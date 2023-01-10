@@ -1,2 +1,2 @@
-#include "MainGUI.h"
+#include "MainGui.h"
 

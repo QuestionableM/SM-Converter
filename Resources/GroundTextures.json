@@ -1,0 +1,49 @@
+{
+    "DefaultTexture": {
+        "Dif": "$GAME_DATA/Terrain/Textures/Ground/gnd_grass_dif.tga",
+        "Asg": "$GAME_DATA/Terrain/Textures/Ground/gnd_grass_asg.tga",
+        "Nor": "$GAME_DATA/Terrain/Textures/Ground/gnd_grass_nor.tga"
+    },
+    "GroundTextureList": [
+        {
+            "Dif": "$GAME_DATA/Terrain/Textures/Ground/gnd_0_dif.tga",
+            "Asg": "$GAME_DATA/Terrain/Textures/Ground/gnd_0_asg.tga",
+            "Nor": "$GAME_DATA/Terrain/Textures/Ground/gnd_0_nor.tga"
+        },
+        {
+            "Dif": "$GAME_DATA/Terrain/Textures/Ground/gnd_1_dif.tga",
+            "Asg": "$GAME_DATA/Terrain/Textures/Ground/gnd_1_asg.tga",
+            "Nor": "$GAME_DATA/Terrain/Textures/Ground/gnd_1_nor.tga"
+        },
+        {
+            "Dif": "$GAME_DATA/Terrain/Textures/Ground/gnd_2_dif.tga",
+            "Asg": "$GAME_DATA/Terrain/Textures/Ground/gnd_2_asg.tga",
+            "Nor": "$GAME_DATA/Terrain/Textures/Ground/gnd_2_nor.tga"
+        },
+        {
+            "Dif": "$GAME_DATA/Terrain/Textures/Ground/gnd_3_dif.tga",
+            "Asg": "$GAME_DATA/Terrain/Textures/Ground/gnd_3_asg.tga",
+            "Nor": "$GAME_DATA/Terrain/Textures/Ground/gnd_3_nor.tga"
+        },
+        {
+            "Dif": "$GAME_DATA/Terrain/Textures/Ground/gnd_4_dif.tga",
+            "Asg": "$GAME_DATA/Terrain/Textures/Ground/gnd_4_asg.tga",
+            "Nor": "$GAME_DATA/Terrain/Textures/Ground/gnd_4_nor.tga"
+        },
+        {
+            "Dif": "$GAME_DATA/Terrain/Textures/Ground/gnd_5_dif.tga",
+            "Asg": "$GAME_DATA/Terrain/Textures/Ground/gnd_5_asg.tga",
+            "Nor": "$GAME_DATA/Terrain/Textures/Ground/gnd_5_nor.tga"
+        },
+        {
+            "Dif": "$GAME_DATA/Terrain/Textures/Ground/gnd_6_dif.tga",
+            "Asg": "$GAME_DATA/Terrain/Textures/Ground/gnd_6_asg.tga",
+            "Nor": "$GAME_DATA/Terrain/Textures/Ground/gnd_6_nor.tga"
+        },
+        {
+            "Dif": "$GAME_DATA/Terrain/Textures/Ground/gnd_7_dif.tga",
+            "Asg": "$GAME_DATA/Terrain/Textures/Ground/gnd_7_asg.tga",
+            "Nor": "$GAME_DATA/Terrain/Textures/Ground/gnd_7_nor.tga"
+        }
+    ]
+}

@@ -1,1 +1,3 @@
 /.vs
+/Build
+/hash_cache.json
