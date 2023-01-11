@@ -93,33 +93,49 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions);SMC_ENABLE_DEBUG_CONSOLE</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)Code;$(SolutionDir)Dependencies\nlohmann_json;$(SolutionDir)Dependencies\simdjson;$(SolutionDir)Dependencies\ValveVDF\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\FreeImage\Include;$(SolutionDir)Dependencies\Assimp\Include;$(SolutionDir)Dependencies\lz4\Include;$(SolutionDir)Dependencies\PerlinNoise;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
     </ClCompile>
     <Link>
-      <AdditionalDependencies />
+      <AdditionalDependencies>user32.lib;FreeImage.lib;assimp$(PlatformArchitecture).lib;lz4_$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\FreeImage\Lib\x$(PlatformArchitecture);$(SolutionDir)Dependencies\Assimp\Lib;$(SolutionDir)Dependencies\lz4\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
       <Command>"$(SolutionDir)Dependencies\Version Counter\VersionCounter.exe"</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(SolutionDir)Resources" "$(SolutionDir)Build\$(PlatformShortName)-$(Configuration)\Resources" /I</Command>
+      <Command>xcopy /y /d "$(SolutionDir)Resources" "$(SolutionDir)Build\$(PlatformShortName)-$(Configuration)\Resources" /I
+xcopy /y /d "$(SolutionDir)Dependencies\FreeImage\DLL\x$(PlatformArchitecture)\FreeImage.dll" "$(SolutionDir)Build\$(PlatformShortName)-$(Configuration)"
+xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture).dll" "$(SolutionDir)Build\$(PlatformShortName)-$(Configuration)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions);SMC_ENABLE_DEBUG_CONSOLE</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)Code;$(SolutionDir)Dependencies\nlohmann_json;$(SolutionDir)Dependencies\simdjson;$(SolutionDir)Dependencies\ValveVDF\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\FreeImage\Include;$(SolutionDir)Dependencies\Assimp\Include;$(SolutionDir)Dependencies\lz4\Include;$(SolutionDir)Dependencies\PerlinNoise;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
     </ClCompile>
     <Link>
-      <AdditionalDependencies />
+      <AdditionalDependencies>user32.lib;FreeImage.lib;assimp$(PlatformArchitecture).lib;lz4_$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\FreeImage\Lib\x$(PlatformArchitecture);$(SolutionDir)Dependencies\Assimp\Lib;$(SolutionDir)Dependencies\lz4\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
       <Command>"$(SolutionDir)Dependencies\Version Counter\VersionCounter.exe"</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(SolutionDir)Resources" "$(SolutionDir)Build\$(PlatformShortName)-$(Configuration)\Resources" /I</Command>
+      <Command>xcopy /y /d "$(SolutionDir)Resources" "$(SolutionDir)Build\$(PlatformShortName)-$(Configuration)\Resources" /I
+xcopy /y /d "$(SolutionDir)Dependencies\FreeImage\DLL\x$(PlatformArchitecture)\FreeImage.dll" "$(SolutionDir)Build\$(PlatformShortName)-$(Configuration)"
+xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture).dll" "$(SolutionDir)Build\$(PlatformShortName)-$(Configuration)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -127,15 +143,23 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)Code;$(SolutionDir)Dependencies\nlohmann_json;$(SolutionDir)Dependencies\simdjson;$(SolutionDir)Dependencies\ValveVDF\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\FreeImage\Include;$(SolutionDir)Dependencies\Assimp\Include;$(SolutionDir)Dependencies\lz4\Include;$(SolutionDir)Dependencies\PerlinNoise;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
     </ClCompile>
     <Link>
-      <AdditionalDependencies />
+      <AdditionalDependencies>user32.lib;FreeImage.lib;assimp$(PlatformArchitecture).lib;lz4_$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\FreeImage\Lib\x$(PlatformArchitecture);$(SolutionDir)Dependencies\Assimp\Lib;$(SolutionDir)Dependencies\lz4\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
       <Command>"$(SolutionDir)Dependencies\Version Counter\VersionCounter.exe"</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(SolutionDir)Resources" "$(SolutionDir)Build\$(PlatformShortName)-$(Configuration)\Resources" /I</Command>
+      <Command>xcopy /y /d "$(SolutionDir)Resources" "$(SolutionDir)Build\$(PlatformShortName)-$(Configuration)\Resources" /I
+xcopy /y /d "$(SolutionDir)Dependencies\FreeImage\DLL\x$(PlatformArchitecture)\FreeImage.dll" "$(SolutionDir)Build\$(PlatformShortName)-$(Configuration)"
+xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture).dll" "$(SolutionDir)Build\$(PlatformShortName)-$(Configuration)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -143,20 +167,67 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)Code;$(SolutionDir)Dependencies\nlohmann_json;$(SolutionDir)Dependencies\simdjson;$(SolutionDir)Dependencies\ValveVDF\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\FreeImage\Include;$(SolutionDir)Dependencies\Assimp\Include;$(SolutionDir)Dependencies\lz4\Include;$(SolutionDir)Dependencies\PerlinNoise;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
     </ClCompile>
     <Link>
-      <AdditionalDependencies />
+      <AdditionalDependencies>user32.lib;FreeImage.lib;assimp$(PlatformArchitecture).lib;lz4_$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\FreeImage\Lib\x$(PlatformArchitecture);$(SolutionDir)Dependencies\Assimp\Lib;$(SolutionDir)Dependencies\lz4\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
       <Command>"$(SolutionDir)Dependencies\Version Counter\VersionCounter.exe"</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(SolutionDir)Resources" "$(SolutionDir)Build\$(PlatformShortName)-$(Configuration)\Resources" /I</Command>
+      <Command>xcopy /y /d "$(SolutionDir)Resources" "$(SolutionDir)Build\$(PlatformShortName)-$(Configuration)\Resources" /I
+xcopy /y /d "$(SolutionDir)Dependencies\FreeImage\DLL\x$(PlatformArchitecture)\FreeImage.dll" "$(SolutionDir)Build\$(PlatformShortName)-$(Configuration)"
+xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture).dll" "$(SolutionDir)Build\$(PlatformShortName)-$(Configuration)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Code\Converter\Entity\Asset.cpp" />
+    <ClCompile Include="Code\Converter\Entity\Block.cpp" />
+    <ClCompile Include="Code\Converter\Entity\Blueprint.cpp" />
+    <ClCompile Include="Code\Converter\Entity\Decal.cpp" />
+    <ClCompile Include="Code\Converter\Entity\Harvestable.cpp" />
+    <ClCompile Include="Code\Converter\Entity\Joint.cpp" />
+    <ClCompile Include="Code\Converter\Entity\Part.cpp" />
+    <ClCompile Include="Code\Converter\Entity\Prefab.cpp" />
+    <ClCompile Include="Code\Converter\Entity\TileClutter.cpp" />
+    <ClCompile Include="Code\Converter\Entity\Entity.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Tile.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\TileConverter.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\TilePart.cpp" />
     <ClCompile Include="Code\Gui\MainGui.cpp" />
     <ClCompile Include="Code\main.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\DatabaseConfig.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\GroundTextureDatabase.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\KeywordReplacer.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\MaterialManager.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\ModelStorage.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\Mods\BlocksAndPartsMod.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\Mods\GameDataMod.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\Mods\Mod.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\Mods\TerrainAssetsMod.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\ObjectData.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\ObjectDatabase.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\ObjectRotations.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\ProgCounter.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\Readers\AssetListLoader.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\Readers\BlockListLoader.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\Readers\ClutterListLoader.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\Readers\DecalsetListReader.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\Readers\DecalsetReader.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\Readers\DefaultLoader.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\Readers\HarvestableListLoader.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\Readers\PartListLoader.cpp" />
+    <ClCompile Include="Code\Utils\Console.cpp" />
+    <ClCompile Include="Code\Utils\Crypt.cpp" />
+    <ClCompile Include="Code\Utils\File.cpp" />
+    <ClCompile Include="Code\Utils\Json.cpp" />
+    <ClCompile Include="Dependencies\simdjson\simdjson\simdjson.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -166,9 +237,72 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Code\BuildInfo.hpp" />
+    <ClInclude Include="Code\Converter\ConvertError.hpp" />
+    <ClInclude Include="Code\Converter\ConvertSettings.hpp" />
+    <ClInclude Include="Code\Converter\Entity\Asset.hpp" />
+    <ClInclude Include="Code\Converter\Entity\Block.hpp" />
+    <ClInclude Include="Code\Converter\Entity\Blueprint.hpp" />
+    <ClInclude Include="Code\Converter\Entity\Decal.hpp" />
+    <ClInclude Include="Code\Converter\Entity\GroundTerrainData.hpp" />
+    <ClInclude Include="Code\Converter\Entity\Harvestable.hpp" />
+    <ClInclude Include="Code\Converter\Entity\Joint.hpp" />
+    <ClInclude Include="Code\Converter\Entity\Part.hpp" />
+    <ClInclude Include="Code\Converter\Entity\Prefab.hpp" />
+    <ClInclude Include="Code\Converter\Entity\TileClutter.hpp" />
+    <ClInclude Include="Code\Converter\Entity\Entity.hpp" />
+    <ClInclude Include="Code\Converter\TileConverter\CellHeader.hpp" />
+    <ClInclude Include="Code\Converter\TileConverter\Readers\AssetListReader.hpp" />
+    <ClInclude Include="Code\Converter\TileConverter\Readers\BlueprintListReader.hpp" />
+    <ClInclude Include="Code\Converter\TileConverter\Readers\ClutterReader.hpp" />
+    <ClInclude Include="Code\Converter\TileConverter\Readers\DecalListReader.hpp" />
+    <ClInclude Include="Code\Converter\TileConverter\Readers\HarvestableListReader.hpp" />
+    <ClInclude Include="Code\Converter\TileConverter\Readers\MipReader.hpp" />
+    <ClInclude Include="Code\Converter\TileConverter\Readers\PrefabFileReader.hpp" />
+    <ClInclude Include="Code\Converter\TileConverter\Readers\PrefabHeader.hpp" />
+    <ClInclude Include="Code\Converter\TileConverter\Readers\PrefabReader.hpp" />
+    <ClInclude Include="Code\Converter\TileConverter\Readers\TileReader.hpp" />
+    <ClInclude Include="Code\Converter\TileConverter\Tile.hpp" />
+    <ClInclude Include="Code\Converter\TileConverter\TileConverter.hpp" />
+    <ClInclude Include="Code\Converter\TileConverter\TileHeader.hpp" />
+    <ClInclude Include="Code\Converter\TileConverter\TilePart.hpp" />
     <ClInclude Include="Code\Gui\MainGui.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="Code\ObjectDatabase\DatabaseConfig.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\GroundTextureDatabase.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\KeywordReplacer.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\MaterialManager.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\ModelStorage.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\Mods\BlocksAndPartsMod.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\Mods\GameDataMod.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\Mods\Mod.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\Mods\TerrainAssetsMod.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\ObjectData.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\ObjectDatabase.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\ObjectRotations.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\ProgCounter.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\Readers\AssetListLoader.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\Readers\BlockListLoader.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\Readers\ClutterListLoader.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\Readers\DecalsetListReader.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\Readers\DecalsetReader.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\Readers\DefaultLoader.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\Readers\HarvestableListLoader.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\Readers\PartListLoader.hpp" />
+    <ClInclude Include="Code\Utils\BitStream.hpp" />
+    <ClInclude Include="Code\Utils\ByteImpl.hpp" />
+    <ClInclude Include="Code\Utils\Color.hpp" />
+    <ClInclude Include="Code\Utils\Console.hpp" />
+    <ClInclude Include="Code\Utils\Crypt.hpp" />
+    <ClInclude Include="Code\Utils\File.hpp" />
+    <ClInclude Include="Code\Utils\Json.hpp" />
+    <ClInclude Include="Code\Utils\Memory.hpp" />
+    <ClInclude Include="Code\Utils\String.hpp" />
+    <ClInclude Include="Code\Utils\Uuid.hpp" />
+    <ClInclude Include="Code\Utils\WinInclude.hpp" />
+    <ClInclude Include="Code\Converter\WriterOffset.hpp" />
+    <ClInclude Include="Dependencies\simdjson\simdjson\simdjson.h" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Code\Gui\MainGui.resx">
