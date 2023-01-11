@@ -37,11 +37,13 @@ namespace SMConverter {
 	private: System::Windows::Forms::ProgressBar^ m_pb_progress;
 	private: System::Windows::Forms::Label^ m_lbl_progressStatus;
 	private: System::Windows::Forms::MenuStrip^ m_menuStrip;
-	private: System::Windows::Forms::ToolStripMenuItem^ aboutToolStripMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^ m_btn_aboutProgram;
+
 	private: System::Windows::Forms::ToolStripMenuItem^ settingsToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^ reloadObjectDatabaseToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripSeparator^ toolStripSeparator1;
 	private: System::Windows::Forms::ToolStripMenuItem^ optionsToolStripMenuItem;
+	private: System::Windows::Forms::Label^ m_lbl_objSelectorStatus;
 
 
 
@@ -72,11 +74,12 @@ namespace SMConverter {
 			this->m_pb_progress = (gcnew System::Windows::Forms::ProgressBar());
 			this->m_lbl_progressStatus = (gcnew System::Windows::Forms::Label());
 			this->m_menuStrip = (gcnew System::Windows::Forms::MenuStrip());
-			this->aboutToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->m_btn_aboutProgram = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->settingsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->reloadObjectDatabaseToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->toolStripSeparator1 = (gcnew System::Windows::Forms::ToolStripSeparator());
 			this->optionsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->m_lbl_objSelectorStatus = (gcnew System::Windows::Forms::Label());
 			this->m_menuStrip->SuspendLayout();
 			this->SuspendLayout();
 			// 
@@ -90,10 +93,12 @@ namespace SMConverter {
 			this->m_btn_folderDialog->TabIndex = 0;
 			this->m_btn_folderDialog->Text = L"...";
 			this->m_btn_folderDialog->UseVisualStyleBackColor = true;
+			this->m_btn_folderDialog->Click += gcnew System::EventHandler(this, &MainGui::FolderDialog_Click);
 			// 
 			// m_btn_convert
 			// 
 			this->m_btn_convert->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
+			this->m_btn_convert->Enabled = false;
 			this->m_btn_convert->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
 			this->m_btn_convert->Location = System::Drawing::Point(282, 263);
 			this->m_btn_convert->Name = L"m_btn_convert";
@@ -108,9 +113,11 @@ namespace SMConverter {
 				| System::Windows::Forms::AnchorStyles::Right));
 			this->m_tb_path->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
 			this->m_tb_path->Location = System::Drawing::Point(12, 27);
+			this->m_tb_path->MaxLength = 256;
 			this->m_tb_path->Name = L"m_tb_path";
 			this->m_tb_path->Size = System::Drawing::Size(310, 22);
 			this->m_tb_path->TabIndex = 2;
+			this->m_tb_path->TextChanged += gcnew System::EventHandler(this, &MainGui::PathTextBox_TextChanged);
 			// 
 			// m_tb_searchBox
 			// 
@@ -118,6 +125,7 @@ namespace SMConverter {
 				| System::Windows::Forms::AnchorStyles::Right));
 			this->m_tb_searchBox->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
 			this->m_tb_searchBox->Location = System::Drawing::Point(12, 55);
+			this->m_tb_searchBox->MaxLength = 64;
 			this->m_tb_searchBox->Name = L"m_tb_searchBox";
 			this->m_tb_searchBox->Size = System::Drawing::Size(360, 22);
 			this->m_tb_searchBox->TabIndex = 3;
@@ -187,7 +195,7 @@ namespace SMConverter {
 			// m_menuStrip
 			// 
 			this->m_menuStrip->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
-				this->aboutToolStripMenuItem,
+				this->m_btn_aboutProgram,
 					this->settingsToolStripMenuItem
 			});
 			this->m_menuStrip->Location = System::Drawing::Point(0, 0);
@@ -197,11 +205,12 @@ namespace SMConverter {
 			this->m_menuStrip->TabIndex = 10;
 			this->m_menuStrip->Text = L"Menu Strip";
 			// 
-			// aboutToolStripMenuItem
+			// m_btn_aboutProgram
 			// 
-			this->aboutToolStripMenuItem->Name = L"aboutToolStripMenuItem";
-			this->aboutToolStripMenuItem->Size = System::Drawing::Size(52, 20);
-			this->aboutToolStripMenuItem->Text = L"About";
+			this->m_btn_aboutProgram->Name = L"m_btn_aboutProgram";
+			this->m_btn_aboutProgram->Size = System::Drawing::Size(52, 20);
+			this->m_btn_aboutProgram->Text = L"About";
+			this->m_btn_aboutProgram->Click += gcnew System::EventHandler(this, &MainGui::AboutButton_Click);
 			// 
 			// settingsToolStripMenuItem
 			// 
@@ -230,11 +239,22 @@ namespace SMConverter {
 			this->optionsToolStripMenuItem->Size = System::Drawing::Size(199, 22);
 			this->optionsToolStripMenuItem->Text = L"Options";
 			// 
+			// m_lbl_objSelectorStatus
+			// 
+			this->m_lbl_objSelectorStatus->BackColor = System::Drawing::SystemColors::ControlLightLight;
+			this->m_lbl_objSelectorStatus->Location = System::Drawing::Point(63, 141);
+			this->m_lbl_objSelectorStatus->Name = L"m_lbl_objSelectorStatus";
+			this->m_lbl_objSelectorStatus->Size = System::Drawing::Size(259, 12);
+			this->m_lbl_objSelectorStatus->TabIndex = 0;
+			this->m_lbl_objSelectorStatus->Text = L"OBJECT_SELECTOR_STATUS";
+			this->m_lbl_objSelectorStatus->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+			// 
 			// MainGui
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(384, 311);
+			this->Controls->Add(this->m_lbl_objSelectorStatus);
 			this->Controls->Add(this->m_lbl_progressStatus);
 			this->Controls->Add(this->m_pb_progress);
 			this->Controls->Add(this->m_lbl_generatorType);
@@ -250,6 +270,7 @@ namespace SMConverter {
 			this->Name = L"MainGui";
 			this->ShowIcon = false;
 			this->Text = L"Scrap Mechanic Converter";
+			this->Resize += gcnew System::EventHandler(this, &MainGui::MainGui_Resize);
 			this->m_menuStrip->ResumeLayout(false);
 			this->m_menuStrip->PerformLayout();
 			this->ResumeLayout(false);
@@ -258,5 +279,9 @@ namespace SMConverter {
 		}
 #pragma endregion
 		System::Void SelectedGenerator_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e);
+		System::Void PathTextBox_TextChanged(System::Object^ sender, System::EventArgs^ e);
+		System::Void FolderDialog_Click(System::Object^ sender, System::EventArgs^ e);
+		System::Void AboutButton_Click(System::Object^ sender, System::EventArgs^ e);
+		System::Void MainGui_Resize(System::Object^ sender, System::EventArgs^ e);
 	};
 }

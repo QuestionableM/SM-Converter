@@ -200,6 +200,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClCompile Include="Code\Converter\TileConverter\Tile.cpp" />
     <ClCompile Include="Code\Converter\TileConverter\TileConverter.cpp" />
     <ClCompile Include="Code\Converter\TileConverter\TilePart.cpp" />
+    <ClCompile Include="Code\Gui\AboutGui.cpp" />
     <ClCompile Include="Code\Gui\MainGui.cpp" />
     <ClCompile Include="Code\main.cpp" />
     <ClCompile Include="Code\ObjectDatabase\DatabaseConfig.cpp" />
@@ -266,6 +267,9 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\Converter\TileConverter\TileConverter.hpp" />
     <ClInclude Include="Code\Converter\TileConverter\TileHeader.hpp" />
     <ClInclude Include="Code\Converter\TileConverter\TilePart.hpp" />
+    <ClInclude Include="Code\Gui\AboutGui.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
     <ClInclude Include="Code\Gui\MainGui.h">
       <FileType>CppForm</FileType>
     </ClInclude>
@@ -305,6 +309,9 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Dependencies\simdjson\simdjson\simdjson.h" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Code\Gui\AboutGui.resx">
+      <DependentUpon>Code\Gui\AboutGui.h</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Code\Gui\MainGui.resx">
       <DependentUpon>Code\Gui\MainGui.h</DependentUpon>
     </EmbeddedResource>

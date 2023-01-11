@@ -96,6 +96,7 @@ std::wstring File::OpenFileDialog(
 ) {
 	std::wstring _Output = L"";
 
+	CoUninitialize();
 	HRESULT hr = CoInitializeEx(NULL, COINIT_DISABLE_OLE1DDE | COINIT_APARTMENTTHREADED);
 
 	if (SUCCEEDED(hr))
