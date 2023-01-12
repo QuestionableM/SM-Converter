@@ -11,6 +11,8 @@
 #include <sstream>
 #include <iomanip>
 
+#pragma unmanaged
+
 class MipReader
 {
 	MipReader() = default;
@@ -72,3 +74,5 @@ public:
 		memory.ObjectsRef<long long>(part->m_Ground.data(), wh_mul_8, 0x41 * 0x41);
 	}
 };
+
+#pragma managed

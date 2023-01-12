@@ -6,6 +6,8 @@
 
 #include "Utils\Console.hpp"
 
+#pragma unmanaged
+
 std::string Decal::GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const
 {
 	const std::string v_materialIdx = MaterialManager::GetMaterialA(m_data->m_textures.material);

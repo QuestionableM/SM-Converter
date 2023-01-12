@@ -12,6 +12,8 @@
 #include <gtx\transform.hpp>
 #include <glm.hpp>
 
+#pragma unmanaged
+
 struct ObjectTexData
 {
 	TextureList Textures;
@@ -78,3 +80,5 @@ protected:
 	SMUuid m_uuid;
 	Model* m_model;
 };
+
+#pragma managed

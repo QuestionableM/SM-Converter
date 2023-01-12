@@ -7,6 +7,8 @@
 
 #include "Utils\Json.hpp"
 
+#pragma unmanaged
+
 class Blueprint : public SMEntity
 {
 	inline Blueprint()
@@ -48,3 +50,5 @@ private:
 	void LoadBodies(const simdjson::dom::element& pJson);
 	void LoadJoints(const simdjson::dom::element& pJson);
 };
+
+#pragma managed

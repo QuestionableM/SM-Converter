@@ -2,6 +2,8 @@
 
 #include "ObjectDatabase\MaterialManager.hpp"
 
+#pragma unmanaged
+
 std::string Harvestable::GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const
 {
 	const SubMeshData* pSubMesh = m_model->subMeshData[mIdx];

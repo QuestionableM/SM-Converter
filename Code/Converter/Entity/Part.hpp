@@ -4,6 +4,8 @@
 #include "Utils\Color.hpp"
 #include "Entity.hpp"
 
+#pragma unmanaged
+
 class Part : public SMEntity
 {
 	SMColor m_color;
@@ -33,3 +35,5 @@ public:
 	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const override;
 	glm::mat4 GetTransformMatrix() const override;
 };
+
+#pragma managed

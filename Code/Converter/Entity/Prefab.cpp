@@ -2,6 +2,8 @@
 
 #include "ObjectDatabase\ModelStorage.hpp"
 
+#pragma unmanaged
+
 std::string Prefab::GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const
 {
 	return "PREFAB_NOT_IMPLEMENTED";

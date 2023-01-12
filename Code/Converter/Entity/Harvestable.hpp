@@ -4,6 +4,8 @@
 #include "Utils\Color.hpp"
 #include "Entity.hpp"
 
+#pragma unmanaged
+
 class Harvestable : public SMEntity
 {
 public:
@@ -29,3 +31,5 @@ private:
 	SMColor m_color;
 	class HarvestableData* m_parent;
 };
+
+#pragma managed

@@ -18,6 +18,8 @@
 #include <filesystem>
 namespace fs = std::filesystem;
 
+#pragma unmanaged
+
 Tile::Tile(const int& width, const int& height)
 {
 	this->m_Width = width;

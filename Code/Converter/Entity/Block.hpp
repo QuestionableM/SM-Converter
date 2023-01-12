@@ -2,6 +2,8 @@
 
 #include "Entity.hpp"
 
+#pragma unmanaged
+
 class Block : public SMEntity
 {
 public:
@@ -32,3 +34,5 @@ private:
 	int m_xAxis;
 	int m_zAxis;
 };
+
+#pragma managed

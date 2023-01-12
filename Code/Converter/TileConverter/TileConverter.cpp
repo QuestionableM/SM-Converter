@@ -6,6 +6,8 @@
 #include <filesystem>
 namespace fs = std::filesystem;
 
+#pragma unmanaged
+
 constexpr const static std::wstring_view g_TileOutputDirectory = L"./ConvertedTiles";
 
 void TileConv::WriteToFileInternal(Tile* pTile, const std::wstring& tile_name, ConvertError& cError)

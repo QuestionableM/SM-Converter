@@ -15,6 +15,8 @@
 
 #include <lz4\lz4.h>
 
+#pragma unmanaged
+
 class HarvestableListReader
 {
 	HarvestableListReader() = default;
@@ -101,3 +103,5 @@ public:
 		return index;
 	}
 };
+
+#pragma managed

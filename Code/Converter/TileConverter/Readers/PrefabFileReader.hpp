@@ -17,6 +17,8 @@
 
 #include <algorithm>
 
+#pragma unmanaged
+
 class PrefabFileReader
 {
 	PrefabFileReader() = default;
@@ -307,3 +309,5 @@ public:
 		DebugWarningL("UNIMPLEMENTED -> ", stream.Index());
 	}
 };
+
+#pragma managed
