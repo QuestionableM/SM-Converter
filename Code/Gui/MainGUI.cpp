@@ -117,30 +117,27 @@ namespace SMConverter
 			L"Search Scripts"
 		};
 
-		m_tb_searchBox->Clear();
-		
-		if (m_obj_isLoaded)
-		{
-			this->UpdateCurrentObjectList();
-		}
-		else
-		{
-			this->UpdateObjectListStatus();
-		}
-
-		this->MainGui_UpdatePathTextBox();
-
 		SendMessage(
 			static_cast<HWND>(m_tb_searchBox->Handle.ToPointer()),
 			EM_SETCUEBANNER,
 			0,
 			reinterpret_cast<LPARAM>(g_searchTextMessages[m_cb_selectedGenerator->SelectedIndex])
 		);
+
+		if (m_obj_isLoaded)
+			this->UpdateCurrentObjectList();
+		else
+			this->UpdateObjectListStatus();
+
+		m_tb_searchBox->Clear();
+		m_btn_convert->Enabled = (m_tb_path->TextLength > 0 || m_lb_objectSelector->SelectedIndex >= 0) && m_database_isLoaded;
+
+		this->MainGui_UpdatePathTextBox();
 	}
 
 	void MainGui::PathTextBox_TextChanged(System::Object^ sender, System::EventArgs^ e)
 	{
-		m_btn_convert->Enabled = (m_tb_path->TextLength > 0);
+		m_btn_convert->Enabled = (m_tb_path->TextLength > 0 || m_lb_objectSelector->SelectedIndex >= 0) && m_database_isLoaded;
 
 		if (m_tb_path->TextLength > 0)
 			m_lb_objectSelector->SelectedIndex = -1;
@@ -261,7 +258,7 @@ namespace SMConverter
 		m_btn_reloadDatabase->Enabled = db_loaded_and_obj_converted;
 		m_lb_objectSelector->Enabled = objlist_and_obj_loaded;
 
-		m_btn_convert->Enabled = db_loaded_and_obj_converted && (m_tb_path->TextLength > 0);
+		m_btn_convert->Enabled = db_loaded_and_obj_converted && (m_tb_path->TextLength > 0 || m_lb_objectSelector->SelectedIndex >= 0);
 		m_btn_options->Enabled = db_loaded_and_obj_converted;
 	}
 
@@ -371,6 +368,8 @@ namespace SMConverter
 
 	void MainGui::MainGui_ObjectSelector_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e)
 	{
+		m_btn_convert->Enabled = (m_tb_path->TextLength > 0 || m_lb_objectSelector->SelectedIndex >= 0) && m_database_isLoaded;
+
 		if (m_lb_objectSelector->SelectedIndex >= 0)
 		{
 			this->MainGui_UpdatePathTextBox();
