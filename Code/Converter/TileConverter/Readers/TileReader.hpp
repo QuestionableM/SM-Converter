@@ -1,13 +1,12 @@
 #pragma once
 
-
-#include "Readers\HarvestableListReader.hpp"
-#include "Readers\BlueprintListReader.hpp"
-#include "Readers\AssetListReader.hpp"
-#include "Readers\DecalListReader.hpp"
-#include "Readers\ClutterReader.hpp"
-#include "Readers\PrefabReader.hpp"
-#include "Readers\MipReader.hpp"
+#include "HarvestableListReader.hpp"
+#include "BlueprintListReader.hpp"
+#include "AssetListReader.hpp"
+#include "DecalListReader.hpp"
+#include "ClutterReader.hpp"
+#include "PrefabReader.hpp"
+#include "MipReader.hpp"
 
 #include "Converter\TileConverter\CellHeader.hpp"
 #include "Converter\TileConverter\TileHeader.hpp"
@@ -26,7 +25,14 @@ class TileReader
 public:
 	static bool ReadTileHeader(const std::wstring& path, TileHeaderBaseInfo& v_header, ConvertError& cError)
 	{
-		MemoryWrapper mMemory = File::ReadFileBytes(path);
+		std::vector<std::uint8_t> v_file_bytes = File::ReadFileBytes(path);
+		if (v_file_bytes.empty())
+		{
+			cError = ConvertError(1, L"TileReader::ReadTile -> Couldn't read the file");
+			return false;
+		}
+
+		MemoryWrapper mMemory = v_file_bytes;
 
 		std::vector<char> v_tile_keyword = mMemory.NextObjects<char>(4);
 		std::string v_tile_key(v_tile_keyword.begin(), v_tile_keyword.end());

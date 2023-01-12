@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Utils\ByteImpl.hpp"
+#include "Utils\Console.hpp"
 #include "Utils\Memory.hpp"
 #include "Utils\Uuid.hpp"
 

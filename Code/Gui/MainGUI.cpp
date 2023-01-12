@@ -316,8 +316,17 @@ namespace SMConverter
 				return;
 			}
 		case Generator_TileConverter:
-			//TODO: IMPLEMENT LATER
-			break;
+			{
+				const std::vector<TileInstance*>& v_cur_tile_list = this->GetCurrentTileList();
+				if (v_cur_tile_list.empty())
+					break;
+
+				for (const TileInstance* v_tile_instance : v_cur_tile_list)
+					m_lb_objectSelector->Items->Add(gcnew System::String(v_tile_instance->name.c_str()));
+
+				m_lb_objectSelector->EndUpdate();
+				return;
+			}
 		case Generator_ScriptConverter:
 			//TODO: IMPLEMENT LATER
 			break;
@@ -344,10 +353,9 @@ namespace SMConverter
 
 	void MainGui::MainGui_ObjectLoader_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e)
 	{
+		//TODO: Make a script loader (not important for now)
 		BlueprintFolderReader::ReadBlueprintsFromConfig();
-
-		//TODO: Actually load blueprints, tiles and scripts in here
-		//Sleep(2000);
+		TileFolderReader::ReadTilesFromConfig();
 	}
 
 	void MainGui::MainGui_ObjectLoader_RunWorkerCompleted(System::Object^ sender, System::ComponentModel::RunWorkerCompletedEventArgs^ e)
@@ -434,9 +442,11 @@ namespace SMConverter
 
 	std::vector<BlueprintInstance*>& MainGui::GetCurrentBlueprintList()
 	{
-		if (m_tb_searchBox->TextLength > 0)
-			return BlueprintFolderReader::BlueprintSearchResults;
+		return (m_tb_searchBox->TextLength > 0) ? BlueprintFolderReader::BlueprintSearchResults : BlueprintFolderReader::BlueprintStorage;
+	}
 
-		return BlueprintFolderReader::BlueprintStorage;
+	std::vector<TileInstance*>& MainGui::GetCurrentTileList()
+	{
+		return (m_tb_searchBox->TextLength > 0) ? TileFolderReader::TileSearchResults : TileFolderReader::TileStorage;
 	}
 }

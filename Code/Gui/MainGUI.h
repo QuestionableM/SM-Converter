@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MainGuiReaders\BlueprintFolderReader.hpp"
+#include "MainGuiReaders\TileFolderReader.hpp"
 
 #include <vector>
 
@@ -330,5 +331,6 @@ namespace SMConverter
 		System::Void MainGui_SearchBox_TextChanged(System::Object^ sender, System::EventArgs^ e);
 
 		std::vector<BlueprintInstance*>& GetCurrentBlueprintList();
+		std::vector<TileInstance*>& GetCurrentTileList();
 	};
 }
