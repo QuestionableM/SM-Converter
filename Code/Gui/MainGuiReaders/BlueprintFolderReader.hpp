@@ -14,7 +14,7 @@ struct BlueprintInstance
 
 	unsigned long long workshop_id;
 
-	BlueprintInstance(const std::wstring& name, const std::wstring& path, const unsigned long long& workshop_id);
+	BlueprintInstance() = default;
 	BlueprintInstance(const BlueprintInstance&) = delete;
 	BlueprintInstance(BlueprintInstance&) = delete;
 	~BlueprintInstance() = default;
@@ -28,7 +28,7 @@ public:
 	inline static std::vector<BlueprintInstance*> Storage = {};
 	inline static std::vector<BlueprintInstance*> SearchResults = {};
 
-	static bool IsValidBlueprintFolder(const std::wstring& folder, std::wstring& v_name, std::wstring& v_path, unsigned long long& v_workshop_id);
+	static void ReadBlueprintFromFolder(const std::wstring& folder);
 	static void ReadBlueprintsFromFolder(const std::wstring& path);
 	static void ReadBlueprintsFromConfig();
 	static void ClearStorage();

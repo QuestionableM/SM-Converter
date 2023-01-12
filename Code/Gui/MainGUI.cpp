@@ -125,19 +125,17 @@ namespace SMConverter
 		);
 
 		if (m_obj_isLoaded)
-			this->UpdateCurrentObjectList();
+			this->UpdateSearchResults(0);
 		else
 			this->UpdateObjectListStatus();
 
-		m_tb_searchBox->Clear();
-		m_btn_convert->Enabled = (m_tb_path->TextLength > 0 || m_lb_objectSelector->SelectedIndex >= 0) && m_database_isLoaded;
-
+		this->UpdateConvertButton();
 		this->MainGui_UpdatePathTextBox();
 	}
 
 	void MainGui::PathTextBox_TextChanged(System::Object^ sender, System::EventArgs^ e)
 	{
-		m_btn_convert->Enabled = (m_tb_path->TextLength > 0 || m_lb_objectSelector->SelectedIndex >= 0) && m_database_isLoaded;
+		this->UpdateConvertButton();
 
 		if (m_tb_path->TextLength > 0)
 			m_lb_objectSelector->SelectedIndex = -1;
@@ -345,11 +343,6 @@ namespace SMConverter
 		m_lbl_objSelectorStatus->Visible = true;
 	}
 
-	void MainGui::UpdateSearchResults()
-	{
-		//TODO: IMPLEMENT LATER
-	}
-
 	void MainGui::MainGui_ObjectLoader_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e)
 	{
 		//TODO: Make a script loader (not important for now)
@@ -359,7 +352,8 @@ namespace SMConverter
 
 	void MainGui::MainGui_ObjectLoader_RunWorkerCompleted(System::Object^ sender, System::ComponentModel::RunWorkerCompletedEventArgs^ e)
 	{
-		this->UpdateCurrentObjectList();
+		this->UpdateSearchResults(0);
+
 		this->MainGui_ChangeGuiState(m_database_isLoaded, true, true);
 	}
 
@@ -370,7 +364,7 @@ namespace SMConverter
 
 	void MainGui::MainGui_ObjectSelector_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e)
 	{
-		m_btn_convert->Enabled = (m_tb_path->TextLength > 0 || m_lb_objectSelector->SelectedIndex >= 0) && m_database_isLoaded;
+		this->UpdateConvertButton();
 
 		if (m_lb_objectSelector->SelectedIndex >= 0)
 		{
@@ -397,9 +391,13 @@ namespace SMConverter
 					T::SearchResults[v_newCacheSize++] = v_cur_instance;
 
 			T::SearchResults.resize(v_newCacheSize);
+
+			DebugOutL("Searching in cache");
 		}
 		else
 		{
+			DebugOutL("Searching in normal array");
+
 			T::SearchResults.clear();
 
 			for (T::InstanceType* v_cur_instance : T::Storage)
@@ -408,28 +406,40 @@ namespace SMConverter
 		}
 	}
 
-	void MainGui::MainGui_SearchBox_TextChanged(System::Object^ sender, System::EventArgs^ e)
+	void MainGui::UpdateSearchResults(int last_search_length)
 	{
 		if (m_tb_searchBox->TextLength > 0)
 		{
-			std::wstring v_searchWstr = msclr::interop::marshal_as<std::wstring>(m_tb_searchBox->Text);
-			::String::ToLowerR(v_searchWstr);
+			std::wstring v_search_str = msclr::interop::marshal_as<std::wstring>(m_tb_searchBox->Text);
+			::String::ToLowerR(v_search_str);
 
 			switch (m_cb_selectedGenerator->SelectedIndex)
 			{
 			case Generator_BlueprintConverter:
-				SearchFunction<BlueprintFolderReader>(v_searchWstr, m_lastSearchLength, m_tb_searchBox->TextLength);
+				SearchFunction<BlueprintFolderReader>(v_search_str, last_search_length, m_tb_searchBox->TextLength);
 				break;
 			case Generator_TileConverter:
-				SearchFunction<TileFolderReader>(v_searchWstr, m_lastSearchLength, m_tb_searchBox->TextLength);
+				SearchFunction<TileFolderReader>(v_search_str, last_search_length, m_tb_searchBox->TextLength);
 				break;
 			case Generator_ScriptConverter:
 				break;
 			}
 		}
 
-		m_lastSearchLength = m_tb_searchBox->TextLength;
 		this->UpdateCurrentObjectList();
+	}
+
+	void MainGui::MainGui_SearchBox_TextChanged(System::Object^ sender, System::EventArgs^ e)
+	{
+		this->UpdateSearchResults(m_lastSearchLength);
+		this->UpdateConvertButton();
+		this->MainGui_UpdatePathTextBox();
+		m_lastSearchLength = m_tb_searchBox->TextLength;
+	}
+
+	void MainGui::UpdateConvertButton()
+	{
+		m_btn_convert->Enabled = (m_tb_path->TextLength > 0 || m_lb_objectSelector->SelectedIndex >= 0) && m_database_isLoaded;
 	}
 
 	std::vector<BlueprintInstance*>& MainGui::GetCurrentBlueprintList()
