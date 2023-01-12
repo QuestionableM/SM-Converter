@@ -272,6 +272,8 @@ namespace SMConverter
 		if (m_bw_objectLoader->IsBusy) return;
 
 		m_lbl_objSelectorStatus->Visible = true;
+		m_lb_objectSelector->SelectedIndex = -1;
+
 		this->UpdateObjectListStatus();
 
 		this->MainGui_ChangeGuiState(m_database_isLoaded, false, true);
@@ -357,8 +359,8 @@ namespace SMConverter
 
 	void MainGui::MainGui_ObjectLoader_RunWorkerCompleted(System::Object^ sender, System::ComponentModel::RunWorkerCompletedEventArgs^ e)
 	{
-		this->MainGui_ChangeGuiState(m_database_isLoaded, true, true);
 		this->UpdateCurrentObjectList();
+		this->MainGui_ChangeGuiState(m_database_isLoaded, true, true);
 	}
 
 	void MainGui::MainGui_ReloadUserObjects_Click(System::Object^ sender, System::EventArgs^ e)
