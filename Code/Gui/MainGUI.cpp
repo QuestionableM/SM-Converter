@@ -337,32 +337,32 @@ namespace SMConverter
 	void MainGui::SearchBlueprints()
 	{
 		const int v_new_text_length = m_tb_searchBox->TextLength;
-		if (v_new_text_length > 0 && !BlueprintFolderReader::BlueprintStorage.empty())
+		if (v_new_text_length == 0 || BlueprintFolderReader::BlueprintStorage.empty())
+			return;
+
+		std::wstring v_searchWstr = msclr::interop::marshal_as<std::wstring>(m_tb_searchBox->Text);
+		::String::ToLowerR(v_searchWstr);
+
+		if (m_lastSearchLength != 0 && v_new_text_length > m_lastSearchLength)
 		{
-			std::wstring v_searchWstr = msclr::interop::marshal_as<std::wstring>(m_tb_searchBox->Text);
-			::String::ToLowerR(v_searchWstr);
+			std::size_t v_newCacheSize = 0;
 
-			if (m_lastSearchLength != 0 && v_new_text_length > m_lastSearchLength)
+			for (BlueprintInstance* v_cur_instance : BlueprintFolderReader::BlueprintSearchResults)
 			{
-				std::size_t v_newCacheSize = 0;
-
-				for (BlueprintInstance* v_cur_instance : BlueprintFolderReader::BlueprintSearchResults)
-				{
-					if (v_cur_instance->lower_name.find(v_searchWstr) != std::wstring::npos)
-						BlueprintFolderReader::BlueprintSearchResults[v_newCacheSize++] = v_cur_instance;
-				}
-
-				BlueprintFolderReader::BlueprintSearchResults.resize(v_newCacheSize);
+				if (v_cur_instance->lower_name.find(v_searchWstr) != std::wstring::npos)
+					BlueprintFolderReader::BlueprintSearchResults[v_newCacheSize++] = v_cur_instance;
 			}
-			else
-			{
-				BlueprintFolderReader::BlueprintSearchResults.clear();
 
-				for (BlueprintInstance* v_cur_instance : BlueprintFolderReader::BlueprintStorage)
-				{
-					if (v_cur_instance->lower_name.find(v_searchWstr) != std::wstring::npos)
-						BlueprintFolderReader::BlueprintSearchResults.push_back(v_cur_instance);
-				}
+			BlueprintFolderReader::BlueprintSearchResults.resize(v_newCacheSize);
+		}
+		else
+		{
+			BlueprintFolderReader::BlueprintSearchResults.clear();
+
+			for (BlueprintInstance* v_cur_instance : BlueprintFolderReader::BlueprintStorage)
+			{
+				if (v_cur_instance->lower_name.find(v_searchWstr) != std::wstring::npos)
+					BlueprintFolderReader::BlueprintSearchResults.push_back(v_cur_instance);
 			}
 		}
 	}
