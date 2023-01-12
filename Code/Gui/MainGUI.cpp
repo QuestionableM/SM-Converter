@@ -70,16 +70,45 @@ namespace SMConverter
 		this->LoadUserObjects();
 	}
 
+	void MainGui::MainGui_UpdatePathTextBox()
+	{
+		if (m_lb_objectSelector->SelectedIndex == -1)
+		{
+			//Used by the path text box to show appropriate text based on the selected generator type
+			const static wchar_t* g_selectedGeneratorMessages[] =
+			{
+				L"Path to Blueprint",
+				L"Path to Tile",
+				L"Path to Script"
+			};
+
+			SendMessage(
+				static_cast<HWND>(m_tb_path->Handle.ToPointer()),
+				EM_SETCUEBANNER,
+				0,
+				reinterpret_cast<LPARAM>(g_selectedGeneratorMessages[m_cb_selectedGenerator->SelectedIndex])
+			);
+		}
+		else
+		{
+			const static wchar_t* g_selectedObjectMessages[] =
+			{
+				L"Selected a Blueprint in the list",
+				L"Selected a tile in the list",
+				L"Selected a script in the list"
+			};
+
+			SendMessage(
+				static_cast<HWND>(m_tb_path->Handle.ToPointer()),
+				EM_SETCUEBANNER,
+				0,
+				reinterpret_cast<LPARAM>(g_selectedObjectMessages[m_cb_selectedGenerator->SelectedIndex])
+			);
+		}
+	}
+
 	void MainGui::SelectedGenerator_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e)
 	{
-		//Used by the path text box to show appropriate text based on the selected generator type
-		const static wchar_t* g_selectedGeneratorMessages[] =
-		{
-			L"Path to Blueprint",
-			L"Path to Tile",
-			L"Path to Script"
-		};
-
 		//Used by the search text box to show appropriate text based on the selected generator type
 		const static wchar_t* g_searchTextMessages[] =
 		{
@@ -99,12 +128,7 @@ namespace SMConverter
 			this->UpdateObjectListStatus();
 		}
 
-		SendMessage(
-			static_cast<HWND>(m_tb_path->Handle.ToPointer()),
-			EM_SETCUEBANNER,
-			0,
-			reinterpret_cast<LPARAM>(g_selectedGeneratorMessages[m_cb_selectedGenerator->SelectedIndex])
-		);
+		this->MainGui_UpdatePathTextBox();
 
 		SendMessage(
 			static_cast<HWND>(m_tb_searchBox->Handle.ToPointer()),
@@ -117,6 +141,9 @@ namespace SMConverter
 	void MainGui::PathTextBox_TextChanged(System::Object^ sender, System::EventArgs^ e)
 	{
 		m_btn_convert->Enabled = (m_tb_path->TextLength > 0);
+
+		if (m_tb_path->TextLength > 0)
+			m_lb_objectSelector->SelectedIndex = -1;
 	}
 
 	void MainGui::FolderDialog_Click(System::Object^ sender, System::EventArgs^ e)
@@ -332,6 +359,15 @@ namespace SMConverter
 	void MainGui::MainGui_ReloadUserObjects_Click(System::Object^ sender, System::EventArgs^ e)
 	{
 		this->LoadUserObjects();
+	}
+
+	void MainGui::MainGui_ObjectSelector_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e)
+	{
+		if (m_lb_objectSelector->SelectedIndex >= 0)
+		{
+			this->MainGui_UpdatePathTextBox();
+			m_tb_path->Clear();
+		}
 	}
 
 	void MainGui::SearchBlueprints()

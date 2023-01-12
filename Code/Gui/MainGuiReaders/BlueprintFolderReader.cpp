@@ -3,6 +3,7 @@
 
 #include "ObjectDatabase\DatabaseConfig.hpp"
 
+#include "Utils\Console.hpp"
 #include "Utils\String.hpp"
 #include "Utils\Json.hpp"
 #include "Utils\File.hpp"
@@ -74,6 +75,8 @@ void BlueprintFolderReader::ReadBlueprintsFromConfig()
 
 	for (const std::wstring& v_bp_folder : DatabaseConfig::BlueprintFolders)
 		BlueprintFolderReader::ReadBlueprintsFromFolder(v_bp_folder);
+
+	DebugOutL("[BlueprintFolderReader] Successfully loaded ", BlueprintFolderReader::BlueprintStorage.size(), " blueprints from ", DatabaseConfig::BlueprintFolders.size(), " folders");
 }
 
 void BlueprintFolderReader::ClearStorage()

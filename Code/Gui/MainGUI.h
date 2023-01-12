@@ -141,6 +141,7 @@ namespace SMConverter
 			this->m_lb_objectSelector->Name = L"m_lb_objectSelector";
 			this->m_lb_objectSelector->Size = System::Drawing::Size(460, 128);
 			this->m_lb_objectSelector->TabIndex = 4;
+			this->m_lb_objectSelector->SelectedIndexChanged += gcnew System::EventHandler(this, &MainGui::MainGui_ObjectSelector_SelectedIndexChanged);
 			// 
 			// m_cb_selectedGenerator
 			// 
@@ -302,6 +303,7 @@ namespace SMConverter
 		}
 #pragma endregion
 		System::Void MainGui_Shown(System::Object^ sender, System::EventArgs^ e);
+		System::Void MainGui_UpdatePathTextBox();
 		System::Void SelectedGenerator_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e);
 		System::Void PathTextBox_TextChanged(System::Object^ sender, System::EventArgs^ e);
 		System::Void FolderDialog_Click(System::Object^ sender, System::EventArgs^ e);
@@ -320,6 +322,7 @@ namespace SMConverter
 		System::Void MainGui_ObjectLoader_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e);
 		System::Void MainGui_ObjectLoader_RunWorkerCompleted(System::Object^ sender, System::ComponentModel::RunWorkerCompletedEventArgs^ e);
 		System::Void MainGui_ReloadUserObjects_Click(System::Object^ sender, System::EventArgs^ e);
+		System::Void MainGui_ObjectSelector_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e);
 
 		System::Void SearchBlueprints();
 		System::Void SearchTiles();
