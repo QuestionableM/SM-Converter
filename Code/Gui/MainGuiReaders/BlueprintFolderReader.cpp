@@ -9,14 +9,22 @@
 
 #include <filesystem>
 
-bool BlueprintFolderReader::IsValidBlueprintFolder(const std::wstring& folder, BlueprintInstance& v_instance)
+BlueprintInstance::BlueprintInstance(const std::wstring& name, const std::wstring& path, const unsigned long long& workshop_id)
+{
+	this->name = name;
+	this->lower_name = String::ToLower(name);
+	this->path = path;
+	this->workshop_id = workshop_id;
+}
+
+bool BlueprintFolderReader::IsValidBlueprintFolder(const std::wstring& folder, std::wstring& v_name, std::wstring& v_path, unsigned long long& v_workshop_id)
 {
 	const std::wstring v_description_path = folder + L"/description.json";
 	if (!File::Exists(v_description_path))
 		return false;
 
 	simdjson::dom::document v_bp_doc;
-	if (!JsonReader::LoadParseSimdjsonC(v_description_path, v_bp_doc, simdjson::dom::element_type::OBJECT))
+	if (!JsonReader::LoadParseSimdjsonCommentsC(v_description_path, v_bp_doc, simdjson::dom::element_type::OBJECT))
 		return false;
 
 	const auto v_root = v_bp_doc.root();
@@ -29,11 +37,11 @@ bool BlueprintFolderReader::IsValidBlueprintFolder(const std::wstring& folder, B
 	if (!(v_bp_name.is_string() && v_bp_uuid.is_string()))
 		return false;
 
-	v_instance.name = String::ToWide(v_bp_name.get_string());
-	v_instance.path = folder;
+	v_name = String::ToWide(v_bp_name.get_string());
+	v_path = folder;
 
 	const auto v_bp_workshop_id = v_root["fileId"];
-	v_instance.workshop_id = (v_bp_workshop_id.is_number() ? JsonReader::GetNumber<unsigned long long>(v_bp_workshop_id) : 0ull);
+	v_workshop_id = (v_bp_workshop_id.is_number() ? JsonReader::GetNumber<unsigned long long>(v_bp_workshop_id) : 0ull);
 
 	return true;
 }
@@ -48,11 +56,14 @@ void BlueprintFolderReader::ReadBlueprintsFromFolder(const std::wstring& path)
 	{
 		if (v_error_code || !v_dir.is_directory()) continue;
 
-		BlueprintInstance v_bp_instance;
+		std::wstring v_bp_path;
+		std::wstring v_bp_name;
+		unsigned long long v_bp_workshop_id;
 		const fs::path& v_path = v_dir.path();
-		if (!BlueprintFolderReader::IsValidBlueprintFolder(v_path.wstring(), v_bp_instance))
+		if (!BlueprintFolderReader::IsValidBlueprintFolder(v_path.wstring(), v_bp_name, v_bp_path, v_bp_workshop_id))
 			continue;
 
+		BlueprintInstance* v_bp_instance = new BlueprintInstance(v_bp_name, v_bp_path, v_bp_workshop_id);
 		BlueprintFolderReader::BlueprintStorage.push_back(v_bp_instance);
 	}
 }
@@ -67,5 +78,9 @@ void BlueprintFolderReader::ReadBlueprintsFromConfig()
 
 void BlueprintFolderReader::ClearStorage()
 {
+	for (std::size_t a = 0; a < BlueprintFolderReader::BlueprintStorage.size(); a++)
+		delete BlueprintFolderReader::BlueprintStorage[a];
+
 	BlueprintFolderReader::BlueprintStorage.clear();
+	BlueprintFolderReader::BlueprintSearchResults.clear();
 }

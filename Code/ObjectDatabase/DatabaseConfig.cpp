@@ -214,12 +214,27 @@ void DatabaseConfig::FindLocalUsers()
 
 		if (!v_curDir.is_directory()) continue;
 
-		std::wstring l_mod_path = v_curDir.path().wstring() + L"\\Mods";
+		const std::wstring v_cur_dir_path = v_curDir.path().wstring();
 
-		if (File::Exists(l_mod_path))
+		const std::wstring v_local_mods_dir = v_cur_dir_path + L"\\Mods";
+		if (File::Exists(v_local_mods_dir))
 		{
-			DebugOutL("Found a new path to local mods: ", 0b01101_fg, l_mod_path);
-			DatabaseConfig::AddToStrVec(DatabaseConfig::LocalModFolders, l_mod_path);
+			DebugOutL("Found a new path to local mods: ", 0b01101_fg, v_local_mods_dir);
+			DatabaseConfig::AddToStrVec(DatabaseConfig::LocalModFolders, v_local_mods_dir);
+		}
+
+		const std::wstring v_local_blueprints_dir = v_cur_dir_path + L"\\Blueprints";
+		if (File::Exists(v_local_blueprints_dir))
+		{
+			DebugOutL("Found a new path to local blueprints: ", 0b01101_fg, v_local_blueprints_dir);
+			DatabaseConfig::AddToStrVec(DatabaseConfig::BlueprintFolders, v_local_blueprints_dir);
+		}
+
+		const std::wstring v_local_tiles_dir = v_cur_dir_path + L"\\Tiles";
+		if (File::Exists(v_local_tiles_dir))
+		{
+			DebugOutL("Found a new path to local tiles: ", 0b01101_fg, v_local_tiles_dir);
+			DatabaseConfig::AddToStrVec(DatabaseConfig::TileFolders, v_local_tiles_dir);
 		}
 	}
 }
@@ -233,6 +248,8 @@ void DatabaseConfig::FindGamePath(const nlohmann::json& config_json, bool& shoul
 		{
 			DatabaseConfig::GamePath = game_path;
 			DatabaseConfig::AddToStrVec(DatabaseConfig::ModFolders, ws_path);
+			DatabaseConfig::AddToStrVec(DatabaseConfig::BlueprintFolders, ws_path);
+			DatabaseConfig::AddToStrVec(DatabaseConfig::TileFolders, ws_path);
 
 			should_write = true;
 		}
@@ -355,6 +372,8 @@ void DatabaseConfig::SaveConfig()
 
 		DatabaseConfig::WstrArrayToJson(user_settings, "WorkshopModFolders", DatabaseConfig::ModFolders);
 		DatabaseConfig::WstrArrayToJson(user_settings, "LocalModFolders", DatabaseConfig::LocalModFolders);
+		DatabaseConfig::WstrArrayToJson(user_settings, "BlueprintFolders", DatabaseConfig::BlueprintFolders);
+		DatabaseConfig::WstrArrayToJson(user_settings, "TileFolders", DatabaseConfig::TileFolders);
 
 		cfgData["UserSettings"] = user_settings;
 	}

@@ -1,5 +1,9 @@
 #pragma once
 
+#include "MainGuiReaders\BlueprintFolderReader.hpp"
+
+#include <vector>
+
 namespace SMConverter
 {
 	using namespace System;
@@ -20,6 +24,7 @@ namespace SMConverter
 	private:
 		bool m_obj_isLoaded = false;
 		bool m_database_isLoaded = false;
+		int m_lastSearchLength = 0;
 
 		System::Windows::Forms::Button^ m_btn_folderDialog;
 		System::Windows::Forms::Button^ m_btn_convert;
@@ -121,6 +126,7 @@ namespace SMConverter
 			this->m_tb_searchBox->Name = L"m_tb_searchBox";
 			this->m_tb_searchBox->Size = System::Drawing::Size(460, 22);
 			this->m_tb_searchBox->TabIndex = 3;
+			this->m_tb_searchBox->TextChanged += gcnew System::EventHandler(this, &MainGui::MainGui_SearchBox_TextChanged);
 			// 
 			// m_lb_objectSelector
 			// 
@@ -310,8 +316,16 @@ namespace SMConverter
 		System::Void LoadUserObjects();
 		System::Void UpdateObjectListStatus();
 		System::Void UpdateCurrentObjectList();
+		System::Void UpdateSearchResults();
 		System::Void MainGui_ObjectLoader_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e);
 		System::Void MainGui_ObjectLoader_RunWorkerCompleted(System::Object^ sender, System::ComponentModel::RunWorkerCompletedEventArgs^ e);
 		System::Void MainGui_ReloadUserObjects_Click(System::Object^ sender, System::EventArgs^ e);
+
+		System::Void SearchBlueprints();
+		System::Void SearchTiles();
+		System::Void SearchScripts();
+		System::Void MainGui_SearchBox_TextChanged(System::Object^ sender, System::EventArgs^ e);
+
+		std::vector<BlueprintInstance*>& GetCurrentBlueprintList();
 	};
 }

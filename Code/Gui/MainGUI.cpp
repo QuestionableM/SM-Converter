@@ -7,14 +7,14 @@
 #include "ObjectDatabase\ProgCounter.hpp"
 #include "ObjectDatabase\Mods\Mod.hpp"
 
-#include "MainGuiReaders\BlueprintFolderReader.hpp"
-
 #include "Utils\Console.hpp"
+#include "Utils\String.hpp"
 #include "Utils\File.hpp"
 
 #include <Windows.h>
 #include <WinUser.h>
 #include <CommCtrl.h>
+#include <msclr\marshal_cppstd.h>
 
 #include <filesystem>
 
@@ -271,21 +271,21 @@ namespace SMConverter
 	{
 		m_lbl_objSelectorStatus->Visible = false;
 
+		m_lb_objectSelector->BeginUpdate();
+		m_lb_objectSelector->Items->Clear();
+
 		switch (m_cb_selectedGenerator->SelectedIndex)
 		{
 		case Generator_BlueprintConverter:
 			{
-				if (BlueprintFolderReader::BlueprintStorage.empty())
+				const std::vector<BlueprintInstance*>& v_cur_bp_list = this->GetCurrentBlueprintList();
+				if (v_cur_bp_list.empty())
 					break;
 
-				m_lb_objectSelector->BeginUpdate();
-
-				m_lb_objectSelector->Items->Clear();
-				for (const BlueprintInstance& v_cur_instance : BlueprintFolderReader::BlueprintStorage)
-					m_lb_objectSelector->Items->Add(gcnew System::String(v_cur_instance.name.c_str()));
+				for (const BlueprintInstance* v_bp_instance : v_cur_bp_list)
+					m_lb_objectSelector->Items->Add(gcnew System::String(v_bp_instance->name.c_str()));
 
 				m_lb_objectSelector->EndUpdate();
-				
 				return;
 			}
 		case Generator_TileConverter:
@@ -295,6 +295,8 @@ namespace SMConverter
 			//TODO: IMPLEMENT LATER
 			break;
 		}
+
+		m_lb_objectSelector->EndUpdate();
 
 		const static wchar_t* g_noObjectMessages[] =
 		{
@@ -306,6 +308,11 @@ namespace SMConverter
 		const wchar_t* v_cur_message = g_noObjectMessages[m_cb_selectedGenerator->SelectedIndex];
 		m_lbl_objSelectorStatus->Text = gcnew System::String(v_cur_message);
 		m_lbl_objSelectorStatus->Visible = true;
+	}
+
+	void MainGui::UpdateSearchResults()
+	{
+		//TODO: IMPLEMENT LATER
 	}
 
 	void MainGui::MainGui_ObjectLoader_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e)
@@ -325,5 +332,75 @@ namespace SMConverter
 	void MainGui::MainGui_ReloadUserObjects_Click(System::Object^ sender, System::EventArgs^ e)
 	{
 		this->LoadUserObjects();
+	}
+
+	void MainGui::SearchBlueprints()
+	{
+		const int v_new_text_length = m_tb_searchBox->TextLength;
+		if (v_new_text_length > 0 && !BlueprintFolderReader::BlueprintStorage.empty())
+		{
+			std::wstring v_searchWstr = msclr::interop::marshal_as<std::wstring>(m_tb_searchBox->Text);
+			::String::ToLowerR(v_searchWstr);
+
+			if (m_lastSearchLength != 0 && v_new_text_length > m_lastSearchLength)
+			{
+				std::size_t v_newCacheSize = 0;
+
+				for (BlueprintInstance* v_cur_instance : BlueprintFolderReader::BlueprintSearchResults)
+				{
+					if (v_cur_instance->lower_name.find(v_searchWstr) != std::wstring::npos)
+						BlueprintFolderReader::BlueprintSearchResults[v_newCacheSize++] = v_cur_instance;
+				}
+
+				BlueprintFolderReader::BlueprintSearchResults.resize(v_newCacheSize);
+			}
+			else
+			{
+				BlueprintFolderReader::BlueprintSearchResults.clear();
+
+				for (BlueprintInstance* v_cur_instance : BlueprintFolderReader::BlueprintStorage)
+				{
+					if (v_cur_instance->lower_name.find(v_searchWstr) != std::wstring::npos)
+						BlueprintFolderReader::BlueprintSearchResults.push_back(v_cur_instance);
+				}
+			}
+		}
+	}
+
+	void MainGui::SearchTiles()
+	{
+
+	}
+
+	void MainGui::SearchScripts()
+	{
+
+	}
+
+	void MainGui::MainGui_SearchBox_TextChanged(System::Object^ sender, System::EventArgs^ e)
+	{
+		switch (m_cb_selectedGenerator->SelectedIndex)
+		{
+		case Generator_BlueprintConverter:
+			this->SearchBlueprints();
+			break;
+		case Generator_TileConverter:
+			this->SearchTiles();
+			break;
+		case Generator_ScriptConverter:
+			this->SearchScripts();
+			break;
+		}
+
+		m_lastSearchLength = m_tb_searchBox->TextLength;
+		this->UpdateCurrentObjectList();
+	}
+
+	std::vector<BlueprintInstance*>& MainGui::GetCurrentBlueprintList()
+	{
+		if (m_tb_searchBox->TextLength > 0)
+			return BlueprintFolderReader::BlueprintSearchResults;
+
+		return BlueprintFolderReader::BlueprintStorage;
 	}
 }
