@@ -6,6 +6,8 @@
 #include "Utils\Console.hpp"
 #include "Utils\String.hpp"
 
+#pragma unmanaged
+
 GroundTexture::GroundTexture(const std::wstring& path)
 {
 	this->SetPath(path);

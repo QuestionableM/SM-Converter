@@ -1,5 +1,7 @@
 #include "ObjectData.hpp"
 
+#pragma unmanaged
+
 std::wstring& TextureList::GetStringRef(const std::size_t& idx)
 {
 	return ((std::wstring*)&this->dif)[idx];

@@ -5,9 +5,10 @@
 #include <Windows.h>
 #include <ShlObj.h>
 
-#include <fstream>
 #include <filesystem>
-namespace fs = std::filesystem;
+#include <fstream>
+
+#pragma unmanaged
 
 std::vector<Byte> File::ReadFileBytes(const std::wstring& path)
 {
@@ -62,7 +63,7 @@ bool File::ReadToStringNormal(const std::wstring& path, std::string& r_output)
 bool File::Exists(const std::wstring& path)
 {
 	std::error_code ec;
-	bool exists = fs::exists(path, ec);
+	bool exists = std::filesystem::exists(path, ec);
 
 	return (!ec && exists);
 }
@@ -70,11 +71,11 @@ bool File::Exists(const std::wstring& path)
 bool File::CreateDirectorySafe(const std::wstring& path)
 {
 	std::error_code e_error;
-	bool exists = fs::exists(path, e_error);
+	bool exists = std::filesystem::exists(path, e_error);
 	bool exists_correct = (!e_error && exists);
 
 	std::error_code f_error;
-	bool file_created = fs::create_directory(path, f_error);
+	bool file_created = std::filesystem::create_directory(path, f_error);
 	bool file_correct = (!f_error && file_created);
 
 	return (exists_correct || file_correct);
@@ -83,7 +84,7 @@ bool File::CreateDirectorySafe(const std::wstring& path)
 bool File::Equivalent(const std::wstring& p1, const std::wstring& p2)
 {
 	std::error_code ec;
-	bool is_equivalent = fs::equivalent(p1, p2, ec);
+	bool is_equivalent = std::filesystem::equivalent(p1, p2, ec);
 
 	return (is_equivalent && !ec);
 }

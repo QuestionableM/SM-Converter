@@ -5,6 +5,8 @@
 
 #include <unordered_map>
 
+#pragma unmanaged
+
 class Mod;
 
 class AssetListLoader
@@ -15,3 +17,5 @@ class AssetListLoader
 public:
 	static void Load(const simdjson::dom::element& fAssets, Mod* mod);
 };
+
+#pragma managed

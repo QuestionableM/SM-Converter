@@ -4,6 +4,8 @@
 
 #include <glm.hpp>
 
+#pragma unmanaged
+
 class Mod;
 
 class PartListLoader
@@ -29,3 +31,5 @@ private:
 
 	static const __CollisionLoaderData g_collisionDataLoaders[];
 };
+
+#pragma managed

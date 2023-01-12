@@ -9,6 +9,8 @@
 #include <vector>
 #include <string>
 
+#pragma unmanaged
+
 class SMUuid
 {
 public:
@@ -270,3 +272,5 @@ namespace std
 		}
 	};
 }
+
+#pragma managed

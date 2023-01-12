@@ -3,6 +3,8 @@
 #include "ObjectDatabase\KeywordReplacer.hpp"
 #include "Utils\String.hpp"
 
+#pragma unmanaged
+
 TextureList DefaultLoader::LoadTextureList(const simdjson::dom::array& texList)
 {
 	TextureList new_list;

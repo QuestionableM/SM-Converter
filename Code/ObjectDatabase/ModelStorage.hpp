@@ -13,6 +13,8 @@
 
 #include <glm.hpp>
 
+#pragma unmanaged
+
 struct VertexData
 {
 	std::size_t m_Vert;
@@ -76,3 +78,5 @@ public:
 
 	static void ClearStorage();
 };
+
+#pragma managed

@@ -8,6 +8,8 @@
 #include "Utils\String.hpp"
 #include "Utils\Uuid.hpp"
 
+#pragma unmanaged
+
 static const std::string blkTexNames[3] = { "dif", "asg", "nor" };
 bool BlockListLoader::GetBlockTextures(const simdjson::dom::element& block, TextureList& tex)
 {

@@ -6,10 +6,13 @@
 #include <vector>
 #include <string>
 
+#pragma unmanaged
+
 class DatabaseLoader
 {
 	static void LoadGameDatabase();
 
+	static void LoadModsFromDirectory(const std::wstring& mod_directory, const bool& is_local);
 	static void LoadModsFromPaths(const std::vector<std::wstring>& path_vector, const bool& is_local);
 	static void LoadModDatabase();
 
@@ -17,3 +20,5 @@ public:
 	static void LoadDatabase();
 	static void InitializeDatabase();
 };
+
+#pragma managed

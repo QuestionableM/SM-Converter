@@ -13,7 +13,8 @@
 #include "Utils\Json.hpp"
 
 #include <filesystem>
-namespace fs = std::filesystem;
+
+#pragma unmanaged
 
 void DatabaseLoader::LoadGameDatabase()
 {
@@ -26,24 +27,31 @@ void DatabaseLoader::LoadGameDatabase()
 	Mod::ModVector.push_back(pGameData);
 }
 
+void DatabaseLoader::LoadModsFromDirectory(const std::wstring& mod_directory, const bool& is_local)
+{
+	namespace fs = std::filesystem;
+
+	std::error_code v_error_code;
+	fs::directory_iterator v_dir_iter(mod_directory, fs::directory_options::skip_permission_denied, v_error_code);
+
+	for (const auto& v_cur_item : v_dir_iter)
+	{
+		if (v_error_code || !v_cur_item.is_directory())
+			continue;
+
+		Mod* v_new_mod = Mod::LoadFromDescription(v_cur_item.path().wstring(), is_local);
+		if (!v_new_mod) continue;
+
+		v_new_mod->LoadObjectDatabase();
+	}
+}
+
 void DatabaseLoader::LoadModsFromPaths(const std::vector<std::wstring>& path_vector, const bool& is_local)
 {
-	for (const std::wstring& v_modDir : path_vector)
-	{
-		std::error_code v_errorCode;
-		fs::directory_iterator v_dirIter(v_modDir, fs::directory_options::skip_permission_denied, v_errorCode);
+	namespace fs = std::filesystem;
 
-		for (const auto& v_curDir : v_dirIter)
-		{
-			if (v_errorCode || !v_curDir.is_directory())
-				continue;
-
-			Mod* v_newMod = Mod::LoadFromDescription(v_curDir.path().wstring(), is_local);
-			if (!v_newMod) continue;
-
-			v_newMod->LoadObjectDatabase();
-		}
-	}
+	for (const std::wstring& v_mod_dir : path_vector)
+		DatabaseLoader::LoadModsFromDirectory(v_mod_dir, is_local);
 }
 
 void DatabaseLoader::LoadModDatabase()

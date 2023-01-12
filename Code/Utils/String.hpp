@@ -9,6 +9,8 @@
 #include "Utils\WinInclude.hpp"
 #include "Utils\ByteImpl.hpp"
 
+#pragma unmanaged
+
 namespace String
 {
 	inline unsigned char HexStrtolSafe(char* v_ptr)
@@ -200,3 +202,5 @@ namespace String
 		return false;
 	}
 }
+
+#pragma managed

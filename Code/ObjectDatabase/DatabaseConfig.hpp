@@ -4,6 +4,8 @@
 
 #include <string>
 
+#pragma unmanaged
+
 class DatabaseConfig
 {
 public:
@@ -41,3 +43,5 @@ public:
 	static void SaveConfig();
 	static void ReadConfig();
 };
+
+#pragma managed

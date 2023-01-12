@@ -8,6 +8,8 @@
 
 #include <gtx\matrix_decompose.hpp>
 
+#pragma unmanaged
+
 void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, std::ofstream& file, const SMEntity* pEntity)
 {
 	std::vector<glm::vec3> mTranslatedVertices = {};

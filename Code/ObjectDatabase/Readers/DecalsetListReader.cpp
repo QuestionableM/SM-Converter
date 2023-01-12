@@ -6,6 +6,8 @@
 #include "Utils\Console.hpp"
 #include "Utils\String.hpp"
 
+#pragma unmanaged
+
 void DecalsetListReader::Load(const simdjson::dom::element& j_data, Mod* mod)
 {
 	if (!j_data.is_array()) return;

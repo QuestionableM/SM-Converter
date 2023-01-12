@@ -8,6 +8,8 @@
 
 #include <gtc\quaternion.hpp>
 
+#pragma unmanaged
+
 class MemoryWrapper
 {
 	std::vector<Byte> bytes;
@@ -171,3 +173,5 @@ public:
 		}
 	}
 };
+
+#pragma managed

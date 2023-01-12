@@ -1,5 +1,4 @@
 #include "BlueprintFolderReader.hpp"
-#pragma unmanaged
 
 #include "ObjectDatabase\DatabaseConfig.hpp"
 
@@ -9,6 +8,8 @@
 #include "Utils\File.hpp"
 
 #include <filesystem>
+
+#pragma unmanaged
 
 void BlueprintFolderReader::ReadBlueprintFromFolder(const std::wstring& folder)
 {

@@ -2,6 +2,8 @@
 
 #include "Utils\Json.hpp"
 
+#pragma unmanaged
+
 class Mod;
 
 class HarvestableListLoader
@@ -10,3 +12,5 @@ class HarvestableListLoader
 public:
 	static void Load(const simdjson::dom::element& fHarvestables, Mod* mod);
 };
+
+#pragma managed
