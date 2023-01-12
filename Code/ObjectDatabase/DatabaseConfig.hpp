@@ -16,6 +16,8 @@ public:
 	inline static std::vector<std::wstring> AssetListFolders     = {};
 	inline static std::vector<std::wstring> ModFolders           = {};
 	inline static std::vector<std::wstring> LocalModFolders      = {};
+	inline static std::vector<std::wstring> BlueprintFolders     = {};
+	inline static std::vector<std::wstring> TileFolders          = {};
 	inline static std::vector<std::wstring> ResourceUpgradeFiles = {};
 	inline static std::vector<std::pair<std::wstring, std::wstring>> DefaultKeywords = {};
 

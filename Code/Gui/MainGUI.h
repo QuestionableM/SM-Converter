@@ -309,6 +309,7 @@ namespace SMConverter
 		System::Void MainGui_ReloadDatabase_Click(System::Object^ sender, System::EventArgs^ e);
 		System::Void LoadUserObjects();
 		System::Void UpdateObjectListStatus();
+		System::Void UpdateCurrentObjectList();
 		System::Void MainGui_ObjectLoader_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e);
 		System::Void MainGui_ObjectLoader_RunWorkerCompleted(System::Object^ sender, System::ComponentModel::RunWorkerCompletedEventArgs^ e);
 		System::Void MainGui_ReloadUserObjects_Click(System::Object^ sender, System::EventArgs^ e);

@@ -7,6 +7,8 @@
 #include "ObjectDatabase\ProgCounter.hpp"
 #include "ObjectDatabase\Mods\Mod.hpp"
 
+#include "MainGuiReaders\BlueprintFolderReader.hpp"
+
 #include "Utils\Console.hpp"
 #include "Utils\File.hpp"
 
@@ -14,7 +16,9 @@
 #include <WinUser.h>
 #include <CommCtrl.h>
 
-enum
+#include <filesystem>
+
+enum : unsigned short
 {
 	Generator_BlueprintConverter = 0,
 	Generator_TileConverter      = 1,
@@ -86,8 +90,14 @@ namespace SMConverter
 
 		m_tb_searchBox->Clear();
 		
-		if (!m_obj_isLoaded)
+		if (m_obj_isLoaded)
+		{
+			this->UpdateCurrentObjectList();
+		}
+		else
+		{
 			this->UpdateObjectListStatus();
+		}
 
 		SendMessage(
 			static_cast<HWND>(m_tb_path->Handle.ToPointer()),
@@ -257,16 +267,59 @@ namespace SMConverter
 		m_lbl_objSelectorStatus->Text = gcnew System::String(v_cur_message);
 	}
 
+	void MainGui::UpdateCurrentObjectList()
+	{
+		m_lbl_objSelectorStatus->Visible = false;
+
+		switch (m_cb_selectedGenerator->SelectedIndex)
+		{
+		case Generator_BlueprintConverter:
+			{
+				if (BlueprintFolderReader::BlueprintStorage.empty())
+					break;
+
+				m_lb_objectSelector->BeginUpdate();
+
+				m_lb_objectSelector->Items->Clear();
+				for (const BlueprintInstance& v_cur_instance : BlueprintFolderReader::BlueprintStorage)
+					m_lb_objectSelector->Items->Add(gcnew System::String(v_cur_instance.name.c_str()));
+
+				m_lb_objectSelector->EndUpdate();
+				
+				return;
+			}
+		case Generator_TileConverter:
+			//TODO: IMPLEMENT LATER
+			break;
+		case Generator_ScriptConverter:
+			//TODO: IMPLEMENT LATER
+			break;
+		}
+
+		const static wchar_t* g_noObjectMessages[] =
+		{
+			L"No Blueprints",
+			L"No Tiles",
+			L"No Scripts"
+		};
+
+		const wchar_t* v_cur_message = g_noObjectMessages[m_cb_selectedGenerator->SelectedIndex];
+		m_lbl_objSelectorStatus->Text = gcnew System::String(v_cur_message);
+		m_lbl_objSelectorStatus->Visible = true;
+	}
+
 	void MainGui::MainGui_ObjectLoader_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e)
 	{
+		BlueprintFolderReader::ReadBlueprintsFromConfig();
+
 		//TODO: Actually load blueprints, tiles and scripts in here
-		Sleep(2000);
+		//Sleep(2000);
 	}
 
 	void MainGui::MainGui_ObjectLoader_RunWorkerCompleted(System::Object^ sender, System::ComponentModel::RunWorkerCompletedEventArgs^ e)
 	{
-		m_lbl_objSelectorStatus->Visible = false;
 		this->MainGui_ChangeGuiState(m_database_isLoaded, true, true);
+		this->UpdateCurrentObjectList();
 	}
 
 	void MainGui::MainGui_ReloadUserObjects_Click(System::Object^ sender, System::EventArgs^ e)

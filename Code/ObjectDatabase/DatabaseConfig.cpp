@@ -255,6 +255,8 @@ void DatabaseConfig::ReadUserSettings(const nlohmann::json& config_json, bool& s
 
 		DatabaseConfig::JsonStrArrayToVector(user_settings, "LocalModFolders", DatabaseConfig::LocalModFolders, false);
 		DatabaseConfig::JsonStrArrayToVector(user_settings, "WorkshopModFolders", DatabaseConfig::ModFolders, false);
+		DatabaseConfig::JsonStrArrayToVector(user_settings, "BlueprintFolders", DatabaseConfig::BlueprintFolders, false);
+		DatabaseConfig::JsonStrArrayToVector(user_settings, "TileFolders", DatabaseConfig::TileFolders, false);
 	}
 
 	DatabaseConfig::FindGamePath(config_json, should_write);
@@ -374,6 +376,8 @@ void DatabaseConfig::ReadConfig()
 	DatabaseConfig::LocalModFolders.clear();
 	DatabaseConfig::ResourceUpgradeFiles.clear();
 	DatabaseConfig::DefaultKeywords.clear();
+	DatabaseConfig::TileFolders.clear();
+	DatabaseConfig::BlueprintFolders.clear();
 	KeywordReplacer::Clear();
 
 	bool should_write = false;
