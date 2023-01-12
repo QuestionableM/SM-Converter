@@ -378,62 +378,53 @@ namespace SMConverter
 		}
 	}
 
-	void MainGui::SearchBlueprints()
+	template<typename T>
+	inline void SearchFunction(
+		const std::wstring& search_str,
+		int v_lastSearchLength,
+		int v_currentSearchLength)
 	{
-		const int v_new_text_length = m_tb_searchBox->TextLength;
-		if (v_new_text_length == 0 || BlueprintFolderReader::BlueprintStorage.empty())
+		if (T::Storage.empty())
 			return;
 
-		std::wstring v_searchWstr = msclr::interop::marshal_as<std::wstring>(m_tb_searchBox->Text);
-		::String::ToLowerR(v_searchWstr);
-
-		if (m_lastSearchLength != 0 && v_new_text_length > m_lastSearchLength)
+		if (v_lastSearchLength != 0 && v_currentSearchLength > v_lastSearchLength)
 		{
 			std::size_t v_newCacheSize = 0;
 
-			for (BlueprintInstance* v_cur_instance : BlueprintFolderReader::BlueprintSearchResults)
-			{
-				if (v_cur_instance->lower_name.find(v_searchWstr) != std::wstring::npos)
-					BlueprintFolderReader::BlueprintSearchResults[v_newCacheSize++] = v_cur_instance;
-			}
+			for (T::InstanceType* v_cur_instance : T::SearchResults)
+				if (v_cur_instance->lower_name.find(search_str) != std::wstring::npos)
+					T::SearchResults[v_newCacheSize++] = v_cur_instance;
 
-			BlueprintFolderReader::BlueprintSearchResults.resize(v_newCacheSize);
+			T::SearchResults.resize(v_newCacheSize);
 		}
 		else
 		{
-			BlueprintFolderReader::BlueprintSearchResults.clear();
+			T::SearchResults.clear();
 
-			for (BlueprintInstance* v_cur_instance : BlueprintFolderReader::BlueprintStorage)
-			{
-				if (v_cur_instance->lower_name.find(v_searchWstr) != std::wstring::npos)
-					BlueprintFolderReader::BlueprintSearchResults.push_back(v_cur_instance);
-			}
+			for (T::InstanceType* v_cur_instance : T::Storage)
+				if (v_cur_instance->lower_name.find(search_str) != std::wstring::npos)
+					T::SearchResults.push_back(v_cur_instance);
 		}
-	}
-
-	void MainGui::SearchTiles()
-	{
-
-	}
-
-	void MainGui::SearchScripts()
-	{
-
 	}
 
 	void MainGui::MainGui_SearchBox_TextChanged(System::Object^ sender, System::EventArgs^ e)
 	{
-		switch (m_cb_selectedGenerator->SelectedIndex)
+		if (m_tb_searchBox->TextLength > 0)
 		{
-		case Generator_BlueprintConverter:
-			this->SearchBlueprints();
-			break;
-		case Generator_TileConverter:
-			this->SearchTiles();
-			break;
-		case Generator_ScriptConverter:
-			this->SearchScripts();
-			break;
+			std::wstring v_searchWstr = msclr::interop::marshal_as<std::wstring>(m_tb_searchBox->Text);
+			::String::ToLowerR(v_searchWstr);
+
+			switch (m_cb_selectedGenerator->SelectedIndex)
+			{
+			case Generator_BlueprintConverter:
+				SearchFunction<BlueprintFolderReader>(v_searchWstr, m_lastSearchLength, m_tb_searchBox->TextLength);
+				break;
+			case Generator_TileConverter:
+				SearchFunction<TileFolderReader>(v_searchWstr, m_lastSearchLength, m_tb_searchBox->TextLength);
+				break;
+			case Generator_ScriptConverter:
+				break;
+			}
 		}
 
 		m_lastSearchLength = m_tb_searchBox->TextLength;
@@ -442,11 +433,11 @@ namespace SMConverter
 
 	std::vector<BlueprintInstance*>& MainGui::GetCurrentBlueprintList()
 	{
-		return (m_tb_searchBox->TextLength > 0) ? BlueprintFolderReader::BlueprintSearchResults : BlueprintFolderReader::BlueprintStorage;
+		return (m_tb_searchBox->TextLength > 0) ? BlueprintFolderReader::SearchResults : BlueprintFolderReader::Storage;
 	}
 
 	std::vector<TileInstance*>& MainGui::GetCurrentTileList()
 	{
-		return (m_tb_searchBox->TextLength > 0) ? TileFolderReader::TileSearchResults : TileFolderReader::TileStorage;
+		return (m_tb_searchBox->TextLength > 0) ? TileFolderReader::SearchResults : TileFolderReader::Storage;
 	}
 }

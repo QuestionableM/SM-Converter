@@ -24,8 +24,10 @@ struct TileInstance
 class TileFolderReader
 {
 public:
-	inline static std::vector<TileInstance*> TileStorage = {};
-	inline static std::vector<TileInstance*> TileSearchResults = {};
+	using InstanceType = TileInstance;
+
+	inline static std::vector<TileInstance*> Storage = {};
+	inline static std::vector<TileInstance*> SearchResults = {};
 
 	static void LoadFromFile(const std::filesystem::path& path);
 	static void LoadFromDirectory(const std::wstring& path);

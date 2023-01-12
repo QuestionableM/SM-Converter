@@ -23,8 +23,10 @@ struct BlueprintInstance
 class BlueprintFolderReader
 {
 public:
-	inline static std::vector<BlueprintInstance*> BlueprintStorage = {};
-	inline static std::vector<BlueprintInstance*> BlueprintSearchResults = {};
+	using InstanceType = BlueprintInstance;
+
+	inline static std::vector<BlueprintInstance*> Storage = {};
+	inline static std::vector<BlueprintInstance*> SearchResults = {};
 
 	static bool IsValidBlueprintFolder(const std::wstring& folder, std::wstring& v_name, std::wstring& v_path, unsigned long long& v_workshop_id);
 	static void ReadBlueprintsFromFolder(const std::wstring& path);

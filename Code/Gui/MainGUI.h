@@ -325,9 +325,6 @@ namespace SMConverter
 		System::Void MainGui_ReloadUserObjects_Click(System::Object^ sender, System::EventArgs^ e);
 		System::Void MainGui_ObjectSelector_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e);
 
-		System::Void SearchBlueprints();
-		System::Void SearchTiles();
-		System::Void SearchScripts();
 		System::Void MainGui_SearchBox_TextChanged(System::Object^ sender, System::EventArgs^ e);
 
 		std::vector<BlueprintInstance*>& GetCurrentBlueprintList();

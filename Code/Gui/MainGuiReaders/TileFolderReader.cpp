@@ -30,7 +30,7 @@ void TileFolderReader::LoadFromFile(const std::filesystem::path& path)
 	v_new_tile->creator_id = v_tile_info.creator_id;
 	v_new_tile->workshop_id = 0ull;
 
-	TileFolderReader::TileStorage.push_back(v_new_tile);
+	TileFolderReader::Storage.push_back(v_new_tile);
 }
 
 void TileFolderReader::LoadFromDirectory(const std::wstring& path)
@@ -76,7 +76,7 @@ void TileFolderReader::LoadFromDirectory(const std::wstring& path)
 	v_new_tile->workshop_id = (v_workshop_id.is_number() ? JsonReader::GetNumber<unsigned long long>(v_workshop_id) : 0ull);
 	v_new_tile->creator_id = v_tile_info.creator_id;
 
-	TileFolderReader::TileStorage.push_back(v_new_tile);
+	TileFolderReader::Storage.push_back(v_new_tile);
 }
 
 void TileFolderReader::ReadTilesFromFolder(const std::wstring& path)
@@ -111,14 +111,14 @@ void TileFolderReader::ReadTilesFromConfig()
 	for (const std::wstring& v_tile_folder : DatabaseConfig::TileFolders)
 		TileFolderReader::ReadTilesFromFolder(v_tile_folder);
 
-	DebugOutL("[TileFolderReader] Successfully loaded ", TileFolderReader::TileStorage.size(), " tiles from ", DatabaseConfig::TileFolders.size(), " folders");
+	DebugOutL("[TileFolderReader] Successfully loaded ", TileFolderReader::Storage.size(), " tiles from ", DatabaseConfig::TileFolders.size(), " folders");
 }
 
 void TileFolderReader::ClearStorage()
 {
-	for (std::size_t a = 0; a < TileFolderReader::TileStorage.size(); a++)
-		delete TileFolderReader::TileStorage[a];
+	for (std::size_t a = 0; a < TileFolderReader::Storage.size(); a++)
+		delete TileFolderReader::Storage[a];
 
-	TileFolderReader::TileStorage.clear();
-	TileFolderReader::TileSearchResults.clear();
+	TileFolderReader::Storage.clear();
+	TileFolderReader::SearchResults.clear();
 }

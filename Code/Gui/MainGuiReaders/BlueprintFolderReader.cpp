@@ -65,7 +65,7 @@ void BlueprintFolderReader::ReadBlueprintsFromFolder(const std::wstring& path)
 			continue;
 
 		BlueprintInstance* v_bp_instance = new BlueprintInstance(v_bp_name, v_bp_path, v_bp_workshop_id);
-		BlueprintFolderReader::BlueprintStorage.push_back(v_bp_instance);
+		BlueprintFolderReader::Storage.push_back(v_bp_instance);
 	}
 }
 
@@ -76,14 +76,14 @@ void BlueprintFolderReader::ReadBlueprintsFromConfig()
 	for (const std::wstring& v_bp_folder : DatabaseConfig::BlueprintFolders)
 		BlueprintFolderReader::ReadBlueprintsFromFolder(v_bp_folder);
 
-	DebugOutL("[BlueprintFolderReader] Successfully loaded ", BlueprintFolderReader::BlueprintStorage.size(), " blueprints from ", DatabaseConfig::BlueprintFolders.size(), " folders");
+	DebugOutL("[BlueprintFolderReader] Successfully loaded ", BlueprintFolderReader::Storage.size(), " blueprints from ", DatabaseConfig::BlueprintFolders.size(), " folders");
 }
 
 void BlueprintFolderReader::ClearStorage()
 {
-	for (std::size_t a = 0; a < BlueprintFolderReader::BlueprintStorage.size(); a++)
-		delete BlueprintFolderReader::BlueprintStorage[a];
+	for (std::size_t a = 0; a < BlueprintFolderReader::Storage.size(); a++)
+		delete BlueprintFolderReader::Storage[a];
 
-	BlueprintFolderReader::BlueprintStorage.clear();
-	BlueprintFolderReader::BlueprintSearchResults.clear();
+	BlueprintFolderReader::Storage.clear();
+	BlueprintFolderReader::SearchResults.clear();
 }
