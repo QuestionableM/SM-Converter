@@ -199,4 +199,40 @@ namespace String
 
 		return false;
 	}
+
+	//Removes the illegal character from string and limits it to a certain size
+	template<typename T>
+	inline constexpr std::wstring LimitWstring(const T& v_str, const std::size_t& v_char_limit)
+	{
+		static_assert(std::is_same_v<T, const wchar_t*> || std::is_same_v<T, std::wstring>, "LimitWstring can only work with const wchar_t* and std::wstring");
+
+		if constexpr (std::is_same_v<T, const wchar_t*>)
+		{
+			const std::size_t v_str_sz = wcslen(v_str);
+
+			std::wstring v_output;
+			for (std::size_t a = 0; a < std::min<std::size_t>(v_str_sz, v_char_limit); a++)
+			{
+				const wchar_t& v_cur_char = v_str[a];
+
+				if (String::IsPathCharacterAllowed(v_cur_char))
+					v_output.append(1, v_cur_char);
+			}
+
+			return v_output;
+		}
+		else
+		{
+			std::wstring v_output;
+			for (std::size_t a = 0; a < std::min<std::size_t>(v_str.size(), v_char_limit); a++)
+			{
+				const wchar_t& v_cur_char = v_str[a];
+
+				if (String::IsPathCharacterAllowed(v_cur_char))
+					v_output.append(1, v_cur_char);
+			}
+
+			return v_output;
+		}
+	}
 }

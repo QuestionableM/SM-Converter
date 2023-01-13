@@ -96,6 +96,14 @@ bool File::IsRegularFile(const std::wstring& path)
 	return (!v_error && v_exists);
 }
 
+bool File::IsPathLegal(const std::wstring& path)
+{
+	std::error_code v_error;
+	const bool v_exists = fs::exists(path, v_error);
+
+	return !v_error;
+}
+
 bool File::Equivalent(const std::wstring& p1, const std::wstring& p2)
 {
 	std::error_code ec;

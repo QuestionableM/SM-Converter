@@ -102,8 +102,8 @@
       <AdditionalIncludeDirectories>$(SolutionDir)Code;$(SolutionDir)Dependencies\nlohmann_json;$(SolutionDir)Dependencies\simdjson;$(SolutionDir)Dependencies\ValveVDF\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\FreeImage\Include;$(SolutionDir)Dependencies\Assimp\Include;$(SolutionDir)Dependencies\lz4\Include;$(SolutionDir)Dependencies\PerlinNoise;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
     </ClCompile>
     <Link>
       <AdditionalDependencies>user32.lib;FreeImage.lib;assimp$(PlatformArchitecture).lib;lz4_$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -126,8 +126,8 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
       <AdditionalIncludeDirectories>$(SolutionDir)Code;$(SolutionDir)Dependencies\nlohmann_json;$(SolutionDir)Dependencies\simdjson;$(SolutionDir)Dependencies\ValveVDF\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\FreeImage\Include;$(SolutionDir)Dependencies\Assimp\Include;$(SolutionDir)Dependencies\lz4\Include;$(SolutionDir)Dependencies\PerlinNoise;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
     </ClCompile>
     <Link>
       <AdditionalDependencies>user32.lib;FreeImage.lib;assimp$(PlatformArchitecture).lib;lz4_$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
