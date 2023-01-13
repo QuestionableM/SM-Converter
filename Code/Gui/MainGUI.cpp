@@ -391,13 +391,9 @@ namespace SMConverter
 					T::SearchResults[v_newCacheSize++] = v_cur_instance;
 
 			T::SearchResults.resize(v_newCacheSize);
-
-			DebugOutL("Searching in cache");
 		}
 		else
 		{
-			DebugOutL("Searching in normal array");
-
 			T::SearchResults.clear();
 
 			for (T::InstanceType* v_cur_instance : T::Storage)

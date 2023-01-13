@@ -30,6 +30,10 @@ void TileFolderReader::LoadFromFile(const std::filesystem::path& path)
 	v_new_tile->creator_id = v_tile_info.creator_id;
 	v_new_tile->workshop_id = 0ull;
 
+	const std::wstring v_preview_img = v_new_tile->directory + L"/" + v_tile_info.uuid.ToWstring() + L".png";
+	if (File::Exists(v_preview_img))
+		v_new_tile->preview_image = v_preview_img;
+
 	TileFolderReader::Storage.push_back(v_new_tile);
 }
 
@@ -71,6 +75,10 @@ void TileFolderReader::LoadFromDirectory(const std::wstring& path)
 	v_new_tile->lower_name = String::ToLower(v_new_tile->name);
 	v_new_tile->directory = path;
 	v_new_tile->filename = v_tile_filename;
+
+	const std::wstring v_preview_img = path + L"/" + v_tile_info.uuid.ToWstring() + L".png";
+	if (File::Exists(v_preview_img))
+		v_new_tile->preview_image = v_preview_img;
 
 	const auto v_workshop_id = v_root["fileId"];
 	v_new_tile->workshop_id = (v_workshop_id.is_number() ? JsonReader::GetNumber<unsigned long long>(v_workshop_id) : 0ull);
