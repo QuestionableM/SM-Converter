@@ -4,8 +4,6 @@
 #include <vector>
 #include <string>
 
-#pragma unmanaged
-
 struct TileInstance
 {
 	std::wstring name;
@@ -45,5 +43,3 @@ private:
 	TileFolderReader(TileFolderReader&) = delete;
 	~TileFolderReader() = default;
 };
-
-#pragma managed

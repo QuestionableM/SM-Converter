@@ -5,8 +5,6 @@
 #include <filesystem>
 namespace fs = std::filesystem;
 
-#pragma unmanaged
-
 GameDataMod::GameDataMod()
 {
 	this->m_Name = L"Vanilla Data";

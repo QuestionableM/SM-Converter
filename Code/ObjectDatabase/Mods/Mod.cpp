@@ -18,8 +18,6 @@
 #include <filesystem>
 namespace fs = std::filesystem;
 
-#pragma unmanaged
-
 Mod::~Mod()
 {
 	for (const auto& pBlock : m_Blocks)

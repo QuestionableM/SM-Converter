@@ -3,8 +3,6 @@
 #include <unordered_map>
 #include <string>
 
-#pragma unmanaged
-
 class MaterialManager
 {
 	using MaterialMap = std::unordered_map<std::wstring, std::wstring>;
@@ -17,5 +15,3 @@ public:
 private:
 	static MaterialMap m_materialStorage;
 };
-
-#pragma managed

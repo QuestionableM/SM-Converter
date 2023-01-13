@@ -8,8 +8,6 @@
 
 #include <glm.hpp>
 
-#pragma unmanaged
-
 enum class TextureDataType
 {
 	SubMeshList,
@@ -142,5 +140,3 @@ public:
 	DecalData(DecalData&) = delete;
 	~DecalData() = default;
 };
-
-#pragma managed

@@ -6,8 +6,6 @@
 #include "Utils\String.hpp"
 #include "Utils\File.hpp"
 
-#pragma unmanaged
-
 static const std::wstring g_AssetSetDirectoryPaths[2] = { L"/Terrain/Database/", L"/Database/" };
 bool TerrainAssetsMod::GetValidAssetDatabaseFolder(const std::wstring& mod_path, std::wstring& r_asset_db)
 {

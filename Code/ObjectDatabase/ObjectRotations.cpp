@@ -11,8 +11,6 @@
 #include <gtc\matrix_transform.hpp>
 #include <glm.hpp>
 
-#pragma unmanaged
-
 namespace Rotations
 {
 	struct RotationEntry

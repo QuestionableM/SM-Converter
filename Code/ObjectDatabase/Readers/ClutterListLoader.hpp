@@ -2,8 +2,6 @@
 
 #include "Utils\Json.hpp"
 
-#pragma unmanaged
-
 class Mod;
 class ClutterData;
 class TextureList;
@@ -17,5 +15,3 @@ class ClutterListLoader
 public:
 	static void Load(const simdjson::dom::element& fClutter, Mod* mod);
 };
-
-#pragma managed

@@ -3,8 +3,6 @@
 #include "ObjectDatabase\ObjectData.hpp"
 #include "Utils\Json.hpp"
 
-#pragma unmanaged
-
 class DefaultLoader
 {
 public:
@@ -14,5 +12,3 @@ public:
 	static bool LoadRenderableData(const simdjson::dom::element& jRenderable, TextureData& tData, std::wstring& mesh);
 	static bool LoadRenderable(const simdjson::dom::element& jAsset, TextureData& tData, std::wstring& mesh);
 };
-
-#pragma managed

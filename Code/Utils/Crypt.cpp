@@ -6,8 +6,6 @@
 #include <sstream>
 #include <vector>
 
-#pragma unmanaged
-
 std::string Crypt::GetHashString(const void* pData, const std::size_t& mDataSize, const HashType& mType)
 {
 	HCRYPTPROV hProv = NULL;

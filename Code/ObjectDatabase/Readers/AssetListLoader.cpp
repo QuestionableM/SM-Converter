@@ -7,8 +7,6 @@
 #include "Utils\Console.hpp"
 #include "Utils\String.hpp"
 
-#pragma unmanaged
-
 void AssetListLoader::LoadDefaultColors(const simdjson::dom::element& jAsset, std::unordered_map<std::wstring, SMColor>& def_colors)
 {
 	const auto v_def_colors = jAsset["defaultColors"];

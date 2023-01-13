@@ -10,8 +10,6 @@
 
 #include <FreeImage.h>
 
-#pragma unmanaged
-
 class GroundTexture
 {
 	int m_width, m_height;
@@ -70,5 +68,3 @@ public:
 	static GroundTexture* GetDefaultTexture(const std::size_t& index);
 	static GroundTexture* GetTexture(const std::size_t& index, const std::size_t& type);
 };
-
-#pragma managed

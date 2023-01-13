@@ -1,3 +1,4 @@
+#pragma unmanaged
 #include "TileFolderReader.hpp"
 
 #include "ObjectDatabase\DatabaseConfig.hpp"
@@ -8,8 +9,6 @@
 #include "Utils\String.hpp"
 #include "Utils\Json.hpp"
 #include "Utils\File.hpp"
-
-#pragma unmanaged
 
 void TileFolderReader::LoadFromFile(const std::filesystem::path& path)
 {

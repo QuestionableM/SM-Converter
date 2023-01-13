@@ -8,8 +8,6 @@
 
 #include <shobjidl.h>
 
-#pragma unmanaged
-
 namespace File
 {
 	std::vector<Byte> ReadFileBytes(const std::wstring& path);
@@ -33,5 +31,3 @@ namespace File
 
 	bool GetAppDataPath(std::wstring& mPath);
 }
-
-#pragma managed

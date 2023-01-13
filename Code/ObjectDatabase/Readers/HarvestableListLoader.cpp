@@ -6,8 +6,6 @@
 
 #include "Utils\Console.hpp"
 
-#pragma unmanaged
-
 void HarvestableListLoader::Load(const simdjson::dom::element& fHarvestables, Mod* mod)
 {
 	if (!fHarvestables.is_array()) return;

@@ -5,8 +5,6 @@
 #include "Utils\Console.hpp"
 #include "Utils\String.hpp"
 
-#pragma unmanaged
-
 void KeywordReplacer::CreateKey(std::wstring& key, std::wstring& replacement)
 {
 	String::ToLowerR(key);

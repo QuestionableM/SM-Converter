@@ -6,8 +6,6 @@
 #include "Utils\String.hpp"
 #include "Utils\Json.hpp"
 
-#pragma unmanaged
-
 inline void GetWstringFromDecalset(const simdjson::dom::element& obj, const std::string& key, std::wstring& r_output)
 {
 	const auto v_json_str = obj[key];

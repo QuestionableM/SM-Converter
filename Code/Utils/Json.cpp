@@ -7,8 +7,6 @@
 #include <fstream>
 #include <iomanip>
 
-#pragma unmanaged
-
 nlohmann::json JsonReader::ParseJsonString(const std::string& json_str)
 {
 	try

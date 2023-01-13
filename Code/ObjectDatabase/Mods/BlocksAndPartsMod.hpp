@@ -2,8 +2,6 @@
 
 #include "Mod.hpp"
 
-#pragma unmanaged
-
 class BlocksAndPartsMod : public Mod
 {
 	static bool GetShapeSetDatabaseFile(const std::wstring& mod_folder, std::wstring& r_shapedb_path);
@@ -16,5 +14,3 @@ public:
 	inline ModType Type() const override { return ModType::BlocksAndParts; }
 	void LoadObjectDatabase() override;
 };
-
-#pragma managed

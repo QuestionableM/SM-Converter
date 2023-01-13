@@ -1,7 +1,5 @@
 #include "ProgCounter.hpp"
 
-#pragma unmanaged
-
 ProgState ProgCounter::State = ProgState::None;
 std::size_t ProgCounter::ProgressMax   = 0;
 std::size_t ProgCounter::ProgressValue = 0;

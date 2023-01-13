@@ -6,8 +6,6 @@
 #include "Utils\String.hpp"
 #include "Utils\Json.hpp"
 
-#pragma unmanaged
-
 MaterialManager::MaterialMap MaterialManager::m_materialStorage = {};
 
 void MaterialManager::Initialize()

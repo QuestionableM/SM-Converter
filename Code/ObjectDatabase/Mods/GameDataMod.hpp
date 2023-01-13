@@ -2,8 +2,6 @@
 
 #include "Mod.hpp"
 
-#pragma unmanaged
-
 class GameDataMod : public Mod
 {
 public:
@@ -13,5 +11,3 @@ public:
 	inline ModType Type() const override { return ModType::GameData; }
 	void LoadObjectDatabase() override;
 };
-
-#pragma managed

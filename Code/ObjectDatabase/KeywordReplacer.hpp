@@ -4,8 +4,6 @@
 
 #include <unordered_map>
 
-#pragma unmanaged
-
 class KeywordReplacer
 {
 	using StringMap = std::unordered_map<std::wstring, std::wstring>;
@@ -36,5 +34,3 @@ public:
 	static void Initialize();
 	static void Clear();
 };
-
-#pragma managed

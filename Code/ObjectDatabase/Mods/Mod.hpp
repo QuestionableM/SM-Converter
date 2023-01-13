@@ -8,8 +8,6 @@
 #include <unordered_map>
 #include <string>
 
-#pragma unmanaged
-
 enum class ModType
 {
 	BlocksAndParts,
@@ -94,5 +92,3 @@ public:
 	virtual ModType Type() const = 0;
 	virtual void LoadObjectDatabase() = 0;
 };
-
-#pragma managed

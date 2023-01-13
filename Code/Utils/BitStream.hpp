@@ -6,8 +6,6 @@
 
 #include <vector>
 
-#pragma unmanaged
-
 class BitStream
 {
 	std::vector<Byte> data;
@@ -163,5 +161,3 @@ public:
 		return std::string(bytes.begin(), bytes.end());
 	}
 };
-
-#pragma managed

@@ -2,8 +2,6 @@
 
 #include "Utils\Json.hpp"
 
-#pragma unmanaged
-
 class Mod;
 class TextureList;
 
@@ -17,5 +15,3 @@ class BlockListLoader
 public:
 	static void Load(const simdjson::dom::element& fBlocks, Mod* mod);
 };
-
-#pragma managed
