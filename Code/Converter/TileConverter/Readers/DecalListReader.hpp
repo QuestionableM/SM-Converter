@@ -10,8 +10,6 @@
 
 #include <lz4\lz4.h>
 
-#pragma unmanaged
-
 class DecalListReader
 {
 	DecalListReader() = default;
@@ -98,5 +96,3 @@ public:
 		return index;
 	}
 };
-
-#pragma managed

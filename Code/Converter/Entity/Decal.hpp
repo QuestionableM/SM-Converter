@@ -4,8 +4,6 @@
 #include "Utils\Color.hpp"
 #include "Entity.hpp"
 
-#pragma unmanaged
-
 class Decal : public SMEntity
 {
 public:
@@ -28,5 +26,3 @@ private:
 	const DecalData* m_data;
 	SMColor m_color;
 };
-
-#pragma managed

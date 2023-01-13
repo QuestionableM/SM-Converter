@@ -5,8 +5,6 @@
 
 #include <array>
 
-#pragma unmanaged
-
 class CellHeader
 {
 public:
@@ -108,5 +106,3 @@ public:
 		return this->mBytes;
 	}
 };
-
-#pragma managed

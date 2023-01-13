@@ -7,8 +7,6 @@
 
 #include "Converter\ConvertSettings.hpp"
 
-#pragma unmanaged
-
 std::string Block::GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const
 {
 	const std::string material_idx = MaterialManager::GetMaterialA(m_parent->Textures.material);

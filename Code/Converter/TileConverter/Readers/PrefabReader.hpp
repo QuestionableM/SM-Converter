@@ -11,8 +11,6 @@
 
 #include <lz4\lz4.h>
 
-#pragma unmanaged
-
 class PrefabReader
 {
 	PrefabReader() = default;
@@ -105,5 +103,3 @@ public:
 		return index;
 	}
 };
-
-#pragma managed

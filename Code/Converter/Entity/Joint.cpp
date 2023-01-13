@@ -6,8 +6,6 @@
 
 #include "Utils\Console.hpp"
 
-#pragma unmanaged
-
 std::string Joint::GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const
 {
 	const SubMeshData* pSubMesh = m_model->subMeshData[mIdx];

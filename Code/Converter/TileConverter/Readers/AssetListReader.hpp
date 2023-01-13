@@ -10,8 +10,6 @@
 
 #include <lz4\lz4.h>
 
-#pragma unmanaged
-
 class AssetListReader
 {
 	AssetListReader() = default;
@@ -147,5 +145,3 @@ public:
 		return index;
 	}
 };
-
-#pragma managed

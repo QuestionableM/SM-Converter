@@ -2,8 +2,6 @@
 
 #include "Entity.hpp"
 
-#pragma unmanaged
-
 class TileClutter : public SMEntity
 {
 public:
@@ -30,5 +28,3 @@ private:
 	class ClutterData* m_parent;
 	SMColor m_color = 0xffffff;
 };
-
-#pragma managed

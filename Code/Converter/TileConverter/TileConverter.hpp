@@ -5,8 +5,6 @@
 
 #include <string>
 
-#pragma unmanaged
-
 class TileConv
 {
 	TileConv()  = default;
@@ -16,5 +14,3 @@ class TileConv
 public:
 	static void ConvertToModel(const std::wstring& tile_path, const std::wstring& tile_name, ConvertError& cError);
 };
-
-#pragma managed

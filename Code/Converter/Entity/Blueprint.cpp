@@ -11,8 +11,6 @@
 
 #include <gtx\quaternion.hpp>
 
-#pragma unmanaged
-
 static const std::string bp_secret = "?JB:";
 
 Blueprint* Blueprint::LoadAutomatic(const std::string& str)

@@ -8,8 +8,6 @@
 
 #include <lz4\lz4.h>
 
-#pragma unmanaged
-
 class ClutterReader
 {
 	ClutterReader() = default;
@@ -125,5 +123,3 @@ public:
 		}
 	}
 };
-
-#pragma managed

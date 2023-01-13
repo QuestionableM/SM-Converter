@@ -4,8 +4,6 @@
 #include "Utils\Console.hpp"
 #include "Utils\Memory.hpp"
 
-#pragma unmanaged
-
 class PrefabHeader
 {
 public:
@@ -137,5 +135,3 @@ public:
 		DebugOutL("Has_0x7c: ", has_0x7c);
 	}
 };
-
-#pragma managed

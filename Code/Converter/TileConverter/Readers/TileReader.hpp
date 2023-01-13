@@ -18,8 +18,6 @@
 
 #include <string>
 
-#pragma unmanaged
-
 class TileReader
 {
 	TileReader() = default;
@@ -154,5 +152,3 @@ public:
 		return tile;
 	}
 };
-
-#pragma managed
