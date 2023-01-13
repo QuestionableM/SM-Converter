@@ -327,6 +327,9 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <EmbeddedResource Include="Code\Gui\MainGui.resx">
       <DependentUpon>Code\Gui\MainGui.h</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Code\Gui\TileConvertSettings.resx">
+      <DependentUpon>Code\Gui\TileConvertSettings.h</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
