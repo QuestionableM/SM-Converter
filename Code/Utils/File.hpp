@@ -20,6 +20,9 @@ namespace File
 	bool Exists(const std::wstring& path);
 	bool CreateDirectorySafe(const std::wstring& path);
 
+	bool IsDirectory(const std::wstring& path);
+	bool IsRegularFile(const std::wstring& path);
+
 	bool Equivalent(const std::wstring& p1, const std::wstring& p2);
 
 	std::wstring OpenFileDialog(

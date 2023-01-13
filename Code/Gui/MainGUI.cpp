@@ -18,6 +18,13 @@
 
 #include <filesystem>
 
+#define WF_SHOW_WARNING(title, message) \
+	System::Windows::Forms::MessageBox::Show( \
+		message, title, \
+		System::Windows::Forms::MessageBoxButtons::OK, \
+		System::Windows::Forms::MessageBoxIcon::Warning \
+	)
+
 enum : unsigned short
 {
 	Generator_BlueprintConverter = 0,
@@ -436,6 +443,82 @@ namespace SMConverter
 	void MainGui::UpdateConvertButton()
 	{
 		m_btn_convert->Enabled = (m_tb_path->TextLength > 0 || m_lb_objectSelector->SelectedIndex >= 0) && m_database_isLoaded;
+	}
+
+	void MainGui::MainGui_Convert_Clicked(System::Object^ sender, System::EventArgs^ e)
+	{
+		if (m_tb_path->TextLength == 0 && m_lb_objectSelector->SelectedIndex == -1)
+			return;
+
+		if (m_lb_objectSelector->SelectedIndex >= 0)
+		{
+			switch (m_cb_selectedGenerator->SelectedIndex)
+			{
+			case Generator_BlueprintConverter:
+				{
+					const std::vector<BlueprintInstance*>& v_bp_list = this->GetCurrentBlueprintList();
+					BlueprintInstance* v_cur_bp = v_bp_list[m_lb_objectSelector->SelectedIndex];
+
+					DebugOutL("Trying to convert a blueprint: ", v_cur_bp->name, ", ", v_cur_bp->path);
+
+					break;
+				}
+			case Generator_TileConverter:
+				{
+					const std::vector<TileInstance*>& v_tile_list = this->GetCurrentTileList();
+					TileInstance* v_cur_tile = v_tile_list[m_lb_objectSelector->SelectedIndex];
+
+					DebugOutL("Trying to convert a tile: ", v_cur_tile->name, ", ", v_cur_tile->path);
+
+					break;
+				}
+			case Generator_ScriptConverter:
+				break;
+			}
+		}
+		else
+		{
+			namespace fs = std::filesystem;
+
+			const std::wstring v_path_wstr = msclr::interop::marshal_as<std::wstring>(m_tb_path->Text);
+			if (!File::Exists(v_path_wstr))
+			{
+				WF_SHOW_WARNING("Invalid Path", "File doesn't exist!");
+				return;
+			}
+
+			if (!File::IsRegularFile(v_path_wstr))
+			{
+				WF_SHOW_WARNING("Invalid Path", "The path must lead to a file");
+				return;
+			}
+
+			const fs::path v_cur_path = v_path_wstr;
+
+			switch (m_cb_selectedGenerator->SelectedIndex)
+			{
+			case Generator_BlueprintConverter:
+				{
+					const std::wstring v_bp_name = (v_cur_path.has_stem() ? v_cur_path.stem().wstring() : L"UnknownBlueprint");
+
+					DebugOutL("Name: ", v_bp_name);
+					DebugOutL("Path: ", v_path_wstr);
+
+					break;
+				}
+			case Generator_TileConverter:
+				{
+					const std::wstring v_tile_name = (v_cur_path.has_stem() ? v_cur_path.stem().wstring() : L"UnknownTile");
+
+					DebugOutL("Name: ", v_tile_name);
+					DebugOutL("Path: ", v_path_wstr);
+
+					break;
+				}
+			case Generator_ScriptConverter:
+				break;
+			}
+		}
 	}
 
 	std::vector<BlueprintInstance*>& MainGui::GetCurrentBlueprintList()

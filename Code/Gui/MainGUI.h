@@ -104,6 +104,7 @@ namespace SMConverter
 			this->m_btn_convert->TabIndex = 1;
 			this->m_btn_convert->Text = L"Convert";
 			this->m_btn_convert->UseVisualStyleBackColor = true;
+			this->m_btn_convert->Click += gcnew System::EventHandler(this, &MainGui::MainGui_Convert_Clicked);
 			// 
 			// m_tb_path
 			// 
@@ -326,6 +327,7 @@ namespace SMConverter
 		System::Void UpdateSearchResults(int last_search_length);
 		System::Void MainGui_SearchBox_TextChanged(System::Object^ sender, System::EventArgs^ e);
 		System::Void UpdateConvertButton();
+		System::Void MainGui_Convert_Clicked(System::Object^ sender, System::EventArgs^ e);
 
 		std::vector<BlueprintInstance*>& GetCurrentBlueprintList();
 		std::vector<TileInstance*>& GetCurrentTileList();
