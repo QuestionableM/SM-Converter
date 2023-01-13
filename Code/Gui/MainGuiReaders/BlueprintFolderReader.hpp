@@ -1,6 +1,7 @@
 #pragma once
 #pragma unmanaged
 
+#include <filesystem>
 #include <vector>
 #include <string>
 
@@ -11,6 +12,7 @@ struct BlueprintInstance
 	std::wstring lower_name;
 
 	std::wstring path;
+	std::wstring preview_image;
 
 	unsigned long long workshop_id;
 
@@ -28,6 +30,7 @@ public:
 	inline static std::vector<BlueprintInstance*> Storage = {};
 	inline static std::vector<BlueprintInstance*> SearchResults = {};
 
+	static void ReadBlueprintFromFile(const std::filesystem::path& path);
 	static void ReadBlueprintFromFolder(const std::wstring& folder);
 	static void ReadBlueprintsFromFolder(const std::wstring& path);
 	static void ReadBlueprintsFromConfig();

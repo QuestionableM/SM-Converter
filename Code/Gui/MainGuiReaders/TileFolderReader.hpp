@@ -9,8 +9,7 @@ struct TileInstance
 	std::wstring name;
 	std::wstring lower_name;
 
-	std::wstring filename;
-	std::wstring directory;
+	std::wstring path;
 
 	std::wstring preview_image;
 

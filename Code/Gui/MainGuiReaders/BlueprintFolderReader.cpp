@@ -8,12 +8,28 @@
 #include "Utils\Json.hpp"
 #include "Utils\File.hpp"
 
-#include <filesystem>
+void BlueprintFolderReader::ReadBlueprintFromFile(const std::filesystem::path& path)
+{
+	if (!(path.has_stem() && path.has_root_directory()))
+		return;
+
+	BlueprintInstance* v_new_bp = new BlueprintInstance();
+	v_new_bp->name = path.stem().wstring();
+	v_new_bp->lower_name = String::ToLower(v_new_bp->name);
+	v_new_bp->path = path.wstring();
+	v_new_bp->workshop_id = 0ull;
+
+	BlueprintFolderReader::Storage.push_back(v_new_bp);
+}
 
 void BlueprintFolderReader::ReadBlueprintFromFolder(const std::wstring& folder)
 {
 	const std::wstring v_description_path = folder + L"/description.json";
 	if (!File::Exists(v_description_path))
+		return;
+
+	const std::wstring v_blueprint_path = folder + L"/blueprint.json";
+	if (!File::Exists(v_blueprint_path))
 		return;
 
 	simdjson::dom::document v_bp_doc;
@@ -33,7 +49,11 @@ void BlueprintFolderReader::ReadBlueprintFromFolder(const std::wstring& folder)
 	BlueprintInstance* v_new_bp = new BlueprintInstance();
 	v_new_bp->name = String::ToWide(v_bp_name.get_string());
 	v_new_bp->lower_name = String::ToLower(v_new_bp->name);
-	v_new_bp->path = folder;
+	v_new_bp->path = v_blueprint_path;
+
+	const std::wstring v_preview_img = folder + L"/icon.png";
+	if (File::Exists(v_preview_img))
+		v_new_bp->preview_image = v_preview_img;
 
 	const auto v_bp_workshop_id = v_root["fileId"];
 	v_new_bp->workshop_id = (v_bp_workshop_id.is_number() ? JsonReader::GetNumber<unsigned long long>(v_bp_workshop_id) : 0ull);
@@ -57,8 +77,12 @@ void BlueprintFolderReader::ReadBlueprintsFromFolder(const std::wstring& path)
 		}
 		else if (v_cur_item.is_regular_file())
 		{
-			//TODO: Make that work later
-			DebugOutL("Found a possible blueprint file: ", v_cur_item.path().wstring());
+			const fs::path& v_bp_path = v_cur_item.path();
+
+			if (!(v_bp_path.has_extension() && v_bp_path.extension().string() == ".blueprint"))
+				continue;
+
+			BlueprintFolderReader::ReadBlueprintFromFile(v_bp_path);
 		}
 	}
 }
