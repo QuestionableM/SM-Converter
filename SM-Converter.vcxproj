@@ -208,6 +208,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClCompile Include="Code\Gui\MainGui.cpp" />
     <ClCompile Include="Code\Gui\MainGuiReaders\BlueprintFolderReader.cpp" />
     <ClCompile Include="Code\Gui\MainGuiReaders\TileFolderReader.cpp" />
+    <ClCompile Include="Code\Gui\TileConvertSettings.cpp" />
     <ClCompile Include="Code\main.cpp" />
     <ClCompile Include="Code\ObjectDatabase\DatabaseConfig.cpp" />
     <ClCompile Include="Code\ObjectDatabase\GroundTextureDatabase.cpp" />
@@ -281,6 +282,9 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     </ClInclude>
     <ClInclude Include="Code\Gui\MainGuiReaders\BlueprintFolderReader.hpp" />
     <ClInclude Include="Code\Gui\MainGuiReaders\TileFolderReader.hpp" />
+    <ClInclude Include="Code\Gui\TileConvertSettings.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
     <ClInclude Include="Code\ObjectDatabase\DatabaseConfig.hpp" />
     <ClInclude Include="Code\ObjectDatabase\GroundTextureDatabase.hpp" />
     <ClInclude Include="Code\ObjectDatabase\KeywordReplacer.hpp" />
