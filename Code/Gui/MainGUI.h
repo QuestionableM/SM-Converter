@@ -327,6 +327,8 @@ namespace SMConverter
 		System::Void UpdateSearchResults(int last_search_length);
 		System::Void MainGui_SearchBox_TextChanged(System::Object^ sender, System::EventArgs^ e);
 		System::Void UpdateConvertButton();
+
+		System::Void MainGui_ConvertTile(const std::wstring& filename, const std::wstring& path);
 		System::Void MainGui_Convert_Clicked(System::Object^ sender, System::EventArgs^ e);
 
 		std::vector<BlueprintInstance*>& GetCurrentBlueprintList();

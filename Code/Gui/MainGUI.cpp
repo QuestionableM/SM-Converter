@@ -1,4 +1,6 @@
 #include "MainGui.h"
+
+#include "TileConvertSettings.h"
 #include "AboutGui.h"
 
 #include "ObjectDatabase\KeywordReplacer.hpp"
@@ -6,6 +8,8 @@
 #include "ObjectDatabase\DatabaseConfig.hpp"
 #include "ObjectDatabase\ProgCounter.hpp"
 #include "ObjectDatabase\Mods\Mod.hpp"
+
+#include "Converter\ConvertSettings.hpp"
 
 #include "Utils\Console.hpp"
 #include "Utils\String.hpp"
@@ -445,6 +449,41 @@ namespace SMConverter
 		m_btn_convert->Enabled = (m_tb_path->TextLength > 0 || m_lb_objectSelector->SelectedIndex >= 0) && m_database_isLoaded;
 	}
 
+	void MainGui::MainGui_ConvertTile(const std::wstring& filename, const std::wstring& path)
+	{
+		TileConvertSettings^ v_conv_settings = gcnew TileConvertSettings(filename.c_str());
+		v_conv_settings->ShowDialog();
+
+		if (!v_conv_settings->m_ready_to_convert)
+			return;
+
+		System::Array^ v_thread_data = gcnew cli::array<System::Object^>(14);
+
+		//Data type
+		v_thread_data->SetValue(static_cast<int>(Generator_TileConverter), static_cast<int>(0));
+
+		//Tile path and name data
+		v_thread_data->SetValue(gcnew System::String(path.c_str())  , static_cast<int>(1));
+		v_thread_data->SetValue(v_conv_settings->m_tb_filename->Text, static_cast<int>(2));
+
+		//Tile settings
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportHarvestables->Checked, static_cast<int>(3));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportBlueprints->Checked  , static_cast<int>(4));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportClutter->Checked     , static_cast<int>(5));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportPrefabs->Checked     , static_cast<int>(6));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportDecals->Checked      , static_cast<int>(7));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportAssets->Checked      , static_cast<int>(8));
+
+		//Model settings
+		v_thread_data->SetValue(v_conv_settings->m_cb_export8kGndTextures->Checked, static_cast<int>(9));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportGndTextures->Checked  , static_cast<int>(10));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportMaterials->Checked    , static_cast<int>(11));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportNormals->Checked      , static_cast<int>(12));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportUvs->Checked          , static_cast<int>(13));
+
+		//TODO: Make a background worker that will use the thread data
+	}
+
 	void MainGui::MainGui_Convert_Clicked(System::Object^ sender, System::EventArgs^ e)
 	{
 		if (m_tb_path->TextLength == 0 && m_lb_objectSelector->SelectedIndex == -1)
@@ -468,8 +507,7 @@ namespace SMConverter
 					const std::vector<TileInstance*>& v_tile_list = this->GetCurrentTileList();
 					TileInstance* v_cur_tile = v_tile_list[m_lb_objectSelector->SelectedIndex];
 
-					DebugOutL("Trying to convert a tile: ", v_cur_tile->name, ", ", v_cur_tile->path);
-
+					this->MainGui_ConvertTile(v_cur_tile->name, v_cur_tile->path);
 					break;
 				}
 			case Generator_ScriptConverter:
@@ -510,9 +548,7 @@ namespace SMConverter
 				{
 					const std::wstring v_tile_name = (v_cur_path.has_stem() ? v_cur_path.stem().wstring() : L"UnknownTile");
 
-					DebugOutL("Name: ", v_tile_name);
-					DebugOutL("Path: ", v_path_wstr);
-
+					this->MainGui_ConvertTile(v_tile_name, v_path_wstr);
 					break;
 				}
 			case Generator_ScriptConverter:
