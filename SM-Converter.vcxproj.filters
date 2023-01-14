@@ -150,6 +150,9 @@
     <ClCompile Include="Code\Gui\TileConvertSettings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Code\Gui\BlueprintConvertSettings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\Gui\MainGui.h">
@@ -354,6 +357,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Code\Gui\TileConvertSettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Gui\BlueprintConvertSettings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

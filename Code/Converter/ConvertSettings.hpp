@@ -10,11 +10,25 @@ struct TileConverterSettings
 	inline static bool ExportPrefabs = true;
 	inline static bool ExportAssets = true;
 	inline static bool ExportDecals = true;
+
+private:
+	TileConverterSettings() = default;
+	TileConverterSettings(const TileConverterSettings&&) = delete;
+	TileConverterSettings(TileConverterSettings&&) = delete;
+	TileConverterSettings(TileConverterSettings&) = delete;
+	~TileConverterSettings() = default;
 };
 
 struct BlueprintConverterSettings
 {
+	inline static int SeparationType = 0;
 
+private:
+	BlueprintConverterSettings() = default;
+	BlueprintConverterSettings(const BlueprintConverterSettings&&) = delete;
+	BlueprintConverterSettings(BlueprintConverterSettings&&) = delete;
+	BlueprintConverterSettings(BlueprintConverterSettings&) = delete;
+	~BlueprintConverterSettings() = default;
 };
 
 struct SharedConverterSettings

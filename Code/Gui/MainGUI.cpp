@@ -1,5 +1,6 @@
 #include "MainGui.h"
 
+#include "BlueprintConvertSettings.h"
 #include "TileConvertSettings.h"
 #include "AboutGui.h"
 
@@ -457,6 +458,39 @@ namespace SMConverter
 		m_pb_progress->Maximum = 0;
 	}
 
+	void MainGui::MainGui_ConvertBlueprint(const std::wstring& filename, const std::wstring& path)
+	{
+		if (m_bw_objectConverter->IsBusy) return;
+
+		BlueprintConvertSettings^ v_conv_settings = gcnew BlueprintConvertSettings(filename.c_str());
+		v_conv_settings->ShowDialog();
+
+		if (!v_conv_settings->m_ready_to_convert)
+			return;
+
+		System::Array^ v_thread_data = gcnew cli::array<System::Object^>(7);
+
+		//Data type
+		v_thread_data->SetValue(safe_cast<System::Object^>(static_cast<int>(Generator_BlueprintConverter)), static_cast<int>(0));
+
+		//Tile path and name data
+		v_thread_data->SetValue(gcnew System::String(path.c_str())  , static_cast<int>(1));
+		v_thread_data->SetValue(v_conv_settings->m_tb_filename->Text, static_cast<int>(2));
+
+		//Blueprint settings
+		v_thread_data->SetValue(v_conv_settings->m_cb_separationType->SelectedIndex, static_cast<int>(3));
+
+		//Model settings
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportMaterials->Checked, static_cast<int>(4));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportNormals->Checked  , static_cast<int>(5));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportUvs->Checked      , static_cast<int>(6));
+
+		this->MainGui_ChangeGuiState(m_database_isLoaded, m_obj_isLoaded, false);
+		m_progressBarUpdater->Start();
+
+		m_bw_objectConverter->RunWorkerAsync(v_thread_data);
+	}
+
 	void MainGui::MainGui_ConvertTile(const std::wstring& filename, const std::wstring& path)
 	{
 		if (m_bw_objectConverter->IsBusy) return;
@@ -511,8 +545,7 @@ namespace SMConverter
 					const std::vector<BlueprintInstance*>& v_bp_list = this->GetCurrentBlueprintList();
 					BlueprintInstance* v_cur_bp = v_bp_list[m_lb_objectSelector->SelectedIndex];
 
-					DebugOutL("Trying to convert a blueprint: ", v_cur_bp->name, ", ", v_cur_bp->path);
-
+					this->MainGui_ConvertBlueprint(v_cur_bp->name, v_cur_bp->path);
 					break;
 				}
 			case Generator_TileConverter:
@@ -552,9 +585,7 @@ namespace SMConverter
 				{
 					const std::wstring v_bp_name = (v_cur_path.has_stem() ? v_cur_path.stem().wstring() : L"UnknownBlueprint");
 
-					DebugOutL("Name: ", v_bp_name);
-					DebugOutL("Path: ", v_path_wstr);
-
+					this->MainGui_ConvertBlueprint(v_bp_name, v_cur_path);
 					break;
 				}
 			case Generator_TileConverter:
@@ -586,7 +617,7 @@ namespace SMConverter
 
 		System::Array^ v_op_result = gcnew cli::array<System::Object^>(2);
 
-		v_op_result->SetValue(static_cast<int>(Generator_BlueprintConverter), static_cast<int>(0));
+		v_op_result->SetValue(safe_cast<System::Object^>(static_cast<int>(Generator_BlueprintConverter)), static_cast<int>(0));
 		v_op_result->SetValue(false, static_cast<int>(1));
 
 		e->Result = v_op_result;

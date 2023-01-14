@@ -337,6 +337,7 @@ namespace SMConverter
 		System::Void UpdateConvertButton();
 		System::Void ResetProgressBar();
 
+		System::Void MainGui_ConvertBlueprint(const std::wstring& filename, const std::wstring& path);
 		System::Void MainGui_ConvertTile(const std::wstring& filename, const std::wstring& path);
 		System::Void MainGui_Convert_Clicked(System::Object^ sender, System::EventArgs^ e);
 
