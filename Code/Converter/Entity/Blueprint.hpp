@@ -4,6 +4,7 @@
 #include "Converter\Entity\Block.hpp"
 #include "Converter\Entity\Joint.hpp"
 #include "Converter\Entity\Part.hpp"
+#include "Converter\ConvertError.hpp"
 
 #include "Utils\Json.hpp"
 
@@ -17,18 +18,8 @@ class Blueprint : public SMEntity
 public:
 	static Blueprint* LoadAutomatic(const std::string& str);
 	static Blueprint* FromFile(const std::wstring& path);
+	static Blueprint* FromFileErrorChecked(const std::wstring& path, void (*v_addObjFunc)(Blueprint*, SMEntity*), ConvertError& v_error);
 	static Blueprint* FromJsonString(const std::string& json_str);
-
-	//This vector contains blocks, parts and joints
-	std::vector<SMEntity*> Objects = {};
-
-	inline void AddObject(SMEntity* object)
-	{
-		//Check if the object is valid (Valid objects: Block, Part, Joint)
-		assert((static_cast<unsigned short>(object->Type()) & 0b11100000) != 0);
-
-		this->Objects.push_back(object);
-	}
 
 	inline EntityType Type() const override { return EntityType::Blueprint; }
 	std::string GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const override;
@@ -42,7 +33,17 @@ public:
 			delete pObject;
 	}
 
+	/*
+		This vector contains blocks, parts and joints
+		When in blueprint converter mode, this vector only stores bodies
+	*/
+	std::vector<SMEntity*> Objects = {};
+
 private:
+	void (*m_addObjectFunction)(Blueprint*, SMEntity*) = Blueprint::AddObject_Default;
+
+	static void AddObject_Default(Blueprint* self, SMEntity* v_entity);
+
 	static glm::vec3 JsonToVector(const simdjson::simdjson_result<simdjson::dom::element>& vec_json);
 
 	void LoadBodies(const simdjson::dom::element& pJson);

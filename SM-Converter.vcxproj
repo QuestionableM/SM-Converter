@@ -191,9 +191,11 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Code\Converter\BlueprintConverter\BlueprintConverter.cpp" />
     <ClCompile Include="Code\Converter\Entity\Asset.cpp" />
     <ClCompile Include="Code\Converter\Entity\Block.cpp" />
     <ClCompile Include="Code\Converter\Entity\Blueprint.cpp" />
+    <ClCompile Include="Code\Converter\Entity\Body.cpp" />
     <ClCompile Include="Code\Converter\Entity\Decal.cpp" />
     <ClCompile Include="Code\Converter\Entity\Harvestable.cpp" />
     <ClCompile Include="Code\Converter\Entity\Joint.cpp" />
@@ -201,6 +203,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClCompile Include="Code\Converter\Entity\Prefab.cpp" />
     <ClCompile Include="Code\Converter\Entity\TileClutter.cpp" />
     <ClCompile Include="Code\Converter\Entity\Entity.cpp" />
+    <ClCompile Include="Code\Converter\MtlFileWriter.cpp" />
     <ClCompile Include="Code\Converter\TileConverter\Tile.cpp" />
     <ClCompile Include="Code\Converter\TileConverter\TileConverter.cpp" />
     <ClCompile Include="Code\Converter\TileConverter\TilePart.cpp" />
@@ -247,11 +250,13 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\BuildInfo.hpp" />
+    <ClInclude Include="Code\Converter\BlueprintConverter\BlueprintConverter.hpp" />
     <ClInclude Include="Code\Converter\ConvertError.hpp" />
     <ClInclude Include="Code\Converter\ConvertSettings.hpp" />
     <ClInclude Include="Code\Converter\Entity\Asset.hpp" />
     <ClInclude Include="Code\Converter\Entity\Block.hpp" />
     <ClInclude Include="Code\Converter\Entity\Blueprint.hpp" />
+    <ClInclude Include="Code\Converter\Entity\Body.hpp" />
     <ClInclude Include="Code\Converter\Entity\Decal.hpp" />
     <ClInclude Include="Code\Converter\Entity\GroundTerrainData.hpp" />
     <ClInclude Include="Code\Converter\Entity\Harvestable.hpp" />
@@ -260,6 +265,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\Converter\Entity\Prefab.hpp" />
     <ClInclude Include="Code\Converter\Entity\TileClutter.hpp" />
     <ClInclude Include="Code\Converter\Entity\Entity.hpp" />
+    <ClInclude Include="Code\Converter\MtlFileWriter.hpp" />
     <ClInclude Include="Code\Converter\TileConverter\CellHeader.hpp" />
     <ClInclude Include="Code\Converter\TileConverter\Readers\AssetListReader.hpp" />
     <ClInclude Include="Code\Converter\TileConverter\Readers\BlueprintListReader.hpp" />

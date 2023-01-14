@@ -6,6 +6,7 @@
 
 #include "Converter\TileConverter\TileConverter.hpp"
 #include "Converter\Entity\GroundTerrainData.hpp"
+#include "Converter\MtlFileWriter.hpp"
 
 #include "Utils\WinInclude.hpp"
 #include "Utils\Console.hpp"
@@ -764,9 +765,6 @@ void Tile::WriteMtlFile(const std::wstring& path) const
 {
 	if (!SharedConverterSettings::ExportMaterials) return;
 
-	std::ofstream oMtl(path);
-	if (!oMtl.is_open()) return;
-
 	DebugOutL("Writing an mtl file...");
 	ProgCounter::SetState(ProgState::WritingMtlFile, 0);
 
@@ -775,7 +773,6 @@ void Tile::WriteMtlFile(const std::wstring& path) const
 	for (const TilePart* tPart : m_Tiles)
 	{
 		tPart->FillTextureMap(tData);
-
 		ProgCounter::ProgressMax = tData.size();
 	}
 
@@ -793,28 +790,5 @@ void Tile::WriteMtlFile(const std::wstring& path) const
 		tData["TileGroundTerrain"] = v_tileGroundTextureData;
 	}
 
-	for (const auto& tDatum : tData)
-	{
-		std::string output_str = "newmtl " + tDatum.first;
-		output_str.append("\nNs 324");
-		output_str.append("\nKa 1 1 1\nKd ");
-		output_str.append(tDatum.second.TexColor.StringNormalized());
-		output_str.append("\nKs 0.5 0.5 0.5");
-		output_str.append("\nKe 0 0 0");
-		output_str.append("\nNi 1.45");
-		output_str.append("\nd 1");
-		output_str.append("\nillum 2");
-
-		const TextureList& tList = tDatum.second.Textures;
-
-		if (!tList.nor.empty()) output_str.append("\nmap_Bump " + String::ToUtf8(tList.nor));
-		if (!tList.dif.empty()) output_str.append("\nmap_Kd " + String::ToUtf8(tList.dif));
-		if (!tList.asg.empty()) output_str.append("\nmap_Ks " + String::ToUtf8(tList.asg));
-
-		output_str.append("\n\n");
-
-		oMtl.write(output_str.c_str(), output_str.size());
-
-		ProgCounter::ProgressValue++;
-	}
+	MtlFileWriter::Write(path, tData);
 }

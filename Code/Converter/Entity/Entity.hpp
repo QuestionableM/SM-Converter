@@ -31,6 +31,7 @@ enum class EntityType : unsigned short
 	Joint       = (1 << 6),
 	Part        = (1 << 7),
 	Decal       = (1 << 8),
+	Body        = (1 << 9),
 
 	//Is not used anywhere except the GroundTerrainData class
 	GroundTerrain = 0
@@ -69,6 +70,7 @@ public:
 	virtual void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const = 0;
 	virtual void WriteObjectToFile(std::ofstream& file, WriterOffsetData& mOffset, const glm::mat4& transform_matrix) const;
 	inline virtual std::size_t GetAmountOfObjects() const { return 1; }
+	inline virtual SMColor GetColor() const { return static_cast<int>(0x000000ff); }
 
 protected:
 	glm::vec3 m_position = glm::vec3(0.0f, 0.0f, 0.0f);

@@ -49,6 +49,38 @@ Blueprint* Blueprint::FromFile(const std::wstring& path)
 	return Blueprint::FromJsonString(v_fileString);
 }
 
+Blueprint* Blueprint::FromFileErrorChecked(const std::wstring& path, void (*v_addObjFunc)(Blueprint*, SMEntity*), ConvertError& v_error)
+{
+	simdjson::dom::document v_bp_doc;
+	if (!JsonReader::LoadParseSimdjsonC(path, v_bp_doc, simdjson::dom::element_type::OBJECT))
+	{
+		v_error = ConvertError(1, L"Couldn't read the specified blueprint file. Possible reason: Invalid file, Parse error, Invalid path");
+		return nullptr;
+	}
+
+	const auto v_root = v_bp_doc.root();
+
+	const bool has_bodies = v_root["bodies"].error() == simdjson::SUCCESS;
+	const bool has_joints = v_root["joints"].error() == simdjson::SUCCESS;
+
+	if (!has_bodies && !has_joints)
+	{
+		v_error = ConvertError(1, L"The specified blueprint has no objects to convert");
+		return nullptr;
+	}
+
+	Blueprint* v_blueprint = new Blueprint();
+
+	//Bind the custom function if it has been passed
+	if (v_addObjFunc)
+		v_blueprint->m_addObjectFunction = v_addObjFunc;
+
+	v_blueprint->LoadBodies(v_root);
+	v_blueprint->LoadJoints(v_root);
+
+	return v_blueprint;
+}
+
 Blueprint* Blueprint::FromJsonString(const std::string& json_str)
 {
 	simdjson::dom::document v_bp_doc;
@@ -84,6 +116,11 @@ void Blueprint::WriteObjectToFile(std::ofstream& file, WriterOffsetData& mOffset
 
 	for (const SMEntity* pEntity : this->Objects)
 		pEntity->WriteObjectToFile(file, mOffset, blueprint_matrix);
+}
+
+void Blueprint::AddObject_Default(Blueprint* self, SMEntity* v_entity)
+{
+	self->Objects.push_back(v_entity);
 }
 
 glm::vec3 Blueprint::JsonToVector(const simdjson::simdjson_result<simdjson::dom::element>& vec_json)
@@ -145,7 +182,7 @@ void Blueprint::LoadBodies(const simdjson::dom::element& pJson)
 				v_new_blk->SetPosition(v_obj_pos);
 				v_new_blk->SetSize(v_blk_bounds);
 
-				this->AddObject(v_new_blk);
+				this->m_addObjectFunction(this, v_new_blk);
 			}
 			else
 			{
@@ -158,7 +195,7 @@ void Blueprint::LoadBodies(const simdjson::dom::element& pJson)
 				Part* v_new_prt = new Part(v_prt_data, v_prt_model, v_obj_color, v_xAxisInt, v_zAxisInt);
 				v_new_prt->SetPosition(v_obj_pos);
 
-				this->AddObject(v_new_prt);
+				this->m_addObjectFunction(this, v_new_prt);
 			}
 		}
 	}
@@ -198,6 +235,6 @@ void Blueprint::LoadJoints(const simdjson::dom::element& pJson)
 		Joint* v_new_jnt = new Joint(v_jnt_data, v_jnt_model, v_jnt_color, v_xAxisInt, v_zAxisInt);
 		v_new_jnt->SetPosition(v_pos_vec);
 
-		this->AddObject(v_new_jnt);
+		this->m_addObjectFunction(this, v_new_jnt);
 	}
 }

@@ -3,6 +3,8 @@
 #include "MainGuiReaders\BlueprintFolderReader.hpp"
 #include "MainGuiReaders\TileFolderReader.hpp"
 
+#include "Converter\ConvertError.hpp"
+
 #include <vector>
 
 namespace SMConverter
@@ -344,6 +346,7 @@ namespace SMConverter
 		std::vector<BlueprintInstance*>& GetCurrentBlueprintList();
 		std::vector<TileInstance*>& GetCurrentTileList();
 
+		System::Void MainGui_HandleConvertError(ConvertError& v_error, const int& v_type, System::ComponentModel::DoWorkEventArgs^ e);
 		System::Void ObjectConverter_ConvertBlueprint(System::Array^ conv_data, System::ComponentModel::DoWorkEventArgs^ e);
 		System::Void ObjectConverter_ConvertTile(System::Array^ conv_data, System::ComponentModel::DoWorkEventArgs^ e);
 		System::Void ObjectConverter_ConvertScript(System::Array^ conv_data, System::ComponentModel::DoWorkEventArgs^ e);

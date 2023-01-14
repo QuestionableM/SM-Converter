@@ -153,6 +153,15 @@
     <ClCompile Include="Code\Gui\BlueprintConvertSettings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Code\Converter\BlueprintConverter\BlueprintConverter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Converter\MtlFileWriter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Converter\Entity\Body.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\Gui\MainGui.h">
@@ -360,6 +369,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Code\Gui\BlueprintConvertSettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Converter\BlueprintConverter\BlueprintConverter.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Converter\MtlFileWriter.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Converter\Entity\Body.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -19,8 +19,7 @@ public:
 	Harvestable(Harvestable&) = delete;
 	~Harvestable() = default;
 
-	inline const SMColor& GetColor() const { return m_color; }
-
+	inline SMColor GetColor() const override { return m_color; }
 	inline EntityType Type() const { return EntityType::Harvestable; }
 	std::string GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const override;
 	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const override;

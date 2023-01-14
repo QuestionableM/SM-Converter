@@ -10,6 +10,7 @@
 #include "ObjectDatabase\ProgCounter.hpp"
 #include "ObjectDatabase\Mods\Mod.hpp"
 
+#include "Converter\BlueprintConverter\BlueprintConverter.hpp"
 #include "Converter\TileConverter\TileConverter.hpp"
 #include "Converter\ConvertSettings.hpp"
 
@@ -611,16 +612,54 @@ namespace SMConverter
 		return (m_tb_searchBox->TextLength > 0) ? TileFolderReader::SearchResults : TileFolderReader::Storage;
 	}
 
+	void MainGui::MainGui_HandleConvertError(ConvertError& v_error, const int& v_type, System::ComponentModel::DoWorkEventArgs^ e)
+	{
+		System::Array^ v_op_result = nullptr;
+		if (v_error)
+		{
+			v_op_result = gcnew cli::array<System::Object^>(3);
+
+			v_op_result->SetValue(true, static_cast<int>(1));
+
+			const std::wstring& v_error_msg = v_error.GetErrorMsg();
+			v_op_result->SetValue(gcnew System::String(v_error_msg.c_str()), static_cast<int>(2));
+		}
+		else
+		{
+			v_op_result = gcnew cli::array<System::Object^>(2);
+
+			v_op_result->SetValue(false, static_cast<int>(1));
+		}
+
+		v_op_result->SetValue(v_type, static_cast<int>(0));
+
+		e->Result = v_op_result;
+	}
+
 	void MainGui::ObjectConverter_ConvertBlueprint(System::Array^ conv_data, System::ComponentModel::DoWorkEventArgs^ e)
 	{
 		DebugOutL(__FUNCTION__);
 
-		System::Array^ v_op_result = gcnew cli::array<System::Object^>(2);
+		System::Array^ v_conv_data = safe_cast<System::Array^>(e->Argument);
 
-		v_op_result->SetValue(safe_cast<System::Object^>(static_cast<int>(Generator_BlueprintConverter)), static_cast<int>(0));
-		v_op_result->SetValue(false, static_cast<int>(1));
+		const std::wstring v_bp_path = msclr::interop::marshal_as<std::wstring>(safe_cast<System::String^>(v_conv_data->GetValue(static_cast<int>(1))));
+		const std::wstring v_bp_name = msclr::interop::marshal_as<std::wstring>(safe_cast<System::String^>(v_conv_data->GetValue(static_cast<int>(2))));
 
-		e->Result = v_op_result;
+		//Load blueprint settings
+		BlueprintConverterSettings::SeparationType = safe_cast<int>(v_conv_data->GetValue(static_cast<int>(3)));
+
+		//Load Model Settings
+		SharedConverterSettings::ExportMaterials = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(4)));
+		SharedConverterSettings::ExportNormals   = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(5)));
+		SharedConverterSettings::ExportUvs       = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(6)));
+
+		//Error check some settings
+		SharedConverterSettings::ExportMaterials &= SharedConverterSettings::ExportUvs;
+
+		ConvertError v_conv_error;
+		BlueprintConv::ConvertToModel(v_bp_path, v_bp_name, v_conv_error);
+
+		this->MainGui_HandleConvertError(v_conv_error, Generator_BlueprintConverter, e);
 	}
 
 	void MainGui::ObjectConverter_ConvertTile(System::Array^ conv_data, System::ComponentModel::DoWorkEventArgs^ e)
@@ -654,27 +693,7 @@ namespace SMConverter
 		ConvertError v_conv_error;
 		TileConv::ConvertToModel(v_tile_path, v_tile_name, v_conv_error);
 
-		//Store the operation result
-		System::Array^ v_op_result = nullptr;
-		if (v_conv_error)
-		{
-			v_op_result = gcnew cli::array<System::Object^>(3);
-
-			v_op_result->SetValue(true, static_cast<int>(1));
-
-			const std::wstring& v_error_msg = v_conv_error.GetErrorMsg();
-			v_op_result->SetValue(gcnew System::String(v_error_msg.c_str()), static_cast<int>(2));
-		}
-		else
-		{
-			v_op_result = gcnew cli::array<System::Object^>(2);
-
-			v_op_result->SetValue(false, static_cast<int>(1));
-		}
-
-		v_op_result->SetValue(static_cast<int>(Generator_TileConverter), static_cast<int>(0));
-
-		e->Result = v_op_result;
+		this->MainGui_HandleConvertError(v_conv_error, Generator_TileConverter, e);
 	}
 
 	void MainGui::ObjectConverter_ConvertScript(System::Array^ conv_data, System::ComponentModel::DoWorkEventArgs^ e)
