@@ -9,6 +9,7 @@
 #include "ObjectDatabase\ProgCounter.hpp"
 #include "ObjectDatabase\Mods\Mod.hpp"
 
+#include "Converter\TileConverter\TileConverter.hpp"
 #include "Converter\ConvertSettings.hpp"
 
 #include "Utils\Console.hpp"
@@ -240,9 +241,7 @@ namespace SMConverter
 		this->MainGui_ChangeGuiState(true, m_obj_isLoaded, true);
 
 		ProgCounter::SetState(ProgState::None, 0);
-
-		m_pb_progress->Value = 0;
-		m_pb_progress->Maximum = 0;
+		this->ResetProgressBar();
 
 		const std::size_t v_mod_count = Mod::GetAmountOfMods();
 		const std::size_t v_obj_count = Mod::GetAmountOfObjects();
@@ -269,6 +268,9 @@ namespace SMConverter
 
 		m_btn_convert->Enabled = db_loaded_and_obj_converted && (m_tb_path->TextLength > 0 || m_lb_objectSelector->SelectedIndex >= 0);
 		m_btn_options->Enabled = db_loaded_and_obj_converted;
+
+		m_cb_selectedGenerator->Enabled = obj_converted;
+		m_menuStrip->Enabled = obj_converted;
 	}
 
 	void MainGui::MainGui_ReloadDatabase_Click(System::Object^ sender, System::EventArgs^ e)
@@ -449,8 +451,16 @@ namespace SMConverter
 		m_btn_convert->Enabled = (m_tb_path->TextLength > 0 || m_lb_objectSelector->SelectedIndex >= 0) && m_database_isLoaded;
 	}
 
+	void MainGui::ResetProgressBar()
+	{
+		m_pb_progress->Value = 0;
+		m_pb_progress->Maximum = 0;
+	}
+
 	void MainGui::MainGui_ConvertTile(const std::wstring& filename, const std::wstring& path)
 	{
+		if (m_bw_objectConverter->IsBusy) return;
+
 		TileConvertSettings^ v_conv_settings = gcnew TileConvertSettings(filename.c_str());
 		v_conv_settings->ShowDialog();
 
@@ -481,7 +491,10 @@ namespace SMConverter
 		v_thread_data->SetValue(v_conv_settings->m_cb_exportNormals->Checked      , static_cast<int>(12));
 		v_thread_data->SetValue(v_conv_settings->m_cb_exportUvs->Checked          , static_cast<int>(13));
 
-		//TODO: Make a background worker that will use the thread data
+		this->MainGui_ChangeGuiState(m_database_isLoaded, m_obj_isLoaded, false);
+		m_progressBarUpdater->Start();
+
+		m_bw_objectConverter->RunWorkerAsync(v_thread_data);
 	}
 
 	void MainGui::MainGui_Convert_Clicked(System::Object^ sender, System::EventArgs^ e)
@@ -565,5 +578,150 @@ namespace SMConverter
 	std::vector<TileInstance*>& MainGui::GetCurrentTileList()
 	{
 		return (m_tb_searchBox->TextLength > 0) ? TileFolderReader::SearchResults : TileFolderReader::Storage;
+	}
+
+	void MainGui::ObjectConverter_ConvertBlueprint(System::Array^ conv_data, System::ComponentModel::DoWorkEventArgs^ e)
+	{
+		DebugOutL(__FUNCTION__);
+
+		System::Array^ v_op_result = gcnew cli::array<System::Object^>(2);
+
+		v_op_result->SetValue(static_cast<int>(Generator_BlueprintConverter), static_cast<int>(0));
+		v_op_result->SetValue(false, static_cast<int>(1));
+
+		e->Result = v_op_result;
+	}
+
+	void MainGui::ObjectConverter_ConvertTile(System::Array^ conv_data, System::ComponentModel::DoWorkEventArgs^ e)
+	{
+		DebugOutL(__FUNCTION__);
+
+		System::Array^ v_conv_data = safe_cast<System::Array^>(e->Argument);
+
+		const std::wstring v_tile_path = msclr::interop::marshal_as<std::wstring>(safe_cast<System::String^>(v_conv_data->GetValue(static_cast<int>(1))));
+		const std::wstring v_tile_name = msclr::interop::marshal_as<std::wstring>(safe_cast<System::String^>(v_conv_data->GetValue(static_cast<int>(2))));
+
+		//Load the tile settings
+		TileConverterSettings::ExportHarvestables = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(3)));
+		TileConverterSettings::ExportBlueprints   = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(4)));
+		TileConverterSettings::ExportClutter      = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(5)));
+		TileConverterSettings::ExportPrefabs      = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(6)));
+		TileConverterSettings::ExportDecals       = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(7)));
+		TileConverterSettings::ExportAssets       = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(8)));
+
+		//Load the model settings
+		TileConverterSettings::Export8kGroundTextures = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(9)));
+		TileConverterSettings::ExportGroundTextures   = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(10)));
+		SharedConverterSettings::ExportMaterials      = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(11)));
+		SharedConverterSettings::ExportNormals        = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(12)));
+		SharedConverterSettings::ExportUvs            = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(13)));
+
+		//Error check some settings
+		TileConverterSettings::Export8kGroundTextures &= TileConverterSettings::ExportGroundTextures;
+		SharedConverterSettings::ExportMaterials &= SharedConverterSettings::ExportUvs;
+
+		ConvertError v_conv_error;
+		TileConv::ConvertToModel(v_tile_path, v_tile_name, v_conv_error);
+
+		//Store the operation result
+		System::Array^ v_op_result = nullptr;
+		if (v_conv_error)
+		{
+			v_op_result = gcnew cli::array<System::Object^>(3);
+
+			v_op_result->SetValue(true, static_cast<int>(1));
+
+			const std::wstring& v_error_msg = v_conv_error.GetErrorMsg();
+			v_op_result->SetValue(gcnew System::String(v_error_msg.c_str()), static_cast<int>(2));
+		}
+		else
+		{
+			v_op_result = gcnew cli::array<System::Object^>(2);
+
+			v_op_result->SetValue(false, static_cast<int>(1));
+		}
+
+		v_op_result->SetValue(static_cast<int>(Generator_TileConverter), static_cast<int>(0));
+
+		e->Result = v_op_result;
+	}
+
+	void MainGui::ObjectConverter_ConvertScript(System::Array^ conv_data, System::ComponentModel::DoWorkEventArgs^ e)
+	{
+		DebugOutL(__FUNCTION__);
+
+		System::Array^ v_op_result = gcnew cli::array<System::Object^>(2);
+
+		v_op_result->SetValue(static_cast<int>(Generator_ScriptConverter), static_cast<int>(0));
+		v_op_result->SetValue(false, static_cast<int>(1));
+
+		e->Result = v_op_result;
+	}
+
+	void MainGui::MainGui_ObjectConverter_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e)
+	{
+		System::Array^ v_thread_data = safe_cast<System::Array^>(e->Argument);
+
+		const unsigned short v_generator_type = static_cast<unsigned short>(safe_cast<int>(v_thread_data->GetValue(static_cast<int>(0))));
+		switch (v_generator_type)
+		{
+		case Generator_BlueprintConverter:
+			this->ObjectConverter_ConvertBlueprint(v_thread_data, e);
+			break;
+		case Generator_TileConverter:
+			this->ObjectConverter_ConvertTile(v_thread_data, e);
+			break;
+		case Generator_ScriptConverter:
+			this->ObjectConverter_ConvertScript(v_thread_data, e);
+			break;
+		}
+	}
+
+	void MainGui::MainGui_ObjectConverter_RunWorkerCompleted(System::Object^ sender, System::ComponentModel::RunWorkerCompletedEventArgs^ e)
+	{
+		m_progressBarUpdater->Stop();
+		this->MainGui_Timer_UpdateProgressBar(nullptr, nullptr);
+
+		System::Array^ v_work_result = safe_cast<System::Array^>(e->Result);
+
+		const unsigned short v_type_id = static_cast<unsigned short>(safe_cast<int>(v_work_result->GetValue(static_cast<int>(0))));
+		const bool v_has_error = safe_cast<bool>(v_work_result->GetValue(static_cast<int>(1)));
+
+		if (v_has_error)
+		{
+			System::String^ v_error_msg = safe_cast<System::String^>(v_work_result->GetValue(static_cast<int>(2)));
+			ProgCounter::SetState(ProgState::ConvertFailure, 0);
+
+			System::Windows::Forms::MessageBox::Show(
+				v_error_msg,
+				"Convert Error",
+				System::Windows::Forms::MessageBoxButtons::OK,
+				System::Windows::Forms::MessageBoxIcon::Error
+			);
+		}
+		else
+		{
+			ProgCounter::SetState(ProgState::ConvertSuccess, 0);
+
+			const static char* g_resultMessages[] =
+			{
+				"Blueprint has been successfully converted!",
+				"Tile has been successfully converted!",
+				"Script has been successfully converted!"
+			};
+
+			System::Windows::Forms::MessageBox::Show(
+				gcnew System::String(g_resultMessages[v_type_id]),
+				"Convert Success",
+				System::Windows::Forms::MessageBoxButtons::OK,
+				System::Windows::Forms::MessageBoxIcon::Information
+			);
+		}
+
+		//Update the status message
+		this->ResetProgressBar();
+		this->MainGui_Timer_UpdateProgressBar(nullptr, nullptr);
+
+		this->MainGui_ChangeGuiState(m_database_isLoaded, m_obj_isLoaded, true);
 	}
 }

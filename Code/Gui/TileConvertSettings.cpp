@@ -23,13 +23,10 @@ namespace SMConverter
 		m_cb_exportDecals->Checked = TileConverterSettings::ExportDecals;
 		m_cb_exportAssets->Checked = TileConverterSettings::ExportAssets;
 
-		const bool v_export_materials = SharedConverterSettings::ExportMaterials && SharedConverterSettings::ExportUvs;
+		m_cb_exportGndTextures->Checked = TileConverterSettings::ExportGroundTextures;
+		m_cb_export8kGndTextures->Checked = TileConverterSettings::ExportGroundTextures && TileConverterSettings::Export8kGroundTextures;
 
-		m_cb_export8kGndTextures->Checked = TileConverterSettings::ExportGroundTextures
-			&& TileConverterSettings::Export8kGroundTextures && v_export_materials;
-
-		m_cb_exportGndTextures->Checked = TileConverterSettings::ExportGroundTextures && v_export_materials;
-		m_cb_exportMaterials->Checked = v_export_materials;
+		m_cb_exportMaterials->Checked = SharedConverterSettings::ExportMaterials && SharedConverterSettings::ExportUvs;
 
 		m_cb_exportNormals->Checked = SharedConverterSettings::ExportNormals;
 		m_cb_exportUvs->Checked = SharedConverterSettings::ExportUvs;

@@ -32,10 +32,11 @@ namespace SMConverter
 
 		System::Windows::Forms::ToolStripSeparator^ toolStripSeparator1;
 		System::Windows::Forms::ToolStripMenuItem^ m_btn_aboutProgram;
-		System::Windows::Forms::ToolStripMenuItem^ settingsToolStripMenuItem;
+
 		System::Windows::Forms::ToolStripMenuItem^ m_btn_reloadDatabase;
 		System::Windows::Forms::ToolStripMenuItem^ m_btn_options;
 		System::Windows::Forms::ToolStripMenuItem^ m_btn_reloadUserObjects;
+		System::Windows::Forms::ToolStripMenuItem^ m_menuItem_settings;
 
 		System::Windows::Forms::TextBox^ m_tb_path;
 		System::Windows::Forms::TextBox^ m_tb_searchBox;
@@ -52,7 +53,8 @@ namespace SMConverter
 		System::Windows::Forms::ProgressBar^ m_pb_progress;
 		System::Windows::Forms::MenuStrip^ m_menuStrip;
 		System::Windows::Forms::Timer^ m_progressBarUpdater;
-		System::ComponentModel::IContainer^ components;
+	private: System::ComponentModel::BackgroundWorker^ m_bw_objectConverter;
+		   System::ComponentModel::IContainer^ components;
 
 #pragma region Windows Form Designer generated code
 		void InitializeComponent(void)
@@ -69,7 +71,7 @@ namespace SMConverter
 			this->m_lbl_progressStatus = (gcnew System::Windows::Forms::Label());
 			this->m_menuStrip = (gcnew System::Windows::Forms::MenuStrip());
 			this->m_btn_aboutProgram = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->settingsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->m_menuItem_settings = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->m_btn_reloadUserObjects = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->m_btn_reloadDatabase = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->toolStripSeparator1 = (gcnew System::Windows::Forms::ToolStripSeparator());
@@ -78,6 +80,7 @@ namespace SMConverter
 			this->m_progressBarUpdater = (gcnew System::Windows::Forms::Timer(this->components));
 			this->m_bw_databaseLoader = (gcnew System::ComponentModel::BackgroundWorker());
 			this->m_bw_objectLoader = (gcnew System::ComponentModel::BackgroundWorker());
+			this->m_bw_objectConverter = (gcnew System::ComponentModel::BackgroundWorker());
 			this->m_menuStrip->SuspendLayout();
 			this->SuspendLayout();
 			// 
@@ -197,7 +200,7 @@ namespace SMConverter
 			// 
 			this->m_menuStrip->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
 				this->m_btn_aboutProgram,
-					this->settingsToolStripMenuItem
+					this->m_menuItem_settings
 			});
 			this->m_menuStrip->Location = System::Drawing::Point(0, 0);
 			this->m_menuStrip->Name = L"m_menuStrip";
@@ -213,15 +216,15 @@ namespace SMConverter
 			this->m_btn_aboutProgram->Text = L"About";
 			this->m_btn_aboutProgram->Click += gcnew System::EventHandler(this, &MainGui::AboutButton_Click);
 			// 
-			// settingsToolStripMenuItem
+			// m_menuItem_settings
 			// 
-			this->settingsToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(4) {
+			this->m_menuItem_settings->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(4) {
 				this->m_btn_reloadUserObjects,
 					this->m_btn_reloadDatabase, this->toolStripSeparator1, this->m_btn_options
 			});
-			this->settingsToolStripMenuItem->Name = L"settingsToolStripMenuItem";
-			this->settingsToolStripMenuItem->Size = System::Drawing::Size(61, 20);
-			this->settingsToolStripMenuItem->Text = L"Settings";
+			this->m_menuItem_settings->Name = L"m_menuItem_settings";
+			this->m_menuItem_settings->Size = System::Drawing::Size(61, 20);
+			this->m_menuItem_settings->Text = L"Settings";
 			// 
 			// m_btn_reloadUserObjects
 			// 
@@ -273,6 +276,11 @@ namespace SMConverter
 			// 
 			this->m_bw_objectLoader->DoWork += gcnew System::ComponentModel::DoWorkEventHandler(this, &MainGui::MainGui_ObjectLoader_DoWork);
 			this->m_bw_objectLoader->RunWorkerCompleted += gcnew System::ComponentModel::RunWorkerCompletedEventHandler(this, &MainGui::MainGui_ObjectLoader_RunWorkerCompleted);
+			// 
+			// m_bw_objectConverter
+			// 
+			this->m_bw_objectConverter->DoWork += gcnew System::ComponentModel::DoWorkEventHandler(this, &MainGui::MainGui_ObjectConverter_DoWork);
+			this->m_bw_objectConverter->RunWorkerCompleted += gcnew System::ComponentModel::RunWorkerCompletedEventHandler(this, &MainGui::MainGui_ObjectConverter_RunWorkerCompleted);
 			// 
 			// MainGui
 			// 
@@ -327,11 +335,19 @@ namespace SMConverter
 		System::Void UpdateSearchResults(int last_search_length);
 		System::Void MainGui_SearchBox_TextChanged(System::Object^ sender, System::EventArgs^ e);
 		System::Void UpdateConvertButton();
+		System::Void ResetProgressBar();
 
 		System::Void MainGui_ConvertTile(const std::wstring& filename, const std::wstring& path);
 		System::Void MainGui_Convert_Clicked(System::Object^ sender, System::EventArgs^ e);
 
 		std::vector<BlueprintInstance*>& GetCurrentBlueprintList();
 		std::vector<TileInstance*>& GetCurrentTileList();
+
+		System::Void ObjectConverter_ConvertBlueprint(System::Array^ conv_data, System::ComponentModel::DoWorkEventArgs^ e);
+		System::Void ObjectConverter_ConvertTile(System::Array^ conv_data, System::ComponentModel::DoWorkEventArgs^ e);
+		System::Void ObjectConverter_ConvertScript(System::Array^ conv_data, System::ComponentModel::DoWorkEventArgs^ e);
+
+		System::Void MainGui_ObjectConverter_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e);
+		System::Void MainGui_ObjectConverter_RunWorkerCompleted(System::Object^ sender, System::ComponentModel::RunWorkerCompletedEventArgs^ e);
 	};
 }
