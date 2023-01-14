@@ -16,7 +16,7 @@ TextureList DefaultLoader::LoadTextureList(const simdjson::dom::array& texList)
 
 		if (v_cur_item.is_string())
 		{
-			std::wstring v_wstr_path = new_list.GetStringRef(a);
+			std::wstring& v_wstr_path = new_list.GetStringRef(a);
 
 			v_wstr_path = String::ToWide(v_cur_item.get_string());
 			KeywordReplacer::ReplaceKeyR(v_wstr_path);
