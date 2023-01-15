@@ -1,5 +1,7 @@
 #pragma once
 
+#pragma unmanaged
+
 struct TileConverterSettings
 {
 	inline static bool Export8kGroundTextures = false;
@@ -44,3 +46,5 @@ private:
 	SharedConverterSettings(SharedConverterSettings&) = delete;
 	~SharedConverterSettings() = default;
 };
+
+#pragma managed

@@ -5,13 +5,12 @@
 #include <string>
 #include <unordered_map>
 
+#pragma unmanaged
+
 class MtlFileWriter
 {
 public:
 	static void Write(const std::wstring& path, const std::unordered_map<std::string, ObjectTexData>& v_data);
-	/*
-	std::unordered_map<std::string, ObjectTexData>
-	*/
 
 private:
 	MtlFileWriter() = default;
@@ -20,3 +19,5 @@ private:
 	MtlFileWriter(MtlFileWriter&) = delete;
 	~MtlFileWriter() = default;
 };
+
+#pragma managed

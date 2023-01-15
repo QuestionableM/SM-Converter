@@ -9,6 +9,8 @@
 
 #include "Utils\ByteImpl.hpp"
 
+#pragma unmanaged
+
 class Tile;
 
 class TilePart
@@ -43,3 +45,5 @@ public:
 	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tData) const;
 	std::size_t GetAmountOfObjects() const;
 };
+
+#pragma managed

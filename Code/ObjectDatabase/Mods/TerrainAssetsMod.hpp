@@ -2,6 +2,8 @@
 
 #include "Mod.hpp"
 
+#pragma unmanaged
+
 class TerrainAssetsMod : public Mod
 {
 	static bool GetValidAssetDatabaseFolder(const std::wstring& mod_path, std::wstring& r_asset_db);
@@ -15,3 +17,5 @@ public:
 	inline ModType Type() const override { return ModType::TerrainAssets; }
 	void LoadObjectDatabase() override;
 };
+
+#pragma managed

@@ -1,9 +1,10 @@
 #include "MtlFileWriter.hpp"
 
-
 #include "ObjectDatabase\ProgCounter.hpp"
 
 #include <fstream>
+
+#pragma unmanaged
 
 void MtlFileWriter::Write(const std::wstring& path, const std::unordered_map<std::string, ObjectTexData>& v_data)
 {

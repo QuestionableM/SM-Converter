@@ -6,6 +6,8 @@
 #include "Utils\String.hpp"
 #include "Utils\File.hpp"
 
+#pragma unmanaged
+
 static const std::wstring g_ShapeSetDbExtensions[2] = { L"json", L"shapedb" };
 bool BlocksAndPartsMod::GetShapeSetDatabaseFile(const std::wstring& mod_folder, std::wstring& r_shapedb_path)
 {

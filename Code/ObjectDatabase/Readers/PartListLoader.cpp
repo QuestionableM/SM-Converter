@@ -6,6 +6,8 @@
 
 #include "Utils\Console.hpp"
 
+#pragma unmanaged
+
 const PartListLoader::__CollisionLoaderData PartListLoader::g_collisionDataLoaders[] =
 {
 	{ "box"     , PartListLoader::LoadBoxCollision      },

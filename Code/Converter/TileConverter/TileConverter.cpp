@@ -3,8 +3,7 @@
 #include "Readers\TileReader.hpp"
 #include "Utils\File.hpp"
 
-#include <filesystem>
-namespace fs = std::filesystem;
+#pragma unmanaged
 
 constexpr const static std::wstring_view g_TileOutputDirectory = L"./ConvertedTiles";
 
@@ -30,8 +29,7 @@ void TileConv::WriteToFileInternal(Tile* pTile, const std::wstring& tile_name, C
 
 void TileConv::ConvertToModel(const std::wstring& tile_path, const std::wstring& tile_name, ConvertError& cError)
 {
-	fs::directory_entry fEntry(tile_path);
-	if (!fEntry.is_regular_file())
+	if (!File::IsRegularFile(tile_path))
 	{
 		cError = ConvertError(1, L"The specified path leads to a directory");
 		return;

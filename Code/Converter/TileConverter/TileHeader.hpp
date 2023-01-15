@@ -8,6 +8,8 @@
 #include "Converter\TileConverter\CellHeader.hpp"
 #include "Converter\ConvertError.hpp"
 
+#pragma unmanaged
+
 struct TileHeaderBaseInfo
 {
 	int version;
@@ -142,3 +144,5 @@ public:
 		return m_CellHeaders[(std::size_t)(x + y * m_data.width)];
 	}
 };
+
+#pragma managed

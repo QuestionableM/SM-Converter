@@ -8,6 +8,8 @@
 #include <gtx\quaternion.hpp>
 #include <gtx\transform.hpp>
 
+#pragma unmanaged
+
 TilePart::TilePart(Tile* parent)
 {
 	this->Parent = parent;

@@ -2,6 +2,8 @@
 
 #include <string>
 
+#pragma unmanaged
+
 class ConvertError
 {
 public:
@@ -33,3 +35,5 @@ private:
 	unsigned short m_errorCode = 0;
 	std::wstring m_errorMessage;
 };
+
+#pragma managed

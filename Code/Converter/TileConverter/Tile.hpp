@@ -4,6 +4,8 @@
 
 #include <vector>
 
+#pragma unmanaged
+
 class GroundTexture;
 
 class Tile
@@ -66,3 +68,5 @@ public:
 	void WriteToFile(const std::wstring& dir_path, const std::wstring& file_name) const;
 	void WriteMtlFile(const std::wstring& path) const;
 };
+
+#pragma managed

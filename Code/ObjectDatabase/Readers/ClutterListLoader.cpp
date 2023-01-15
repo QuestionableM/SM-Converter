@@ -7,6 +7,8 @@
 #include "Utils\Console.hpp"
 #include "Utils\String.hpp"
 
+#pragma unmanaged
+
 bool ClutterListLoader::LoadTextureData(const simdjson::dom::element& fClutter, TextureList& tList, std::wstring& mesh)
 {
 	const auto v_cl_dif = fClutter["texture"];

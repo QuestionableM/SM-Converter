@@ -4,6 +4,8 @@
 
 #include <gtx\hash.hpp>
 
+#pragma unmanaged
+
 struct WriterOffsetData
 {
 	using Vec3Iterator = typename std::unordered_map<glm::vec3, std::size_t>::const_iterator;
@@ -23,3 +25,5 @@ struct WriterOffsetData
 	WriterOffsetData(WriterOffsetData&) = delete;
 	~WriterOffsetData() = default;
 };
+
+#pragma managed
