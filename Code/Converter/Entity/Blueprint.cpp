@@ -130,6 +130,12 @@ std::size_t SMBlueprint::GetAmountOfObjects() const
 	return v_output;
 }
 
+void SMBlueprint::CalculateCenterPoint(glm::vec3& v_input) const
+{
+	for (const SMEntity* v_entity : this->Objects)
+		v_entity->CalculateCenterPoint(v_input);
+}
+
 void SMBlueprint::AddObject_Default(SMBlueprint* self, SMEntity* v_entity)
 {
 	self->Objects.push_back(v_entity);

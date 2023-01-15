@@ -39,10 +39,21 @@ void BlueprintConv::WriteToFileInternal(SMBlueprint* blueprint, const std::wstri
 			return;
 		}
 
-		ProgCounter::SetState(ProgState::WritingObjects, blueprint->GetAmountOfObjects());
+		glm::vec3 v_center_point(0.0f);
+
+		const std::size_t v_bp_object_count = blueprint->GetAmountOfObjects();
+		if (v_bp_object_count > 0) //prevent division by 0 exception
+		{
+			blueprint->CalculateCenterPoint(v_center_point);
+			v_center_point /= static_cast<float>(v_bp_object_count);
+		}
+
+		v_center_point *= blueprint->m_size;
+
+		ProgCounter::SetState(ProgState::WritingObjects, v_bp_object_count);
 
 		WriterOffsetData v_offset_data;
-		blueprint->WriteObjectToFile(v_obj_writer, v_offset_data, glm::mat4(1.0f));
+		blueprint->WriteObjectToFile(v_obj_writer, v_offset_data, glm::translate(-v_center_point));
 		v_obj_writer.close();
 	}
 

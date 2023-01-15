@@ -31,6 +31,7 @@ public:
 	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const override;
 	void WriteObjectToFile(std::ofstream& file, WriterOffsetData& mOffset, const glm::mat4& transform_matrix) const override;
 	std::size_t GetAmountOfObjects() const override;
+	void CalculateCenterPoint(glm::vec3& v_input) const override;
 
 	inline ~SMBlueprint()
 	{

@@ -16,3 +16,9 @@ void SMBody::WriteObjectToFile(std::ofstream& file, WriterOffsetData& mOffset, c
 	for (const SMEntity* v_entity : m_objects)
 		v_entity->WriteObjectToFile(file, mOffset, transform_matrix);
 }
+
+void SMBody::CalculateCenterPoint(glm::vec3& v_input) const
+{
+	for (const SMEntity* v_entity : m_objects)
+		v_entity->CalculateCenterPoint(v_input);
+}
