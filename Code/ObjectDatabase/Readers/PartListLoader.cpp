@@ -40,7 +40,7 @@ void PartListLoader::LoadCylinderCollision(const simdjson::dom::element& collisi
 	{
 		const std::string_view v_axis_str = v_axis.get_string();
 		if (v_axis_str.size() > 0)
-			v_axis_char = v_axis_str.data()[0];
+			v_axis_char = std::tolower(v_axis_str.data()[0]);
 	}
 
 	const float v_diameter_f = JsonReader::GetNumber<float>(v_diameter);
