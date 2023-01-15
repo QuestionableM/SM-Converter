@@ -380,5 +380,8 @@
     <ClInclude Include="Code\Converter\Entity\Body.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Code\Utils\GlmUnmanaged.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

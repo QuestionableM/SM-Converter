@@ -6,8 +6,6 @@
 #include "Utils\Console.hpp"
 #include "Utils\String.hpp"
 
-#include <gtx\matrix_decompose.hpp>
-
 #pragma unmanaged
 
 static char g_indexWriterBuffer[256];

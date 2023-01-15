@@ -1,0 +1,9 @@
+#pragma once
+#pragma unmanaged
+#include <gtc\matrix_transform.hpp>
+#include <gtx\matrix_decompose.hpp>
+#include <gtx\quaternion.hpp>
+#include <gtx\transform.hpp>
+#include <gtx\hash.hpp>
+#include <glm.hpp>
+#pragma managed

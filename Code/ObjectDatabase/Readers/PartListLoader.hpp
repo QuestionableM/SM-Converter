@@ -1,8 +1,7 @@
 #pragma once
 
+#include "Utils\GlmUnmanaged.hpp"
 #include "Utils\Json.hpp"
-
-#include <glm.hpp>
 
 #pragma unmanaged
 

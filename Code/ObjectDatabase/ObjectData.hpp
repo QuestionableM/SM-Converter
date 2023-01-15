@@ -1,12 +1,11 @@
 #pragma once
 
+#include "Utils\GlmUnmanaged.hpp"
 #include "Utils\Color.hpp"
 #include "Utils\Uuid.hpp"
 
 #include <unordered_map>
 #include <string>
-
-#include <glm.hpp>
 
 #pragma unmanaged
 

@@ -7,11 +7,10 @@
 #include "Utils\File.hpp"
 
 #include <filesystem>
-namespace fs = std::filesystem;
-
-#include <valve_vdf\vdf_parser.hpp>
 
 #pragma unmanaged
+
+#include <valve_vdf\vdf_parser.hpp>
 
 void DatabaseConfig::WstrArrayToJson(nlohmann::json& j_obj, const std::string& key, const std::vector<std::wstring>& r_wstr_vec)
 {
@@ -195,6 +194,8 @@ bool DatabaseConfig::GetSteamPaths(std::wstring& r_game_path, std::wstring& r_wo
 
 void DatabaseConfig::FindLocalUsers()
 {
+	namespace fs = std::filesystem;
+
 	std::wstring v_smLocalData;
 	if (!File::GetAppDataPath(v_smLocalData))
 		return;

@@ -2,11 +2,9 @@
 
 #include "Converter\TileConverter\Tile.hpp"
 
+#include "Utils\GlmUnmanaged.hpp"
 #include "Utils\Console.hpp"
 #include "Utils\String.hpp"
-
-#include <gtx\quaternion.hpp>
-#include <gtx\transform.hpp>
 
 #pragma unmanaged
 

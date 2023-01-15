@@ -11,7 +11,7 @@
 #include <assimp\Importer.hpp>
 #include <assimp\scene.h>
 
-#include <glm.hpp>
+#include "Utils\GlmUnmanaged.hpp"
 
 #pragma unmanaged
 

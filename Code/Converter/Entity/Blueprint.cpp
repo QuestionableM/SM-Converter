@@ -5,11 +5,10 @@
 #include "ObjectDatabase\ProgCounter.hpp"
 #include "ObjectDatabase\Mods\Mod.hpp"
 
+#include "Utils\GlmUnmanaged.hpp"
 #include "Utils\Console.hpp"
 #include "Utils\String.hpp"
 #include "Utils\File.hpp"
-
-#include <gtx\quaternion.hpp>
 
 #pragma unmanaged
 

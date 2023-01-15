@@ -3,14 +3,11 @@
 #include "ObjectDatabase\ObjectData.hpp"
 #include "Converter\WriterOffset.hpp"
 
+#include "Utils\GlmUnmanaged.hpp"
 #include "Utils\Color.hpp"
 #include "Utils\Uuid.hpp"
 
 #include <string>
-
-#include <gtx\quaternion.hpp>
-#include <gtx\transform.hpp>
-#include <glm.hpp>
 
 #pragma unmanaged
 

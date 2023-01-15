@@ -532,6 +532,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\Utils\Console.hpp" />
     <ClInclude Include="Code\Utils\Crypt.hpp" />
     <ClInclude Include="Code\Utils\File.hpp" />
+    <ClInclude Include="Code\Utils\GlmUnmanaged.hpp" />
     <ClInclude Include="Code\Utils\Json.hpp" />
     <ClInclude Include="Code\Utils\Memory.hpp" />
     <ClInclude Include="Code\Utils\String.hpp" />

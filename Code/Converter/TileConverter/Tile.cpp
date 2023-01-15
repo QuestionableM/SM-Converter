@@ -8,16 +8,18 @@
 #include "Converter\Entity\GroundTerrainData.hpp"
 #include "Converter\MtlFileWriter.hpp"
 
+#include "Utils\GlmUnmanaged.hpp"
 #include "Utils\WinInclude.hpp"
 #include "Utils\Console.hpp"
 #include "Utils\String.hpp"
 
+#pragma unmanaged
 #include <PerlinNoise\PerlinNoise.hpp>
-#include <gtc\matrix_transform.hpp>
+#pragma managed
+
 #include <FreeImage.h>
 
 #include <filesystem>
-namespace fs = std::filesystem;
 
 #pragma unmanaged
 
