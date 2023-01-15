@@ -16,6 +16,9 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 	mTranslatedVertices.resize(this->vertices.size());
 	mTranslatedNormals.resize (this->normals.size());
 
+	//Used by the writers
+	char v_sprintf_buffer[128];
+
 	for (std::size_t a = 0; a < this->vertices.size(); a++)
 	{
 		const glm::vec3 pVertPos = model_mat * glm::vec4(this->vertices[a], 1.0f);
@@ -27,8 +30,8 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 			offset.VertexMap.insert(std::make_pair(pVertPos, offset.Vertex));
 			offset.Vertex++;
 
-			const std::string output_str = "v " + String::FloatVecToString(&pVertPos.x, 3) + "\n";
-			file.write(output_str.c_str(), output_str.size());
+			const int v_num_chars = sprintf_s(v_sprintf_buffer, "v %g %g %g\n", pVertPos.x, pVertPos.y, pVertPos.z);
+			file.write(v_sprintf_buffer, v_num_chars);
 		}
 	}
 
@@ -43,8 +46,8 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 				offset.UvMap.insert(std::make_pair(uv, offset.Uv));
 				offset.Uv++;
 
-				const std::string output_str = "vt " + String::FloatVecToString(&uv.x, 2) + "\n";
-				file.write(output_str.c_str(), output_str.size());
+				const int v_num_chars = sprintf_s(v_sprintf_buffer, "vt %g %g\n", uv.x, uv.y);
+				file.write(v_sprintf_buffer, v_num_chars);
 			}
 		}
 	}
@@ -64,8 +67,8 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 				offset.NormalMap.insert(std::make_pair(pNormal, offset.Normal));
 				offset.Normal++;
 
-				const std::string output_str = "vn " + String::FloatVecToString(&pNormal.x, 3) + "\n";
-				file.write(output_str.c_str(), output_str.size());
+				const int v_num_chars = sprintf_s(v_sprintf_buffer, "vn %g %g %g\n", pNormal.x, pNormal.y, pNormal.z);
+				file.write(v_sprintf_buffer, v_num_chars);
 			}
 		}
 	}
