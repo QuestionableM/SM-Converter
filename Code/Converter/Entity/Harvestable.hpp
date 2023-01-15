@@ -4,10 +4,10 @@
 #include "Utils\Color.hpp"
 #include "Entity.hpp"
 
-class Harvestable : public SMEntity
+class SMHarvestable : public SMEntity
 {
 public:
-	inline Harvestable(HarvestableData* pParent, Model* pModel, const SMColor& color)
+	inline SMHarvestable(HarvestableData* pParent, Model* pModel, const SMColor& color)
 	{
 		this->m_parent = pParent;
 		this->m_uuid = pParent->Uuid;
@@ -15,9 +15,9 @@ public:
 		this->m_color = color;
 	}
 
-	Harvestable(const Harvestable&) = delete;
-	Harvestable(Harvestable&) = delete;
-	~Harvestable() = default;
+	SMHarvestable(const SMHarvestable&) = delete;
+	SMHarvestable(SMHarvestable&) = delete;
+	~SMHarvestable() = default;
 
 	inline SMColor GetColor() const override { return m_color; }
 	inline EntityType Type() const { return EntityType::Harvestable; }

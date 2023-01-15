@@ -90,7 +90,7 @@ public:
 			Model* hvs_model = ModelStorage::LoadModel(hvs_data->Mesh);
 			if (!hvs_model) continue;
 
-			Harvestable* pNewHvs = new Harvestable(hvs_data, hvs_model, f_color);
+			SMHarvestable* pNewHvs = new SMHarvestable(hvs_data, hvs_model, f_color);
 			pNewHvs->SetPosition(f_pos);
 			pNewHvs->SetRotation(f_quat);
 			pNewHvs->SetSize(f_size);

@@ -7,7 +7,7 @@
 
 #include <unordered_map>
 
-class Asset : public SMEntity
+class SMAsset : public SMEntity
 {
 	class AssetData* m_parent;
 
@@ -15,7 +15,7 @@ class Asset : public SMEntity
 	ColorMap m_colors;
 
 public:
-	inline Asset(AssetData* pParent, Model* pModel, const ColorMap& color_map)
+	inline SMAsset(AssetData* pParent, Model* pModel, const ColorMap& color_map)
 	{
 		this->m_parent = pParent;
 		this->m_uuid = pParent->Uuid;
@@ -23,9 +23,9 @@ public:
 		this->m_colors = color_map;
 	}
 
-	Asset(const Asset&) = delete;
-	Asset(Asset&&) = delete;
-	~Asset() = default;
+	SMAsset(const SMAsset&) = delete;
+	SMAsset(SMAsset&&) = delete;
+	~SMAsset() = default;
 
 	SMColor GetColor(const std::wstring& color) const;
 	inline const ColorMap& GetMaterials() const { return m_colors; }

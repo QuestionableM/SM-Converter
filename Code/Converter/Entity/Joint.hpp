@@ -4,10 +4,10 @@
 #include "Utils\Color.hpp"
 #include "Entity.hpp"
 
-class Joint : public SMEntity
+class SMJoint : public SMEntity
 {
 public:
-	inline Joint(PartData* pParent, Model* pModel, const SMColor& color, const int& xAxis, const int& zAxis, const std::size_t& index)
+	inline SMJoint(PartData* pParent, Model* pModel, const SMColor& color, const int& xAxis, const int& zAxis, const std::size_t& index)
 	{
 		this->m_parent = pParent;
 		this->m_uuid = pParent->Uuid;
@@ -18,9 +18,9 @@ public:
 		this->m_index = index;
 	}
 
-	Joint(const Joint&) = delete;
-	Joint(Joint&) = delete;
-	~Joint() = default;
+	SMJoint(const SMJoint&) = delete;
+	SMJoint(SMJoint&) = delete;
+	~SMJoint() = default;
 
 	inline std::size_t GetIndex() const override { return m_index; }
 	inline SMColor GetColor() const override { return m_color; }

@@ -6,7 +6,7 @@
 
 #include "Utils\Console.hpp"
 
-std::string Joint::GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const
+std::string SMJoint::GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const
 {
 	const SubMeshData* pSubMesh = m_model->subMeshData[mIdx];
 	const std::wstring tex_name = (m_parent->Textures.Type() == TextureDataType::SubMeshList ? std::to_wstring(mIdx) : pSubMesh->m_MaterialName);
@@ -20,7 +20,7 @@ std::string Joint::GetMtlName(const std::wstring& mat_name, const std::size_t& m
 	return m_uuid.ToString() + " " + m_color.StringHex() + " " + std::to_string(mIdx + 1) + " " + material_idx;
 }
 
-void Joint::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
+void SMJoint::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
 {
 	const std::string mtl_first_part = m_uuid.ToString() + " " + m_color.StringHex() + " ";
 	for (std::size_t a = 0; a < m_model->subMeshData.size(); a++)
@@ -44,7 +44,7 @@ void Joint::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_m
 	}
 }
 
-glm::mat4 Joint::GetTransformMatrix() const
+glm::mat4 SMJoint::GetTransformMatrix() const
 {
 	const glm::mat4 joint_rotation = Rotations::GetRotationMatrix(m_xAxis, m_zAxis);
 	const glm::vec3 pos_offset = Rotations::GetOffsetPosition(m_xAxis, m_zAxis);

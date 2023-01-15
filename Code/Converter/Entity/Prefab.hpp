@@ -3,19 +3,19 @@
 #include "Converter\WriterOffset.hpp"
 #include "Entity.hpp"
 
-class Prefab : public SMEntity
+class SMPrefab : public SMEntity
 {
 public:
-	Prefab(const Prefab&) = delete;
-	Prefab(Prefab&) = delete;
+	SMPrefab(const SMPrefab&) = delete;
+	SMPrefab(SMPrefab&) = delete;
 
-	inline Prefab(const std::wstring& path, const std::wstring& flag = L"")
+	inline SMPrefab(const std::wstring& path, const std::wstring& flag = L"")
 	{
 		this->path = path;
 		this->flag = flag;
 	}
 
-	inline ~Prefab()
+	inline ~SMPrefab()
 	{
 		for (SMEntity*& pObject : this->Objects)
 			delete pObject;

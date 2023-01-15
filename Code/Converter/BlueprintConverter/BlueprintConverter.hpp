@@ -19,17 +19,17 @@ enum : int
 
 class BlueprintConv
 {
-	static void WriteToFileInternal(Blueprint* blueprint, const std::wstring& bp_name, ConvertError& v_error);
+	static void WriteToFileInternal(SMBlueprint* blueprint, const std::wstring& bp_name, ConvertError& v_error);
 
-	static void CreateAndAddObjToCollection(Blueprint* self, const std::string& v_name, SMEntity* v_entity);
+	static void CreateAndAddObjToCollection(SMBlueprint* self, const std::string& v_name, SMEntity* v_entity);
 
-	static void BlueprintAddObject_SeparateAll(Blueprint* self, SMEntity* v_entity);
-	static void BlueprintAddObject_SeparateJoints(Blueprint* self, SMEntity* v_entity);
-	static void BlueprintAddObject_SeparateUuid(Blueprint* self, SMEntity* v_entity);
-	static void BlueprintAddObject_SeparateColor(Blueprint* self, SMEntity* v_entity);
-	static void BlueprintAddObject_SeparateUuidAndColor(Blueprint* self, SMEntity* v_entity);
+	static void BlueprintAddObject_SeparateAll(SMBlueprint* self, SMEntity* v_entity);
+	static void BlueprintAddObject_SeparateJoints(SMBlueprint* self, SMEntity* v_entity);
+	static void BlueprintAddObject_SeparateUuid(SMBlueprint* self, SMEntity* v_entity);
+	static void BlueprintAddObject_SeparateColor(SMBlueprint* self, SMEntity* v_entity);
+	static void BlueprintAddObject_SeparateUuidAndColor(SMBlueprint* self, SMEntity* v_entity);
 
-	static Blueprint::AddObjectFunction GetAddObjectFunction();
+	static SMBlueprint::AddObjectFunction GetAddObjectFunction();
 
 public:
 	static void ConvertToModel(const std::wstring& bp_path, const std::wstring& bp_name, ConvertError& v_error);

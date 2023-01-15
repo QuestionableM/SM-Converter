@@ -4,13 +4,13 @@
 #include "Utils\Color.hpp"
 #include "Entity.hpp"
 
-class Decal : public SMEntity
+class SMDecal : public SMEntity
 {
 public:
-	~Decal() = default;
-	Decal(const Decal&) = delete;
-	Decal(Decal&) = delete;
-	inline Decal(const DecalData* data_ptr, const SMColor& color)
+	~SMDecal() = default;
+	SMDecal(const SMDecal&) = delete;
+	SMDecal(SMDecal&) = delete;
+	inline SMDecal(const DecalData* data_ptr, const SMColor& color)
 	{
 		this->m_data = data_ptr;
 		this->m_color = color;

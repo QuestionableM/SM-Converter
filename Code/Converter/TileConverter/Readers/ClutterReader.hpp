@@ -119,7 +119,7 @@ public:
 			Model* pModel = ModelStorage::LoadModel(clData->Mesh);
 			if (!pModel) continue;
 
-			part->m_ClutterMap[a] = new TileClutter(clData, pModel);
+			part->m_ClutterMap[a] = new SMTileClutter(clData, pModel);
 		}
 	}
 };

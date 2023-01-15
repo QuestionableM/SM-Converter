@@ -85,7 +85,7 @@ public:
 				index++;
 			}
 
-			Blueprint* pNewBlueprint = Blueprint::LoadAutomatic(value);
+			SMBlueprint* pNewBlueprint = SMBlueprint::LoadAutomatic(value);
 			if (!pNewBlueprint) continue;
 
 			pNewBlueprint->SetPosition(f_pos);

@@ -4,7 +4,7 @@
 #include "ObjectDatabase\ModelStorage.hpp"
 #include "ObjectDatabase\ObjectData.hpp"
 
-SMColor Asset::GetColor(const std::wstring& color) const
+SMColor SMAsset::GetColor(const std::wstring& color) const
 {
 	{
 		const ColorMap::const_iterator v_iter = m_colors.find(color);
@@ -21,7 +21,7 @@ SMColor Asset::GetColor(const std::wstring& color) const
 	return SMColor(static_cast<unsigned int>(0x000000));
 }
 
-std::string Asset::GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const
+std::string SMAsset::GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const
 {
 	const std::wstring v_name = (m_parent->Textures.Type() == TextureDataType::SubMeshList ? std::to_wstring(mIdx) : mat_name);
 
@@ -38,7 +38,7 @@ std::string Asset::GetMtlName(const std::wstring& mat_name, const std::size_t& m
 	return m_uuid.ToString() + " " + v_color.StringHex() + " " + std::to_string(mIdx + 1) + " " + mat_idx;
 }
 
-void Asset::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
+void SMAsset::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
 {
 	const std::string mtl_first_part = m_uuid.ToString() + " ";
 	for (std::size_t a = 0; a < m_model->subMeshData.size(); a++)

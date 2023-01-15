@@ -23,7 +23,7 @@ public:
 
 	// Clutter
 	std::array<SignedByte, 128 * 128> m_Clutter;
-	std::array<TileClutter*, 128 * 128> m_ClutterMap;
+	std::array<SMTileClutter*, 128 * 128> m_ClutterMap;
 
 	/*
 		the 1st vector contains: harvestables, assets, prefabs and blueprints

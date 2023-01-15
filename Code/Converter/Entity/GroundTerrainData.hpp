@@ -2,7 +2,7 @@
 
 #include "Entity.hpp"
 
-class GroundTerrainData : public SMEntity
+class SMGroundTerrainData : public SMEntity
 {
 public:
 	inline EntityType Type() const override { return EntityType::GroundTerrain; }

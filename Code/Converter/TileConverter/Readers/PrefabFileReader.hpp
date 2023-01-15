@@ -22,7 +22,7 @@ class PrefabFileReader
 	PrefabFileReader() = default;
 
 public:
-	static Prefab* Read(const std::wstring& path, const std::wstring& flag)
+	static SMPrefab* Read(const std::wstring& path, const std::wstring& flag)
 	{
 		std::vector<Byte> bytes = File::ReadFileBytes(path);
 
@@ -35,7 +35,7 @@ public:
 		return PrefabFileReader::Read(bytes, path, flag);
 	}
 
-	static Prefab* Read(const std::vector<Byte>& bytes, const std::wstring& ppath, const std::wstring& pflag)
+	static SMPrefab* Read(const std::vector<Byte>& bytes, const std::wstring& ppath, const std::wstring& pflag)
 	{
 		MemoryWrapper reader(bytes);
 
@@ -47,7 +47,7 @@ public:
 			return nullptr;
 		}
 
-		Prefab* prefab = new Prefab(ppath, pflag);
+		SMPrefab* prefab = new SMPrefab(ppath, pflag);
 		
 		const int version = reader.NextObject<int, true>();
 		DebugOutL("Prefab Version: ", version);
@@ -100,7 +100,7 @@ public:
 		return prefab;
 	}
 
-	static void ReadBlueprints(BitStream& stream, Prefab* prefab, const int& count)
+	static void ReadBlueprints(BitStream& stream, SMPrefab* prefab, const int& count)
 	{
 		for (int a = 0; a < count; a++)
 		{
@@ -114,7 +114,7 @@ public:
 
 			if (TileConverterSettings::ExportBlueprints)
 			{
-				Blueprint* blueprint = Blueprint::LoadAutomatic(value);
+				SMBlueprint* blueprint = SMBlueprint::LoadAutomatic(value);
 				if (!blueprint) continue;
 
 				blueprint->SetPosition(f_pos);
@@ -125,7 +125,7 @@ public:
 		}
 	}
 
-	static void ReadPrefabs(BitStream& stream, Prefab* prefab, const int& count, const int& version)
+	static void ReadPrefabs(BitStream& stream, SMPrefab* prefab, const int& count, const int& version)
 	{
 		for (int a = 0; a < count; a++)
 		{
@@ -152,7 +152,7 @@ public:
 
 			if (TileConverterSettings::ExportPrefabs)
 			{
-				Prefab* rec_prefab = PrefabFileReader::Read(l_PrefFullPath, L"");
+				SMPrefab* rec_prefab = PrefabFileReader::Read(l_PrefFullPath, L"");
 				if (!rec_prefab) continue;
 
 				rec_prefab->SetPosition(f_pos);
@@ -164,7 +164,7 @@ public:
 		}
 	}
 
-	static void ReadNodes(BitStream& stream, Prefab* prefab, const int& count)
+	static void ReadNodes(BitStream& stream, SMPrefab* prefab, const int& count)
 	{
 		const int uVar2 = stream.ReadByte();
 		std::vector<std::string> tags = {};
@@ -215,7 +215,7 @@ public:
 		}
 	}
 
-	static void ReadAssets(BitStream& stream, Prefab* prefab, const int& count)
+	static void ReadAssets(BitStream& stream, SMPrefab* prefab, const int& count)
 	{
 		for (int a = 0; a < count; a++)
 		{
@@ -251,7 +251,7 @@ public:
 				Model* pModel = ModelStorage::LoadModel(asset_data->Mesh);
 				if (!pModel) continue;
 
-				Asset* nAsset = new Asset(asset_data, pModel, color_map);
+				SMAsset* nAsset = new SMAsset(asset_data, pModel, color_map);
 				nAsset->SetPosition(f_pos);
 				nAsset->SetRotation(f_quat);
 				nAsset->SetSize(f_size);
@@ -261,7 +261,7 @@ public:
 		}
 	}
 
-	static void ReadDecals(BitStream& stream, Prefab* prefab, const int& count, const int& version)
+	static void ReadDecals(BitStream& stream, SMPrefab* prefab, const int& count, const int& version)
 	{
 		DebugOutL("Reading ", count, " decals...");
 
@@ -282,7 +282,7 @@ public:
 				const DecalData* v_decalData = Mod::GetGlobalDecal(v_uuid);
 				if (!v_decalData) continue;
 
-				Decal* v_newDecal = new Decal(v_decalData, v_color);
+				SMDecal* v_newDecal = new SMDecal(v_decalData, v_color);
 				v_newDecal->SetPosition(v_pos);
 				v_newDecal->SetRotation(v_quat);
 				v_newDecal->SetSize(v_size);
@@ -292,17 +292,17 @@ public:
 		}
 	}
 
-	static void Read_248(BitStream& stream, Prefab* prefab, const int& count)
+	static void Read_248(BitStream& stream, SMPrefab* prefab, const int& count)
 	{
 		DebugWarningL("UNIMPLEMENTED -> ", stream.Index());
 	}
 
-	static void Read_1(BitStream& stream, Prefab* prefab, const int& count)
+	static void Read_1(BitStream& stream, SMPrefab* prefab, const int& count)
 	{
 		DebugWarningL("UNIMPLEMENTED -> ", stream.Index());
 	}
 
-	static void Read_2(BitStream& stream, Prefab* prefab, const int& count)
+	static void Read_2(BitStream& stream, SMPrefab* prefab, const int& count)
 	{
 		DebugWarningL("UNIMPLEMENTED -> ", stream.Index());
 	}

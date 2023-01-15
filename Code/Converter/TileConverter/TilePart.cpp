@@ -74,7 +74,7 @@ void TilePart::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tD
 
 	for (std::size_t a = 0; a < m_ClutterMap.size(); a++)
 	{
-		const TileClutter* pClutter = m_ClutterMap[a];
+		const SMTileClutter* pClutter = m_ClutterMap[a];
 		if (!pClutter) continue;
 
 		pClutter->FillTextureMap(tData);

@@ -4,10 +4,10 @@
 #include "Utils\Color.hpp"
 #include "Entity.hpp"
 
-class Part : public SMEntity
+class SMPart : public SMEntity
 {
 public:
-	inline Part(PartData* pParent, Model* pModel, const SMColor& color, const int& xAxis, const int& zAxis, const std::size_t& index)
+	inline SMPart(PartData* pParent, Model* pModel, const SMColor& color, const int& xAxis, const int& zAxis, const std::size_t& index)
 	{
 		this->m_parent = pParent;
 		this->m_uuid = pParent->Uuid;
@@ -18,9 +18,9 @@ public:
 		this->m_index = index;
 	}
 
-	Part(const Part&) = delete;
-	Part(Part&) = delete;
-	~Part() = default;
+	SMPart(const SMPart&) = delete;
+	SMPart(SMPart&) = delete;
+	~SMPart() = default;
 
 	inline std::size_t GetIndex() const override { return m_index; }
 	inline SMColor GetColor() const override { return this->m_color; }

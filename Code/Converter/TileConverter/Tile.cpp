@@ -115,12 +115,12 @@ std::vector<int> Tile::GetVertexColor() const
 	return vert_colors;
 }
 
-std::vector<TileClutter*> Tile::GetClutter() const
+std::vector<SMTileClutter*> Tile::GetClutter() const
 {
 	const int w = m_Width * 128;
 	const int h = m_Height * 128;
 
-	std::vector<TileClutter*> clutter_bytes = {};
+	std::vector<SMTileClutter*> clutter_bytes = {};
 	clutter_bytes.resize(static_cast<std::size_t>(w * h));
 
 	for (int y = 0; y < m_Height; y++)
@@ -350,7 +350,7 @@ void Tile::WriteTerrain(std::ofstream& model, WriterOffsetData& mOffset, const s
 	ProgCounter::SetState(ProgState::WritingGroundMesh, 0);
 
 	//Used to generate the material for ground terrain mesh
-	GroundTerrainData* v_tempTerrainData = new GroundTerrainData();
+	SMGroundTerrainData* v_tempTerrainData = new SMGroundTerrainData();
 
 	Model* terrain = this->GenerateTerrainMesh(height_map);
 	terrain->WriteToFile(glm::mat4(1.0f), mOffset, model, v_tempTerrainData);
@@ -365,7 +365,7 @@ void Tile::WriteClutter(std::ofstream& model, WriterOffsetData& mOffset, const s
 
 	DebugOutL("Writing clutter...");
 
-	std::vector<TileClutter*> tile_clutter = this->GetClutter();
+	std::vector<SMTileClutter*> tile_clutter = this->GetClutter();
 
 	const int clWidth  = m_Width  * 128;
 	const int clHeight = m_Height * 128;
@@ -390,7 +390,7 @@ void Tile::WriteClutter(std::ofstream& model, WriterOffsetData& mOffset, const s
 	{
 		for (int x = 0; x < clHeight; x++)
 		{
-			TileClutter* tClutter = tile_clutter[x + y * clWidth];
+			SMTileClutter* tClutter = tile_clutter[x + y * clWidth];
 			if (!tClutter) continue;
 
 			const float x_offset = (float)x_noise.octave2D_11((double)x * 91.42f, (double)y * 83.24f, 4) * 0.5f;

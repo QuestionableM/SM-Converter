@@ -5,7 +5,7 @@
 
 #include "Utils\Console.hpp"
 
-std::string Part::GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const
+std::string SMPart::GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const
 {
 	const SubMeshData* pSubMesh = m_model->subMeshData[mIdx];
 	const std::wstring tex_name = (m_parent->Textures.Type() == TextureDataType::SubMeshList ? std::to_wstring(mIdx) : pSubMesh->m_MaterialName);
@@ -19,7 +19,7 @@ std::string Part::GetMtlName(const std::wstring& mat_name, const std::size_t& mI
 	return m_uuid.ToString() + " " + m_color.StringHex() + " " + std::to_string(mIdx + 1) + " " + material_idx;
 }
 
-void Part::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
+void SMPart::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
 {
 	const std::string mtl_first_part = m_uuid.ToString() + " " + m_color.StringHex() + " ";
 	for (std::size_t a = 0; a < m_model->subMeshData.size(); a++)
@@ -43,7 +43,7 @@ void Part::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_ma
 	}
 }
 
-glm::mat4 Part::GetTransformMatrix() const
+glm::mat4 SMPart::GetTransformMatrix() const
 {
 	const glm::mat4 axis_rotation = Rotations::GetRotationMatrix(m_xAxis, m_zAxis);
 

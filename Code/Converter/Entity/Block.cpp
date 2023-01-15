@@ -7,14 +7,14 @@
 
 #include "Converter\ConvertSettings.hpp"
 
-std::string Block::GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const
+std::string SMBlock::GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const
 {
 	const std::string material_idx = MaterialManager::GetMaterialA(m_parent->Textures.material);
 
 	return m_uuid.ToString() + " " + m_color.StringHex() + " " + std::to_string(mIdx + 1) + " " + material_idx;
 }
 
-void Block::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
+void SMBlock::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
 {
 	const std::string mtl_name = this->GetMtlName(L"", 0);
 
@@ -140,7 +140,7 @@ void AlignUvs(Model& model, const glm::vec3& bounds, const glm::vec3& pos, const
 	model.uvs[8] += _Off5;
 }
 
-void Block::WriteObjectToFile(std::ofstream& file, WriterOffsetData& mOffset, const glm::mat4& transform_matrix) const
+void SMBlock::WriteObjectToFile(std::ofstream& file, WriterOffsetData& mOffset, const glm::mat4& transform_matrix) const
 {
 	const glm::mat4 block_matrix = transform_matrix * this->GetTransformMatrix();
 
@@ -153,7 +153,7 @@ void Block::WriteObjectToFile(std::ofstream& file, WriterOffsetData& mOffset, co
 	ProgCounter::ProgressValue++;
 }
 
-glm::mat4 Block::GetTransformMatrix() const
+glm::mat4 SMBlock::GetTransformMatrix() const
 {
 	const glm::mat4 block_matrix = Rotations::GetRotationMatrix(m_xAxis, m_zAxis);
 

@@ -2,14 +2,14 @@
 
 #include "ObjectDatabase\MaterialManager.hpp"
 
-std::string	TileClutter::GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const
+std::string	SMTileClutter::GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const
 {
 	const std::string tex_mat = MaterialManager::GetMaterialA(m_parent->Textures.material);
 
 	return m_uuid.ToString() + " " + m_color.StringHex() + " " + std::to_string(mIdx + 1) + " " + tex_mat;
 }
 
-void TileClutter::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
+void SMTileClutter::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
 {
 	const std::string mtl_name = this->GetMtlName(L"", 0);
 

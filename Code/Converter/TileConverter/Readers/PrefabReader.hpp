@@ -90,7 +90,7 @@ public:
 			const std::wstring pref_flag = String::ToWide(std::string(flag.begin(), flag.end()));
 			DebugOutL("Prefab Path: ", pref_path);
 
-			Prefab* pNewPrefab = PrefabFileReader::Read(pref_path, pref_flag);
+			SMPrefab* pNewPrefab = PrefabFileReader::Read(pref_path, pref_flag);
 			if (!pNewPrefab) continue;
 
 			pNewPrefab->SetPosition(f_pos);

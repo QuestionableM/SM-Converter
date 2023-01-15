@@ -10,7 +10,7 @@
 
 constexpr const static std::wstring_view g_BlueprintOutputDirectory = L"./ConvertedBlueprints";
 
-void BlueprintConv::WriteToFileInternal(Blueprint* blueprint, const std::wstring& bp_name, ConvertError& v_error)
+void BlueprintConv::WriteToFileInternal(SMBlueprint* blueprint, const std::wstring& bp_name, ConvertError& v_error)
 {
 	if (v_error) return;
 
@@ -61,7 +61,7 @@ void BlueprintConv::WriteToFileInternal(Blueprint* blueprint, const std::wstring
 	}
 }
 
-void BlueprintConv::CreateAndAddObjToCollection(Blueprint* self, const std::string& v_name, SMEntity* v_entity)
+void BlueprintConv::CreateAndAddObjToCollection(SMBlueprint* self, const std::string& v_name, SMEntity* v_entity)
 {
 	SMBody* v_collection = nullptr;
 
@@ -84,12 +84,12 @@ void BlueprintConv::CreateAndAddObjToCollection(Blueprint* self, const std::stri
 	BlueprintConv::BodyIndexMap.insert(std::make_pair(v_entity->GetIndex(), v_collection));
 }
 
-void BlueprintConv::BlueprintAddObject_SeparateAll(Blueprint* self, SMEntity* v_entity)
+void BlueprintConv::BlueprintAddObject_SeparateAll(SMBlueprint* self, SMEntity* v_entity)
 {
 	BlueprintConv::CreateAndAddObjToCollection(self, "Object_" + std::to_string(self->m_object_index + 1), v_entity);
 }
 
-void BlueprintConv::BlueprintAddObject_SeparateJoints(Blueprint* self, SMEntity* v_entity)
+void BlueprintConv::BlueprintAddObject_SeparateJoints(SMBlueprint* self, SMEntity* v_entity)
 {
 	if (v_entity->Type() == EntityType::Joint)
 	{
@@ -111,17 +111,17 @@ void BlueprintConv::BlueprintAddObject_SeparateJoints(Blueprint* self, SMEntity*
 	}
 }
 
-void BlueprintConv::BlueprintAddObject_SeparateUuid(Blueprint* self, SMEntity* v_entity)
+void BlueprintConv::BlueprintAddObject_SeparateUuid(SMBlueprint* self, SMEntity* v_entity)
 {
 	BlueprintConv::CreateAndAddObjToCollection(self, v_entity->GetUuid().ToString(), v_entity);
 }
 
-void BlueprintConv::BlueprintAddObject_SeparateColor(Blueprint* self, SMEntity* v_entity)
+void BlueprintConv::BlueprintAddObject_SeparateColor(SMBlueprint* self, SMEntity* v_entity)
 {
 	BlueprintConv::CreateAndAddObjToCollection(self, v_entity->GetColor().StringHex(), v_entity);
 }
 
-void BlueprintConv::BlueprintAddObject_SeparateUuidAndColor(Blueprint* self, SMEntity* v_entity)
+void BlueprintConv::BlueprintAddObject_SeparateUuidAndColor(SMBlueprint* self, SMEntity* v_entity)
 {
 	std::string v_group_name = v_entity->GetUuid().ToString();
 	v_group_name.append("_");
@@ -130,7 +130,7 @@ void BlueprintConv::BlueprintAddObject_SeparateUuidAndColor(Blueprint* self, SME
 	BlueprintConv::CreateAndAddObjToCollection(self, v_group_name, v_entity);
 }
 
-Blueprint::AddObjectFunction BlueprintConv::GetAddObjectFunction()
+SMBlueprint::AddObjectFunction BlueprintConv::GetAddObjectFunction()
 {
 	switch (BlueprintConverterSettings::SeparationType)
 	{
@@ -152,13 +152,14 @@ void BlueprintConv::ConvertToModel(const std::wstring& bp_path, const std::wstri
 		return;
 	}
 
-	Blueprint::AddObjectFunction v_add_obj_func = BlueprintConv::GetAddObjectFunction();
+	SMBlueprint::AddObjectFunction v_add_obj_func = BlueprintConv::GetAddObjectFunction();
 
-	Blueprint* v_blueprint = Blueprint::FromFileWithStatus(bp_path, v_add_obj_func, v_error);
+	SMBlueprint* v_blueprint = SMBlueprint::FromFileWithStatus(bp_path, v_add_obj_func, v_error);
 	if (v_blueprint)
 	{
 		BlueprintConv::WriteToFileInternal(v_blueprint, bp_name, v_error);
 
+		//Since all the sorted groups are attached to the blueprint, the blueprint takes care of all the allocated memory
 		delete v_blueprint;
 	}
 

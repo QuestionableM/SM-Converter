@@ -2,10 +2,10 @@
 
 #include "Entity.hpp"
 
-class Block : public SMEntity
+class SMBlock : public SMEntity
 {
 public:
-	inline Block(BlockData* pParent,
+	inline SMBlock(BlockData* pParent,
 		const glm::vec3& bounds,
 		const SMColor& color,
 		const int& xAxis,
@@ -21,9 +21,9 @@ public:
 		this->m_index = index;
 	}
 
-	Block(const Block&) = delete;
-	Block(Block&) = delete;
-	~Block() = default;
+	SMBlock(const SMBlock&) = delete;
+	SMBlock(SMBlock&) = delete;
+	~SMBlock() = default;
 
 	inline std::size_t GetIndex() const override { return m_index; }
 	inline SMColor GetColor() const override { return m_color; }

@@ -8,23 +8,23 @@
 
 #include "Utils\Json.hpp"
 
-class Blueprint : public SMEntity
+class SMBlueprint : public SMEntity
 {
 	friend class BlueprintConv;
 
-	inline Blueprint()
+	inline SMBlueprint()
 	{
 		this->m_size = glm::vec3(0.25f);
 	}
 
 public:
-	using AddObjectFunction = void (*)(Blueprint*, SMEntity*);
+	using AddObjectFunction = void (*)(SMBlueprint*, SMEntity*);
 
-	static Blueprint* LoadAutomatic(const std::string& str);
-	static Blueprint* FromFile(const std::wstring& path);
+	static SMBlueprint* LoadAutomatic(const std::string& str);
+	static SMBlueprint* FromFile(const std::wstring& path);
 	//Used by blueprint converter as it reports the conversion status
-	static Blueprint* FromFileWithStatus(const std::wstring& path, AddObjectFunction v_addObjFunc, ConvertError& v_error);
-	static Blueprint* FromJsonString(const std::string& json_str);
+	static SMBlueprint* FromFileWithStatus(const std::wstring& path, AddObjectFunction v_addObjFunc, ConvertError& v_error);
+	static SMBlueprint* FromJsonString(const std::string& json_str);
 
 	inline EntityType Type() const override { return EntityType::Blueprint; }
 	std::string GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const override;
@@ -32,7 +32,7 @@ public:
 	void WriteObjectToFile(std::ofstream& file, WriterOffsetData& mOffset, const glm::mat4& transform_matrix) const override;
 	std::size_t GetAmountOfObjects() const override;
 
-	inline ~Blueprint()
+	inline ~SMBlueprint()
 	{
 		for (SMEntity*& pObject : this->Objects)
 			delete pObject;
@@ -45,9 +45,9 @@ public:
 	std::vector<SMEntity*> Objects = {};
 
 private:
-	AddObjectFunction m_addObjectFunction = Blueprint::AddObject_Default;
+	AddObjectFunction m_addObjectFunction = SMBlueprint::AddObject_Default;
 
-	static void AddObject_Default(Blueprint* self, SMEntity* v_entity);
+	static void AddObject_Default(SMBlueprint* self, SMEntity* v_entity);
 
 	static glm::vec3 JsonToVector(const simdjson::simdjson_result<simdjson::dom::element>& vec_json);
 

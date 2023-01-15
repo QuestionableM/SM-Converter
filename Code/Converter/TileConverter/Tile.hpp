@@ -45,7 +45,7 @@ public:
 
 	std::vector<float> GetVertexHeight() const;
 	std::vector<int> GetVertexColor() const;
-	std::vector<TileClutter*> GetClutter() const;
+	std::vector<SMTileClutter*> GetClutter() const;
 	std::vector<long long> GetGround() const;
 
 private:

@@ -134,7 +134,7 @@ public:
 			Model* pModel = ModelStorage::LoadModel(asset_data->Mesh);
 			if (!pModel) continue;
 
-			Asset* pNewAsset = new Asset(asset_data, pModel, color_map);
+			SMAsset* pNewAsset = new SMAsset(asset_data, pModel, color_map);
 			pNewAsset->SetPosition(f_pos);
 			pNewAsset->SetRotation(f_quat);
 			pNewAsset->SetSize(f_size);

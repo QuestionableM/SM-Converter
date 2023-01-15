@@ -2,19 +2,19 @@
 
 #include "Entity.hpp"
 
-class TileClutter : public SMEntity
+class SMTileClutter : public SMEntity
 {
 public:
-	inline TileClutter(ClutterData* pParent, Model* pModel)
+	inline SMTileClutter(ClutterData* pParent, Model* pModel)
 	{
 		this->m_parent = pParent;
 		this->m_uuid = pParent->Uuid;
 		this->m_model = pModel;
 	}
 
-	TileClutter(TileClutter&) = delete;
-	TileClutter(const TileClutter&) = delete;
-	~TileClutter() = default;
+	SMTileClutter(SMTileClutter&) = delete;
+	SMTileClutter(const SMTileClutter&) = delete;
+	~SMTileClutter() = default;
 
 	inline const float& ScaleVariance() const { return m_parent->ScaleVariance; }
 

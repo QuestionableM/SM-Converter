@@ -6,14 +6,14 @@
 
 #include "Utils\Console.hpp"
 
-std::string Decal::GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const
+std::string SMDecal::GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const
 {
 	const std::string v_materialIdx = MaterialManager::GetMaterialA(m_data->m_textures.material);
 
 	return m_data->m_uuid.ToString() + " " + m_color.StringHex() + " " + std::to_string(mIdx + 1) + " " + v_materialIdx;
 }
 
-void Decal::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
+void SMDecal::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
 {
 	const std::string v_mtlName = this->GetMtlName(L"", 0);
 
@@ -29,7 +29,7 @@ void Decal::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_m
 	tex_map.insert(std::make_pair(v_mtlName, v_texData));
 }
 
-void Decal::WriteObjectToFile(std::ofstream& file, WriterOffsetData& mOffset, const glm::mat4& transform_matrix) const
+void SMDecal::WriteObjectToFile(std::ofstream& file, WriterOffsetData& mOffset, const glm::mat4& transform_matrix) const
 {
 	const glm::mat4 decal_matrix = transform_matrix * this->GetTransformMatrix();
 
