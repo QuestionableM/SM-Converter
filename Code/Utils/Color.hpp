@@ -5,6 +5,8 @@
 
 #include <string>
 
+#pragma unmanaged
+
 class SMColor
 {
 public:
@@ -223,3 +225,5 @@ public:
 		};
 	};
 };
+
+#pragma managed

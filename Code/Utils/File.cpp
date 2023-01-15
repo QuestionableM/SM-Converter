@@ -9,6 +9,8 @@
 #include <filesystem>
 namespace fs = std::filesystem;
 
+#pragma unmanaged
+
 std::vector<Byte> File::ReadFileBytes(const std::wstring& path)
 {
 	std::ifstream input_file(path, std::ios::binary);

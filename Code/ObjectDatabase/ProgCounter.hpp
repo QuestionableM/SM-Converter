@@ -2,6 +2,8 @@
 
 #include <string>
 
+#pragma unmanaged
+
 enum class ProgState : std::size_t
 {
 	None = 0,
@@ -49,3 +51,5 @@ public:
 	static std::wstring GetStateString();
 	static bool StateHasNumbers();
 };
+
+#pragma managed

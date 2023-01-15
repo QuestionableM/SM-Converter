@@ -2,6 +2,8 @@
 
 #include <glm.hpp>
 
+#pragma unmanaged
+
 namespace Rotations
 {
 	void InitializeRotations();
@@ -10,3 +12,5 @@ namespace Rotations
 	glm::mat4 GetRotationMatrix(const int& xAxis, const int& zAxis);
 	glm::vec3 GetOffsetPosition(const int& xAxis, const int& zAxis);
 }
+
+#pragma managed

@@ -15,6 +15,8 @@
 #include <filesystem>
 namespace fs = std::filesystem;
 
+#pragma unmanaged
+
 void DatabaseLoader::LoadGameDatabase()
 {
 	ProgCounter::SetState(ProgState::LoadingVanilla, 0);

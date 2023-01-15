@@ -8,6 +8,8 @@
 #include "Utils\Console.hpp"
 #include "Utils\File.hpp"
 
+#pragma unmanaged
+
 constexpr const static std::wstring_view g_BlueprintOutputDirectory = L"./ConvertedBlueprints";
 
 void BlueprintConv::WriteToFileInternal(SMBlueprint* blueprint, const std::wstring& bp_name, ConvertError& v_error)

@@ -6,6 +6,8 @@
 #include <vector>
 #include <string>
 
+#pragma unmanaged
+
 class DatabaseLoader
 {
 	static void LoadGameDatabase();
@@ -17,3 +19,5 @@ public:
 	static void LoadDatabase();
 	static void InitializeDatabase();
 };
+
+#pragma managed

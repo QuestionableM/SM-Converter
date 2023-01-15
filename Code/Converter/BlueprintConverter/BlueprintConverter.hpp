@@ -17,11 +17,12 @@ enum : int
 	BPObjectSep_UuidAndColor = 5
 };
 
+#pragma unmanaged
+
 class BlueprintConv
 {
 	static void WriteToFileInternal(SMBlueprint* blueprint, const std::wstring& bp_name, ConvertError& v_error);
 
-	static glm::vec3 CalculateCenterPoint(SMBlueprint* self);
 	static void CreateAndAddObjToCollection(SMBlueprint* self, const std::string& v_name, SMEntity* v_entity);
 
 	static void BlueprintAddObject_SeparateAll(SMBlueprint* self, SMEntity* v_entity);
@@ -46,3 +47,5 @@ private:
 	BlueprintConv(BlueprintConv&) = delete;
 	~BlueprintConv() = default;
 };
+
+#pragma managed

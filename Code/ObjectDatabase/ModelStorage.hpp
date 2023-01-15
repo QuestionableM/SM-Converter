@@ -13,6 +13,8 @@
 
 #include <glm.hpp>
 
+#pragma unmanaged
+
 struct VertexData
 {
 	std::size_t m_Vert;
@@ -20,8 +22,32 @@ struct VertexData
 	std::size_t m_Norm;
 };
 
+struct IndexWriterArguments
+{
+	const struct Model* m_model;
+	const struct SubMeshData* m_sub_mesh;
+	WriterOffsetData* offset;
+
+	std::vector<glm::vec3>* translated_vertices;
+	std::vector<glm::vec3>* translated_normals;
+};
+
 struct SubMeshData
 {
+	using IndexWriterFunction = void(*)(const IndexWriterArguments&, const VertexData&);
+
+	static void IndexWriter_None(const IndexWriterArguments& v_data, const VertexData& v_vert);
+	static void IndexWriter_Normals(const IndexWriterArguments& v_data, const VertexData& v_vert);
+	static void IndexWriter_Uvs(const IndexWriterArguments& v_data, const VertexData& v_vert);
+	static void IndexWriter_UvsAndNormals(const IndexWriterArguments& v_data, const VertexData& v_vert);
+
+	IndexWriterFunction GetWriterFunction() const;
+
+	inline bool IsEmpty() { return m_DataIdx.empty(); }
+
+	inline SubMeshData(const int& sub_mesh_idx) { this->m_SubMeshIdx = sub_mesh_idx; }
+	~SubMeshData() = default;
+
 	std::wstring m_MaterialName;
 	unsigned int m_SubMeshIdx;
 
@@ -29,11 +55,6 @@ struct SubMeshData
 
 	bool has_normals;
 	bool has_uvs;
-
-	inline bool IsEmpty() { return m_DataIdx.empty(); }
-
-	inline SubMeshData(const int& sub_mesh_idx) { this->m_SubMeshIdx = sub_mesh_idx; }
-	~SubMeshData() = default;
 };
 
 struct Model
@@ -76,3 +97,5 @@ public:
 
 	static void ClearStorage();
 };
+
+#pragma managed

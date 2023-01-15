@@ -11,6 +11,8 @@ namespace fs = std::filesystem;
 
 #include <valve_vdf\vdf_parser.hpp>
 
+#pragma unmanaged
+
 void DatabaseConfig::WstrArrayToJson(nlohmann::json& j_obj, const std::string& key, const std::vector<std::wstring>& r_wstr_vec)
 {
 	nlohmann::json v_strArray = nlohmann::json::array();

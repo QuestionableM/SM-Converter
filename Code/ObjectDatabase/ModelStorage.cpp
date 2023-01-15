@@ -8,6 +8,67 @@
 
 #include <gtx\matrix_decompose.hpp>
 
+#pragma unmanaged
+
+static char g_indexWriterBuffer[256];
+
+void SubMeshData::IndexWriter_None(const IndexWriterArguments& v_data, const VertexData& v_vert)
+{
+	const glm::vec3& v_vertex = (*v_data.translated_vertices)[v_vert.m_Vert];
+	const std::size_t& v_idx = v_data.offset->VertexMap.at(v_vertex);
+
+	sprintf_s(g_indexWriterBuffer, " %lld", v_idx + 1);
+}
+
+void SubMeshData::IndexWriter_Normals(const IndexWriterArguments& v_data, const VertexData& v_vert)
+{
+	const glm::vec3& v_vertex = (*v_data.translated_vertices)[v_vert.m_Vert];
+	const glm::vec3& v_normal = (*v_data.translated_normals)[v_vert.m_Norm];
+
+	const std::size_t& v_vert_idx = v_data.offset->VertexMap.at(v_vertex);
+	const std::size_t& v_norm_idx = v_data.offset->NormalMap.at(v_normal);
+
+	sprintf_s(g_indexWriterBuffer, " %lld//%lld", v_vert_idx + 1, v_norm_idx + 1);
+}
+
+void SubMeshData::IndexWriter_Uvs(const IndexWriterArguments& v_data, const VertexData& v_vert)
+{
+	const glm::vec3& v_vertex = (*v_data.translated_vertices)[v_vert.m_Vert];
+	const glm::vec2& v_uv = v_data.m_model->uvs[v_vert.m_Uv];
+
+	const std::size_t& v_vert_idx = v_data.offset->VertexMap.at(v_vertex);
+	const std::size_t& v_uv_idx = v_data.offset->UvMap.at(v_uv);
+
+	sprintf_s(g_indexWriterBuffer, " %lld/%lld", v_vert_idx + 1, v_uv_idx + 1);
+}
+
+void SubMeshData::IndexWriter_UvsAndNormals(const IndexWriterArguments& v_data, const VertexData& v_vert)
+{
+	const glm::vec3& v_vertex = (*v_data.translated_vertices)[v_vert.m_Vert];
+	const glm::vec2& v_uv = v_data.m_model->uvs[v_vert.m_Uv];
+	const glm::vec3& v_normal = (*v_data.translated_normals)[v_vert.m_Norm];
+
+	const std::size_t& v_vert_idx = v_data.offset->VertexMap.at(v_vertex);
+	const std::size_t& v_uv_idx = v_data.offset->UvMap.at(v_uv);
+	const std::size_t& v_norm_idx = v_data.offset->NormalMap.at(v_normal);
+
+	sprintf_s(g_indexWriterBuffer, " %lld/%lld/%lld", v_vert_idx + 1, v_uv_idx + 1, v_norm_idx + 1);
+}
+
+SubMeshData::IndexWriterFunction SubMeshData::GetWriterFunction() const
+{
+	const static SubMeshData::IndexWriterFunction v_writer_functions[4] =
+	{
+		SubMeshData::IndexWriter_None,
+		SubMeshData::IndexWriter_Normals,
+		SubMeshData::IndexWriter_Uvs,
+		SubMeshData::IndexWriter_UvsAndNormals
+	};
+
+	const int v_func_idx = static_cast<int>(this->has_normals) | (static_cast<int>(this->has_uvs) << 1);
+	return v_writer_functions[v_func_idx];
+}
+
 void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, std::ofstream& file, const SMEntity* pEntity)
 {
 	std::vector<glm::vec3> mTranslatedVertices = {};
@@ -73,9 +134,16 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 		}
 	}
 
+	IndexWriterArguments v_idx_writer_arg;
+	v_idx_writer_arg.m_model = this;
+	v_idx_writer_arg.offset = &offset;
+	v_idx_writer_arg.translated_normals = &mTranslatedNormals;
+	v_idx_writer_arg.translated_vertices = &mTranslatedVertices;
+
 	for (std::size_t mIdx = 0; mIdx < this->subMeshData.size(); mIdx++)
 	{
 		const SubMeshData* pSubMesh = this->subMeshData[mIdx];
+		v_idx_writer_arg.m_sub_mesh = pSubMesh;
 
 		if (pEntity != nullptr && SharedConverterSettings::ExportMaterials)
 		{
@@ -83,42 +151,21 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 			file.write(mtl_name.c_str(), mtl_name.size());
 		}
 
+		SubMeshData::IndexWriterFunction v_writer_func = pSubMesh->GetWriterFunction();
+
 		for (std::size_t a = 0; a < pSubMesh->m_DataIdx.size(); a++)
 		{
-			std::string _f_str = "f";
+			std::string v_idx_str = "f";
 
 			const std::vector<VertexData>& vert_vec = pSubMesh->m_DataIdx[a];
 			for (std::size_t b = 0; b < vert_vec.size(); b++)
 			{
-				const VertexData& d_idx = vert_vec[b];
-
-				const glm::vec3& l_Vertex = mTranslatedVertices[d_idx.m_Vert];
-				const WriterOffsetData::Vec3Iterator v_vert_iter = offset.VertexMap.find(l_Vertex);
-				if (v_vert_iter != offset.VertexMap.end())
-					_f_str.append(" " + std::to_string(v_vert_iter->second + 1));
-
-				if (!pSubMesh->has_uvs && !pSubMesh->has_normals) continue;
-
-				_f_str.append("/");
-
-				if (pSubMesh->has_uvs)
-				{
-					const WriterOffsetData::Vec2Iterator v_uv_iter = offset.UvMap.find(this->uvs[d_idx.m_Uv]);
-					if (v_uv_iter != offset.UvMap.end())
-						_f_str.append(std::to_string(v_uv_iter->second + 1));
-				}
-
-				if (pSubMesh->has_normals)
-				{
-					const glm::vec3& l_Normal = mTranslatedNormals[d_idx.m_Norm];
-					const WriterOffsetData::Vec3Iterator v_norm_iter = offset.NormalMap.find(l_Normal);
-					if (v_norm_iter != offset.NormalMap.end())
-						_f_str.append("/" + std::to_string(v_norm_iter->second + 1));
-				}
+				v_writer_func(v_idx_writer_arg, vert_vec[b]);
+				v_idx_str.append(g_indexWriterBuffer);
 			}
 
-			_f_str.append("\n");
-			file.write(_f_str.c_str(), _f_str.size());
+			v_idx_str.append("\n");
+			file.write(v_idx_str.c_str(), v_idx_str.size());
 		}
 	}
 }
