@@ -7,6 +7,8 @@
 
 #include <unordered_map>
 
+#pragma unmanaged
+
 enum : int
 {
 	BPObjectSep_None         = 0,
@@ -17,7 +19,6 @@ enum : int
 	BPObjectSep_UuidAndColor = 5
 };
 
-#pragma unmanaged
 
 class BlueprintConv
 {

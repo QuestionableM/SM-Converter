@@ -8,6 +8,8 @@
 
 #include "Utils\Json.hpp"
 
+#pragma unmanaged
+
 class SMBlueprint : public SMEntity
 {
 	friend class BlueprintConv;
@@ -64,3 +66,5 @@ private:
 	std::size_t m_object_index = 0;
 	std::size_t m_body_index = 0;
 };
+
+#pragma managed

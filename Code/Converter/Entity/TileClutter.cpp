@@ -2,6 +2,8 @@
 
 #include "ObjectDatabase\MaterialManager.hpp"
 
+#pragma unmanaged
+
 std::string	SMTileClutter::GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const
 {
 	const std::string tex_mat = MaterialManager::GetMaterialA(m_parent->Textures.material);

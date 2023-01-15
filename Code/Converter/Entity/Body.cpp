@@ -2,6 +2,8 @@
 
 #include <fstream>
 
+#pragma unmanaged
+
 void SMBody::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
 {
 	for (const SMEntity* v_entity : m_objects)

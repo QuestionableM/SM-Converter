@@ -5,6 +5,8 @@
 #include <vector>
 #include <string>
 
+#pragma unmanaged
+
 class SMBody : public SMEntity
 {
 public:
@@ -35,3 +37,5 @@ private:
 	std::string m_body_name;
 	std::vector<SMEntity*> m_objects = {};
 };
+
+#pragma managed

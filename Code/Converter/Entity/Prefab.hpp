@@ -3,6 +3,8 @@
 #include "Converter\WriterOffset.hpp"
 #include "Entity.hpp"
 
+#pragma unmanaged
+
 class SMPrefab : public SMEntity
 {
 public:
@@ -46,3 +48,5 @@ private:
 	//This vector contains blueprints, prefabs and assets
 	std::vector<SMEntity*> Objects = {};
 };
+
+#pragma managed

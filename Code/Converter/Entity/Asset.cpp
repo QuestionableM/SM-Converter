@@ -4,6 +4,8 @@
 #include "ObjectDatabase\ModelStorage.hpp"
 #include "ObjectDatabase\ObjectData.hpp"
 
+#pragma unmanaged
+
 SMColor SMAsset::GetColor(const std::wstring& color) const
 {
 	{

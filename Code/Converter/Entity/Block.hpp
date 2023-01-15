@@ -2,6 +2,8 @@
 
 #include "Entity.hpp"
 
+#pragma unmanaged
+
 class SMBlock : public SMEntity
 {
 public:
@@ -41,3 +43,5 @@ private:
 	int m_zAxis;
 	std::size_t m_index;
 };
+
+#pragma managed
