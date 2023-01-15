@@ -29,7 +29,11 @@ enum class ProgState : std::size_t
 
 	FillingGndNor = 18,
 	SamplingGndNor = 19,
-	WritingGndNor = 20
+	WritingGndNor = 20,
+
+	ParsingBlueprint = 21,
+	ReadingBlueprintParts = 22,
+	ReadingBlueprintJoints = 23
 };
 
 class ProgCounter

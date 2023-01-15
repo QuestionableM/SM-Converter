@@ -10,22 +10,27 @@
 
 class Blueprint : public SMEntity
 {
+	friend class BlueprintConv;
+
 	inline Blueprint()
 	{
 		this->m_size = glm::vec3(0.25f);
 	}
 
 public:
+	using AddObjectFunction = void (*)(Blueprint*, SMEntity*);
+
 	static Blueprint* LoadAutomatic(const std::string& str);
 	static Blueprint* FromFile(const std::wstring& path);
-	static Blueprint* FromFileErrorChecked(const std::wstring& path, void (*v_addObjFunc)(Blueprint*, SMEntity*), ConvertError& v_error);
+	//Used by blueprint converter as it reports the conversion status
+	static Blueprint* FromFileWithStatus(const std::wstring& path, AddObjectFunction v_addObjFunc, ConvertError& v_error);
 	static Blueprint* FromJsonString(const std::string& json_str);
 
 	inline EntityType Type() const override { return EntityType::Blueprint; }
 	std::string GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const override;
 	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const override;
 	void WriteObjectToFile(std::ofstream& file, WriterOffsetData& mOffset, const glm::mat4& transform_matrix) const override;
-	inline std::size_t GetAmountOfObjects() const override { return this->Objects.size(); }
+	std::size_t GetAmountOfObjects() const override;
 
 	inline ~Blueprint()
 	{
@@ -40,12 +45,21 @@ public:
 	std::vector<SMEntity*> Objects = {};
 
 private:
-	void (*m_addObjectFunction)(Blueprint*, SMEntity*) = Blueprint::AddObject_Default;
+	AddObjectFunction m_addObjectFunction = Blueprint::AddObject_Default;
 
 	static void AddObject_Default(Blueprint* self, SMEntity* v_entity);
 
 	static glm::vec3 JsonToVector(const simdjson::simdjson_result<simdjson::dom::element>& vec_json);
 
+	void LoadChild(const simdjson::dom::element& v_child);
+	void LoadJoint(const simdjson::dom::element& v_jnt);
+
+	void LoadBodiesWithCounter(const simdjson::dom::element& v_blueprint);
+	void LoadJointsWithCounter(const simdjson::dom::element& v_blueprint);
+
 	void LoadBodies(const simdjson::dom::element& pJson);
 	void LoadJoints(const simdjson::dom::element& pJson);
+
+	std::size_t m_object_index = 0;
+	std::size_t m_body_index = 0;
 };

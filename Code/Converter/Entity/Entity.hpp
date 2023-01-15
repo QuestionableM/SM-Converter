@@ -66,6 +66,7 @@ public:
 	inline void SetModel(Model* model) { this->m_model = model; }
 
 	virtual EntityType Type() const = 0;
+	virtual std::size_t GetIndex() const { return -1; }
 	virtual std::string GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const = 0;
 	virtual void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const = 0;
 	virtual void WriteObjectToFile(std::ofstream& file, WriterOffsetData& mOffset, const glm::mat4& transform_matrix) const;

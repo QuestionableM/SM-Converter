@@ -38,7 +38,7 @@ static const StateData StateDataArray[] =
 
 	{ L"Success!",       false },
 	{ L"Convert Failed", false },
-	
+
 	{ L"Filling Ground Dif Texture...",   false },
 	{ L"Sampling Ground Dif Texture... ", true  },
 	{ L"Writing Ground Dif Texture...",   false },
@@ -49,7 +49,11 @@ static const StateData StateDataArray[] =
 
 	{ L"Filling Ground Nor Texture...",   false },
 	{ L"Sampling Ground Nor Texture... ", true  },
-	{ L"Writing Ground Nor Texture...",   false }
+	{ L"Writing Ground Nor Texture...",   false },
+
+	{ L"Parsing Blueprint...", false },
+	{ L"Reading Parts...",     true  },
+	{ L"Reading Joints...",    true  }
 };
 
 std::wstring ProgCounter::GetStateString()
