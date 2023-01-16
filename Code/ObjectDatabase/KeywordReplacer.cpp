@@ -62,14 +62,7 @@ void KeywordReplacer::UpgradeResource(const std::wstring& mPath, std::wstring& m
 	String::ReplaceAllR(v_lowerPath, L'\\', L'/');
 
 	const StringMap::const_iterator v_iter = m_ResourceUpgrades.find(v_lowerPath);
-	if (v_iter != m_ResourceUpgrades.end())
-	{
-		mOutput = v_iter->second;
-	}
-	else
-	{
-		mOutput = v_lowerPath;
-	}
+	mOutput = (v_iter != m_ResourceUpgrades.end()) ? v_iter->second : v_lowerPath;
 }
 
 void KeywordReplacer::LoadResourceUpgradesFromConfig()
