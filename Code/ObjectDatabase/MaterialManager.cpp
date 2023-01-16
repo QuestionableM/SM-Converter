@@ -20,8 +20,10 @@ void MaterialManager::Initialize()
 	{
 		if (!v_object.value.is_string()) continue;
 
-		const std::wstring v_key = String::ToWide(v_object.key);
-		const std::wstring v_value = String::ToWide(v_object.value.get_string());
+		const std::string v_key(v_object.key.data(), v_object.key.size());
+
+		const std::string_view v_value_view = v_object.value.get_string();
+		const std::string v_value(v_value_view.data(), v_value_view.size());
 
 		if (m_materialStorage.find(v_key) != m_materialStorage.end())
 			continue;
@@ -30,18 +32,18 @@ void MaterialManager::Initialize()
 	}
 }
 
-std::wstring MaterialManager::GetMaterialW(const std::wstring& mat_name)
+std::string MaterialManager::GetMaterialA(const std::string& mat_name)
 {
-	const MaterialMap::const_iterator iter = m_materialStorage.find(mat_name);
-	if (iter != m_materialStorage.end())
-		return L"m" + iter->second;
+	const MaterialMap::const_iterator v_iter = m_materialStorage.find(mat_name);
+	if (v_iter != m_materialStorage.end())
+		return "m" + v_iter->second;
 
 	DebugOutL("Couldn't find the specified material: ", mat_name);
 
-	return L"m1";
+	return "m1";
 }
 
-std::string MaterialManager::GetMaterialA(const std::wstring& mat_name)
+std::wstring MaterialManager::GetMaterialW(const std::string& mat_name)
 {
-	return String::ToUtf8(MaterialManager::GetMaterialW(mat_name));
+	return String::ToWide(MaterialManager::GetMaterialA(mat_name));
 }

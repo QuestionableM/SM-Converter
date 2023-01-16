@@ -35,7 +35,9 @@ bool DefaultLoader::LoadSubMeshDataEntry(const simdjson::dom::element& v_item, S
 		return false;
 
 	SMTextureList* v_newEntry = new SMTextureList();
-	v_newEntry->material = String::ToWide(v_material.get_string());
+
+	const std::string_view v_mat_view = v_material.get_string();
+	v_newEntry->material = std::string(v_mat_view.data(), v_mat_view.size());
 
 	const auto v_custom_prop = v_item["custom"];
 	if (v_custom_prop.is_object())

@@ -21,7 +21,7 @@ bool ClutterListLoader::LoadTextureData(const simdjson::dom::element& fClutter, 
 	tList.dif = KeywordReplacer::ReplaceKey(v_cl_dif_wstr);
 
 	const auto v_cl_material = fClutter["material"];
-	tList.material = (v_cl_material.is_string() ? String::ToWide(v_cl_material.get_string()) : L"GroundVegetation");
+	tList.material = (v_cl_material.is_string() ? v_cl_material.get_c_str() : "GroundVegetation");
 
 	const std::wstring v_cl_mesh_wstr = String::ToWide(v_cl_mesh.get_string());
 	mesh = KeywordReplacer::ReplaceKey(v_cl_mesh_wstr);

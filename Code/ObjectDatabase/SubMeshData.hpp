@@ -19,7 +19,7 @@ public:
 	std::wstring asg;
 	std::wstring nor;
 
-	std::wstring material;
+	std::string material;
 	std::string def_color_idx;
 	bool is_shadow_only = false;
 

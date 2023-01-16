@@ -36,14 +36,14 @@ void BlockListLoader::GetBlockMaterial(const simdjson::dom::element& block, SMTe
 
 	if (v_glass.is_bool() && v_glass.get_bool() == true)
 	{
-		tex.material = L"BlockGlass";
+		tex.material = "BlockGlass";
 	}
 	else
 	{
-		tex.material = L"BlockDifAsgNor";
+		tex.material = "BlockDifAsgNor";
 
 		if (v_alpha.is_bool() && v_alpha.get_bool() == true)
-			tex.material.append(L"Alpha");
+			tex.material.append("Alpha");
 	}
 }
 

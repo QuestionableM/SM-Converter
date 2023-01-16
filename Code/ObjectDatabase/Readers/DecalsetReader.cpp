@@ -60,7 +60,8 @@ void DecalsetReader::LoadFromFile(const std::wstring& path, Mod* mod)
 			continue;
 		}
 
-		v_texList.material = String::ToWide(v_material.get_string());
+		const std::string_view v_mat_view = v_material.get_string();
+		v_texList.material = std::string(v_mat_view.data(), v_mat_view.size());
 
 		DecalData* v_new_decal = new DecalData();
 		v_new_decal->m_name = std::string(v_decal.key.data(), v_decal.key.size());
