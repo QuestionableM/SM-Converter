@@ -58,12 +58,8 @@ bool KeywordReplacer::ContentKeyExists()
 
 void KeywordReplacer::UpgradeResource(const std::wstring& mPath, std::wstring& mOutput)
 {
-	std::wstring v_lowerPath = mPath;
-
-	{
-		String::ToLowerR(v_lowerPath);
-		String::ReplaceAllR(v_lowerPath, L'\\', L'/');
-	}
+	std::wstring v_lowerPath = String::ToLower(mPath);
+	String::ReplaceAllR(v_lowerPath, L'\\', L'/');
 
 	const StringMap::const_iterator v_iter = m_ResourceUpgrades.find(v_lowerPath);
 	if (v_iter != m_ResourceUpgrades.end())
@@ -80,6 +76,10 @@ void KeywordReplacer::LoadResourceUpgradesFromConfig()
 {
 	for (const std::wstring& v_upgrades_path : DatabaseConfig::ResourceUpgradeFiles)
 		KeywordReplacer::LoadResourceUpgrades(v_upgrades_path);
+
+	//Nonor normal textures look weird in blender, so i'm just gonna skip em by replacing the string with nothing
+	m_ResourceUpgrades[L"$game_data/textures/nonor_nor.png"] = L"";
+	m_ResourceUpgrades[L"$game_data/textures/nonor_nor.tga"] = L"";
 }
 
 void KeywordReplacer::LoadResourceUpgrades(const std::wstring& path)
