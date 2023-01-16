@@ -9,7 +9,7 @@
 
 #pragma unmanaged
 
-void AssetListLoader::LoadDefaultColors(const simdjson::dom::element& jAsset, std::unordered_map<std::wstring, SMColor>& def_colors)
+void AssetListLoader::LoadDefaultColors(const simdjson::dom::element& jAsset, std::unordered_map<std::string, SMColor>& def_colors)
 {
 	const auto v_def_colors = jAsset["defaultColors"];
 	if (!v_def_colors.is_object()) return;
@@ -24,7 +24,7 @@ void AssetListLoader::LoadDefaultColors(const simdjson::dom::element& jAsset, st
 			? std::string(v_str_view.data(), v_str_view.size())
 			: "000000";
 
-		const std::wstring v_key_str = String::ToWide(v_def_col_obj.key);
+		const std::string v_key_str(v_def_col_obj.key.data(), v_def_col_obj.key.size());
 		if (def_colors.find(v_key_str) != def_colors.end())
 			continue;
 
@@ -54,18 +54,18 @@ void AssetListLoader::Load(const simdjson::dom::element& fAssets, Mod* mod)
 		}
 
 		std::wstring v_tMesh;
-		TextureData v_tData;
-		if (!DefaultLoader::LoadRenderable(v_cur_asset, v_tData, v_tMesh))
+		SMSubMeshBase* v_tData;
+		if (!DefaultLoader::LoadRenderable(v_cur_asset, &v_tData, v_tMesh))
 			continue;
 
 		AssetData* v_new_asset = new AssetData();
-		v_new_asset->Uuid = v_asset_uuid;
-		v_new_asset->Mesh = v_tMesh;
-		AssetListLoader::LoadDefaultColors(v_cur_asset, v_new_asset->DefaultColors);
-		v_new_asset->Textures = v_tData;
-		v_new_asset->pMod = mod;
+		v_new_asset->m_uuid = v_asset_uuid;
+		v_new_asset->m_mesh = v_tMesh;
+		AssetListLoader::LoadDefaultColors(v_cur_asset, v_new_asset->m_defaultColors);
+		v_new_asset->m_textures = v_tData;
+		v_new_asset->m_mod = mod;
 
-		const auto v_new_pair = std::make_pair(v_new_asset->Uuid, v_new_asset);
+		const auto v_new_pair = std::make_pair(v_new_asset->m_uuid, v_new_asset);
 
 		mod->m_Assets.insert(v_new_pair);
 		Mod::AssetStorage.insert(v_new_pair);

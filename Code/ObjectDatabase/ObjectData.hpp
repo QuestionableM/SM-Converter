@@ -1,5 +1,7 @@
 #pragma once
 
+#include "SubMeshData.hpp"
+
 #include "Utils\GlmUnmanaged.hpp"
 #include "Utils\Color.hpp"
 #include "Utils\Uuid.hpp"
@@ -9,55 +11,16 @@
 
 #pragma unmanaged
 
-enum class TextureDataType
-{
-	SubMeshList,
-	SubMeshMap,
-	None
-};
-
-class TextureList
-{
-public:
-	std::wstring dif;
-	std::wstring asg;
-	std::wstring nor;
-
-	std::wstring material;
-	std::wstring def_color_idx;
-
-	std::wstring& GetStringRef(const std::size_t& idx);
-
-	TextureList() = default;
-	~TextureList() = default;
-};
-
-class TextureData
-{
-	std::unordered_map<std::wstring, TextureList> MaterialMap = {};
-	TextureDataType type = TextureDataType::None;
-
-public:
-	void AddEntry(const std::wstring& name, const TextureList& tex_list);
-	bool GetEntry(const std::wstring& name, TextureList& list_ref) const;
-
-	TextureDataType Type() const;
-
-	TextureData() = default;
-	TextureData(const TextureDataType& type);
-	~TextureData() = default;
-};
-
 class Mod;
 
 class AssetData
 {
 public:
-	SMUuid Uuid;
-	std::unordered_map<std::wstring, SMColor> DefaultColors;
-	TextureData Textures;
-	Mod* pMod;
-	std::wstring Mesh;
+	SMUuid m_uuid;
+	std::unordered_map<std::string, SMColor> m_defaultColors;
+	SMSubMeshBase* m_textures;
+	Mod* m_mod;
+	std::wstring m_mesh;
 
 	AssetData() = default;
 	AssetData(const AssetData&) = delete;
@@ -68,10 +31,10 @@ public:
 class HarvestableData
 {
 public:
-	SMUuid Uuid;
-	TextureData Textures;
-	Mod* pMod;
-	std::wstring Mesh;
+	SMUuid m_uuid;
+	SMSubMeshBase* m_textures;
+	Mod* m_mod;
+	std::wstring m_mesh;
 
 	HarvestableData() = default;
 	HarvestableData(const HarvestableData&) = delete;
@@ -82,11 +45,11 @@ public:
 class BlockData
 {
 public:
-	SMUuid Uuid;
-	TextureList Textures;
-	Mod* pMod;
-	SMColor DefaultColor;
-	int Tiling;
+	SMUuid m_uuid;
+	SMTextureList m_textures;
+	Mod* m_mod;
+	SMColor m_defaultColor;
+	int m_tiling;
 
 	BlockData() = default;
 	BlockData(const BlockData&) = delete;
@@ -97,12 +60,12 @@ public:
 class PartData
 {
 public:
-	SMUuid Uuid;
-	TextureData Textures;
-	SMColor DefaultColor;
-	glm::vec3 Bounds;
-	std::wstring Mesh;
-	Mod* pMod;
+	SMUuid m_uuid;
+	SMSubMeshBase* m_textures;
+	SMColor m_defaultColor;
+	glm::vec3 m_bounds;
+	std::wstring m_mesh;
+	Mod* m_mod;
 
 	PartData() = default;
 	PartData(const PartData&) = delete;
@@ -113,13 +76,13 @@ public:
 class ClutterData
 {
 public:
-	SMUuid Uuid;
-	TextureList Textures;
-	std::wstring Mesh;
-	float Height;
-	float ScaleVariance;
-	bool GroundNormal;
-	Mod* pMod;
+	SMUuid m_uuid;
+	SMTextureList m_textures;
+	std::wstring m_mesh;
+	float m_height;
+	float m_scaleVariance;
+	bool m_groundNormal;
+	Mod* m_mod;
 
 	ClutterData() = default;
 	ClutterData(const ClutterData&) = delete;
@@ -132,7 +95,7 @@ class DecalData
 public:
 	std::string m_name;
 	SMUuid m_uuid;
-	TextureList m_textures;
+	SMTextureList m_textures;
 	int m_ranges[4];
 	Mod* m_mod;
 

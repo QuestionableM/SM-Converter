@@ -5,10 +5,8 @@
 
 #pragma unmanaged
 
-TextureList DefaultLoader::LoadTextureList(const simdjson::dom::array& texList)
+void DefaultLoader::LoadTextureList(const simdjson::dom::array& texList, SMTextureList* v_tex_list)
 {
-	TextureList new_list;
-
 	const int v_arr_sz = static_cast<int>(texList.size());
 	const int v_list_sz = (v_arr_sz > 3 ? 3 : v_arr_sz);
 
@@ -18,80 +16,82 @@ TextureList DefaultLoader::LoadTextureList(const simdjson::dom::array& texList)
 
 		if (v_cur_item.is_string())
 		{
-			std::wstring& v_wstr_path = new_list.GetStringRef(a);
+			std::wstring& v_wstr_path = v_tex_list->GetStringRef(a);
 
 			v_wstr_path = String::ToWide(v_cur_item.get_string());
 			KeywordReplacer::ReplaceKeyR(v_wstr_path);
 		}
 	}
-
-	return new_list;
 }
 
-void DefaultLoader::AddSubMesh(const simdjson::dom::element& subMesh, TextureData& tData, const std::wstring& idx)
+bool DefaultLoader::LoadSubMeshDataEntry(const simdjson::dom::element& v_item, SMTextureList** v_sub_mesh)
 {
-	const auto v_tex_list = subMesh["textureList"];
-	if (!v_tex_list.is_array()) return;
+	const auto v_material = v_item["material"];
+	const auto v_tex_list_obj = v_item["textureList"];
 
-	TextureList v_new_tList = DefaultLoader::LoadTextureList(v_tex_list.get_array());
+	if (!(v_material.is_string() && v_tex_list_obj.is_array()))
+		return false;
 
-	const auto v_custom_prop = subMesh["custom"];
-	if (v_custom_prop.is_object())
-	{
-		const auto v_def_col_idx = v_custom_prop["color"];
-		if (v_def_col_idx.is_string())
-			v_new_tList.def_color_idx = String::ToWide(v_def_col_idx.get_string());
-	}
+	SMTextureList* v_newEntry = new SMTextureList();
+	v_newEntry->material = String::ToWide(v_material.get_string());
 
-	const auto v_mat_name = subMesh["material"];
-	if (v_mat_name.is_string())
-		v_new_tList.material = String::ToWide(v_mat_name.get_string());
+	DefaultLoader::LoadTextureList(v_tex_list_obj.value_unsafe(), v_newEntry);
 
-	tData.AddEntry(idx, v_new_tList);
+	(*v_sub_mesh) = v_newEntry;
+	return true;
 }
 
-bool DefaultLoader::LoadTextureData(const simdjson::dom::element& jLodList, TextureData& tData)
+bool DefaultLoader::TryLoadSubMeshList(const simdjson::dom::element& lod_item, SMSubMeshBase** v_sub_mesh)
 {
-	const auto v_sub_mesh_list_obj = jLodList["subMeshList"];
-	if (v_sub_mesh_list_obj.is_array())
+	const auto v_sub_mesh_list_obj = lod_item["subMeshList"];
+	if (!v_sub_mesh_list_obj.is_array())
+		return false;
+
+	std::size_t v_idx = 0;
+	SMSubMeshList* v_subMeshList = new SMSubMeshList();
+
+	for (const auto v_sub_mesh_item : v_sub_mesh_list_obj.get_array())
 	{
-		std::size_t _idx = 0;
-		tData = TextureData(TextureDataType::SubMeshList);
+		if (!v_sub_mesh_item.is_object()) continue;
 
-		for (const auto v_sub_mesh_item : v_sub_mesh_list_obj.get_array())
-		{
-			if (!v_sub_mesh_item.is_object()) continue;
+		const auto v_idx_json = v_sub_mesh_item["idx"];
+		const std::size_t v_cur_idx = (v_idx_json.is_number() ? JsonReader::GetNumber<std::size_t>(v_idx_json) : v_idx);
 
-			const auto v_idx = v_sub_mesh_item["idx"];
-			std::size_t v_cur_idx = (v_idx.is_number() ? JsonReader::GetNumber<std::size_t>(v_idx) : _idx);
+		SMTextureList* v_newTexData;
+		if (DefaultLoader::LoadSubMeshDataEntry(v_sub_mesh_item, &v_newTexData))
+			v_subMeshList->AddTexList("", v_cur_idx, v_newTexData);
 
-			DefaultLoader::AddSubMesh(v_sub_mesh_item, tData, std::to_wstring(v_cur_idx));
-			_idx++;
-		}
-
-		return true;
+		v_idx++;
 	}
 
-	const auto v_sub_mesh_map_obj = jLodList["subMeshMap"];
-	if (v_sub_mesh_map_obj.is_object())
-	{
-		tData = TextureData(TextureDataType::SubMeshMap);
-
-		for (const auto v_sub_mesh_item : v_sub_mesh_map_obj.get_object())
-		{
-			if (!v_sub_mesh_item.value.is_object()) continue;
-
-			const std::wstring v_sub_mesh_name = String::ToWide(v_sub_mesh_item.key);
-			DefaultLoader::AddSubMesh(v_sub_mesh_item.value, tData, v_sub_mesh_name);
-		}
-
-		return true;
-	}
-
-	return false;
+	(*v_sub_mesh) = v_subMeshList;
+	return true;
 }
 
-bool DefaultLoader::LoadRenderableData(const simdjson::dom::element& jRenderable, TextureData& tData, std::wstring& mesh)
+bool DefaultLoader::TryLoadSubMeshMap(const simdjson::dom::element& lod_item, SMSubMeshBase** v_sub_mesh)
+{
+	const auto v_sub_mesh_map_obj = lod_item["subMeshMap"];
+	if (!v_sub_mesh_map_obj.is_object())
+		return false;
+
+	SMSubMeshMap* v_subMeshMap = new SMSubMeshMap();
+
+	for (const auto v_sub_mesh_item : v_sub_mesh_map_obj.get_object())
+	{
+		if (!v_sub_mesh_item.value.is_object()) continue;
+
+		const std::string v_sub_mesh_name(v_sub_mesh_item.key.data(), v_sub_mesh_item.key.size());
+
+		SMTextureList* v_newTexData;
+		if (DefaultLoader::LoadSubMeshDataEntry(v_sub_mesh_item.value, &v_newTexData))
+			v_subMeshMap->AddTexList(v_sub_mesh_name, 0, v_newTexData);
+	}
+
+	(*v_sub_mesh) = v_subMeshMap;
+	return true;
+}
+
+bool DefaultLoader::LoadRenderableData(const simdjson::dom::element& jRenderable, SMSubMeshBase** tData, std::wstring& mesh)
 {
 	const auto v_lod_list_obj = jRenderable["lodList"];
 	if (!v_lod_list_obj.is_array())
@@ -105,8 +105,11 @@ bool DefaultLoader::LoadRenderableData(const simdjson::dom::element& jRenderable
 	if (!v_lod_list0.is_object())
 		return false;
 
-	if (!DefaultLoader::LoadTextureData(v_lod_list0.value_unsafe(), tData))
-		return false;
+	if (!DefaultLoader::TryLoadSubMeshList(v_lod_list0.value_unsafe(), tData))
+	{
+		if (!DefaultLoader::TryLoadSubMeshMap(v_lod_list0.value_unsafe(), tData))
+			return false;
+	}
 
 	const auto v_mesh_path = v_lod_list0["mesh"];
 	if (!v_mesh_path.is_string())
@@ -118,7 +121,7 @@ bool DefaultLoader::LoadRenderableData(const simdjson::dom::element& jRenderable
 	return true;
 }
 
-bool DefaultLoader::LoadRenderable(const simdjson::dom::element& jAsset, TextureData& tData, std::wstring& mesh)
+bool DefaultLoader::LoadRenderable(const simdjson::dom::element& jAsset, SMSubMeshBase** tData, std::wstring& mesh)
 {
 	const auto v_rend_data = jAsset["renderable"];
 	if (v_rend_data.error() != simdjson::SUCCESS)

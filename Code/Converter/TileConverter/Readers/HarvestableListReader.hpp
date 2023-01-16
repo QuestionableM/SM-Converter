@@ -87,7 +87,7 @@ public:
 			HarvestableData* hvs_data = Mod::GetGlobalHarvestbale(f_uuid);
 			if (!hvs_data) continue;
 
-			Model* hvs_model = ModelStorage::LoadModel(hvs_data->Mesh);
+			Model* hvs_model = ModelStorage::LoadModel(hvs_data->m_mesh);
 			if (!hvs_model) continue;
 
 			SMHarvestable* pNewHvs = new SMHarvestable(hvs_data, hvs_model, f_color);

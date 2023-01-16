@@ -13,8 +13,8 @@
 
 struct ObjectTexData
 {
-	TextureList Textures;
-	SMColor TexColor;
+	SMTextureList m_textures;
+	SMColor m_tex_color;
 };
 
 struct Model;
@@ -66,7 +66,7 @@ public:
 
 	virtual EntityType Type() const = 0;
 	virtual std::size_t GetIndex() const { return -1; }
-	virtual std::string GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const = 0;
+	virtual std::string GetMtlName(const std::string& mat_name, const std::size_t& mIdx) const = 0;
 	virtual void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const = 0;
 	virtual void WriteObjectToFile(std::ofstream& file, WriterOffsetData& mOffset, const glm::mat4& transform_matrix) const;
 	inline virtual void CalculateCenterPoint(glm::vec3& v_input) const { v_input += m_position; }

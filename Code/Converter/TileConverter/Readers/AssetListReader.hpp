@@ -100,7 +100,7 @@ public:
 				index += 0x10;
 			}
 
-			std::unordered_map<std::wstring, SMColor> color_map;
+			std::unordered_map<std::string, SMColor> color_map;
 
 			int bVar4 = (int)memory.Object<Byte>(index++) & 0xff;
 			if (bVar4 != 0)
@@ -112,13 +112,13 @@ public:
 					bVar4 = (int)memory.Object<Byte>(index++) & 0xff;
 					const std::vector<char> str_vec = memory.Objects<char>(index, bVar4);
 
-					const std::wstring wstr_data = String::ToWide(std::string(str_vec.begin(), str_vec.end()));
+					const std::string v_str_data = std::string(str_vec.begin(), str_vec.end());
 					index += bVar4;
 					const unsigned int color = memory.Object<unsigned int>(index);
 					index += 4;
 
-					if (color_map.find(wstr_data) == color_map.end())
-						color_map.insert(std::make_pair(wstr_data, color));
+					if (color_map.find(v_str_data) == color_map.end())
+						color_map.insert(std::make_pair(v_str_data, color));
 				}
 			}
 
@@ -131,7 +131,7 @@ public:
 			AssetData* asset_data = Mod::GetGlobalAsset(f_uuid);
 			if (!asset_data) continue;
 
-			Model* pModel = ModelStorage::LoadModel(asset_data->Mesh);
+			Model* pModel = ModelStorage::LoadModel(asset_data->m_mesh);
 			if (!pModel) continue;
 
 			SMAsset* pNewAsset = new SMAsset(asset_data, pModel, color_map);

@@ -84,9 +84,6 @@
     <ClCompile Include="Code\ObjectDatabase\ModelStorage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Code\ObjectDatabase\ObjectData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Code\ObjectDatabase\ObjectDatabase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -381,6 +378,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Code\Utils\GlmUnmanaged.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\ObjectDatabase\SubMeshData.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

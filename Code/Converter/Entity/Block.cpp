@@ -9,23 +9,23 @@
 
 #pragma unmanaged
 
-std::string SMBlock::GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const
+std::string SMBlock::GetMtlName(const std::string& mat_name, const std::size_t& mIdx) const
 {
-	const std::string material_idx = MaterialManager::GetMaterialA(m_parent->Textures.material);
+	const std::string material_idx = MaterialManager::GetMaterialA(m_parent->m_textures.material);
 
 	return m_uuid.ToString() + " " + m_color.StringHex() + " " + std::to_string(mIdx + 1) + " " + material_idx;
 }
 
 void SMBlock::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
 {
-	const std::string mtl_name = this->GetMtlName(L"", 0);
+	const std::string mtl_name = this->GetMtlName("", 0);
 
 	if (tex_map.find(mtl_name) != tex_map.end())
 		return;
 
 	ObjectTexData oTexData;
-	oTexData.Textures = m_parent->Textures;
-	oTexData.TexColor = this->m_color;
+	oTexData.m_textures = m_parent->m_textures;
+	oTexData.m_tex_color = this->m_color;
 
 	tex_map.insert(std::make_pair(mtl_name, oTexData));
 }
@@ -148,7 +148,7 @@ void SMBlock::WriteObjectToFile(std::ofstream& file, WriterOffsetData& mOffset, 
 
 	Model new_block;
 	FillCustomCube(new_block, m_size / 2.0f);
-	AlignUvs(new_block, m_size / 2.0f, m_position, m_parent->Tiling);
+	AlignUvs(new_block, m_size / 2.0f, m_position, m_parent->m_tiling);
 
 	new_block.WriteToFile(block_matrix, mOffset, file, this);
 

@@ -782,13 +782,13 @@ void Tile::WriteMtlFile(const std::wstring& path) const
 
 	{
 		ObjectTexData v_tileGroundTextureData;
-		v_tileGroundTextureData.TexColor = 0xffffff;
+		v_tileGroundTextureData.m_tex_color = 0xffffff;
 
 		if (TileConverterSettings::ExportGroundTextures)
 		{
-			v_tileGroundTextureData.Textures.dif = L"./GroundTexture_Dif.jpg";
-			v_tileGroundTextureData.Textures.asg = L"./GroundTexture_Asg.jpg";
-			v_tileGroundTextureData.Textures.nor = L"./GroundTexture_Nor.jpg";
+			v_tileGroundTextureData.m_textures.dif = L"./GroundTexture_Dif.jpg";
+			v_tileGroundTextureData.m_textures.asg = L"./GroundTexture_Asg.jpg";
+			v_tileGroundTextureData.m_textures.nor = L"./GroundTexture_Nor.jpg";
 		}
 
 		tData["TileGroundTerrain"] = v_tileGroundTextureData;

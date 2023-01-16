@@ -116,7 +116,7 @@ public:
 			ClutterData* clData = Mod::GetGlobalClutterById(cur_byte);
 			if (!clData) continue;
 
-			Model* pModel = ModelStorage::LoadModel(clData->Mesh);
+			Model* pModel = ModelStorage::LoadModel(clData->m_mesh);
 			if (!pModel) continue;
 
 			part->m_ClutterMap[a] = new SMTileClutter(clData, pModel);

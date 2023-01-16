@@ -15,7 +15,7 @@ public:
 		const std::size_t& index)
 	{
 		this->m_parent = pParent;
-		this->m_uuid = pParent->Uuid;
+		this->m_uuid = pParent->m_uuid;
 		this->m_bounds = bounds;
 		this->m_color = color;
 		this->m_xAxis = xAxis;
@@ -30,7 +30,7 @@ public:
 	inline std::size_t GetIndex() const override { return m_index; }
 	inline SMColor GetColor() const override { return m_color; }
 	inline EntityType Type() const override { return EntityType::Block; }
-	std::string GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const override;
+	std::string GetMtlName(const std::string& mat_name, const std::size_t& mIdx) const override;
 	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const override;
 	void WriteObjectToFile(std::ofstream& file, WriterOffsetData& mOffset, const glm::mat4& transform_matrix) const override;
 	glm::mat4 GetTransformMatrix() const override;

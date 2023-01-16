@@ -228,7 +228,7 @@ public:
 			const SMUuid uuid = stream.ReadUuid();
 			const int materialCount = stream.ReadByte();
 
-			std::unordered_map<std::wstring, SMColor> color_map;
+			std::unordered_map<std::string, SMColor> color_map;
 
 			if (materialCount != 0)
 			{
@@ -237,11 +237,10 @@ public:
 					const int length = stream.ReadByte();
 					const std::string str = stream.ReadString(length);
 
-					const std::wstring wstr = String::ToWide(str);
 					const unsigned int color = stream.ReadInt();
 
-					if (color_map.find(wstr) == color_map.end())
-						color_map.insert(std::make_pair(wstr, color));
+					if (color_map.find(str) == color_map.end())
+						color_map.insert(std::make_pair(str, color));
 				}
 			}
 
@@ -250,7 +249,7 @@ public:
 				AssetData* asset_data = Mod::GetGlobalAsset(uuid);
 				if (!asset_data) continue;
 
-				Model* pModel = ModelStorage::LoadModel(asset_data->Mesh);
+				Model* pModel = ModelStorage::LoadModel(asset_data->m_mesh);
 				if (!pModel) continue;
 
 				SMAsset* nAsset = new SMAsset(asset_data, pModel, color_map);

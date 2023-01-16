@@ -8,11 +8,12 @@
 class DefaultLoader
 {
 public:
-	static TextureList LoadTextureList(const simdjson::dom::array& texList);
-	static void AddSubMesh(const simdjson::dom::element& subMesh, TextureData& tData, const std::wstring& idx);
-	static bool LoadTextureData(const simdjson::dom::element& jLodList, TextureData& tData);
-	static bool LoadRenderableData(const simdjson::dom::element& jRenderable, TextureData& tData, std::wstring& mesh);
-	static bool LoadRenderable(const simdjson::dom::element& jAsset, TextureData& tData, std::wstring& mesh);
+	static void LoadTextureList(const simdjson::dom::array& texList, SMTextureList* v_tex_list);
+	static bool LoadSubMeshDataEntry(const simdjson::dom::element& v_item, SMTextureList** v_sub_mesh);
+	static bool TryLoadSubMeshList(const simdjson::dom::element& lod_item, SMSubMeshBase** v_sub_mesh);
+	static bool TryLoadSubMeshMap(const simdjson::dom::element& lod_item, SMSubMeshBase** v_sub_mesh);
+	static bool LoadRenderableData(const simdjson::dom::element& jRenderable, SMSubMeshBase** tData, std::wstring& mesh);
+	static bool LoadRenderable(const simdjson::dom::element& jAsset, SMSubMeshBase** tData, std::wstring& mesh);
 };
 
 #pragma managed

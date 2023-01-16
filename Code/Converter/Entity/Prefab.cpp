@@ -4,7 +4,7 @@
 
 #pragma unmanaged
 
-std::string SMPrefab::GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const
+std::string SMPrefab::GetMtlName(const std::string& mat_name, const std::size_t& mIdx) const
 {
 	return "PREFAB_NOT_IMPLEMENTED";
 }

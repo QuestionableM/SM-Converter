@@ -48,7 +48,7 @@ struct SubMeshData
 	inline SubMeshData(const int& sub_mesh_idx) { this->m_SubMeshIdx = sub_mesh_idx; }
 	~SubMeshData() = default;
 
-	std::wstring m_MaterialName;
+	std::string m_MaterialName;
 	unsigned int m_SubMeshIdx;
 
 	std::vector<std::vector<VertexData>> m_DataIdx;

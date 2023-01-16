@@ -6,7 +6,7 @@
 
 #pragma unmanaged
 
-SMColor SMAsset::GetColor(const std::wstring& color) const
+SMColor SMAsset::GetColor(const std::string& color) const
 {
 	{
 		const ColorMap::const_iterator v_iter = m_colors.find(color);
@@ -15,29 +15,27 @@ SMColor SMAsset::GetColor(const std::wstring& color) const
 	}
 
 	{
-		const ColorMap::const_iterator v_iter = m_parent->DefaultColors.find(color);
-		if (v_iter != m_parent->DefaultColors.end())
+		const ColorMap::const_iterator v_iter = m_parent->m_defaultColors.find(color);
+		if (v_iter != m_parent->m_defaultColors.end())
 			return v_iter->second;
 	}
 
 	return SMColor(static_cast<unsigned int>(0x000000));
 }
 
-std::string SMAsset::GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const
+std::string SMAsset::GetMtlName(const std::string& mat_name, const std::size_t& mIdx) const
 {
-	const std::wstring v_name = (m_parent->Textures.Type() == TextureDataType::SubMeshList ? std::to_wstring(mIdx) : mat_name);
-
-	std::string mat_idx = "m1";
+	std::string v_mat_idx = "m1";
 	SMColor v_color;
 
-	TextureList tList;
-	if (m_parent->Textures.GetEntry(v_name, tList))
+	const SMTextureList* v_tex_list = m_parent->m_textures->GetTexList(mat_name, mIdx);
+	if (v_tex_list)
 	{
-		v_color = this->GetColor(tList.def_color_idx);
-		mat_idx = MaterialManager::GetMaterialA(tList.material);
+		v_color = this->GetColor(v_tex_list->def_color_idx);
+		v_mat_idx = MaterialManager::GetMaterialA(v_tex_list->material);
 	}
 
-	return m_uuid.ToString() + " " + v_color.StringHex() + " " + std::to_string(mIdx + 1) + " " + mat_idx;
+	return m_uuid.ToString() + " " + v_color.StringHex() + " " + std::to_string(mIdx + 1) + " " + v_mat_idx;
 }
 
 void SMAsset::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
@@ -46,20 +44,20 @@ void SMAsset::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex
 	for (std::size_t a = 0; a < m_model->subMeshData.size(); a++)
 	{
 		const SubMeshData* pSubMesh = m_model->subMeshData[a];
-		const std::wstring tex_name = (m_parent->Textures.Type() == TextureDataType::SubMeshList ? std::to_wstring(a) : pSubMesh->m_MaterialName);
+		const SMTextureList* v_tex_list = m_parent->m_textures->GetTexList(pSubMesh->m_MaterialName, a);
+		if (!v_tex_list) continue;
 
-		ObjectTexData oTexData;
-		if (m_parent->Textures.GetEntry(tex_name, oTexData.Textures))
-		{
-			oTexData.TexColor = this->GetColor(oTexData.Textures.def_color_idx);
+		const SMColor v_color = this->GetColor(v_tex_list->def_color_idx);
+		const std::string v_mat_idx = MaterialManager::GetMaterialA(v_tex_list->material);
+		const std::string v_mtl_name = mtl_first_part + v_color.StringHex() + " " + std::to_string(a + 1) + " " + v_mat_idx;
 
-			const std::string mat_idx = MaterialManager::GetMaterialA(oTexData.Textures.material);
-			const std::string mtl_name = mtl_first_part + oTexData.TexColor.StringHex() + " " + std::to_string(a + 1) + " " + mat_idx;
+		if (tex_map.find(v_mtl_name) != tex_map.end())
+			continue;
 
-			if (tex_map.find(mtl_name) != tex_map.end())
-				continue;
+		ObjectTexData v_obj_tex_data;
+		v_obj_tex_data.m_textures = *v_tex_list;
+		v_obj_tex_data.m_tex_color = v_color;
 
-			tex_map.insert(std::make_pair(mtl_name, oTexData));
-		}
+		tex_map.insert(std::make_pair(v_mtl_name, v_obj_tex_data));
 	}
 }

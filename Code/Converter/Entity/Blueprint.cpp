@@ -102,7 +102,7 @@ SMBlueprint* SMBlueprint::FromJsonString(const std::string& json_str)
 	return nBlueprint;
 }
 
-std::string SMBlueprint::GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const
+std::string SMBlueprint::GetMtlName(const std::string& mat_name, const std::size_t& mIdx) const
 {
 	return "BLUEPRINT_MTL_NAME_NOT_NEEDED";
 }
@@ -198,7 +198,7 @@ void SMBlueprint::LoadChild(const simdjson::dom::element& v_child)
 		PartData* v_prt_data = Mod::GetGlobalPart(v_obj_uuid);
 		if (!v_prt_data) return;
 
-		Model* v_prt_model = ModelStorage::LoadModel(v_prt_data->Mesh);
+		Model* v_prt_model = ModelStorage::LoadModel(v_prt_data->m_mesh);
 		if (!v_prt_model) return;
 
 		SMPart* v_new_prt = new SMPart(v_prt_data, v_prt_model, v_obj_color, v_xAxisInt, v_zAxisInt, m_object_index);
@@ -232,7 +232,7 @@ void SMBlueprint::LoadJoint(const simdjson::dom::element& v_jnt)
 	PartData* v_jnt_data = Mod::GetGlobalPart(v_jnt_uuid);
 	if (!v_jnt_data) return;
 
-	Model* v_jnt_model = ModelStorage::LoadModel(v_jnt_data->Mesh);
+	Model* v_jnt_model = ModelStorage::LoadModel(v_jnt_data->m_mesh);
 	if (!v_jnt_model) return;
 
 	SMJoint* v_new_jnt = new SMJoint(v_jnt_data, v_jnt_model, v_jnt_color, v_xAxisInt, v_zAxisInt, v_child_idx);

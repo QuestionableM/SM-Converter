@@ -11,7 +11,7 @@
 #pragma unmanaged
 
 static const std::string blkTexNames[3] = { "dif", "asg", "nor" };
-bool BlockListLoader::GetBlockTextures(const simdjson::dom::element& block, TextureList& tex)
+bool BlockListLoader::GetBlockTextures(const simdjson::dom::element& block, SMTextureList& tex)
 {
 	for (int a = 0; a < 3; a++)
 	{
@@ -29,7 +29,7 @@ bool BlockListLoader::GetBlockTextures(const simdjson::dom::element& block, Text
 	return (!tex.dif.empty() || !tex.asg.empty() || !tex.nor.empty());
 }
 
-void BlockListLoader::GetBlockMaterial(const simdjson::dom::element& block, TextureList& tex)
+void BlockListLoader::GetBlockMaterial(const simdjson::dom::element& block, SMTextureList& tex)
 {
 	const auto v_glass = block["glass"];
 	const auto v_alpha = block["alpha"];
@@ -71,7 +71,7 @@ void BlockListLoader::Load(const simdjson::dom::element& fBlocks, Mod* mod)
 			continue;
 		}
 
-		TextureList v_tList;
+		SMTextureList v_tList;
 		if (!BlockListLoader::GetBlockTextures(v_blk, v_tList)) continue;
 		BlockListLoader::GetBlockMaterial(v_blk, v_tList);
 
@@ -79,13 +79,14 @@ void BlockListLoader::Load(const simdjson::dom::element& fBlocks, Mod* mod)
 		if (v_blk_tiling > 16 || v_blk_tiling <= 0) v_blk_tiling = 4;
 
 		BlockData* v_new_blk = new BlockData();
-		v_new_blk->Uuid = v_blk_uuid;
-		v_new_blk->Textures = v_tList;
-		v_new_blk->Tiling = v_blk_tiling;
-		v_new_blk->DefaultColor = (v_color.is_string() ? v_color.get_c_str() : "375000");
-		v_new_blk->pMod = mod;
+		v_new_blk->m_uuid = v_blk_uuid;
+		v_new_blk->m_textures = v_tList;
+		v_new_blk->m_tiling = v_blk_tiling;
+		v_new_blk->m_defaultColor = (v_color.is_string() ? v_color.get_c_str() : "375000");
+		v_new_blk->m_mod = mod;
 
-		const auto v_new_pair = std::make_pair(v_new_blk->Uuid, v_new_blk);
+		const auto v_new_pair = std::make_pair(v_new_blk->m_uuid, v_new_blk);
+
 		Mod::BlockStorage.insert(v_new_pair);
 		mod->m_Blocks.insert(v_new_pair);
 

@@ -216,8 +216,7 @@ void ModelStorage::LoadMaterialName(const aiScene*& scene, const aiMesh*& mesh, 
 	aiString cMatName;
 	cMeshMat->Get(AI_MATKEY_NAME, cMatName);
 
-	const std::string cStrMatName = std::string(cMatName.C_Str(), cMatName.length);
-	sub_mesh->m_MaterialName = String::ToWide(cStrMatName);
+	sub_mesh->m_MaterialName = std::string(cMatName.C_Str(), cMatName.length);
 }
 
 void ModelStorage::LoadIndices(const aiMesh*& mesh, Model*& model, SubMeshData*& sub_mesh)

@@ -10,7 +10,7 @@ public:
 	inline SMTileClutter(ClutterData* pParent, Model* pModel)
 	{
 		this->m_parent = pParent;
-		this->m_uuid = pParent->Uuid;
+		this->m_uuid = pParent->m_uuid;
 		this->m_model = pModel;
 	}
 
@@ -18,12 +18,12 @@ public:
 	SMTileClutter(const SMTileClutter&) = delete;
 	~SMTileClutter() = default;
 
-	inline const float& ScaleVariance() const { return m_parent->ScaleVariance; }
+	inline const float& ScaleVariance() const { return m_parent->m_scaleVariance; }
 
 	inline void SetColor(const SMColor& color) { this->m_color = color; }
 
 	inline EntityType Type() const override { return EntityType::Clutter; }
-	std::string GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const override;
+	std::string GetMtlName(const std::string& mat_name, const std::size_t& mIdx) const override;
 	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const override;
 
 private:

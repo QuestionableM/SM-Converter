@@ -107,19 +107,20 @@ void PartListLoader::Load(const simdjson::dom::element& fParts, Mod* mod)
 		}
 
 		std::wstring v_mesh_path;
-		TextureData v_tex_data;
-		if (!DefaultLoader::LoadRenderable(v_prt, v_tex_data, v_mesh_path))
+		SMSubMeshBase* v_tex_data;
+		if (!DefaultLoader::LoadRenderable(v_prt, &v_tex_data, v_mesh_path))
 			continue;
 
 		PartData* v_new_part = new PartData();
-		v_new_part->Mesh = v_mesh_path;
-		v_new_part->Textures = v_tex_data;
-		v_new_part->Uuid = v_prt_uuid;
-		v_new_part->pMod = mod;
-		v_new_part->DefaultColor = (v_color.is_string() ? v_color.get_c_str() : "375000");
-		v_new_part->Bounds = PartListLoader::LoadPartCollision(v_prt);
+		v_new_part->m_mesh = v_mesh_path;
+		v_new_part->m_textures = v_tex_data;
+		v_new_part->m_uuid = v_prt_uuid;
+		v_new_part->m_mod = mod;
+		v_new_part->m_defaultColor = (v_color.is_string() ? v_color.get_c_str() : "375000");
+		v_new_part->m_bounds = PartListLoader::LoadPartCollision(v_prt);
 
-		const auto v_new_pair = std::make_pair(v_new_part->Uuid, v_new_part);
+		const auto v_new_pair = std::make_pair(v_new_part->m_uuid, v_new_part);
+
 		Mod::PartStorage.insert(v_new_pair);
 		mod->m_Parts.insert(v_new_pair);
 

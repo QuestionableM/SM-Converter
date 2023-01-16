@@ -30,17 +30,18 @@ void HarvestableListLoader::Load(const simdjson::dom::element& fHarvestables, Mo
 		}
 
 		std::wstring v_tMesh;
-		TextureData v_tData;
-		if (!DefaultLoader::LoadRenderable(v_hvs, v_tData, v_tMesh))
+		SMSubMeshBase* v_tData;
+		if (!DefaultLoader::LoadRenderable(v_hvs, &v_tData, v_tMesh))
 			continue;
 
 		HarvestableData* v_new_hvs = new HarvestableData();
-		v_new_hvs->Uuid = v_hvs_uuid;
-		v_new_hvs->Mesh = v_tMesh;
-		v_new_hvs->Textures = v_tData;
-		v_new_hvs->pMod = mod;
+		v_new_hvs->m_uuid = v_hvs_uuid;
+		v_new_hvs->m_mesh = v_tMesh;
+		v_new_hvs->m_textures = v_tData;
+		v_new_hvs->m_mod = mod;
 
-		const auto v_new_pair = std::make_pair(v_new_hvs->Uuid, v_new_hvs);
+		const auto v_new_pair = std::make_pair(v_new_hvs->m_uuid, v_new_hvs);
+
 		mod->m_Harvestables.insert(v_new_pair);
 		Mod::HarvestableStorage.insert(v_new_pair);
 

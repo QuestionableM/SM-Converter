@@ -12,7 +12,7 @@ public:
 	inline SMHarvestable(HarvestableData* pParent, Model* pModel, const SMColor& color)
 	{
 		this->m_parent = pParent;
-		this->m_uuid = pParent->Uuid;
+		this->m_uuid = pParent->m_uuid;
 		this->m_model = pModel;
 		this->m_color = color;
 	}
@@ -23,7 +23,7 @@ public:
 
 	inline SMColor GetColor() const override { return m_color; }
 	inline EntityType Type() const { return EntityType::Harvestable; }
-	std::string GetMtlName(const std::wstring& mat_name, const std::size_t& mIdx) const override;
+	std::string GetMtlName(const std::string& mat_name, const std::size_t& mIdx) const override;
 	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const override;
 
 private:

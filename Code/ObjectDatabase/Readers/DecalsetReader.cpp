@@ -30,7 +30,7 @@ void DecalsetReader::LoadFromFile(const std::wstring& path, Mod* mod)
 	if (!v_decal_list.is_object())
 		return;
 
-	TextureList v_texList;
+	SMTextureList v_texList;
 	GetWstringFromDecalset(v_root, "difSheet", v_texList.dif);
 	GetWstringFromDecalset(v_root, "asgSheet", v_texList.asg);
 	GetWstringFromDecalset(v_root, "norSheet", v_texList.nor);
