@@ -113,11 +113,11 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 
 	if (SharedConverterSettings::ExportNormals)
 	{
-		const glm::mat4 rot_matrix(model_mat[0], model_mat[1], model_mat[2], glm::highp_vec4(0.0f, 0.0f, 0.0f, 1.0f));
+		const glm::mat3 v_rot_matrix(model_mat);
 
 		for (std::size_t a = 0; a < this->normals.size(); a++)
 		{
-			const glm::vec3 pNormal = rot_matrix * glm::vec4(this->normals[a], 1.0f);
+			const glm::vec3 pNormal = v_rot_matrix * this->normals[a];
 
 			mTranslatedNormals[a] = pNormal;
 
