@@ -21,6 +21,7 @@ public:
 
 	std::wstring material;
 	std::string def_color_idx;
+	bool is_shadow_only = false;
 
 	std::wstring& GetStringRef(const std::size_t& idx)
 	{

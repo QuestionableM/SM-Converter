@@ -4,11 +4,6 @@
 
 #pragma unmanaged
 
-std::string SMPrefab::GetMtlName(const std::string& mat_name, const std::size_t& mIdx) const
-{
-	return "PREFAB_NOT_IMPLEMENTED";
-}
-
 void SMPrefab::WriteObjectToFile(std::ofstream& file, WriterOffsetData& mOffset, const glm::mat4& transform_matrix) const
 {
 	const glm::mat4 prefab_matrix = transform_matrix * this->GetTransformMatrix();

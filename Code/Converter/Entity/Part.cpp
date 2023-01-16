@@ -54,3 +54,11 @@ glm::mat4 SMPart::GetTransformMatrix() const
 
 	return model_matrix;
 }
+
+bool SMPart::GetCanWrite(const std::string& name, const std::size_t& v_idx) const
+{
+	const SMTextureList* v_tex_list = m_parent->m_textures->GetTexList(name, v_idx);
+	if (!v_tex_list) return false;
+
+	return !v_tex_list->is_shadow_only;
+}

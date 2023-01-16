@@ -141,13 +141,21 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 	for (std::size_t mIdx = 0; mIdx < this->subMeshData.size(); mIdx++)
 	{
 		const SubMeshData* pSubMesh = this->subMeshData[mIdx];
-		v_idx_writer_arg.m_sub_mesh = pSubMesh;
 
-		if (pEntity != nullptr && SharedConverterSettings::ExportMaterials)
+		if (pEntity != nullptr)
 		{
-			const std::string mtl_name = "usemtl " + pEntity->GetMtlName(pSubMesh->m_MaterialName, mIdx) + "\n";
-			file.write(mtl_name.c_str(), mtl_name.size());
+			//Skip writing the sub mesh if entity doesn't allow it
+			if (!pEntity->GetCanWrite(pSubMesh->m_MaterialName, mIdx))
+				continue;
+
+			if (SharedConverterSettings::ExportMaterials)
+			{
+				const std::string v_mtl_name = "usemtl " + pEntity->GetMtlName(pSubMesh->m_MaterialName, mIdx) + "\n";
+				file.write(v_mtl_name.c_str(), v_mtl_name.size());
+			}
 		}
+
+		v_idx_writer_arg.m_sub_mesh = pSubMesh;
 
 		SubMeshData::IndexWriterFunction v_writer_func = pSubMesh->GetWriterFunction();
 

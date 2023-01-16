@@ -1,6 +1,8 @@
 #include "DefaultLoader.hpp"
 
 #include "ObjectDatabase\KeywordReplacer.hpp"
+
+#include "Utils\Console.hpp"
 #include "Utils\String.hpp"
 
 #pragma unmanaged
@@ -34,6 +36,22 @@ bool DefaultLoader::LoadSubMeshDataEntry(const simdjson::dom::element& v_item, S
 
 	SMTextureList* v_newEntry = new SMTextureList();
 	v_newEntry->material = String::ToWide(v_material.get_string());
+
+	const auto v_custom_prop = v_item["custom"];
+	if (v_custom_prop.is_object())
+	{
+		const auto v_def_col_idx = v_custom_prop["color"];
+		if (v_def_col_idx.is_string())
+		{
+			const std::string_view v_col_view = v_def_col_idx.get_string();
+			v_newEntry->def_color_idx = std::string(v_col_view.data(), v_col_view.size());
+		}
+
+		const auto v_shadow_only_mode = v_custom_prop["shadowOnly"];
+		if (v_shadow_only_mode.is_bool())
+			v_newEntry->is_shadow_only = v_shadow_only_mode.get_bool();
+	}
+
 
 	DefaultLoader::LoadTextureList(v_tex_list_obj.value_unsafe(), v_newEntry);
 

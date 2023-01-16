@@ -102,11 +102,6 @@ SMBlueprint* SMBlueprint::FromJsonString(const std::string& json_str)
 	return nBlueprint;
 }
 
-std::string SMBlueprint::GetMtlName(const std::string& mat_name, const std::size_t& mIdx) const
-{
-	return "BLUEPRINT_MTL_NAME_NOT_NEEDED";
-}
-
 void SMBlueprint::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
 {
 	for (const SMEntity* pEntity : this->Objects)

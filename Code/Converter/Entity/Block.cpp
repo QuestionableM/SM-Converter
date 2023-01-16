@@ -19,7 +19,6 @@ std::string SMBlock::GetMtlName(const std::string& mat_name, const std::size_t& 
 void SMBlock::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
 {
 	const std::string mtl_name = this->GetMtlName("", 0);
-
 	if (tex_map.find(mtl_name) != tex_map.end())
 		return;
 

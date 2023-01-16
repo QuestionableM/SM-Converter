@@ -30,6 +30,7 @@ public:
 	std::string GetMtlName(const std::string& mat_name, const std::size_t& mIdx) const override;
 	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const override;
 	glm::mat4 GetTransformMatrix() const override;
+	bool GetCanWrite(const std::string& name, const std::size_t& v_idx) const override;
 
 private:
 	SMColor m_color;

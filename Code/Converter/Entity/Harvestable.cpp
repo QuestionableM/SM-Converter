@@ -39,3 +39,11 @@ void SMHarvestable::FillTextureMap(std::unordered_map<std::string, ObjectTexData
 		tex_map.insert(std::make_pair(v_mat_name, v_obj_tex_data));
 	}
 }
+
+bool SMHarvestable::GetCanWrite(const std::string& name, const std::size_t& v_idx) const
+{
+	const SMTextureList* v_tex_list = m_parent->m_textures->GetTexList(name, v_idx);
+	if (!v_tex_list) return false;
+
+	return !v_tex_list->is_shadow_only;
+}
