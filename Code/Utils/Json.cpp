@@ -213,7 +213,9 @@ bool JsonReader::LoadParseSimdjsonC(const std::wstring& path, simdjson::dom::doc
 			return false;
 
 		simdjson::dom::parser v_parser;
-		const auto v_root = v_parser.parse_into_document(v_doc, v_json_str);
+		v_parser.parse_into_document(v_doc, v_json_str);
+
+		const auto v_root = v_doc.root();
 		if (v_root.type() != type_check)
 		{
 			DebugErrorL("Mismatching root json type!\nFile: ", path);
@@ -272,7 +274,9 @@ bool JsonReader::LoadParseSimdjsonCommentsC(const std::wstring& path, simdjson::
 		v_json_str = JsonReader::RemoveComments(v_json_str);
 
 		simdjson::dom::parser v_parser;
-		const auto v_root = v_parser.parse_into_document(v_doc, v_json_str);
+		v_parser.parse_into_document(v_doc, v_json_str);
+
+		const auto v_root = v_doc.root();
 		if (v_root.type() != type_check)
 		{
 			DebugErrorL("Mismatching root json type!\nFile: ", path);
