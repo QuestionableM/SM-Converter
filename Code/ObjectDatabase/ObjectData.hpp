@@ -25,7 +25,11 @@ public:
 	AssetData() = default;
 	AssetData(const AssetData&) = delete;
 	AssetData(AssetData&&) = delete;
-	~AssetData() = default;
+	
+	inline ~AssetData()
+	{
+		delete m_textures;
+	}
 };
 
 class HarvestableData
@@ -39,7 +43,11 @@ public:
 	HarvestableData() = default;
 	HarvestableData(const HarvestableData&) = delete;
 	HarvestableData(HarvestableData&) = delete;
-	~HarvestableData() = default;
+
+	inline ~HarvestableData()
+	{
+		delete m_textures;
+	}
 };
 
 class BlockData
@@ -70,7 +78,11 @@ public:
 	PartData() = default;
 	PartData(const PartData&) = delete;
 	PartData(PartData&) = delete;
-	~PartData() = default;
+
+	inline ~PartData()
+	{
+		delete m_textures;
+	}
 };
 
 class ClutterData
