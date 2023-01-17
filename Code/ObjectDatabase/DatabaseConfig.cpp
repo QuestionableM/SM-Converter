@@ -273,6 +273,9 @@ void DatabaseConfig::ReadUserSettings(const nlohmann::json& config_json, bool& s
 			DebugOutL("Game Path: ", DatabaseConfig::GamePath);
 		}
 
+		const auto& v_open_in_steam = JsonReader::Get(user_settings, "OpenLinksInSteam");
+		DatabaseConfig::OpenLinksInSteam = v_open_in_steam.is_boolean() ? v_open_in_steam.get<bool>() : false;
+
 		DatabaseConfig::JsonStrArrayToVector(user_settings, "LocalModFolders", DatabaseConfig::LocalModFolders, false);
 		DatabaseConfig::JsonStrArrayToVector(user_settings, "WorkshopModFolders", DatabaseConfig::ModFolders, false);
 		DatabaseConfig::JsonStrArrayToVector(user_settings, "BlueprintFolders", DatabaseConfig::BlueprintFolders, false);

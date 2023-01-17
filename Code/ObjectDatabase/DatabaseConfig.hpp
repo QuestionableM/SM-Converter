@@ -23,6 +23,8 @@ public:
 	inline static std::vector<std::wstring> ResourceUpgradeFiles = {};
 	inline static std::vector<std::pair<std::wstring, std::wstring>> DefaultKeywords = {};
 
+	inline static bool OpenLinksInSteam = false;
+
 private:
 	static void WstrArrayToJson(nlohmann::json& j_obj, const std::string& key, const std::vector<std::wstring>& r_wstr_vec);
 	static void JsonStrArrayToVector(const nlohmann::json& pJson, const std::string& pKey, std::vector<std::wstring>& pWstrVec, const bool& replace_keys);
