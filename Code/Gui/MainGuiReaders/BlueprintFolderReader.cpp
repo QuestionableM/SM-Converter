@@ -1,5 +1,4 @@
 #include "BlueprintFolderReader.hpp"
-#pragma unmanaged
 
 #include "ObjectDatabase\DatabaseConfig.hpp"
 
@@ -7,6 +6,8 @@
 #include "Utils\String.hpp"
 #include "Utils\Json.hpp"
 #include "Utils\File.hpp"
+
+#pragma unmanaged
 
 void BlueprintFolderReader::ReadBlueprintFromFile(const std::filesystem::path& path)
 {

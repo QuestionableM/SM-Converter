@@ -2,6 +2,7 @@
 
 #include "BlueprintConvertSettings.h"
 #include "TileConvertSettings.h"
+#include "SettingsGui.h"
 #include "AboutGui.h"
 
 #include "ObjectDatabase\KeywordReplacer.hpp"
@@ -773,5 +774,11 @@ namespace SMConverter
 		this->MainGui_Timer_UpdateProgressBar(nullptr, nullptr);
 
 		this->MainGui_ChangeGuiState(m_database_isLoaded, m_obj_isLoaded, true);
+	}
+
+	void MainGui::MainGui_Options_Click(System::Object^ sender, System::EventArgs^ e)
+	{
+		SettingsGui^ v_settings_gui = gcnew SettingsGui();
+		v_settings_gui->ShowDialog();
 	}
 }

@@ -252,6 +252,7 @@ namespace SMConverter
 			this->m_btn_options->Name = L"m_btn_options";
 			this->m_btn_options->Size = System::Drawing::Size(199, 22);
 			this->m_btn_options->Text = L"Options";
+			this->m_btn_options->Click += gcnew System::EventHandler(this, &MainGui::MainGui_Options_Click);
 			// 
 			// m_lbl_objSelectorStatus
 			// 
@@ -353,5 +354,6 @@ namespace SMConverter
 
 		System::Void MainGui_ObjectConverter_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e);
 		System::Void MainGui_ObjectConverter_RunWorkerCompleted(System::Object^ sender, System::ComponentModel::RunWorkerCompletedEventArgs^ e);
+		System::Void MainGui_Options_Click(System::Object^ sender, System::EventArgs^ e);
 	};
 }

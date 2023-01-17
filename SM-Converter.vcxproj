@@ -292,6 +292,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClCompile Include="Code\Gui\MainGui.cpp" />
     <ClCompile Include="Code\Gui\MainGuiReaders\BlueprintFolderReader.cpp" />
     <ClCompile Include="Code\Gui\MainGuiReaders\TileFolderReader.cpp" />
+    <ClCompile Include="Code\Gui\SettingsGui.cpp" />
     <ClCompile Include="Code\Gui\TileConvertSettings.cpp" />
     <ClCompile Include="Code\main.cpp" />
     <ClCompile Include="Code\ObjectDatabase\DatabaseConfig.cpp">
@@ -496,6 +497,9 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     </ClInclude>
     <ClInclude Include="Code\Gui\MainGuiReaders\BlueprintFolderReader.hpp" />
     <ClInclude Include="Code\Gui\MainGuiReaders\TileFolderReader.hpp" />
+    <ClInclude Include="Code\Gui\SettingsGui.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
     <ClInclude Include="Code\Gui\TileConvertSettings.h">
       <FileType>CppForm</FileType>
     </ClInclude>
@@ -545,6 +549,9 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     </EmbeddedResource>
     <EmbeddedResource Include="Code\Gui\MainGui.resx">
       <DependentUpon>Code\Gui\MainGui.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Code\Gui\SettingsGui.resx">
+      <DependentUpon>Code\Gui\SettingsGui.h</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Code\Gui\TileConvertSettings.resx">
       <DependentUpon>Code\Gui\TileConvertSettings.h</DependentUpon>

@@ -1,9 +1,10 @@
 #pragma once
-#pragma unmanaged
 
 #include <filesystem>
 #include <vector>
 #include <string>
+
+#pragma unmanaged
 
 struct BlueprintInstance
 {
