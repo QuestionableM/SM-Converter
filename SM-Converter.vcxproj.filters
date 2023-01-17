@@ -162,6 +162,9 @@
     <ClCompile Include="Code\Gui\SettingsGui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Code\Gui\SettingsGuiChangeDetector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\Gui\MainGui.h">
@@ -387,6 +390,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Code\Gui\SettingsGui.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Gui\SettingsGuiChangeDetector.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

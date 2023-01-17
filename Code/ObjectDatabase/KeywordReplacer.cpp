@@ -67,8 +67,8 @@ void KeywordReplacer::UpgradeResource(const std::wstring& mPath, std::wstring& m
 
 void KeywordReplacer::LoadResourceUpgradesFromConfig()
 {
-	for (const std::wstring& v_upgrades_path : DatabaseConfig::ResourceUpgradeFiles)
-		KeywordReplacer::LoadResourceUpgrades(v_upgrades_path);
+	for (const auto& v_upgrade_path : DatabaseConfig::ResourceUpgradeFiles)
+		KeywordReplacer::LoadResourceUpgrades(v_upgrade_path.first);
 
 	//Nonor normal textures look weird in blender, so i'm just gonna skip em by replacing the string with nothing
 	m_ResourceUpgrades[L"$game_data/textures/nonor_nor.png"] = L"";

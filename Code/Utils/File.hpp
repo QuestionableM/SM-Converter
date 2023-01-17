@@ -22,6 +22,9 @@ namespace File
 	bool Exists(const std::wstring& path);
 	bool CreateDirectorySafe(const std::wstring& path);
 
+	bool GetFullFilePath(const std::wstring& path, std::wstring& v_output);
+	bool GetFullFilePathLower(const std::wstring& path, std::wstring& v_output);
+
 	bool IsDirectory(const std::wstring& path);
 	bool IsRegularFile(const std::wstring& path);
 	bool IsPathLegal(const std::wstring& path);

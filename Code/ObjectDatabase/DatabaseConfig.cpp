@@ -12,7 +12,7 @@
 
 #include <valve_vdf\vdf_parser.hpp>
 
-void DatabaseConfig::WstrArrayToJson(nlohmann::json& j_obj, const std::string& key, const std::vector<std::wstring>& r_wstr_vec)
+void DatabaseConfig::WstrVecToJson(nlohmann::json& j_obj, const std::string& key, const std::vector<std::wstring>& r_wstr_vec)
 {
 	nlohmann::json v_strArray = nlohmann::json::array();
 
@@ -22,48 +22,83 @@ void DatabaseConfig::WstrArrayToJson(nlohmann::json& j_obj, const std::string& k
 	j_obj[key] = v_strArray;
 }
 
-void DatabaseConfig::JsonStrArrayToVector(const nlohmann::json& pJson, const std::string& pKey, std::vector<std::wstring>& pWstrVec, const bool& replace_keys)
+void DatabaseConfig::WstrMapToJson(nlohmann::json& j_obj, const std::string& key, const PathChecker& v_map)
 {
-	const auto& v_jArray = JsonReader::Get(pJson, pKey);
-	if (!v_jArray.is_array()) return;
+	nlohmann::json v_strArray = nlohmann::json::array();
 
-	if (replace_keys)
+	for (const auto& v_item : v_map)
+		v_strArray.push_back(String::ToUtf8(v_item.first));
+
+	j_obj[key] = v_strArray;
+}
+
+bool DatabaseConfig::AddToStrVec(std::vector<std::wstring>& v_vec, PathChecker& v_path_checker, const std::wstring& v_new_str)
+{
+	std::wstring v_full_path;
+	if (!File::GetFullFilePathLower(v_new_str, v_full_path))
+		return false;
+
+	const auto v_iter = v_path_checker.find(v_full_path);
+	if (v_iter != v_path_checker.end())
 	{
-		for (const auto& v_curVal : v_jArray)
-		{
-			if (!v_curVal.is_string()) continue;
-
-			const std::wstring v_wstrPath = String::ToWide(v_curVal.get_ref<const std::string&>());
-			pWstrVec.push_back(KeywordReplacer::ReplaceKey(v_wstrPath));
-		}
+		DebugWarningL("The specified path already exists: ", v_full_path);
+		return false;
 	}
-	else
-	{
-		for (const auto& v_curVal : v_jArray)
-		{
-			if (!v_curVal.is_string()) continue;
 
-			const std::wstring v_wstrPath = String::ToWide(v_curVal.get_ref<const std::string&>());
-			pWstrVec.push_back(v_wstrPath);
-		}
+	v_path_checker.insert(std::make_pair(v_full_path, 1));
+	v_vec.push_back(v_full_path);
+
+	return true;
+}
+
+bool DatabaseConfig::AddToStrMap(PathChecker& v_map, const std::wstring& v_new_str)
+{
+	std::wstring v_full_path;
+	if (!File::GetFullFilePathLower(v_new_str, v_full_path))
+		return false;
+
+	const auto v_iter = v_map.find(v_full_path);
+	if (v_iter != v_map.end())
+	{
+		DebugWarningL("The specified path already exists: ", v_full_path);
+		return false;
+	}
+
+	v_map.insert(std::make_pair(v_full_path, 1));
+	return true;
+}
+
+void DatabaseConfig::JsonStrArrayToStrVec(const nlohmann::json& v_json, const std::string& key, std::vector<std::wstring>& v_vec, PathChecker& v_path_checker, const bool& replace_keys)
+{
+	const auto v_array = JsonReader::Get(v_json, key);
+	if (!v_array.is_array()) return;
+
+	for (const auto& v_cur_item : v_array)
+	{
+		if (!v_cur_item.is_string()) continue;
+
+		std::wstring v_wstr_path = String::ToWide(v_cur_item.get_ref<const std::string&>());
+		if (replace_keys)
+			KeywordReplacer::ReplaceKeyR(v_wstr_path);
+
+		DatabaseConfig::AddToStrVec(v_vec, v_path_checker, v_wstr_path);
 	}
 }
 
-void DatabaseConfig::AddToStrVec(std::vector<std::wstring>& mWstrVec, const std::wstring& mWstr)
+void DatabaseConfig::JsonStrArrayToStrMap(const nlohmann::json& v_json, const std::string& key, PathChecker& v_map, const bool& replace_keys)
 {
-	for (const std::wstring& wstr_data : mWstrVec)
+	const auto v_array = JsonReader::Get(v_json, key);
+	if (!v_array.is_array()) return;
+
+	for (const auto& v_cur_item : v_array)
 	{
-		if (wstr_data == mWstr || File::Equivalent(wstr_data, mWstr))
-			return;
-	}
+		if (!v_cur_item.is_string()) continue;
 
-	{
-		std::wstring mFinalString = mWstr;
+		std::wstring v_wstr_path = String::ToWide(v_cur_item.get_ref<const std::string&>());
+		if (replace_keys)
+			KeywordReplacer::ReplaceKeyR(v_wstr_path);
 
-		String::ToLowerR(mFinalString);
-		String::ReplaceAllR(mFinalString, L'\\', L'/');
-
-		mWstrVec.push_back(mFinalString);
+		DatabaseConfig::AddToStrMap(v_map, v_wstr_path);
 	}
 }
 
@@ -89,10 +124,10 @@ void DatabaseConfig::ReadProgramSettings(const nlohmann::json& config_json)
 		}
 	}
 
-	DatabaseConfig::JsonStrArrayToVector(program_settings, "ResourceUpgradeFiles", DatabaseConfig::ResourceUpgradeFiles, true);
+	DatabaseConfig::JsonStrArrayToStrMap(program_settings, "ResourceUpgradeFiles", DatabaseConfig::ResourceUpgradeFiles, true);
 	KeywordReplacer::LoadResourceUpgradesFromConfig();
 
-	DatabaseConfig::JsonStrArrayToVector(program_settings, "ScrapAssetDatabase", DatabaseConfig::AssetListFolders, true);
+	DatabaseConfig::JsonStrArrayToStrMap(program_settings, "ScrapAssetDatabase", DatabaseConfig::AssetListFolders, true);
 }
 
 using vdf_childs_table = std::unordered_map<std::string, std::shared_ptr<tyti::vdf::object>>;
@@ -223,21 +258,21 @@ void DatabaseConfig::FindLocalUsers()
 		if (File::Exists(v_local_mods_dir))
 		{
 			DebugOutL("Found a new path to local mods: ", 0b01101_fg, v_local_mods_dir);
-			DatabaseConfig::AddToStrVec(DatabaseConfig::LocalModFolders, v_local_mods_dir);
+			DatabaseConfig::AddToStrVec(DatabaseConfig::LocalModFolders, DatabaseConfig::ModPathChecker, v_local_mods_dir);
 		}
 
 		const std::wstring v_local_blueprints_dir = v_cur_dir_path + L"\\Blueprints";
 		if (File::Exists(v_local_blueprints_dir))
 		{
 			DebugOutL("Found a new path to local blueprints: ", 0b01101_fg, v_local_blueprints_dir);
-			DatabaseConfig::AddToStrVec(DatabaseConfig::BlueprintFolders, v_local_blueprints_dir);
+			DatabaseConfig::AddToStrMap(DatabaseConfig::BlueprintFolders, v_local_blueprints_dir);
 		}
 
 		const std::wstring v_local_tiles_dir = v_cur_dir_path + L"\\Tiles";
 		if (File::Exists(v_local_tiles_dir))
 		{
 			DebugOutL("Found a new path to local tiles: ", 0b01101_fg, v_local_tiles_dir);
-			DatabaseConfig::AddToStrVec(DatabaseConfig::TileFolders, v_local_tiles_dir);
+			DatabaseConfig::AddToStrMap(DatabaseConfig::TileFolders, v_local_tiles_dir);
 		}
 	}
 }
@@ -250,9 +285,10 @@ void DatabaseConfig::FindGamePath(const nlohmann::json& config_json, bool& shoul
 		if (DatabaseConfig::GetSteamPaths(game_path, ws_path))
 		{
 			DatabaseConfig::GamePath = game_path;
-			DatabaseConfig::AddToStrVec(DatabaseConfig::ModFolders, ws_path);
-			DatabaseConfig::AddToStrVec(DatabaseConfig::BlueprintFolders, ws_path);
-			DatabaseConfig::AddToStrVec(DatabaseConfig::TileFolders, ws_path);
+
+			DatabaseConfig::AddToStrVec(DatabaseConfig::ModFolders, DatabaseConfig::ModPathChecker, ws_path);
+			DatabaseConfig::AddToStrMap(DatabaseConfig::BlueprintFolders, ws_path);
+			DatabaseConfig::AddToStrMap(DatabaseConfig::TileFolders, ws_path);
 
 			should_write = true;
 		}
@@ -276,10 +312,11 @@ void DatabaseConfig::ReadUserSettings(const nlohmann::json& config_json, bool& s
 		const auto& v_open_in_steam = JsonReader::Get(user_settings, "OpenLinksInSteam");
 		DatabaseConfig::OpenLinksInSteam = v_open_in_steam.is_boolean() ? v_open_in_steam.get<bool>() : false;
 
-		DatabaseConfig::JsonStrArrayToVector(user_settings, "LocalModFolders", DatabaseConfig::LocalModFolders, false);
-		DatabaseConfig::JsonStrArrayToVector(user_settings, "WorkshopModFolders", DatabaseConfig::ModFolders, false);
-		DatabaseConfig::JsonStrArrayToVector(user_settings, "BlueprintFolders", DatabaseConfig::BlueprintFolders, false);
-		DatabaseConfig::JsonStrArrayToVector(user_settings, "TileFolders", DatabaseConfig::TileFolders, false);
+		DatabaseConfig::JsonStrArrayToStrVec(user_settings, "LocalModFolders", DatabaseConfig::LocalModFolders, DatabaseConfig::ModPathChecker, false);
+		DatabaseConfig::JsonStrArrayToStrVec(user_settings, "WorkshopModFolders", DatabaseConfig::ModFolders, DatabaseConfig::ModPathChecker, false);
+
+		DatabaseConfig::JsonStrArrayToStrMap(user_settings, "BlueprintFolders", DatabaseConfig::BlueprintFolders, false);
+		DatabaseConfig::JsonStrArrayToStrMap(user_settings, "TileFolders", DatabaseConfig::TileFolders, false);
 	}
 
 	DatabaseConfig::FindGamePath(config_json, should_write);
@@ -375,11 +412,12 @@ void DatabaseConfig::SaveConfig()
 		nlohmann::json user_settings = nlohmann::json::object();
 
 		user_settings["GamePath"] = String::ToUtf8(DatabaseConfig::GamePath);
+		user_settings["OpenLinksInSteam"] = DatabaseConfig::OpenLinksInSteam;
 
-		DatabaseConfig::WstrArrayToJson(user_settings, "WorkshopModFolders", DatabaseConfig::ModFolders);
-		DatabaseConfig::WstrArrayToJson(user_settings, "LocalModFolders", DatabaseConfig::LocalModFolders);
-		DatabaseConfig::WstrArrayToJson(user_settings, "BlueprintFolders", DatabaseConfig::BlueprintFolders);
-		DatabaseConfig::WstrArrayToJson(user_settings, "TileFolders", DatabaseConfig::TileFolders);
+		DatabaseConfig::WstrVecToJson(user_settings, "WorkshopModFolders", DatabaseConfig::ModFolders);
+		DatabaseConfig::WstrVecToJson(user_settings, "LocalModFolders", DatabaseConfig::LocalModFolders);
+		DatabaseConfig::WstrMapToJson(user_settings, "BlueprintFolders", DatabaseConfig::BlueprintFolders);
+		DatabaseConfig::WstrMapToJson(user_settings, "TileFolders", DatabaseConfig::TileFolders);
 
 		cfgData["UserSettings"] = user_settings;
 	}
@@ -395,15 +433,7 @@ void DatabaseConfig::ReadConfig()
 {
 	DebugOutL(0b0110_fg, "Reading the program config...");
 
-	DatabaseConfig::GamePath.clear();
-	DatabaseConfig::AssetListFolders.clear();
-	DatabaseConfig::ModFolders.clear();
-	DatabaseConfig::LocalModFolders.clear();
-	DatabaseConfig::ResourceUpgradeFiles.clear();
-	DatabaseConfig::DefaultKeywords.clear();
-	DatabaseConfig::TileFolders.clear();
-	DatabaseConfig::BlueprintFolders.clear();
-	KeywordReplacer::Clear();
+	DatabaseConfig::ClearConfig();
 
 	bool should_write = false;
 	nlohmann::json cfgData = DatabaseConfig::GetConfigJson(&should_write, true);
@@ -420,4 +450,22 @@ void DatabaseConfig::ReadConfig()
 	{
 		DatabaseConfig::SaveConfig();
 	}
+}
+
+void DatabaseConfig::ClearConfig()
+{
+	DatabaseConfig::GamePath.clear();
+	DatabaseConfig::OpenLinksInSteam = false;
+
+	DatabaseConfig::AssetListFolders.clear();
+	DatabaseConfig::BlueprintFolders.clear();
+	DatabaseConfig::TileFolders.clear();
+	DatabaseConfig::ResourceUpgradeFiles.clear();
+
+	DatabaseConfig::ModPathChecker.clear();
+	DatabaseConfig::LocalModFolders.clear();
+	DatabaseConfig::ModFolders.clear();
+
+	DatabaseConfig::DefaultKeywords.clear();
+	KeywordReplacer::Clear();
 }

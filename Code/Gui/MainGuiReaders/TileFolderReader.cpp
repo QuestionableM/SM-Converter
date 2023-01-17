@@ -115,8 +115,8 @@ void TileFolderReader::ReadTilesFromConfig()
 {
 	TileFolderReader::ClearStorage();
 
-	for (const std::wstring& v_tile_folder : DatabaseConfig::TileFolders)
-		TileFolderReader::ReadTilesFromFolder(v_tile_folder);
+	for (const auto& v_tile_folder : DatabaseConfig::TileFolders)
+		TileFolderReader::ReadTilesFromFolder(v_tile_folder.first);
 
 	DebugOutL("[TileFolderReader] Successfully loaded ", TileFolderReader::Storage.size(), " tiles from ", DatabaseConfig::TileFolders.size(), " folders");
 }

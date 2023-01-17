@@ -92,8 +92,8 @@ void BlueprintFolderReader::ReadBlueprintsFromConfig()
 {
 	BlueprintFolderReader::ClearStorage();
 
-	for (const std::wstring& v_bp_folder : DatabaseConfig::BlueprintFolders)
-		BlueprintFolderReader::ReadBlueprintsFromFolder(v_bp_folder);
+	for (const auto& v_bp_folder : DatabaseConfig::BlueprintFolders)
+		BlueprintFolderReader::ReadBlueprintsFromFolder(v_bp_folder.first);
 
 	DebugOutL("[BlueprintFolderReader] Successfully loaded ", BlueprintFolderReader::Storage.size(), " blueprints from ", DatabaseConfig::BlueprintFolders.size(), " folders");
 }

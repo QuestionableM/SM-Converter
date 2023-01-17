@@ -16,20 +16,20 @@ GameDataMod::GameDataMod()
 
 void GameDataMod::LoadObjectDatabase()
 {
-	for (const std::wstring& db_dir : DatabaseConfig::AssetListFolders)
+	for (const auto& db_item : DatabaseConfig::AssetListFolders)
 	{
 		std::error_code rError;
-		const bool is_regular_file = fs::is_regular_file(db_dir, rError);
+		const bool is_regular_file = fs::is_regular_file(db_item.first, rError);
 
 		if (rError) continue;
 
 		if (is_regular_file)
 		{
-			this->LoadFile(db_dir);
+			this->LoadFile(db_item.first);
 		}
 		else
 		{
-			this->ScanDatabaseFolderRecursive(db_dir);
+			this->ScanDatabaseFolderRecursive(db_item.first);
 		}
 	}
 }

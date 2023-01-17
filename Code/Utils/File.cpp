@@ -1,6 +1,7 @@
 #include "File.hpp"
 
-#include "Console.hpp"
+#include "Utils\Console.hpp"
+#include "Utils\String.hpp"
 
 #include <Windows.h>
 #include <ShlObj.h>
@@ -80,6 +81,28 @@ bool File::CreateDirectorySafe(const std::wstring& path)
 	bool file_correct = (!f_error && file_created);
 
 	return (exists_correct || file_correct);
+}
+
+static wchar_t v_fullPathBuffer[512] = {};
+
+bool File::GetFullFilePath(const std::wstring& path, std::wstring& v_output)
+{
+	if (GetFullPathNameW(path.c_str(), 512, v_fullPathBuffer, nullptr) == 0)
+		return false;
+
+	v_output = std::wstring(v_fullPathBuffer);
+	return true;
+}
+
+bool File::GetFullFilePathLower(const std::wstring& path, std::wstring& v_output)
+{
+	if (GetFullPathNameW(path.c_str(), 512, v_fullPathBuffer, nullptr) == 0)
+		return false;
+
+	v_output = std::wstring(v_fullPathBuffer);
+	String::ToLowerR(v_output);
+
+	return true;
 }
 
 bool File::IsDirectory(const std::wstring& path)

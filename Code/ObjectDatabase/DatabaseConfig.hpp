@@ -9,26 +9,39 @@
 class DatabaseConfig
 {
 public:
+	//Used to remove the same path entires
+	using PathChecker = std::unordered_map<std::wstring, unsigned char>;
+
 	constexpr static const std::wstring_view ConfigPath = L"./Resources/Config.json";
 	constexpr static const std::wstring_view RotationsPath = L"./Resources/RotationSettings.json";
 	constexpr static const std::wstring_view MaterialMapPath = L"./Resources/MaterialIds.json";
 	constexpr static const std::wstring_view GroundTexturesPath = L"./Resources/GroundTextures.json";
 
-	inline static std::wstring GamePath                          = L"";
-	inline static std::vector<std::wstring> AssetListFolders     = {};
-	inline static std::vector<std::wstring> ModFolders           = {};
-	inline static std::vector<std::wstring> LocalModFolders      = {};
-	inline static std::vector<std::wstring> BlueprintFolders     = {};
-	inline static std::vector<std::wstring> TileFolders          = {};
-	inline static std::vector<std::wstring> ResourceUpgradeFiles = {};
-	inline static std::vector<std::pair<std::wstring, std::wstring>> DefaultKeywords = {};
-
+	inline static std::wstring GamePath = L"";
 	inline static bool OpenLinksInSteam = false;
 
+	inline static PathChecker AssetListFolders     = {};
+	inline static PathChecker BlueprintFolders = {};
+	inline static PathChecker TileFolders = {};
+	inline static PathChecker ResourceUpgradeFiles = {};
+
+	inline static PathChecker ModPathChecker = {};
+	inline static std::vector<std::wstring> ModFolders           = {};
+	inline static std::vector<std::wstring> LocalModFolders      = {};
+
+	inline static std::vector<std::pair<std::wstring, std::wstring>> DefaultKeywords = {};
+
 private:
-	static void WstrArrayToJson(nlohmann::json& j_obj, const std::string& key, const std::vector<std::wstring>& r_wstr_vec);
-	static void JsonStrArrayToVector(const nlohmann::json& pJson, const std::string& pKey, std::vector<std::wstring>& pWstrVec, const bool& replace_keys);
-	static void AddToStrVec(std::vector<std::wstring>& mWstrVec, const std::wstring& mWstr);
+	static void WstrVecToJson(nlohmann::json& j_obj, const std::string& key, const std::vector<std::wstring>& r_wstr_vec);
+	static void WstrMapToJson(nlohmann::json& j_obj, const std::string& key, const PathChecker& v_map);
+
+public:
+	static bool AddToStrVec(std::vector<std::wstring>& v_vec, PathChecker& v_path_checker, const std::wstring& v_new_str);
+	static bool AddToStrMap(PathChecker& v_map, const std::wstring& v_new_str);
+
+private:
+	static void JsonStrArrayToStrVec(const nlohmann::json& v_json, const std::string& key, std::vector<std::wstring>& v_vec, PathChecker& v_path_checker, const bool& replace_keys);
+	static void JsonStrArrayToStrMap(const nlohmann::json& v_json, const std::string& key, PathChecker& v_map, const bool& replace_keys);
 
 	static void ReadProgramSettings(const nlohmann::json& config_json);
 
@@ -44,6 +57,7 @@ private:
 public:
 	static void SaveConfig();
 	static void ReadConfig();
+	static void ClearConfig();
 };
 
 #pragma managed
