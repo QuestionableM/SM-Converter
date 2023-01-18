@@ -2,9 +2,9 @@
 
 #include "Utils\GlmUnmanaged.hpp"
 
-#include <vcruntime.h>
-
 #pragma unmanaged
+
+#include <vcruntime.h>
 
 struct WriterOffsetData
 {

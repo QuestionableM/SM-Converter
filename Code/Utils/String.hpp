@@ -1,15 +1,15 @@
 #pragma once
 
-#include <sstream>
-#include <cwctype>
-#include <iomanip>
-#include <string>
-#include <vector>
-
+#include "Utils\UnmanagedIomanip.hpp"
+#include "Utils\UnmanagedSstream.hpp"
+#include "Utils\UnmanagedString.hpp"
+#include "Utils\UnmanagedVector.hpp"
 #include "Utils\WinInclude.hpp"
 #include "Utils\ByteImpl.hpp"
 
 #pragma unmanaged
+
+#include <cwctype>
 
 namespace String
 {

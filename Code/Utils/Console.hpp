@@ -2,12 +2,13 @@
 
 #ifdef SMC_ENABLE_DEBUG_CONSOLE
 
+#include "Utils\UnmanagedString.hpp"
+#include "Utils\UnmanagedVector.hpp"
 #include "Utils\WinInclude.hpp"
-#include <string>
-#include <vector>
-#include <stdio.h>
 
 #pragma unmanaged
+
+#include <stdio.h>
 
 class ConColor
 {

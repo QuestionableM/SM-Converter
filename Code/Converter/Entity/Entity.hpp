@@ -3,11 +3,11 @@
 #include "ObjectDatabase\ObjectData.hpp"
 #include "Converter\WriterOffset.hpp"
 
+#include "Utils\UnmanagedString.hpp"
 #include "Utils\GlmUnmanaged.hpp"
 #include "Utils\Color.hpp"
 #include "Utils\Uuid.hpp"
 
-#include <string>
 
 #pragma unmanaged
 

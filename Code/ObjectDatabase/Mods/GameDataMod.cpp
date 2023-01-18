@@ -2,8 +2,7 @@
 
 #include "ObjectDatabase\DatabaseConfig.hpp"
 
-#include <filesystem>
-namespace fs = std::filesystem;
+#include "Utils\UnmanagedFilesystem.hpp"
 
 #pragma unmanaged
 
@@ -16,6 +15,8 @@ GameDataMod::GameDataMod()
 
 void GameDataMod::LoadObjectDatabase()
 {
+	namespace fs = std::filesystem;
+
 	for (const auto& db_item : DatabaseConfig::AssetListFolders)
 	{
 		std::error_code v_error;

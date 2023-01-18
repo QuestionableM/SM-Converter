@@ -1,8 +1,7 @@
 #pragma once
 
+#include "Utils\UnmanagedString.hpp"
 #include "Utils\Json.hpp"
-
-#include <string>
 
 #pragma unmanaged
 

@@ -9,11 +9,9 @@
 #include "ObjectDatabase\ObjectRotations.hpp"
 #include "ObjectDatabase\KeywordReplacer.hpp"
 
+#include "Utils\UnmanagedFilesystem.hpp"
 #include "Utils\Console.hpp"
 #include "Utils\Json.hpp"
-
-#include <filesystem>
-namespace fs = std::filesystem;
 
 #pragma unmanaged
 
@@ -30,6 +28,8 @@ void DatabaseLoader::LoadGameDatabase()
 
 void DatabaseLoader::LoadModsFromPaths(const std::vector<std::wstring>& path_vector, const bool& is_local)
 {
+	namespace fs = std::filesystem;
+
 	for (const std::wstring& v_modDir : path_vector)
 	{
 		std::error_code v_errorCode;

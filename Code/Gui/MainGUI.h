@@ -5,7 +5,7 @@
 
 #include "Converter\ConvertError.hpp"
 
-#include <vector>
+#include "Utils\UnmanagedVector.hpp"
 
 namespace SMConverter
 {

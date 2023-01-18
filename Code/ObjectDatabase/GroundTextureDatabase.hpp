@@ -1,16 +1,14 @@
 #pragma once
 
+#include "Utils\UnmanagedString.hpp"
+#include "Utils\UnmanagedArray.hpp"
 #include "Utils\WinInclude.hpp"
 #include "Utils\ByteImpl.hpp"
 #include "Utils\Json.hpp"
 
-#include <vector>
-#include <string>
-#include <array>
+#pragma unmanaged
 
 #include <FreeImage.h>
-
-#pragma unmanaged
 
 class GroundTexture
 {

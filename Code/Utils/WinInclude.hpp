@@ -51,4 +51,6 @@
 #define NOKANJI
 #define NOMETAFILE
 #define NOMINMAX
+#pragma unmanaged
 #include <Windows.h>
+#pragma managed

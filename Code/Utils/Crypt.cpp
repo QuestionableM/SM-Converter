@@ -1,12 +1,12 @@
 #include "Crypt.hpp"
 
+#include "Utils\UnmanagedSstream.hpp"
+#include "Utils\UnmanagedVector.hpp"
 #include "Utils\WinInclude.hpp"
 
-#include <wincrypt.h>
-#include <sstream>
-#include <vector>
-
 #pragma unmanaged
+
+#include <wincrypt.h>
 
 std::string Crypt::GetHashString(const void* pData, const std::size_t& mDataSize, const HashType& mType)
 {

@@ -16,16 +16,15 @@
 #include "Converter\TileConverter\TileConverter.hpp"
 #include "Converter\ConvertSettings.hpp"
 
+#include "Utils\UnmanagedFilesystem.hpp"
+#include "Utils\WinInclude.hpp"
 #include "Utils\Console.hpp"
 #include "Utils\String.hpp"
 #include "Utils\File.hpp"
 
-#include <Windows.h>
 #include <WinUser.h>
 #include <CommCtrl.h>
 #include <msclr\marshal_cppstd.h>
-
-#include <filesystem>
 
 #define WF_SHOW_WARNING(title, message) \
 	System::Windows::Forms::MessageBox::Show( \

@@ -11,12 +11,10 @@
 #include "ObjectDatabase\Mods\BlocksAndPartsMod.hpp"
 #include "ObjectDatabase\Mods\TerrainAssetsMod.hpp"
 
+#include "Utils\UnmanagedFilesystem.hpp"
 #include "Utils\Console.hpp"
 #include "Utils\String.hpp"
 #include "Utils\File.hpp"
-
-#include <filesystem>
-namespace fs = std::filesystem;
 
 #pragma unmanaged
 
@@ -236,6 +234,8 @@ inline bool IsShapeSetExtensionValid(const std::string& extension)
 
 void Mod::ScanDatabaseFolderRecursive(const std::wstring& folder)
 {
+	namespace fs = std::filesystem;
+
 	std::error_code rError;
 	fs::recursive_directory_iterator rDirIter(folder, fs::directory_options::skip_permission_denied, rError);
 
@@ -252,6 +252,8 @@ void Mod::ScanDatabaseFolderRecursive(const std::wstring& folder)
 
 void Mod::ScanDatabaseFolder(const std::wstring& folder)
 {
+	namespace fs = std::filesystem;
+
 	std::error_code rError;
 	fs::directory_iterator rDirIter(folder, fs::directory_options::skip_permission_denied, rError);
 

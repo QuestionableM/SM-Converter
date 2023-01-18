@@ -1,10 +1,9 @@
 #pragma once
 
+#include "Utils\UnmanagedString.hpp"
+#include "Utils\UnmanagedVector.hpp"
 #include "Utils\WinInclude.hpp"
 #include "Utils\ByteImpl.hpp"
-
-#include <vector>
-#include <string>
 
 #include <shobjidl.h>
 

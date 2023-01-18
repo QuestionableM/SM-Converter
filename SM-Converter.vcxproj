@@ -537,6 +537,15 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\Utils\Json.hpp" />
     <ClInclude Include="Code\Utils\Memory.hpp" />
     <ClInclude Include="Code\Utils\String.hpp" />
+    <ClInclude Include="Code\Utils\UnmanagedAlgorithm.hpp" />
+    <ClInclude Include="Code\Utils\UnmanagedArray.hpp" />
+    <ClInclude Include="Code\Utils\UnmanagedFilesystem.hpp" />
+    <ClInclude Include="Code\Utils\UnmanagedFstream.hpp" />
+    <ClInclude Include="Code\Utils\UnmanagedIomanip.hpp" />
+    <ClInclude Include="Code\Utils\UnmanagedSstream.hpp" />
+    <ClInclude Include="Code\Utils\UnmanagedString.hpp" />
+    <ClInclude Include="Code\Utils\UnmanagedUnorderedMap.hpp" />
+    <ClInclude Include="Code\Utils\UnmanagedVector.hpp" />
     <ClInclude Include="Code\Utils\Uuid.hpp" />
     <ClInclude Include="Code\Utils\WinInclude.hpp" />
     <ClInclude Include="Code\Converter\WriterOffset.hpp" />

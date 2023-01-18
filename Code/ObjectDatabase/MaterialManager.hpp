@@ -1,7 +1,7 @@
 #pragma once
 
-#include <unordered_map>
-#include <string>
+#include "Utils\UnmanagedUnorderedMap.hpp"
+#include "Utils\UnmanagedString.hpp"
 
 #pragma unmanaged
 

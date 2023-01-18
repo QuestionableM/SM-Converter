@@ -1,8 +1,7 @@
 #pragma once
 
+#include "Utils\UnmanagedUnorderedMap.hpp"
 #include "Utils\Uuid.hpp"
-
-#include <unordered_map>
 
 #pragma unmanaged
 

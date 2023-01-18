@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include "Utils\UnmanagedString.hpp"
 
 #pragma unmanaged
 

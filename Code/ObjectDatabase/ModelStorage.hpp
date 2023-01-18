@@ -2,18 +2,17 @@
 
 #include "Converter\WriterOffset.hpp"
 
-#include <unordered_map>
-#include <fstream>
-#include <string>
-#include <vector>
+#include "Utils\UnmanagedUnorderedMap.hpp"
+#include "Utils\UnmanagedFstream.hpp"
+#include "Utils\UnmanagedString.hpp"
+#include "Utils\UnmanagedVector.hpp"
+#include "Utils\GlmUnmanaged.hpp"
+
+#pragma unmanaged
 
 #include <assimp\postprocess.h>
 #include <assimp\Importer.hpp>
 #include <assimp\scene.h>
-
-#include "Utils\GlmUnmanaged.hpp"
-
-#pragma unmanaged
 
 struct VertexData
 {

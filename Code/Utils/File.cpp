@@ -1,13 +1,13 @@
 #include "File.hpp"
 
+#include "Utils\UnmanagedFilesystem.hpp"
+#include "Utils\UnmanagedFstream.hpp"
+#include "Utils\WinInclude.hpp"
 #include "Utils\Console.hpp"
 #include "Utils\String.hpp"
 
-#include <Windows.h>
 #include <ShlObj.h>
 
-#include <fstream>
-#include <filesystem>
 namespace fs = std::filesystem;
 
 #pragma unmanaged

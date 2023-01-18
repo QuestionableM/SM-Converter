@@ -1,6 +1,6 @@
 #include "Body.hpp"
 
-#include <fstream>
+#include "Utils\UnmanagedFstream.hpp"
 
 #pragma unmanaged
 

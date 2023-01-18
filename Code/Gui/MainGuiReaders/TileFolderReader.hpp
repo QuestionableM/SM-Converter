@@ -1,8 +1,8 @@
 #pragma once
 
-#include <filesystem>
-#include <vector>
-#include <string>
+#include "Utils\UnmanagedFilesystem.hpp"
+#include "Utils\UnmanagedString.hpp"
+#include "Utils\UnmanagedVector.hpp"
 
 #pragma unmanaged
 

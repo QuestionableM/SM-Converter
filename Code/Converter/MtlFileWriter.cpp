@@ -2,7 +2,7 @@
 
 #include "ObjectDatabase\ProgCounter.hpp"
 
-#include <fstream>
+#include "Utils\UnmanagedFstream.hpp"
 
 #pragma unmanaged
 

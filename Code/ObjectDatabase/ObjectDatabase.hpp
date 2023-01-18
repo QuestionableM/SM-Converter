@@ -1,10 +1,10 @@
 #pragma once
 
 #include "ObjectDatabase\ObjectData.hpp"
-#include "Utils\Json.hpp"
 
-#include <vector>
-#include <string>
+#include "Utils\UnmanagedString.hpp"
+#include "Utils\UnmanagedVector.hpp"
+#include "Utils\Json.hpp"
 
 #pragma unmanaged
 

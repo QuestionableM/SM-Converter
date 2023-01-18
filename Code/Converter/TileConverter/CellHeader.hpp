@@ -1,9 +1,8 @@
 #pragma once
 
+#include "Utils\UnmanagedArray.hpp"
 #include "Utils\ByteImpl.hpp"
 #include "Utils\Memory.hpp"
-
-#include <array>
 
 #pragma unmanaged
 

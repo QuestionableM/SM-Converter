@@ -3,13 +3,12 @@
 #include "Converter\TileConverter\CellHeader.hpp"
 #include "Converter\TileConverter\TilePart.hpp"
 
+#include "Utils\UnmanagedSstream.hpp"
+#include "Utils\UnmanagedIomanip.hpp"
 #include "Utils\ByteImpl.hpp"
 #include "Utils\Memory.hpp"
 
 #include <lz4\lz4.h>
-
-#include <sstream>
-#include <iomanip>
 
 class MipReader
 {

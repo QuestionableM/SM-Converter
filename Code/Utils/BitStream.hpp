@@ -1,10 +1,9 @@
 #pragma once
 
+#include "Utils\UnmanagedVector.hpp"
 #include "Utils\ByteImpl.hpp"
 #include "Utils\Memory.hpp"
 #include "Utils\Uuid.hpp"
-
-#include <vector>
 
 #pragma unmanaged
 

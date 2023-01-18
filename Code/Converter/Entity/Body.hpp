@@ -2,8 +2,8 @@
 
 #include "Entity.hpp"
 
-#include <vector>
-#include <string>
+#include "Utils\UnmanagedString.hpp"
+#include "Utils\UnmanagedVector.hpp"
 
 #pragma unmanaged
 

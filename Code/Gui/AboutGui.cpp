@@ -1,11 +1,10 @@
 #include "AboutGui.h"
 
+#include "Utils\WinInclude.hpp"
 #include "BuildInfo.hpp"
 
 #define STR_INDIR(x) #x
 #define TO_STR(x) STR_INDIR(x)
-
-#include <Windows.h>
 
 namespace SMConverter
 {

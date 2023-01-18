@@ -1,9 +1,10 @@
+#include "Utils\WinInclude.hpp"
 #include "Utils\Console.hpp"
 #include "Gui\MainGui.h"
 
+#pragma unmanaged
 #include <locale>
-
-#include <Windows.h>
+#pragma managed
 
 int WINAPI WinMain(
     _In_ HINSTANCE hInstance,

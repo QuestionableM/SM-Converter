@@ -11,11 +11,10 @@
 #include "Converter\Entity\Prefab.hpp"
 #include "Converter\Entity\Decal.hpp"
 
+#include "Utils\UnmanagedAlgorithm.hpp"
 #include "Utils\Console.hpp"
 #include "Utils\Memory.hpp"
 #include "Utils\File.hpp"
-
-#include <algorithm>
 
 #pragma unmanaged
 

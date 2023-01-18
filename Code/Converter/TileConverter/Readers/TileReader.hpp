@@ -13,10 +13,10 @@
 #include "Converter\TileConverter\Tile.hpp"
 
 #include "ObjectDatabase\ProgCounter.hpp"
+
+#include "Utils\UnmanagedString.hpp"
 #include "Utils\String.hpp"
 #include "Utils\File.hpp"
-
-#include <string>
 
 #pragma unmanaged
 

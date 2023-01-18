@@ -2,11 +2,10 @@
 
 #include "ObjectDatabase\ObjectData.hpp"
 
+#include "Utils\UnmanagedUnorderedMap.hpp"
+#include "Utils\UnmanagedString.hpp"
 #include "Utils\Uuid.hpp"
 #include "Utils\Json.hpp"
-
-#include <unordered_map>
-#include <string>
 
 #pragma unmanaged
 
