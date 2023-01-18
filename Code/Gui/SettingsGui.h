@@ -126,6 +126,7 @@ namespace SMConverter
 			this->m_cb_openLinksInSteam->TabIndex = 1;
 			this->m_cb_openLinksInSteam->Text = L"Open Links in Steam";
 			this->m_cb_openLinksInSteam->UseVisualStyleBackColor = true;
+			this->m_cb_openLinksInSteam->CheckedChanged += gcnew System::EventHandler(this, &SettingsGui::Settings_OpenLinksInSteam_CheckedChanged);
 			// 
 			// m_tb_gamePath
 			// 
@@ -246,6 +247,7 @@ namespace SMConverter
 			this->m_btn_saveChanges->TabIndex = 1;
 			this->m_btn_saveChanges->Text = L"Save Changes";
 			this->m_btn_saveChanges->UseVisualStyleBackColor = true;
+			this->m_btn_saveChanges->Click += gcnew System::EventHandler(this, &SettingsGui::Settings_SaveChanges_Click);
 			// 
 			// SettingsGui
 			// 
@@ -281,5 +283,7 @@ namespace SMConverter
 		System::Void Settings_RemovePath_Click(System::Object^ sender, System::EventArgs^ e);
 		System::Void Settings_AddPath_Click(System::Object^ sender, System::EventArgs^ e);
 		System::Void Settings_PathBrowser_Click(System::Object^ sender, System::EventArgs^ e);
+		System::Void Settings_SaveChanges_Click(System::Object^ sender, System::EventArgs^ e);
+		System::Void Settings_OpenLinksInSteam_CheckedChanged(System::Object^ sender, System::EventArgs^ e);
 	};
 }

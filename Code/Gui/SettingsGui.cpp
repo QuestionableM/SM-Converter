@@ -5,6 +5,13 @@
 
 #include <msclr\marshal_cppstd.h>
 
+#define WF_SETTINGS_WARNING(title, message) \
+	System::Windows::Forms::MessageBox::Show( \
+		message, title, \
+		System::Windows::Forms::MessageBoxButtons::OK, \
+		System::Windows::Forms::MessageBoxIcon::Warning \
+	)
+
 enum : unsigned int
 {
 	SMFileOption_LocalModFolders    = 0,
@@ -168,25 +175,13 @@ namespace SMConverter
 		const std::wstring v_new_path = msclr::interop::marshal_as<std::wstring>(m_tb_filePath->Text);
 		if (!File::Exists(v_new_path))
 		{
-			System::Windows::Forms::MessageBox::Show(
-				"The specified path doesn't exist!",
-				"Invalid Path",
-				System::Windows::Forms::MessageBoxButtons::OK,
-				System::Windows::Forms::MessageBoxIcon::Warning
-			);
-
+			WF_SETTINGS_WARNING("Invalid Path", "The specified path doesn't exist!");
 			return;
 		}
 
 		if (!File::IsDirectory(v_new_path))
 		{
-			System::Windows::Forms::MessageBox::Show(
-				"The specified path must lead to a directory",
-				"Invalid Path",
-				System::Windows::Forms::MessageBoxButtons::OK,
-				System::Windows::Forms::MessageBoxIcon::Warning
-			);
-
+			WF_SETTINGS_WARNING("Invalid Path", "The specified path must lead to a directory");
 			return;
 		}
 
@@ -210,13 +205,7 @@ namespace SMConverter
 
 		if (!is_success)
 		{
-			System::Windows::Forms::MessageBox::Show(
-				"The specified path already exists in the list!",
-				"Invalid Path",
-				System::Windows::Forms::MessageBoxButtons::OK,
-				System::Windows::Forms::MessageBoxIcon::Warning
-			);
-
+			WF_SETTINGS_WARNING("Invalid Path", "The specified path already exists in the list!");
 			return;
 		}
 
@@ -246,5 +235,31 @@ namespace SMConverter
 			return;
 
 		m_tb_filePath->Text = gcnew System::String(v_file_path.c_str());
+	}
+
+	void SettingsGui::Settings_SaveChanges_Click(System::Object^ sender, System::EventArgs^ e)
+	{
+		if (m_tb_gamePath->TextLength == 0)
+		{
+			WF_SETTINGS_WARNING("Empty Path", "The path to the game must be filled in");
+			return;
+		}
+
+		const std::wstring v_game_path = msclr::interop::marshal_as<std::wstring>(m_tb_gamePath->Text);
+		if (!File::Exists(v_game_path))
+		{
+			WF_SETTINGS_WARNING("Invalid Game Path", "The specified path to the game doesn't exist");
+			return;
+		}
+
+		m_changeDetector->ApplyChanges();
+		DatabaseConfig::SaveConfig();
+
+		m_btn_saveChanges->Enabled = false;
+	}
+
+	void SettingsGui::Settings_OpenLinksInSteam_CheckedChanged(System::Object^ sender, System::EventArgs^ e)
+	{
+		m_changeDetector->m_openLinksInSteam = m_cb_openLinksInSteam->Checked;
 	}
 }
