@@ -12,7 +12,8 @@ enum : unsigned char
 	SettingsChangeDetector_WorkshopModList  = (1 << 1),
 	SettingsChangeDetector_BlueprintFolders = (1 << 2),
 	SettingsChangeDetector_TileFolders      = (1 << 3),
-	SettingsChangeDetector_OpenLinksInSteam = (1 << 4)
+	SettingsChangeDetector_OpenLinksInSteam = (1 << 4),
+	SettingsChangeDetector_GamePath         = (1 << 5)
 };
 
 class SettingsChangeDetector
@@ -27,6 +28,7 @@ public:
 	static void RemoveFromCheckedVec(std::vector<std::wstring>& v_vec, std::unordered_map<std::wstring, unsigned char>& v_map, const std::size_t& v_idx);
 	static void RemoveFromMap(std::unordered_map<std::wstring, unsigned char>& v_map, const std::wstring& v_path);
 
+	std::wstring m_gamePath = L"";
 	std::unordered_map<std::wstring, unsigned char> m_modListMap = {};
 	std::vector<std::wstring> m_localModList    = {};
 	std::vector<std::wstring> m_workshopModList = {};
@@ -36,10 +38,42 @@ public:
 	bool m_openLinksInSteam = false;
 
 
-	void ApplyChanges() const;
+	inline void SetChangeBit(const unsigned char& bit, const bool& is_set)
+	{
+		if (is_set)
+			m_changeData |= bit;
+		else
+			m_changeData &= ~bit;
+	}
 
-	void UpdateChange(const unsigned char& id);
-	inline bool HasAnyChanges() const { return (m_changeData != 0); }
+	inline bool IsAnyBitSet(const unsigned char& bit)
+	{
+		return (m_changeData & bit) != 0;
+	}
+
+	inline bool HasAnyChanges() const
+	{
+		return (m_changeData != 0);
+	}
+
+	template<unsigned char t_option_id>
+	inline constexpr void UpdateChange()
+	{
+		if constexpr (t_option_id == SettingsChangeDetector_LocalModList)
+			this->SetChangeBit(t_option_id, m_localModList != DatabaseConfig::LocalModFolders);
+		else if constexpr (t_option_id == SettingsChangeDetector_WorkshopModList)
+			this->SetChangeBit(t_option_id, m_workshopModList != DatabaseConfig::ModFolders);
+		else if constexpr (t_option_id == SettingsChangeDetector_BlueprintFolders)
+			this->SetChangeBit(t_option_id, m_blueprintFolders != DatabaseConfig::BlueprintFolders);
+		else if constexpr (t_option_id == SettingsChangeDetector_TileFolders)
+			this->SetChangeBit(t_option_id, m_tileFolders != DatabaseConfig::TileFolders);
+		else if constexpr (t_option_id == SettingsChangeDetector_OpenLinksInSteam)
+			this->SetChangeBit(t_option_id, m_openLinksInSteam != DatabaseConfig::OpenLinksInSteam);
+		else if constexpr (t_option_id == SettingsChangeDetector_GamePath)
+			this->SetChangeBit(t_option_id, m_gamePath != DatabaseConfig::GamePath);
+	}
+
+	void ApplyChanges();
 
 private:
 	unsigned char m_changeData = 0x0;

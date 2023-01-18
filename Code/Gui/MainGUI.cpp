@@ -5,6 +5,7 @@
 #include "SettingsGui.h"
 #include "AboutGui.h"
 
+#include "ObjectDatabase\GroundTextureDatabase.hpp"
 #include "ObjectDatabase\KeywordReplacer.hpp"
 #include "ObjectDatabase\ObjectDatabase.hpp"
 #include "ObjectDatabase\DatabaseConfig.hpp"
@@ -780,5 +781,16 @@ namespace SMConverter
 	{
 		SettingsGui^ v_settings_gui = gcnew SettingsGui();
 		v_settings_gui->ShowDialog();
+
+		if (v_settings_gui->m_reload_obj_db)
+		{
+			DatabaseConfig::ReadConfig();
+			GroundTextureDatabase::Initialize();
+
+			this->LoadObjectDatabase(false);
+		}
+
+		if (v_settings_gui->m_reload_user_obj)
+			this->LoadUserObjects();
 	}
 }

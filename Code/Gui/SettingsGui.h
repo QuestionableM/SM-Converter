@@ -20,6 +20,9 @@ namespace SMConverter
 	public:
 		SettingsGui(void);
 
+		bool m_reload_obj_db = false;
+		bool m_reload_user_obj = false;
+
 	protected:
 		~SettingsGui();
 
@@ -137,6 +140,7 @@ namespace SMConverter
 			this->m_tb_gamePath->Name = L"m_tb_gamePath";
 			this->m_tb_gamePath->Size = System::Drawing::Size(394, 22);
 			this->m_tb_gamePath->TabIndex = 0;
+			this->m_tb_gamePath->TextChanged += gcnew System::EventHandler(this, &SettingsGui::Settings_GamePath_TextChanged);
 			// 
 			// m_tabPage_paths
 			// 
@@ -168,10 +172,11 @@ namespace SMConverter
 			this->m_lb_pathList->Size = System::Drawing::Size(359, 200);
 			this->m_lb_pathList->TabIndex = 5;
 			this->m_lb_pathList->SelectedIndexChanged += gcnew System::EventHandler(this, &SettingsGui::Settings_PathList_SelectedIndexChanged);
+			this->m_lb_pathList->KeyDown += gcnew System::Windows::Forms::KeyEventHandler(this, &SettingsGui::Settings_PathList_KeyDown);
 			// 
 			// m_cb_fileOption
 			// 
-			this->m_cb_fileOption->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left)
+			this->m_cb_fileOption->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left)
 				| System::Windows::Forms::AnchorStyles::Right));
 			this->m_cb_fileOption->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			this->m_cb_fileOption->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
@@ -188,7 +193,7 @@ namespace SMConverter
 			// 
 			// m_btn_removePath
 			// 
-			this->m_btn_removePath->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
+			this->m_btn_removePath->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Right));
 			this->m_btn_removePath->Enabled = false;
 			this->m_btn_removePath->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
 			this->m_btn_removePath->Location = System::Drawing::Point(371, 62);
@@ -201,7 +206,7 @@ namespace SMConverter
 			// 
 			// m_btn_addPath
 			// 
-			this->m_btn_addPath->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
+			this->m_btn_addPath->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Right));
 			this->m_btn_addPath->Enabled = false;
 			this->m_btn_addPath->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
 			this->m_btn_addPath->Location = System::Drawing::Point(371, 34);
@@ -214,7 +219,7 @@ namespace SMConverter
 			// 
 			// m_btn_browsePath
 			// 
-			this->m_btn_browsePath->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
+			this->m_btn_browsePath->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Right));
 			this->m_btn_browsePath->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
 			this->m_btn_browsePath->Location = System::Drawing::Point(371, 6);
 			this->m_btn_browsePath->Name = L"m_btn_browsePath";
@@ -226,7 +231,7 @@ namespace SMConverter
 			// 
 			// m_tb_filePath
 			// 
-			this->m_tb_filePath->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left)
+			this->m_tb_filePath->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left)
 				| System::Windows::Forms::AnchorStyles::Right));
 			this->m_tb_filePath->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
 			this->m_tb_filePath->Location = System::Drawing::Point(6, 6);
@@ -235,6 +240,7 @@ namespace SMConverter
 			this->m_tb_filePath->Size = System::Drawing::Size(359, 22);
 			this->m_tb_filePath->TabIndex = 0;
 			this->m_tb_filePath->TextChanged += gcnew System::EventHandler(this, &SettingsGui::Settings_FilePath_TextChanged);
+			this->m_tb_filePath->KeyPress += gcnew System::Windows::Forms::KeyPressEventHandler(this, &SettingsGui::Settings_FilePath_KeyPress);
 			// 
 			// m_btn_saveChanges
 			// 
@@ -260,6 +266,7 @@ namespace SMConverter
 			this->Name = L"SettingsGui";
 			this->ShowIcon = false;
 			this->Text = L"Settings";
+			this->FormClosing += gcnew System::Windows::Forms::FormClosingEventHandler(this, &SettingsGui::Settings_FormClosing);
 			this->m_tabControl->ResumeLayout(false);
 			this->m_tabPage_general->ResumeLayout(false);
 			this->m_tabPage_general->PerformLayout();
@@ -276,7 +283,10 @@ namespace SMConverter
 		System::Void UpdatePathListFromVec(const std::vector<std::wstring>& v_path_list);
 		System::Void UpdateCurrentPathList();
 
+		System::Void Settings_PathList_KeyDown(System::Object^ sender, System::Windows::Forms::KeyEventArgs^ e);
 		System::Void Settings_PathList_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e);
+
+		System::Void Settings_FilePath_KeyPress(System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e);
 		System::Void Settings_FilePath_TextChanged(System::Object^ sender, System::EventArgs^ e);
 
 		std::wstring GetSelectedPathListString();
@@ -285,5 +295,10 @@ namespace SMConverter
 		System::Void Settings_PathBrowser_Click(System::Object^ sender, System::EventArgs^ e);
 		System::Void Settings_SaveChanges_Click(System::Object^ sender, System::EventArgs^ e);
 		System::Void Settings_OpenLinksInSteam_CheckedChanged(System::Object^ sender, System::EventArgs^ e);
+
+		System::Void Settings_GamePath_TextChanged(System::Object^ sender, System::EventArgs^ e);
+		System::Void UpdateSaveButton();
+
+		System::Void Settings_FormClosing(System::Object^ sender, System::Windows::Forms::FormClosingEventArgs^ e);
 	};
 }

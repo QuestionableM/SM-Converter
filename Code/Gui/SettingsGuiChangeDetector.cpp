@@ -13,6 +13,8 @@ SettingsChangeDetector::SettingsChangeDetector()
 	m_tileFolders = DatabaseConfig::TileFolders;
 
 	m_openLinksInSteam = DatabaseConfig::OpenLinksInSteam;
+
+	m_gamePath = DatabaseConfig::GamePath;
 }
 
 void SettingsChangeDetector::RemoveFromCheckedVec(std::vector<std::wstring>& v_vec, std::unordered_map<std::wstring, unsigned char>& v_map, const std::size_t& v_idx)
@@ -31,31 +33,33 @@ void SettingsChangeDetector::RemoveFromMap(std::unordered_map<std::wstring, unsi
 		v_map.erase(v_iter);
 }
 
-void SettingsChangeDetector::ApplyChanges() const
+void SettingsChangeDetector::ApplyChanges()
 {
-	DatabaseConfig::ModFolders = m_workshopModList;
-	DatabaseConfig::LocalModFolders = m_localModList;
-	DatabaseConfig::ModPathChecker = m_modListMap;
+	const bool v_local_mods_changed = m_changeData & SettingsChangeDetector_LocalModList;
+	const bool v_workshop_mods_changed = m_changeData & SettingsChangeDetector_WorkshopModList;
 
-	DatabaseConfig::BlueprintFolders = m_blueprintFolders;
-	DatabaseConfig::TileFolders = m_tileFolders;
-
-	DatabaseConfig::OpenLinksInSteam = m_openLinksInSteam;
-}
-
-void SettingsChangeDetector::UpdateChange(const unsigned char& id)
-{
-	switch (id)
+	if (v_local_mods_changed || v_workshop_mods_changed)
 	{
-	case SettingsChangeDetector_LocalModList:
-		break;
-	case SettingsChangeDetector_WorkshopModList:
-		break;
-	case SettingsChangeDetector_BlueprintFolders:
-		break;
-	case SettingsChangeDetector_TileFolders:
-		break;
-	case SettingsChangeDetector_OpenLinksInSteam:
-		break;
+		DatabaseConfig::ModPathChecker = m_modListMap;
+
+		if (v_local_mods_changed)
+			DatabaseConfig::LocalModFolders = m_localModList;
+
+		if (v_workshop_mods_changed)
+			DatabaseConfig::ModFolders = m_workshopModList;
 	}
+
+	if (m_changeData & SettingsChangeDetector_BlueprintFolders)
+		DatabaseConfig::BlueprintFolders = m_blueprintFolders;
+
+	if (m_changeData & SettingsChangeDetector_TileFolders)
+		DatabaseConfig::TileFolders = m_tileFolders;
+
+	if (m_changeData & SettingsChangeDetector_GamePath)
+		DatabaseConfig::GamePath = m_gamePath;
+
+	//Doesn't matter for boolean that much
+	DatabaseConfig::OpenLinksInSteam = m_openLinksInSteam;
+
+	m_changeData = 0x0;
 }

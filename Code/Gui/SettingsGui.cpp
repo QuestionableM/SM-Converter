@@ -28,8 +28,8 @@ namespace SMConverter
 
 		m_changeDetector = new SettingsChangeDetector();
 
-		if (!DatabaseConfig::GamePath.empty())
-			m_tb_gamePath->Text = gcnew System::String(DatabaseConfig::GamePath.c_str());
+		if (!m_changeDetector->m_gamePath.empty())
+			m_tb_gamePath->Text = gcnew System::String(m_changeDetector->m_gamePath.c_str());
 
 		m_cb_openLinksInSteam->Checked = DatabaseConfig::OpenLinksInSteam;
 
@@ -123,10 +123,28 @@ namespace SMConverter
 		}
 	}
 
+	void SettingsGui::Settings_PathList_KeyDown(System::Object^ sender, System::Windows::Forms::KeyEventArgs^ e)
+	{
+		if (e->KeyCode == Keys::Delete && m_lb_pathList->SelectedIndex >= 0)
+		{
+			this->Settings_RemovePath_Click(nullptr, nullptr);
+			e->Handled = true;
+		}
+	}
+
 	void SettingsGui::Settings_PathList_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e)
 	{
 		const bool v_is_valid = (m_lb_pathList->SelectedIndex >= 0);
 		m_btn_removePath->Enabled = v_is_valid;
+	}
+
+	void SettingsGui::Settings_FilePath_KeyPress(System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e)
+	{
+		if (e->KeyChar == 13 && m_tb_filePath->TextLength > 0) //Check for Enter
+		{
+			this->Settings_AddPath_Click(nullptr, nullptr);
+			e->Handled = true;
+		}
 	}
 
 	void SettingsGui::Settings_FilePath_TextChanged(System::Object^ sender, System::EventArgs^ e)
@@ -149,23 +167,35 @@ namespace SMConverter
 		switch (m_cb_fileOption->SelectedIndex)
 		{
 		case SMFileOption_LocalModFolders:
-			SettingsChangeDetector::RemoveFromCheckedVec(m_changeDetector->m_localModList, m_changeDetector->m_modListMap, static_cast<std::size_t>(v_cur_idx));
-			break;
+			{
+				SettingsChangeDetector::RemoveFromCheckedVec(m_changeDetector->m_localModList, m_changeDetector->m_modListMap, static_cast<std::size_t>(v_cur_idx));
+				m_changeDetector->UpdateChange<SettingsChangeDetector_LocalModList>();
+				break;
+			}
 		case SMFileOption_WorkshopModFolders:
-			SettingsChangeDetector::RemoveFromCheckedVec(m_changeDetector->m_workshopModList, m_changeDetector->m_modListMap, static_cast<std::size_t>(v_cur_idx));
-			break;
+			{
+				SettingsChangeDetector::RemoveFromCheckedVec(m_changeDetector->m_workshopModList, m_changeDetector->m_modListMap, static_cast<std::size_t>(v_cur_idx));
+				m_changeDetector->UpdateChange<SettingsChangeDetector_WorkshopModList>();
+				break;
+			}
 		case SMFileOption_BlueprintFolders:
-			SettingsChangeDetector::RemoveFromMap(m_changeDetector->m_blueprintFolders, this->GetSelectedPathListString());
-			break;
+			{
+				SettingsChangeDetector::RemoveFromMap(m_changeDetector->m_blueprintFolders, this->GetSelectedPathListString());
+				m_changeDetector->UpdateChange<SettingsChangeDetector_BlueprintFolders>();
+				break;
+			}
 		case SMFileOption_TileFolders:
-			SettingsChangeDetector::RemoveFromMap(m_changeDetector->m_tileFolders, this->GetSelectedPathListString());
-			break;
+			{
+				SettingsChangeDetector::RemoveFromMap(m_changeDetector->m_tileFolders, this->GetSelectedPathListString());
+				m_changeDetector->UpdateChange<SettingsChangeDetector_TileFolders>();
+				break;
+			}
 		}
 
 		this->UpdateCurrentPathList();
+		this->UpdateSaveButton();
 
 		m_lb_pathList->SelectedIndex = (v_cur_idx < m_lb_pathList->Items->Count) ? v_cur_idx : v_cur_idx - 1;
-		m_btn_saveChanges->Enabled = true;
 	}
 
 	void SettingsGui::Settings_AddPath_Click(System::Object^ sender, System::EventArgs^ e)
@@ -190,17 +220,29 @@ namespace SMConverter
 		switch (m_cb_fileOption->SelectedIndex)
 		{
 		case SMFileOption_LocalModFolders:
-			is_success = DatabaseConfig::AddToStrVec(m_changeDetector->m_localModList, m_changeDetector->m_modListMap, v_new_path);
-			break;
+			{
+				is_success = DatabaseConfig::AddToStrVec(m_changeDetector->m_localModList, m_changeDetector->m_modListMap, v_new_path);
+				m_changeDetector->UpdateChange<SettingsChangeDetector_LocalModList>();
+				break;
+			}
 		case SMFileOption_WorkshopModFolders:
-			is_success = DatabaseConfig::AddToStrVec(m_changeDetector->m_workshopModList, m_changeDetector->m_modListMap, v_new_path);
-			break;
+			{
+				is_success = DatabaseConfig::AddToStrVec(m_changeDetector->m_workshopModList, m_changeDetector->m_modListMap, v_new_path);
+				m_changeDetector->UpdateChange<SettingsChangeDetector_WorkshopModList>();
+				break;
+			}
 		case SMFileOption_BlueprintFolders:
-			is_success = DatabaseConfig::AddToStrMap(m_changeDetector->m_blueprintFolders, v_new_path);
-			break;
+			{
+				is_success = DatabaseConfig::AddToStrMap(m_changeDetector->m_blueprintFolders, v_new_path);
+				m_changeDetector->UpdateChange<SettingsChangeDetector_BlueprintFolders>();
+				break;
+			}
 		case SMFileOption_TileFolders:
-			is_success = DatabaseConfig::AddToStrMap(m_changeDetector->m_tileFolders, v_new_path);
-			break;
+			{
+				is_success = DatabaseConfig::AddToStrMap(m_changeDetector->m_tileFolders, v_new_path);
+				m_changeDetector->UpdateChange<SettingsChangeDetector_TileFolders>();
+				break;
+			}
 		}
 
 		if (!is_success)
@@ -211,7 +253,7 @@ namespace SMConverter
 
 		m_tb_filePath->Clear();
 		this->UpdateCurrentPathList();
-		m_btn_saveChanges->Enabled = true;
+		this->UpdateSaveButton();
 	}
 
 	void SettingsGui::Settings_PathBrowser_Click(System::Object^ sender, System::EventArgs^ e)
@@ -252,6 +294,18 @@ namespace SMConverter
 			return;
 		}
 
+		if (!File::IsDirectory(v_game_path))
+		{
+			WF_SETTINGS_WARNING("Invalid Game Path", "The path must lead to the root directory of the game");
+			return;
+		}
+
+		m_reload_obj_db |= m_changeDetector->IsAnyBitSet(SettingsChangeDetector_GamePath);
+		m_reload_user_obj |= m_changeDetector->IsAnyBitSet(
+			SettingsChangeDetector_LocalModList | SettingsChangeDetector_WorkshopModList |
+			SettingsChangeDetector_BlueprintFolders | SettingsChangeDetector_TileFolders
+		);
+
 		m_changeDetector->ApplyChanges();
 		DatabaseConfig::SaveConfig();
 
@@ -261,5 +315,39 @@ namespace SMConverter
 	void SettingsGui::Settings_OpenLinksInSteam_CheckedChanged(System::Object^ sender, System::EventArgs^ e)
 	{
 		m_changeDetector->m_openLinksInSteam = m_cb_openLinksInSteam->Checked;
+		m_changeDetector->UpdateChange<SettingsChangeDetector_OpenLinksInSteam>();
+
+		this->UpdateSaveButton();
+	}
+
+	void SettingsGui::Settings_GamePath_TextChanged(System::Object^ sender, System::EventArgs^ e)
+	{
+		m_changeDetector->m_gamePath = msclr::interop::marshal_as<std::wstring>(m_tb_gamePath->Text);
+		m_changeDetector->UpdateChange<SettingsChangeDetector_GamePath>();
+
+		this->UpdateSaveButton();
+	}
+
+	void SettingsGui::UpdateSaveButton()
+	{
+		m_btn_saveChanges->Enabled = m_changeDetector->HasAnyChanges();
+	}
+
+	void SettingsGui::Settings_FormClosing(System::Object^ sender, System::Windows::Forms::FormClosingEventArgs^ e)
+	{
+		namespace WForms = System::Windows::Forms;
+
+		if (!m_btn_saveChanges->Enabled)
+			return;
+
+		const WForms::DialogResult v_dialog_res = WForms::MessageBox::Show(
+			"Do you want to leave the settings without saving?\n\nAll unsaved changes will be lost!",
+			"Unsaved Changes",
+			WForms::MessageBoxButtons::YesNo,
+			WForms::MessageBoxIcon::Warning
+		);
+
+		if (v_dialog_res != WForms::DialogResult::Yes)
+			e->Cancel = true;
 	}
 }

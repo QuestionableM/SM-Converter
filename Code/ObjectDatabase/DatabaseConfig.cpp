@@ -115,12 +115,12 @@ void DatabaseConfig::ReadProgramSettings(const nlohmann::json& config_json)
 			const auto& v_keyObjVal = key_obj.value();
 			if (!v_keyObjVal.is_string()) continue;
 
-			const std::wstring pKey = String::ToWide(key_obj.key());
+			const std::wstring v_key = String::ToWide(key_obj.key());
 
-			std::wstring pValue = String::ToWide(v_keyObjVal.get_ref<const std::string&>());
-			KeywordReplacer::ReplaceKeyR(pValue);
+			std::wstring v_value = String::ToWide(v_keyObjVal.get_ref<const std::string&>());
+			KeywordReplacer::ReplaceKeyR(v_value);
 
-			DatabaseConfig::AddKeywordReplacement(pKey, pValue);
+			DatabaseConfig::AddKeywordReplacement(v_key, v_value);
 		}
 	}
 
@@ -391,15 +391,15 @@ nlohmann::json DatabaseConfig::GetConfigJson(bool* should_write, const bool& rea
 	return cfgData;
 }
 
-void DatabaseConfig::AddKeywordReplacement(const std::wstring& key, const std::wstring& value)
+void DatabaseConfig::AddKeywordReplacement(const std::wstring& key, const std::wstring& path)
 {
-	DebugOutL("Set ", key, " to ", value);
+	DebugOutL(key, " is set to ", path);
 
-	KeywordReplacer::SetReplacement(key, value);
-	DatabaseConfig::DefaultKeywords.push_back(std::make_pair(key, value));
+	DatabaseConfig::DefaultKeywords[key] = path;
+	KeywordReplacer::SetReplacement(key, path);
 }
 
-void DatabaseConfig::UpdatePathReplacement()
+void DatabaseConfig::UpdateGamePathReplacement()
 {
 	DatabaseConfig::AddKeywordReplacement(L"$GAME_FOLDER", DatabaseConfig::GamePath);
 }
@@ -426,7 +426,7 @@ void DatabaseConfig::SaveConfig()
 	JsonReader::WriteJson(DatabaseConfig::ConfigPath.data(), cfgData);
 
 	//Update the game path keyword in case the path was updated
-	DatabaseConfig::UpdatePathReplacement();
+	DatabaseConfig::UpdateGamePathReplacement();
 }
 
 void DatabaseConfig::ReadConfig()
@@ -443,7 +443,7 @@ void DatabaseConfig::ReadConfig()
 	//Stop reading the config if the path to the game is invalid
 	if (DatabaseConfig::GamePath.empty()) return;
 
-	DatabaseConfig::UpdatePathReplacement();
+	DatabaseConfig::UpdateGamePathReplacement();
 	DatabaseConfig::ReadProgramSettings(cfgData);
 
 	if (should_write)

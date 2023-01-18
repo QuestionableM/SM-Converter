@@ -21,15 +21,15 @@ public:
 	inline static bool OpenLinksInSteam = false;
 
 	inline static PathChecker AssetListFolders     = {};
-	inline static PathChecker BlueprintFolders = {};
-	inline static PathChecker TileFolders = {};
+	inline static PathChecker BlueprintFolders     = {};
+	inline static PathChecker TileFolders          = {};
 	inline static PathChecker ResourceUpgradeFiles = {};
 
 	inline static PathChecker ModPathChecker = {};
 	inline static std::vector<std::wstring> ModFolders           = {};
 	inline static std::vector<std::wstring> LocalModFolders      = {};
 
-	inline static std::vector<std::pair<std::wstring, std::wstring>> DefaultKeywords = {};
+	inline static std::unordered_map<std::wstring, std::wstring> DefaultKeywords = {};
 
 private:
 	static void WstrVecToJson(nlohmann::json& j_obj, const std::string& key, const std::vector<std::wstring>& r_wstr_vec);
@@ -51,8 +51,8 @@ private:
 	static void ReadUserSettings(const nlohmann::json& config_json, bool& should_write);
 
 	static nlohmann::json GetConfigJson(bool* should_write, const bool& read_from_file);
-	static void AddKeywordReplacement(const std::wstring& key, const std::wstring& value);
-	static void UpdatePathReplacement();
+	static void AddKeywordReplacement(const std::wstring& key, const std::wstring& path);
+	static void UpdateGamePathReplacement();
 
 public:
 	static void SaveConfig();
