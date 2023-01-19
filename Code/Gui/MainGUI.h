@@ -32,9 +32,6 @@ namespace SMConverter
 		System::Windows::Forms::Button^ m_btn_folderDialog;
 		System::Windows::Forms::Button^ m_btn_convert;
 
-		System::Windows::Forms::ToolStripSeparator^ toolStripSeparator1;
-		System::Windows::Forms::ToolStripMenuItem^ m_btn_aboutProgram;
-
 		System::Windows::Forms::ToolStripMenuItem^ m_btn_reloadDatabase;
 		System::Windows::Forms::ToolStripMenuItem^ m_btn_options;
 		System::Windows::Forms::ToolStripMenuItem^ m_btn_reloadUserObjects;
@@ -60,7 +57,20 @@ namespace SMConverter
 		System::Windows::Forms::ProgressBar^ m_pb_progress;
 		System::Windows::Forms::MenuStrip^ m_menuStrip;
 		System::Windows::Forms::Timer^ m_progressBarUpdater;
+		
+		System::Windows::Forms::ContextMenuStrip^ m_cms_tile;
+		System::Windows::Forms::ToolStripMenuItem^ m_btn_openTileInSteamWorkshop;
+		System::Windows::Forms::ToolStripMenuItem^ m_btn_findTileCreatorInSteam;
+		System::Windows::Forms::ToolStripMenuItem^ m_btn_openTileFolder;
+		System::Windows::Forms::ToolStripSeparator^ m_cms_tile_separator;
 
+		System::Windows::Forms::ToolStripMenuItem^ m_menuItem_open;
+		System::Windows::Forms::ToolStripMenuItem^ m_btn_openBlueprintOutputDirectory;
+		System::Windows::Forms::ToolStripMenuItem^ m_btn_openTileOutputDirectory;
+		System::Windows::Forms::ToolStripSeparator^ m_ts_open_separator;
+		System::Windows::Forms::ToolStripMenuItem^ m_btn_aboutProgram;
+
+		System::Windows::Forms::ToolStripSeparator^ m_ts_settings_separator;
 		System::ComponentModel::IContainer^ components;
 
 #pragma region Windows Form Designer generated code
@@ -77,11 +87,15 @@ namespace SMConverter
 			this->m_pb_progress = (gcnew System::Windows::Forms::ProgressBar());
 			this->m_lbl_progressStatus = (gcnew System::Windows::Forms::Label());
 			this->m_menuStrip = (gcnew System::Windows::Forms::MenuStrip());
+			this->m_menuItem_open = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->m_btn_openBlueprintOutputDirectory = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->m_btn_openTileOutputDirectory = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->m_ts_open_separator = (gcnew System::Windows::Forms::ToolStripSeparator());
 			this->m_btn_aboutProgram = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->m_menuItem_settings = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->m_btn_reloadUserObjects = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->m_btn_reloadDatabase = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->toolStripSeparator1 = (gcnew System::Windows::Forms::ToolStripSeparator());
+			this->m_ts_settings_separator = (gcnew System::Windows::Forms::ToolStripSeparator());
 			this->m_btn_options = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->m_lbl_objSelectorStatus = (gcnew System::Windows::Forms::Label());
 			this->m_progressBarUpdater = (gcnew System::Windows::Forms::Timer(this->components));
@@ -91,8 +105,14 @@ namespace SMConverter
 			this->m_cms_blueprint = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
 			this->m_btn_openBlueprintInSteamWorkshop = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->m_btn_openBlueprintFolder = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->m_cms_tile = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
+			this->m_btn_openTileInSteamWorkshop = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->m_btn_openTileFolder = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->m_cms_tile_separator = (gcnew System::Windows::Forms::ToolStripSeparator());
+			this->m_btn_findTileCreatorInSteam = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->m_menuStrip->SuspendLayout();
 			this->m_cms_blueprint->SuspendLayout();
+			this->m_cms_tile->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// m_btn_folderDialog
@@ -211,7 +231,7 @@ namespace SMConverter
 			// m_menuStrip
 			// 
 			this->m_menuStrip->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
-				this->m_btn_aboutProgram,
+				this->m_menuItem_open,
 					this->m_menuItem_settings
 			});
 			this->m_menuStrip->Location = System::Drawing::Point(0, 0);
@@ -221,18 +241,47 @@ namespace SMConverter
 			this->m_menuStrip->TabIndex = 10;
 			this->m_menuStrip->Text = L"Menu Strip";
 			// 
+			// m_menuItem_open
+			// 
+			this->m_menuItem_open->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(4) {
+				this->m_btn_openBlueprintOutputDirectory,
+					this->m_btn_openTileOutputDirectory, this->m_ts_open_separator, this->m_btn_aboutProgram
+			});
+			this->m_menuItem_open->Name = L"m_menuItem_open";
+			this->m_menuItem_open->Size = System::Drawing::Size(48, 20);
+			this->m_menuItem_open->Text = L"Open";
+			// 
+			// m_btn_openBlueprintOutputDirectory
+			// 
+			this->m_btn_openBlueprintOutputDirectory->Name = L"m_btn_openBlueprintOutputDirectory";
+			this->m_btn_openBlueprintOutputDirectory->Size = System::Drawing::Size(214, 22);
+			this->m_btn_openBlueprintOutputDirectory->Text = L"Blueprint Output Directory";
+			this->m_btn_openBlueprintOutputDirectory->Click += gcnew System::EventHandler(this, &MainGui::MainGui_OpenBlueprintOutputFolder_Click);
+			// 
+			// m_btn_openTileOutputDirectory
+			// 
+			this->m_btn_openTileOutputDirectory->Name = L"m_btn_openTileOutputDirectory";
+			this->m_btn_openTileOutputDirectory->Size = System::Drawing::Size(214, 22);
+			this->m_btn_openTileOutputDirectory->Text = L"Tile Output Directory";
+			this->m_btn_openTileOutputDirectory->Click += gcnew System::EventHandler(this, &MainGui::MainGui_OpenTileOutputFolder_Click);
+			// 
+			// m_ts_open_separator
+			// 
+			this->m_ts_open_separator->Name = L"m_ts_open_separator";
+			this->m_ts_open_separator->Size = System::Drawing::Size(211, 6);
+			// 
 			// m_btn_aboutProgram
 			// 
 			this->m_btn_aboutProgram->Name = L"m_btn_aboutProgram";
-			this->m_btn_aboutProgram->Size = System::Drawing::Size(52, 20);
-			this->m_btn_aboutProgram->Text = L"About";
+			this->m_btn_aboutProgram->Size = System::Drawing::Size(214, 22);
+			this->m_btn_aboutProgram->Text = L"About Program";
 			this->m_btn_aboutProgram->Click += gcnew System::EventHandler(this, &MainGui::AboutButton_Click);
 			// 
 			// m_menuItem_settings
 			// 
 			this->m_menuItem_settings->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(4) {
 				this->m_btn_reloadUserObjects,
-					this->m_btn_reloadDatabase, this->toolStripSeparator1, this->m_btn_options
+					this->m_btn_reloadDatabase, this->m_ts_settings_separator, this->m_btn_options
 			});
 			this->m_menuItem_settings->Name = L"m_menuItem_settings";
 			this->m_menuItem_settings->Size = System::Drawing::Size(61, 20);
@@ -252,10 +301,10 @@ namespace SMConverter
 			this->m_btn_reloadDatabase->Text = L"Reload Object Database";
 			this->m_btn_reloadDatabase->Click += gcnew System::EventHandler(this, &MainGui::MainGui_ReloadDatabase_Click);
 			// 
-			// toolStripSeparator1
+			// m_ts_settings_separator
 			// 
-			this->toolStripSeparator1->Name = L"toolStripSeparator1";
-			this->toolStripSeparator1->Size = System::Drawing::Size(196, 6);
+			this->m_ts_settings_separator->Name = L"m_ts_settings_separator";
+			this->m_ts_settings_separator->Size = System::Drawing::Size(196, 6);
 			// 
 			// m_btn_options
 			// 
@@ -304,7 +353,7 @@ namespace SMConverter
 			});
 			this->m_cms_blueprint->Name = L"m_cms_blueprint";
 			this->m_cms_blueprint->RenderMode = System::Windows::Forms::ToolStripRenderMode::System;
-			this->m_cms_blueprint->Size = System::Drawing::Size(210, 70);
+			this->m_cms_blueprint->Size = System::Drawing::Size(210, 48);
 			// 
 			// m_btn_openBlueprintInSteamWorkshop
 			// 
@@ -317,8 +366,44 @@ namespace SMConverter
 			// 
 			this->m_btn_openBlueprintFolder->Name = L"m_btn_openBlueprintFolder";
 			this->m_btn_openBlueprintFolder->Size = System::Drawing::Size(209, 22);
-			this->m_btn_openBlueprintFolder->Text = L"Open Blueprint Folder";
+			this->m_btn_openBlueprintFolder->Text = L"Open in Explorer";
 			this->m_btn_openBlueprintFolder->Click += gcnew System::EventHandler(this, &MainGui::MainGui_OpenItemDirectory);
+			// 
+			// m_cms_tile
+			// 
+			this->m_cms_tile->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(4) {
+				this->m_btn_openTileInSteamWorkshop,
+					this->m_btn_openTileFolder, this->m_cms_tile_separator, this->m_btn_findTileCreatorInSteam
+			});
+			this->m_cms_tile->Name = L"m_cms_tile";
+			this->m_cms_tile->RenderMode = System::Windows::Forms::ToolStripRenderMode::System;
+			this->m_cms_tile->Size = System::Drawing::Size(210, 76);
+			// 
+			// m_btn_openTileInSteamWorkshop
+			// 
+			this->m_btn_openTileInSteamWorkshop->Name = L"m_btn_openTileInSteamWorkshop";
+			this->m_btn_openTileInSteamWorkshop->Size = System::Drawing::Size(209, 22);
+			this->m_btn_openTileInSteamWorkshop->Text = L"Open in Steam Workshop";
+			this->m_btn_openTileInSteamWorkshop->Click += gcnew System::EventHandler(this, &MainGui::MainGui_OpenItemInWorkshop);
+			// 
+			// m_btn_openTileFolder
+			// 
+			this->m_btn_openTileFolder->Name = L"m_btn_openTileFolder";
+			this->m_btn_openTileFolder->Size = System::Drawing::Size(209, 22);
+			this->m_btn_openTileFolder->Text = L"Open in Explorer";
+			this->m_btn_openTileFolder->Click += gcnew System::EventHandler(this, &MainGui::MainGui_OpenItemDirectory);
+			// 
+			// m_cms_tile_separator
+			// 
+			this->m_cms_tile_separator->Name = L"m_cms_tile_separator";
+			this->m_cms_tile_separator->Size = System::Drawing::Size(206, 6);
+			// 
+			// m_btn_findTileCreatorInSteam
+			// 
+			this->m_btn_findTileCreatorInSteam->Name = L"m_btn_findTileCreatorInSteam";
+			this->m_btn_findTileCreatorInSteam->Size = System::Drawing::Size(209, 22);
+			this->m_btn_findTileCreatorInSteam->Text = L"Find Creator in Steam";
+			this->m_btn_findTileCreatorInSteam->Click += gcnew System::EventHandler(this, &MainGui::MainGui_FindTileCreator_Click);
 			// 
 			// MainGui
 			// 
@@ -346,6 +431,7 @@ namespace SMConverter
 			this->m_menuStrip->ResumeLayout(false);
 			this->m_menuStrip->PerformLayout();
 			this->m_cms_blueprint->ResumeLayout(false);
+			this->m_cms_tile->ResumeLayout(false);
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -401,5 +487,9 @@ namespace SMConverter
 		System::Void MainGui_OpenItemDirectory(System::Object^ sender, System::EventArgs^ e);
 
 		System::Void UpdateContextMenuStrip();
+		System::Void MainGui_FindTileCreator_Click(System::Object^ sender, System::EventArgs^ e);
+
+		System::Void MainGui_OpenBlueprintOutputFolder_Click(System::Object^ sender, System::EventArgs^ e);
+		System::Void MainGui_OpenTileOutputFolder_Click(System::Object^ sender, System::EventArgs^ e);
 	};
 }

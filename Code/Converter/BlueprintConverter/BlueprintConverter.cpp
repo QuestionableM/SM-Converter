@@ -1,5 +1,6 @@
 #include "BlueprintConverter.hpp"
 
+#include "ObjectDatabase\DatabaseConfig.hpp"
 #include "ObjectDatabase\ProgCounter.hpp"
 
 #include "Converter\ConvertSettings.hpp"
@@ -10,13 +11,11 @@
 
 #pragma unmanaged
 
-constexpr const static std::wstring_view g_BlueprintOutputDirectory = L"./ConvertedBlueprints";
-
 void BlueprintConv::WriteToFileInternal(SMBlueprint* blueprint, const std::wstring& bp_name, ConvertError& v_error)
 {
 	if (v_error) return;
 
-	const std::wstring v_bp_out_dir = std::wstring(g_BlueprintOutputDirectory.data());
+	const std::wstring v_bp_out_dir = std::wstring(DatabaseConfig::BlueprintOutputFolder.data());
 	if (!File::CreateDirectorySafe(v_bp_out_dir))
 	{
 		v_error = ConvertError(1, L"Couldn't create the main output directory");

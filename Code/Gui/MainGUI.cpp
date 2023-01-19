@@ -34,6 +34,13 @@
 		System::Windows::Forms::MessageBoxIcon::Warning \
 	)
 
+#define WF_SHOW_ERROR(title, message) \
+	System::Windows::Forms::MessageBox::Show( \
+		message, title, \
+		System::Windows::Forms::MessageBoxButtons::OK, \
+		System::Windows::Forms::MessageBoxIcon::Error \
+	)
+
 enum : unsigned short
 {
 	Generator_BlueprintConverter = 0,
@@ -46,6 +53,10 @@ namespace SMConverter
 	MainGui::MainGui()
 	{
 		this->InitializeComponent();
+
+	#if defined(DEBUG) || defined(_DEBUG)
+		this->Text += " (DEBUG)";
+	#endif
 
 		m_cb_selectedGenerator->SelectedIndex = 0;
 
@@ -132,6 +143,8 @@ namespace SMConverter
 			m_lb_objectSelector->ContextMenuStrip = m_cms_blueprint;
 			break;
 		case Generator_TileConverter:
+			m_lb_objectSelector->ContextMenuStrip = m_cms_tile;
+			break;
 		case Generator_ScriptConverter:
 			m_lb_objectSelector->ContextMenuStrip = nullptr;
 			break;
@@ -292,10 +305,14 @@ namespace SMConverter
 		m_cb_selectedGenerator->Enabled = obj_converted;
 		m_menuStrip->Enabled = obj_converted;
 
-
 		m_cms_blueprint->Enabled = objlist_and_obj_loaded;
 		m_btn_openBlueprintFolder->Enabled = false;
 		m_btn_openBlueprintInSteamWorkshop->Enabled = false;
+
+		m_cms_tile->Enabled = objlist_and_obj_loaded;
+		m_btn_openTileInSteamWorkshop->Enabled = false;
+		m_btn_openTileFolder->Enabled = false;
+		m_btn_findTileCreatorInSteam->Enabled = false;
 
 		if (objlist_and_obj_loaded)
 			this->UpdateContextMenuStrip();
@@ -481,7 +498,9 @@ namespace SMConverter
 	{
 		this->UpdateSearchResults(m_lastSearchLength);
 		this->UpdateConvertButton();
+		this->UpdateContextMenuStrip();
 		this->MainGui_UpdatePathTextBox();
+
 		m_lastSearchLength = m_tb_searchBox->TextLength;
 	}
 
@@ -925,9 +944,67 @@ namespace SMConverter
 				break;
 			}
 		case Generator_TileConverter:
-			break;
+			{
+				bool v_has_workshop_id = false;
+				bool v_has_creator_id = false;
+				bool v_has_directory = false;
+
+				TileInstance* v_cur_tile = this->GetCurrentTile();
+				if (v_cur_tile)
+				{
+					v_has_workshop_id = v_cur_tile->workshop_id != 0;
+					v_has_creator_id = v_cur_tile->creator_id != 0;
+					v_has_directory = File::Exists(v_cur_tile->directory);
+				}
+
+				m_btn_openTileFolder->Enabled = v_has_directory;
+				m_btn_openTileInSteamWorkshop->Enabled = v_has_workshop_id;
+				m_btn_findTileCreatorInSteam->Enabled = v_has_creator_id;
+
+				break;
+			}
 		case Generator_ScriptConverter:
 			break;
 		}
+	}
+
+	void MainGui::MainGui_FindTileCreator_Click(System::Object^ sender, System::EventArgs^ e)
+	{
+		if (m_lb_objectSelector->SelectedIndex == -1) return;
+		if (m_cb_selectedGenerator->SelectedIndex != Generator_TileConverter) return;
+
+		TileInstance* v_cur_tile = this->GetCurrentTile();
+		if (v_cur_tile->creator_id == 0)
+		{
+			WF_SHOW_WARNING("Can't open", "Invalid user id");
+			return;
+		}
+
+		std::wstring v_user_url;
+		if (DatabaseConfig::OpenLinksInSteam)
+			v_user_url.append(L"steam://openurl/");
+
+		v_user_url.append(L"https://steamcommunity.com/profiles/");
+		v_user_url.append(std::to_wstring(v_cur_tile->creator_id));
+
+		System::Diagnostics::Process::Start(gcnew System::String(v_user_url.c_str()));
+	}
+
+	void MainGui::MainGui_OpenBlueprintOutputFolder_Click(System::Object^ sender, System::EventArgs^ e)
+	{
+		const std::wstring v_bp_out_dir = std::wstring(DatabaseConfig::BlueprintOutputFolder.data());
+		if (File::CreateDirectorySafe(v_bp_out_dir))
+			System::Diagnostics::Process::Start(gcnew System::String(v_bp_out_dir.c_str()));
+		else
+			WF_SHOW_ERROR("Error", "Failed to create the blueprint output directory");
+	}
+
+	void MainGui::MainGui_OpenTileOutputFolder_Click(System::Object^ sender, System::EventArgs^ e)
+	{
+		const std::wstring v_tile_out_dir = std::wstring(DatabaseConfig::TileOutputFolder.data());
+		if (File::CreateDirectorySafe(v_tile_out_dir))
+			System::Diagnostics::Process::Start(gcnew System::String(v_tile_out_dir.c_str()));
+		else
+			WF_SHOW_ERROR("Error", "Failed to create the tile output directory!");
 	}
 }

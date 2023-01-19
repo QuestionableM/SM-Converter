@@ -76,7 +76,7 @@ namespace String
 	template<typename T>
 	inline void ToLowerR(T& r_str)
 	{
-		static_assert(std::_Is_any_of_v<T, std::string, std::wstring>, "ToLowerR can only be used with the following types: std::string, std::wstring");
+		static_assert(std::is_same_v<T, std::string> || std::is_same_v<T, std::wstring>, "ToLowerR can only be used with the following types: std::string, std::wstring");
 
 		if constexpr (std::is_same_v<T, std::wstring>) {
 			for (wchar_t& w_char : r_str)
@@ -91,7 +91,7 @@ namespace String
 	template<typename T>
 	inline T ToLower(const T& str)
 	{
-		static_assert(std::_Is_any_of_v<T, std::string, std::wstring>, "ToLower can only be used with the following types: std::string, std::wstring");
+		static_assert(std::is_same_v<T, std::string> || std::is_same_v<T, std::wstring>, "ToLower can only be used with the following types: std::string, std::wstring");
 
 		if constexpr (std::is_same_v<T, std::wstring>) {
 			std::wstring v_output = str;
@@ -114,7 +114,7 @@ namespace String
 	template<typename T>
 	inline void ReplaceAllR(T& str, const typename T::value_type& to_replace, const typename T::value_type& replacer)
 	{
-		static_assert(std::_Is_any_of_v<T, std::string, std::wstring>, "ReplaceAllR can only be used with the following types: std::string, std::wstring");
+		static_assert(std::is_same_v<T, std::string> || std::is_same_v<T, std::wstring>, "ReplaceAllR can only be used with the following types: std::string, std::wstring");
 
 		std::size_t v_idx = 0;
 		while ((v_idx = str.find(to_replace)) != T::npos)
@@ -124,7 +124,7 @@ namespace String
 	template<typename T>
 	inline T ReplaceAll(const T& str, const typename T::value_type& to_replace, const typename T::value_type& replacer)
 	{
-		static_assert(std::_Is_any_of_v<T, std::string, std::wstring>, "ReplaceAll can only be used with the following types: std::string, std::wstring");
+		static_assert(std::is_same_v<T, std::string> || std::is_same_v<T, std::wstring>, "ReplaceAll can only be used with the following types: std::string, std::wstring");
 
 		T str_cpy = str;
 		std::size_t v_idx = 0;
