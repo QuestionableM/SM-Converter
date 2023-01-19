@@ -20,6 +20,7 @@ namespace SMConverter
 	public:
 		SettingsGui(void);
 
+	public:
 		bool m_reload_obj_db = false;
 		bool m_reload_user_obj = false;
 
@@ -45,12 +46,16 @@ namespace SMConverter
 		System::Windows::Forms::TabPage^ m_tabPage_general;
 		System::Windows::Forms::TabPage^ m_tabPage_paths;
 
+		System::Windows::Forms::ContextMenuStrip^ m_cms_pathListMenu;
+		System::Windows::Forms::ToolStripMenuItem^ m_btn_openPathInExplorer;
+
 		System::Windows::Forms::Label^ m_lbl_gamePath;
-		System::ComponentModel::Container ^components;
+		System::ComponentModel::IContainer^ components;
 
 #pragma region Windows Form Designer generated code
 		void InitializeComponent(void)
 		{
+			this->components = (gcnew System::ComponentModel::Container());
 			this->m_tabControl = (gcnew System::Windows::Forms::TabControl());
 			this->m_tabPage_general = (gcnew System::Windows::Forms::TabPage());
 			this->m_btn_gamePathSelector = (gcnew System::Windows::Forms::Button());
@@ -59,6 +64,8 @@ namespace SMConverter
 			this->m_tb_gamePath = (gcnew System::Windows::Forms::TextBox());
 			this->m_tabPage_paths = (gcnew System::Windows::Forms::TabPage());
 			this->m_lb_pathList = (gcnew System::Windows::Forms::ListBox());
+			this->m_cms_pathListMenu = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
+			this->m_btn_openPathInExplorer = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->m_cb_fileOption = (gcnew System::Windows::Forms::ComboBox());
 			this->m_btn_removePath = (gcnew System::Windows::Forms::Button());
 			this->m_btn_addPath = (gcnew System::Windows::Forms::Button());
@@ -68,6 +75,7 @@ namespace SMConverter
 			this->m_tabControl->SuspendLayout();
 			this->m_tabPage_general->SuspendLayout();
 			this->m_tabPage_paths->SuspendLayout();
+			this->m_cms_pathListMenu->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// m_tabControl
@@ -163,6 +171,7 @@ namespace SMConverter
 			this->m_lb_pathList->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Bottom)
 				| System::Windows::Forms::AnchorStyles::Left)
 				| System::Windows::Forms::AnchorStyles::Right));
+			this->m_lb_pathList->ContextMenuStrip = this->m_cms_pathListMenu;
 			this->m_lb_pathList->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
 			this->m_lb_pathList->FormattingEnabled = true;
 			this->m_lb_pathList->IntegralHeight = false;
@@ -173,6 +182,22 @@ namespace SMConverter
 			this->m_lb_pathList->TabIndex = 5;
 			this->m_lb_pathList->SelectedIndexChanged += gcnew System::EventHandler(this, &SettingsGui::Settings_PathList_SelectedIndexChanged);
 			this->m_lb_pathList->KeyDown += gcnew System::Windows::Forms::KeyEventHandler(this, &SettingsGui::Settings_PathList_KeyDown);
+			this->m_lb_pathList->MouseDown += gcnew System::Windows::Forms::MouseEventHandler(this, &SettingsGui::Settings_PathList_MouseDown);
+			// 
+			// m_cms_pathListMenu
+			// 
+			this->m_cms_pathListMenu->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->m_btn_openPathInExplorer });
+			this->m_cms_pathListMenu->Name = L"m_cms_pathListMenu";
+			this->m_cms_pathListMenu->RenderMode = System::Windows::Forms::ToolStripRenderMode::System;
+			this->m_cms_pathListMenu->Size = System::Drawing::Size(181, 48);
+			// 
+			// m_btn_openPathInExplorer
+			// 
+			this->m_btn_openPathInExplorer->Enabled = false;
+			this->m_btn_openPathInExplorer->Name = L"m_btn_openPathInExplorer";
+			this->m_btn_openPathInExplorer->Size = System::Drawing::Size(180, 22);
+			this->m_btn_openPathInExplorer->Text = L"Open in Explorer";
+			this->m_btn_openPathInExplorer->Click += gcnew System::EventHandler(this, &SettingsGui::Settings_OpenPathInExplorer_Click);
 			// 
 			// m_cb_fileOption
 			// 
@@ -272,6 +297,7 @@ namespace SMConverter
 			this->m_tabPage_general->PerformLayout();
 			this->m_tabPage_paths->ResumeLayout(false);
 			this->m_tabPage_paths->PerformLayout();
+			this->m_cms_pathListMenu->ResumeLayout(false);
 			this->ResumeLayout(false);
 
 		}
@@ -283,6 +309,7 @@ namespace SMConverter
 		System::Void UpdatePathListFromVec(const std::vector<std::wstring>& v_path_list);
 		System::Void UpdateCurrentPathList();
 
+		System::Void Settings_PathList_MouseDown(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e);
 		System::Void Settings_PathList_KeyDown(System::Object^ sender, System::Windows::Forms::KeyEventArgs^ e);
 		System::Void Settings_PathList_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e);
 
@@ -300,5 +327,6 @@ namespace SMConverter
 		System::Void UpdateSaveButton();
 
 		System::Void Settings_FormClosing(System::Object^ sender, System::Windows::Forms::FormClosingEventArgs^ e);
+		System::Void Settings_OpenPathInExplorer_Click(System::Object^ sender, System::EventArgs^ e);
 	};
 }

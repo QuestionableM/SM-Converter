@@ -994,7 +994,7 @@ namespace SMConverter
 	{
 		const std::wstring v_bp_out_dir = std::wstring(DatabaseConfig::BlueprintOutputFolder.data());
 		if (File::CreateDirectorySafe(v_bp_out_dir))
-			System::Diagnostics::Process::Start(gcnew System::String(v_bp_out_dir.c_str()));
+			System::Diagnostics::Process::Start("explorer.exe", gcnew System::String(v_bp_out_dir.c_str()));
 		else
 			WF_SHOW_ERROR("Error", "Failed to create the blueprint output directory");
 	}
@@ -1003,7 +1003,7 @@ namespace SMConverter
 	{
 		const std::wstring v_tile_out_dir = std::wstring(DatabaseConfig::TileOutputFolder.data());
 		if (File::CreateDirectorySafe(v_tile_out_dir))
-			System::Diagnostics::Process::Start(gcnew System::String(v_tile_out_dir.c_str()));
+			System::Diagnostics::Process::Start("explorer.exe", gcnew System::String(v_tile_out_dir.c_str()));
 		else
 			WF_SHOW_ERROR("Error", "Failed to create the tile output directory!");
 	}

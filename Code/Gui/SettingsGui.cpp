@@ -1,6 +1,8 @@
 #include "SettingsGui.h"
 
 #include "ObjectDatabase\DatabaseConfig.hpp"
+
+#include "Utils\String.hpp"
 #include "Utils\File.hpp"
 
 #include <msclr\marshal_cppstd.h>
@@ -123,6 +125,16 @@ namespace SMConverter
 		}
 	}
 
+	void SettingsGui::Settings_PathList_MouseDown(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e)
+	{
+		if (e->Button != System::Windows::Forms::MouseButtons::Right) return;
+
+		const int v_idx = m_lb_pathList->IndexFromPoint(e->X, e->Y);
+		if (v_idx == -1) return;
+
+		m_lb_pathList->SetSelected(v_idx, true);
+	}
+
 	void SettingsGui::Settings_PathList_KeyDown(System::Object^ sender, System::Windows::Forms::KeyEventArgs^ e)
 	{
 		if (e->KeyCode == Keys::Delete && m_lb_pathList->SelectedIndex >= 0)
@@ -136,6 +148,7 @@ namespace SMConverter
 	{
 		const bool v_is_valid = (m_lb_pathList->SelectedIndex >= 0);
 		m_btn_removePath->Enabled = v_is_valid;
+		m_btn_openPathInExplorer->Enabled = v_is_valid;
 	}
 
 	void SettingsGui::Settings_FilePath_KeyPress(System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e)
@@ -350,5 +363,21 @@ namespace SMConverter
 
 		if (v_dialog_res != WForms::DialogResult::Yes)
 			e->Cancel = true;
+	}
+
+	void SettingsGui::Settings_OpenPathInExplorer_Click(System::Object^ sender, System::EventArgs^ e)
+	{
+		if (m_lb_pathList->SelectedIndex == -1) return;
+
+		std::wstring v_selected_path = msclr::interop::marshal_as<std::wstring>(m_lb_pathList->GetItemText(m_lb_pathList->SelectedItem));
+		::String::ReplaceAllR(v_selected_path, L'/', L'\\');
+
+		if (!File::Exists(v_selected_path))
+		{
+			WF_SETTINGS_WARNING("Invalid Path", "Selected path is invalid");
+			return;
+		}
+
+		System::Diagnostics::Process::Start("explorer.exe", gcnew System::String(v_selected_path.c_str()));
 	}
 }
