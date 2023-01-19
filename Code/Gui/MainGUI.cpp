@@ -74,7 +74,8 @@ namespace SMConverter
 
 			if (v_dr == WForms::DialogResult::Yes)
 			{
-				DebugOutL("TODO: Make an options gui");
+				SettingsGui^ v_settings = gcnew SettingsGui();
+				v_settings->ShowDialog();
 			}
 			else
 				this->Close();
@@ -123,6 +124,20 @@ namespace SMConverter
 		}
 	}
 
+	void MainGui::MainGui_UpdatePathListContextMenuStrip()
+	{
+		switch (m_cb_selectedGenerator->SelectedIndex)
+		{
+		case Generator_BlueprintConverter:
+			m_lb_objectSelector->ContextMenuStrip = m_cms_blueprint;
+			break;
+		case Generator_TileConverter:
+		case Generator_ScriptConverter:
+			m_lb_objectSelector->ContextMenuStrip = nullptr;
+			break;
+		}
+	}
+
 	void MainGui::SelectedGenerator_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e)
 	{
 		//Used by the search text box to show appropriate text based on the selected generator type
@@ -147,6 +162,7 @@ namespace SMConverter
 
 		this->UpdateConvertButton();
 		this->MainGui_UpdatePathTextBox();
+		this->MainGui_UpdatePathListContextMenuStrip();
 	}
 
 	void MainGui::PathTextBox_TextChanged(System::Object^ sender, System::EventArgs^ e)
@@ -275,6 +291,14 @@ namespace SMConverter
 
 		m_cb_selectedGenerator->Enabled = obj_converted;
 		m_menuStrip->Enabled = obj_converted;
+
+
+		m_cms_blueprint->Enabled = objlist_and_obj_loaded;
+		m_btn_openBlueprintFolder->Enabled = false;
+		m_btn_openBlueprintInSteamWorkshop->Enabled = false;
+
+		if (objlist_and_obj_loaded)
+			this->UpdateContextMenuStrip();
 	}
 
 	void MainGui::MainGui_ReloadDatabase_Click(System::Object^ sender, System::EventArgs^ e)
@@ -379,9 +403,20 @@ namespace SMConverter
 		this->LoadUserObjects();
 	}
 
+	void MainGui::MainGui_ObjectSelector_MouseDown(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e)
+	{
+		if (e->Button != System::Windows::Forms::MouseButtons::Right) return;
+
+		const int v_idx = m_lb_objectSelector->IndexFromPoint(e->X, e->Y);
+		if (v_idx == -1) return;
+
+		m_lb_objectSelector->SetSelected(v_idx, true);
+	}
+
 	void MainGui::MainGui_ObjectSelector_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e)
 	{
 		this->UpdateConvertButton();
+		this->UpdateContextMenuStrip();
 
 		if (m_lb_objectSelector->SelectedIndex >= 0)
 		{
@@ -609,9 +644,25 @@ namespace SMConverter
 		return (m_tb_searchBox->TextLength > 0) ? BlueprintFolderReader::SearchResults : BlueprintFolderReader::Storage;
 	}
 
+	BlueprintInstance* MainGui::GetCurrentBlueprint()
+	{
+		if (m_lb_objectSelector->SelectedIndex == -1)
+			return nullptr;
+
+		return this->GetCurrentBlueprintList()[m_lb_objectSelector->SelectedIndex];
+	}
+
 	std::vector<TileInstance*>& MainGui::GetCurrentTileList()
 	{
 		return (m_tb_searchBox->TextLength > 0) ? TileFolderReader::SearchResults : TileFolderReader::Storage;
+	}
+
+	TileInstance* MainGui::GetCurrentTile()
+	{
+		if (m_lb_objectSelector->SelectedIndex == -1)
+			return nullptr;
+
+		return this->GetCurrentTileList()[m_lb_objectSelector->SelectedIndex];
 	}
 
 	void MainGui::MainGui_HandleConvertError(ConvertError& v_error, const int& v_type, System::ComponentModel::DoWorkEventArgs^ e)
@@ -792,5 +843,91 @@ namespace SMConverter
 
 		if (v_settings_gui->m_reload_user_obj)
 			this->LoadUserObjects();
+	}
+
+	void MainGui::MainGui_OpenItemInWorkshop(System::Object^ sender, System::EventArgs^ e)
+	{
+		if (m_lb_objectSelector->SelectedIndex == -1) return;
+
+		unsigned long long v_workshop_id = 0;
+		switch (m_cb_selectedGenerator->SelectedIndex)
+		{
+		case Generator_BlueprintConverter:
+			v_workshop_id = this->GetCurrentBlueprint()->workshop_id;
+			break;
+		case Generator_TileConverter:
+			v_workshop_id = this->GetCurrentTile()->workshop_id;
+			break;
+		}
+
+		if (v_workshop_id == 0)
+		{
+			WF_SHOW_WARNING("Can't open", "Invalid workshop id");
+			return;
+		}
+
+		std::wstring v_workshop_url;
+		if (DatabaseConfig::OpenLinksInSteam)
+			v_workshop_url.append(L"steam://openurl/");
+
+		v_workshop_url.append(L"https://steamcommunity.com/sharedfiles/filedetails/?id=");
+		v_workshop_url.append(std::to_wstring(v_workshop_id));
+
+		System::Diagnostics::Process::Start(gcnew System::String(v_workshop_url.c_str()));
+	}
+
+	void MainGui::MainGui_OpenItemDirectory(System::Object^ sender, System::EventArgs^ e)
+	{
+		if (m_lb_objectSelector->SelectedIndex == -1) return;
+
+		std::wstring v_path_to_open;
+		switch (m_cb_selectedGenerator->SelectedIndex)
+		{
+		case Generator_BlueprintConverter:
+			v_path_to_open = this->GetCurrentBlueprint()->directory;
+			break;
+		case Generator_TileConverter:
+			v_path_to_open = this->GetCurrentTile()->directory;
+			break;
+		case Generator_ScriptConverter:
+			break;
+		}
+
+		::String::ReplaceAllR(v_path_to_open, L'/', L'\\');
+		if (!File::Exists(v_path_to_open))
+		{
+			WF_SHOW_WARNING("Invalid item directory", "Path doesn't exist");
+			return;
+		}
+
+		System::Diagnostics::Process::Start("explorer.exe", gcnew System::String(v_path_to_open.c_str()));
+	}
+
+	void MainGui::UpdateContextMenuStrip()
+	{
+		switch (m_cb_selectedGenerator->SelectedIndex)
+		{
+		case Generator_BlueprintConverter:
+			{
+				bool v_has_workshop_id = false;
+				bool v_has_directory = false;
+
+				BlueprintInstance* v_cur_bp = this->GetCurrentBlueprint();
+				if (v_cur_bp)
+				{
+					v_has_workshop_id = v_cur_bp->workshop_id != 0;
+					v_has_directory = File::Exists(v_cur_bp->directory);
+				}
+
+				m_btn_openBlueprintFolder->Enabled = v_has_directory;
+				m_btn_openBlueprintInSteamWorkshop->Enabled = v_has_workshop_id;
+
+				break;
+			}
+		case Generator_TileConverter:
+			break;
+		case Generator_ScriptConverter:
+			break;
+		}
 	}
 }

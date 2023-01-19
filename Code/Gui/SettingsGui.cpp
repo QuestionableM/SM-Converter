@@ -277,6 +277,7 @@ namespace SMConverter
 			return;
 
 		m_tb_filePath->Text = gcnew System::String(v_file_path.c_str());
+		m_tb_filePath->Focus();
 	}
 
 	void SettingsGui::Settings_SaveChanges_Click(System::Object^ sender, System::EventArgs^ e)

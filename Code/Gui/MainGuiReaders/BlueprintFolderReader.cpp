@@ -11,13 +11,14 @@
 
 void BlueprintFolderReader::ReadBlueprintFromFile(const std::filesystem::path& path)
 {
-	if (!(path.has_stem() && path.has_root_directory()))
+	if (!(path.has_stem() && path.has_parent_path()))
 		return;
 
 	BlueprintInstance* v_new_bp = new BlueprintInstance();
 	v_new_bp->name = path.stem().wstring();
 	v_new_bp->lower_name = String::ToLower(v_new_bp->name);
 	v_new_bp->path = path.wstring();
+	v_new_bp->directory = path.parent_path().wstring();
 	v_new_bp->workshop_id = 0ull;
 
 	BlueprintFolderReader::Storage.push_back(v_new_bp);
@@ -51,6 +52,7 @@ void BlueprintFolderReader::ReadBlueprintFromFolder(const std::wstring& folder)
 	v_new_bp->name = String::ToWide(v_bp_name.get_string());
 	v_new_bp->lower_name = String::ToLower(v_new_bp->name);
 	v_new_bp->path = v_blueprint_path;
+	v_new_bp->directory = folder;
 
 	const std::wstring v_preview_img = folder + L"/icon.png";
 	if (File::Exists(v_preview_img))

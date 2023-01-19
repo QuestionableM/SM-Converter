@@ -2,8 +2,9 @@
 
 #ifdef SMC_ENABLE_DEBUG_CONSOLE
 
-#include "Utils\UnmanagedString.hpp"
-#include "Utils\UnmanagedVector.hpp"
+#include "UStd\UnmanagedString.hpp"
+#include "UStd\UnmanagedVector.hpp"
+
 #include "Utils\WinInclude.hpp"
 
 #pragma unmanaged

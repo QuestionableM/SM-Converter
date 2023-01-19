@@ -13,6 +13,8 @@ struct BlueprintInstance
 	std::wstring lower_name;
 
 	std::wstring path;
+	std::wstring directory;
+
 	std::wstring preview_image;
 
 	unsigned long long workshop_id;

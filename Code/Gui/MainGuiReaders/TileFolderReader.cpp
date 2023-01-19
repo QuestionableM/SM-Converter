@@ -26,6 +26,7 @@ void TileFolderReader::LoadFromFile(const std::filesystem::path& path)
 	v_new_tile->lower_name = String::ToLower(v_new_tile->name);
 
 	v_new_tile->path = path.wstring();
+	v_new_tile->directory = path.parent_path().wstring();
 
 	v_new_tile->creator_id = v_tile_info.creator_id;
 	v_new_tile->workshop_id = 0ull;
@@ -74,6 +75,7 @@ void TileFolderReader::LoadFromDirectory(const std::wstring& path)
 	v_new_tile->name = v_tile_path.stem().wstring();
 	v_new_tile->lower_name = String::ToLower(v_new_tile->name);
 	v_new_tile->path = v_tile_path.wstring();
+	v_new_tile->directory = path;
 
 	const std::wstring v_preview_img = path + L"/" + v_tile_info.uuid.ToWstring() + L".png";
 	if (File::Exists(v_preview_img))

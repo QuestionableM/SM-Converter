@@ -45,18 +45,23 @@ namespace SMConverter
 		System::Windows::Forms::ListBox^ m_lb_objectSelector;
 		System::Windows::Forms::ComboBox^ m_cb_selectedGenerator;
 
+		System::Windows::Forms::ContextMenuStrip^ m_cms_blueprint;
+		System::Windows::Forms::ToolStripMenuItem^ m_btn_openBlueprintFolder;
+		System::Windows::Forms::ToolStripMenuItem^ m_btn_openBlueprintInSteamWorkshop;
+
 		System::Windows::Forms::Label^ m_lbl_generatorType;
 		System::Windows::Forms::Label^ m_lbl_progressStatus;
 		System::Windows::Forms::Label^ m_lbl_objSelectorStatus;
 
+		System::ComponentModel::BackgroundWorker^ m_bw_objectConverter;
 		System::ComponentModel::BackgroundWorker^ m_bw_databaseLoader;
 		System::ComponentModel::BackgroundWorker^ m_bw_objectLoader;
 
 		System::Windows::Forms::ProgressBar^ m_pb_progress;
 		System::Windows::Forms::MenuStrip^ m_menuStrip;
 		System::Windows::Forms::Timer^ m_progressBarUpdater;
-	private: System::ComponentModel::BackgroundWorker^ m_bw_objectConverter;
-		   System::ComponentModel::IContainer^ components;
+
+		System::ComponentModel::IContainer^ components;
 
 #pragma region Windows Form Designer generated code
 		void InitializeComponent(void)
@@ -83,7 +88,11 @@ namespace SMConverter
 			this->m_bw_databaseLoader = (gcnew System::ComponentModel::BackgroundWorker());
 			this->m_bw_objectLoader = (gcnew System::ComponentModel::BackgroundWorker());
 			this->m_bw_objectConverter = (gcnew System::ComponentModel::BackgroundWorker());
+			this->m_cms_blueprint = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
+			this->m_btn_openBlueprintInSteamWorkshop = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->m_btn_openBlueprintFolder = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->m_menuStrip->SuspendLayout();
+			this->m_cms_blueprint->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// m_btn_folderDialog
@@ -149,6 +158,7 @@ namespace SMConverter
 			this->m_lb_objectSelector->Size = System::Drawing::Size(460, 128);
 			this->m_lb_objectSelector->TabIndex = 4;
 			this->m_lb_objectSelector->SelectedIndexChanged += gcnew System::EventHandler(this, &MainGui::MainGui_ObjectSelector_SelectedIndexChanged);
+			this->m_lb_objectSelector->MouseDown += gcnew System::Windows::Forms::MouseEventHandler(this, &MainGui::MainGui_ObjectSelector_MouseDown);
 			// 
 			// m_cb_selectedGenerator
 			// 
@@ -285,6 +295,31 @@ namespace SMConverter
 			this->m_bw_objectConverter->DoWork += gcnew System::ComponentModel::DoWorkEventHandler(this, &MainGui::MainGui_ObjectConverter_DoWork);
 			this->m_bw_objectConverter->RunWorkerCompleted += gcnew System::ComponentModel::RunWorkerCompletedEventHandler(this, &MainGui::MainGui_ObjectConverter_RunWorkerCompleted);
 			// 
+			// m_cms_blueprint
+			// 
+			this->m_cms_blueprint->ImeMode = System::Windows::Forms::ImeMode::NoControl;
+			this->m_cms_blueprint->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
+				this->m_btn_openBlueprintInSteamWorkshop,
+					this->m_btn_openBlueprintFolder
+			});
+			this->m_cms_blueprint->Name = L"m_cms_blueprint";
+			this->m_cms_blueprint->RenderMode = System::Windows::Forms::ToolStripRenderMode::System;
+			this->m_cms_blueprint->Size = System::Drawing::Size(210, 70);
+			// 
+			// m_btn_openBlueprintInSteamWorkshop
+			// 
+			this->m_btn_openBlueprintInSteamWorkshop->Name = L"m_btn_openBlueprintInSteamWorkshop";
+			this->m_btn_openBlueprintInSteamWorkshop->Size = System::Drawing::Size(209, 22);
+			this->m_btn_openBlueprintInSteamWorkshop->Text = L"Open in Steam Workshop";
+			this->m_btn_openBlueprintInSteamWorkshop->Click += gcnew System::EventHandler(this, &MainGui::MainGui_OpenItemInWorkshop);
+			// 
+			// m_btn_openBlueprintFolder
+			// 
+			this->m_btn_openBlueprintFolder->Name = L"m_btn_openBlueprintFolder";
+			this->m_btn_openBlueprintFolder->Size = System::Drawing::Size(209, 22);
+			this->m_btn_openBlueprintFolder->Text = L"Open Blueprint Folder";
+			this->m_btn_openBlueprintFolder->Click += gcnew System::EventHandler(this, &MainGui::MainGui_OpenItemDirectory);
+			// 
 			// MainGui
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -310,6 +345,7 @@ namespace SMConverter
 			this->Resize += gcnew System::EventHandler(this, &MainGui::MainGui_Resize);
 			this->m_menuStrip->ResumeLayout(false);
 			this->m_menuStrip->PerformLayout();
+			this->m_cms_blueprint->ResumeLayout(false);
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -317,6 +353,7 @@ namespace SMConverter
 #pragma endregion
 		System::Void MainGui_Shown(System::Object^ sender, System::EventArgs^ e);
 		System::Void MainGui_UpdatePathTextBox();
+		System::Void MainGui_UpdatePathListContextMenuStrip();
 		System::Void SelectedGenerator_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e);
 		System::Void PathTextBox_TextChanged(System::Object^ sender, System::EventArgs^ e);
 		System::Void FolderDialog_Click(System::Object^ sender, System::EventArgs^ e);
@@ -334,6 +371,7 @@ namespace SMConverter
 		System::Void MainGui_ObjectLoader_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e);
 		System::Void MainGui_ObjectLoader_RunWorkerCompleted(System::Object^ sender, System::ComponentModel::RunWorkerCompletedEventArgs^ e);
 		System::Void MainGui_ReloadUserObjects_Click(System::Object^ sender, System::EventArgs^ e);
+		System::Void MainGui_ObjectSelector_MouseDown(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e);
 		System::Void MainGui_ObjectSelector_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e);
 		System::Void UpdateSearchResults(int last_search_length);
 		System::Void MainGui_SearchBox_TextChanged(System::Object^ sender, System::EventArgs^ e);
@@ -345,7 +383,10 @@ namespace SMConverter
 		System::Void MainGui_Convert_Clicked(System::Object^ sender, System::EventArgs^ e);
 
 		std::vector<BlueprintInstance*>& GetCurrentBlueprintList();
+		BlueprintInstance* GetCurrentBlueprint();
+
 		std::vector<TileInstance*>& GetCurrentTileList();
+		TileInstance* GetCurrentTile();
 
 		System::Void MainGui_HandleConvertError(ConvertError& v_error, const int& v_type, System::ComponentModel::DoWorkEventArgs^ e);
 		System::Void ObjectConverter_ConvertBlueprint(System::Array^ conv_data, System::ComponentModel::DoWorkEventArgs^ e);
@@ -355,5 +396,10 @@ namespace SMConverter
 		System::Void MainGui_ObjectConverter_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e);
 		System::Void MainGui_ObjectConverter_RunWorkerCompleted(System::Object^ sender, System::ComponentModel::RunWorkerCompletedEventArgs^ e);
 		System::Void MainGui_Options_Click(System::Object^ sender, System::EventArgs^ e);
+
+		System::Void MainGui_OpenItemInWorkshop(System::Object^ sender, System::EventArgs^ e);
+		System::Void MainGui_OpenItemDirectory(System::Object^ sender, System::EventArgs^ e);
+
+		System::Void UpdateContextMenuStrip();
 	};
 }
