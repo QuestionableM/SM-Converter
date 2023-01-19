@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Utils\UnmanagedString.hpp"
-#include "Utils\UnmanagedVector.hpp"
+#include "UStd\UnmanagedString.hpp"
+#include "UStd\UnmanagedVector.hpp"
+
 #include "Utils\WinInclude.hpp"
 #include "Utils\ByteImpl.hpp"
 

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Utils\UnmanagedString.hpp"
+#include "UStd\UnmanagedString.hpp"
+
 #include "Utils\ByteImpl.hpp"
 #include "Utils\String.hpp"
 

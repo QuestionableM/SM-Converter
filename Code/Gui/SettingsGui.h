@@ -2,9 +2,9 @@
 
 #include "SettingsGuiChangeDetector.hpp"
 
-#include "Utils\UnmanagedUnorderedMap.hpp"
-#include "Utils\UnmanagedString.hpp"
-#include "Utils\UnmanagedVector.hpp"
+#include "UStd\UnmanagedUnorderedMap.hpp"
+#include "UStd\UnmanagedString.hpp"
+#include "UStd\UnmanagedVector.hpp"
 
 namespace SMConverter
 {

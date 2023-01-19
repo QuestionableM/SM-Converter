@@ -3,7 +3,7 @@
 #include "Converter\ConvertSettings.hpp"
 #include "Converter\ConvertError.hpp"
 
-#include "Utils\UnmanagedString.hpp"
+#include "UStd\UnmanagedString.hpp"
 
 #pragma unmanaged
 

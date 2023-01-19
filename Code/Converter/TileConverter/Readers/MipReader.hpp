@@ -3,8 +3,9 @@
 #include "Converter\TileConverter\CellHeader.hpp"
 #include "Converter\TileConverter\TilePart.hpp"
 
-#include "Utils\UnmanagedSstream.hpp"
-#include "Utils\UnmanagedIomanip.hpp"
+#include "UStd\UnmanagedSstream.hpp"
+#include "UStd\UnmanagedIomanip.hpp"
+
 #include "Utils\ByteImpl.hpp"
 #include "Utils\Memory.hpp"
 

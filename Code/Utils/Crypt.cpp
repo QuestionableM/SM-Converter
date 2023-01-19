@@ -1,7 +1,8 @@
 #include "Crypt.hpp"
 
-#include "Utils\UnmanagedSstream.hpp"
-#include "Utils\UnmanagedVector.hpp"
+#include "UStd\UnmanagedSstream.hpp"
+#include "UStd\UnmanagedVector.hpp"
+
 #include "Utils\WinInclude.hpp"
 
 #pragma unmanaged

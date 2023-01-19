@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Utils\UnmanagedArray.hpp"
+#include "UStd\UnmanagedArray.hpp"
+
 #include "Utils\ByteImpl.hpp"
 #include "Utils\Memory.hpp"
 

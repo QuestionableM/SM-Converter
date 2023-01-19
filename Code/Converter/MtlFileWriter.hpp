@@ -2,8 +2,8 @@
 
 #include "Converter\Entity\Entity.hpp"
 
-#include "Utils\UnmanagedUnorderedMap.hpp"
-#include "Utils\UnmanagedString.hpp"
+#include "UStd\UnmanagedUnorderedMap.hpp"
+#include "UStd\UnmanagedString.hpp"
 
 #pragma unmanaged
 

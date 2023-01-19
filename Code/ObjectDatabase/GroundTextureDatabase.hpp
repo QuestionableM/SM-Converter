@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Utils\UnmanagedString.hpp"
-#include "Utils\UnmanagedArray.hpp"
+#include "UStd\UnmanagedString.hpp"
+#include "UStd\UnmanagedArray.hpp"
+
 #include "Utils\WinInclude.hpp"
 #include "Utils\ByteImpl.hpp"
 #include "Utils\Json.hpp"

@@ -1,8 +1,9 @@
 #pragma once
 
-#include "Utils\UnmanagedAlgorithm.hpp"
-#include "Utils\UnmanagedVector.hpp"
-#include "Utils\UnmanagedArray.hpp"
+#include "UStd\UnmanagedAlgorithm.hpp"
+#include "UStd\UnmanagedVector.hpp"
+#include "UStd\UnmanagedArray.hpp"
+
 #include "Utils\GlmUnmanaged.hpp"
 #include "Utils\ByteImpl.hpp"
 

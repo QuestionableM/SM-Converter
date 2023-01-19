@@ -1,9 +1,10 @@
 #pragma once
 
-#include "Utils\UnmanagedIomanip.hpp"
-#include "Utils\UnmanagedSstream.hpp"
-#include "Utils\UnmanagedString.hpp"
-#include "Utils\UnmanagedVector.hpp"
+#include "UStd\UnmanagedIomanip.hpp"
+#include "UStd\UnmanagedSstream.hpp"
+#include "UStd\UnmanagedString.hpp"
+#include "UStd\UnmanagedVector.hpp"
+
 #include "Utils\WinInclude.hpp"
 #include "Utils\ByteImpl.hpp"
 

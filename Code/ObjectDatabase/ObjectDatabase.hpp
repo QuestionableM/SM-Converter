@@ -2,8 +2,9 @@
 
 #include "ObjectDatabase\ObjectData.hpp"
 
-#include "Utils\UnmanagedString.hpp"
-#include "Utils\UnmanagedVector.hpp"
+#include "UStd\UnmanagedString.hpp"
+#include "UStd\UnmanagedVector.hpp"
+
 #include "Utils\Json.hpp"
 
 #pragma unmanaged

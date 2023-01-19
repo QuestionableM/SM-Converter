@@ -2,8 +2,9 @@
 
 #include "ObjectDatabase\ObjectData.hpp"
 
-#include "Utils\UnmanagedUnorderedMap.hpp"
-#include "Utils\UnmanagedString.hpp"
+#include "UStd\UnmanagedUnorderedMap.hpp"
+#include "UStd\UnmanagedString.hpp"
+
 #include "Utils\Uuid.hpp"
 #include "Utils\Json.hpp"
 

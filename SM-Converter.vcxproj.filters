@@ -395,31 +395,31 @@
     <ClInclude Include="Code\Gui\SettingsGuiChangeDetector.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Code\Utils\UnmanagedString.hpp">
+    <ClInclude Include="Code\UStd\UnmanagedString.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Code\Utils\UnmanagedVector.hpp">
+    <ClInclude Include="Code\UStd\UnmanagedVector.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Code\Utils\UnmanagedUnorderedMap.hpp">
+    <ClInclude Include="Code\UStd\UnmanagedUnorderedMap.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Code\Utils\UnmanagedFilesystem.hpp">
+    <ClInclude Include="Code\UStd\UnmanagedFilesystem.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Code\Utils\UnmanagedArray.hpp">
+    <ClInclude Include="Code\UStd\UnmanagedArray.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Code\Utils\UnmanagedFstream.hpp">
+    <ClInclude Include="Code\UStd\UnmanagedFstream.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Code\Utils\UnmanagedSstream.hpp">
+    <ClInclude Include="Code\UStd\UnmanagedSstream.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Code\Utils\UnmanagedAlgorithm.hpp">
+    <ClInclude Include="Code\UStd\UnmanagedAlgorithm.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Code\Utils\UnmanagedIomanip.hpp">
+    <ClInclude Include="Code\UStd\UnmanagedIomanip.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
