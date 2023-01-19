@@ -98,7 +98,7 @@ public:
 		char v_buffer[7];
 		sprintf_s(v_buffer, "%02x%02x%02x", this->r, this->g, this->b);
 
-		return std::string(v_buffer);
+		return std::string(v_buffer, 6);
 	}
 
 	//Convert to string with alpha component
@@ -107,7 +107,7 @@ public:
 		char v_buffer[9];
 		sprintf_s(v_buffer, "%02x%02x%02x%02x", this->r, this->g, this->b, this->a);
 
-		return std::string(v_buffer);
+		return std::string(v_buffer, 8);
 	}
 
 	template<typename T>

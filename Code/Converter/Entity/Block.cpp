@@ -13,7 +13,7 @@ std::string SMBlock::GetMtlName(const std::string& mat_name, const std::size_t& 
 {
 	const std::string material_idx = MaterialManager::GetMaterialA(m_parent->m_textures.material);
 
-	return m_uuid.ToString() + " " + m_color.StringHex() + " " + std::to_string(mIdx + 1) + " " + material_idx;
+	return m_uuid.ToString() + ' ' + m_color.StringHex() + ' ' + std::to_string(mIdx + 1) + ' ' + material_idx;
 }
 
 void SMBlock::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const

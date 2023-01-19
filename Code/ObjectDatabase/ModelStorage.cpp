@@ -150,7 +150,7 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 
 			if (SharedConverterSettings::ExportMaterials)
 			{
-				const std::string v_mtl_name = "usemtl " + pEntity->GetMtlName(pSubMesh->m_MaterialName, mIdx) + "\n";
+				const std::string v_mtl_name = "usemtl " + pEntity->GetMtlName(pSubMesh->m_MaterialName, mIdx) + '\n';
 				file.write(v_mtl_name.c_str(), v_mtl_name.size());
 			}
 		}
@@ -170,7 +170,7 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 				v_idx_str.append(g_indexWriterBuffer);
 			}
 
-			v_idx_str.append("\n");
+			v_idx_str.append(1, '\n');
 			file.write(v_idx_str.c_str(), v_idx_str.size());
 		}
 	}

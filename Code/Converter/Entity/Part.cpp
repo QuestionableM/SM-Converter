@@ -17,7 +17,7 @@ std::string SMPart::GetMtlName(const std::string& mat_name, const std::size_t& m
 	if (v_tex_data)
 		material_idx = MaterialManager::GetMaterialA(v_tex_data->material);
 
-	return m_uuid.ToString() + " " + m_color.StringHex() + " " + std::to_string(mIdx + 1) + " " + material_idx;
+	return m_uuid.ToString() + ' ' + m_color.StringHex() + ' ' + std::to_string(mIdx + 1) + ' ' + material_idx;
 }
 
 void SMPart::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const

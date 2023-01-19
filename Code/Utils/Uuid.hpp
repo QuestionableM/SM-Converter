@@ -93,64 +93,28 @@ public:
 
 	inline std::string ToString() const
 	{
-		std::stringstream sstream;
+		char v_buffer[37];
+		sprintf_s(v_buffer, "%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
+			m_Data8[0], m_Data8[1], m_Data8[2], m_Data8[3],
+			m_Data8[4], m_Data8[5],
+			m_Data8[6], m_Data8[7],
+			m_Data8[8], m_Data8[9],
+			m_Data8[10], m_Data8[11], m_Data8[12], m_Data8[13], m_Data8[14], m_Data8[15]);
 
-		const auto v_setw = std::setw(2);
-
-		sstream << std::hex << std::setfill('0')
-			<< v_setw << static_cast<int>(m_Data8[0])
-			<< v_setw << static_cast<int>(m_Data8[1])
-			<< v_setw << static_cast<int>(m_Data8[2])
-			<< v_setw << static_cast<int>(m_Data8[3])
-			<< '-'
-			<< v_setw << static_cast<int>(m_Data8[4])
-			<< v_setw << static_cast<int>(m_Data8[5])
-			<< '-'
-			<< v_setw << static_cast<int>(m_Data8[6])
-			<< v_setw << static_cast<int>(m_Data8[7])
-			<< '-'
-			<< v_setw << static_cast<int>(m_Data8[8])
-			<< v_setw << static_cast<int>(m_Data8[9])
-			<< '-'
-			<< v_setw << static_cast<int>(m_Data8[10])
-			<< v_setw << static_cast<int>(m_Data8[11])
-			<< v_setw << static_cast<int>(m_Data8[12])
-			<< v_setw << static_cast<int>(m_Data8[13])
-			<< v_setw << static_cast<int>(m_Data8[14])
-			<< v_setw << static_cast<int>(m_Data8[15]);
-
-		return sstream.str();
+		return std::string(v_buffer, 36);
 	}
 
 	inline std::wstring ToWstring() const
 	{
-		std::wstringstream wstream;
+		wchar_t v_buffer[37];
+		swprintf_s(v_buffer, L"%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
+			m_Data8[0], m_Data8[1], m_Data8[2], m_Data8[3],
+			m_Data8[4], m_Data8[5],
+			m_Data8[6], m_Data8[7],
+			m_Data8[8], m_Data8[9],
+			m_Data8[10], m_Data8[11], m_Data8[12], m_Data8[13], m_Data8[14], m_Data8[15]);
 
-		const auto v_setw = std::setw(2);
-
-		wstream << std::hex << std::setfill(L'0')
-			<< v_setw << static_cast<int>(m_Data8[0])
-			<< v_setw << static_cast<int>(m_Data8[1])
-			<< v_setw << static_cast<int>(m_Data8[2])
-			<< v_setw << static_cast<int>(m_Data8[3])
-			<< L'-'
-			<< v_setw << static_cast<int>(m_Data8[4])
-			<< v_setw << static_cast<int>(m_Data8[5])
-			<< L'-'
-			<< v_setw << static_cast<int>(m_Data8[6])
-			<< v_setw << static_cast<int>(m_Data8[7])
-			<< L'-'
-			<< v_setw << static_cast<int>(m_Data8[8])
-			<< v_setw << static_cast<int>(m_Data8[9])
-			<< L'-'
-			<< v_setw << static_cast<int>(m_Data8[10])
-			<< v_setw << static_cast<int>(m_Data8[11])
-			<< v_setw << static_cast<int>(m_Data8[12])
-			<< v_setw << static_cast<int>(m_Data8[13])
-			<< v_setw << static_cast<int>(m_Data8[14])
-			<< v_setw << static_cast<int>(m_Data8[15]);
-
-		return wstream.str();
+		return std::wstring(v_buffer, 36);
 	}
 
 	inline void FromCString(const char* v_str)

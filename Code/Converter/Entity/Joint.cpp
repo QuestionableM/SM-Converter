@@ -18,7 +18,7 @@ std::string SMJoint::GetMtlName(const std::string& mat_name, const std::size_t& 
 	if (v_tex_list)
 		material_idx = MaterialManager::GetMaterialA(v_tex_list->material);
 
-	return m_uuid.ToString() + " " + m_color.StringHex() + " " + std::to_string(mIdx + 1) + " " + material_idx;
+	return m_uuid.ToString() + ' ' + m_color.StringHex() + ' ' + std::to_string(mIdx + 1) + ' ' + material_idx;
 }
 
 void SMJoint::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
