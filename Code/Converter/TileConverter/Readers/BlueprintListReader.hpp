@@ -5,17 +5,15 @@
 #include "Converter\TileConverter\Tile.hpp"
 
 #include "Utils\Memory.hpp"
+#include "Utils\Lz4Lib.hpp"
 
-#include <lz4\lz4.h>
+#pragma unmanaged
 
 class BlueprintListReader
 {
 	BlueprintListReader() = default;
+
 public:
-
-#pragma warning(push)
-#pragma warning(disable : 4996)
-
 	static void Read(CellHeader* header, MemoryWrapper& reader, TilePart* part, ConvertError& cError)
 	{
 		if (cError || !TileConverterSettings::ExportBlueprints) return;
@@ -28,7 +26,8 @@ public:
 		std::vector<Byte> bytes;
 		bytes.resize(header->blueprintListSize);
 
-		int debugSize = LZ4_decompress_fast((char*)compressed.data(), (char*)bytes.data(), header->blueprintListSize);
+		int debugSize = Lz4::DecompressFast(reinterpret_cast<const char*>(compressed.data()),
+			reinterpret_cast<char*>(bytes.data()), header->blueprintListSize);
 		if (debugSize != header->blueprintListCompressedSize)
 		{
 			cError = ConvertError(1, L"BlueprintListReader::Read -> debugSize != header->blueprintListCompressedSize");
@@ -42,8 +41,6 @@ public:
 			return;
 		}
 	}
-
-#pragma warning(pop)
 
 	static int Read(const std::vector<Byte>& bytes, const int& count, TilePart* part)
 	{
@@ -97,3 +94,5 @@ public:
 		return index;
 	}
 };
+
+#pragma managed

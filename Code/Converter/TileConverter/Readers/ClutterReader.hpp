@@ -4,9 +4,11 @@
 #include "Converter\TileConverter\TilePart.hpp"
 
 #include "ObjectDatabase\Mods\Mod.hpp"
-#include "Utils\Uuid.hpp"
 
-#include <lz4\lz4.h>
+#include "Utils\Uuid.hpp"
+#include "Utils\Lz4Lib.hpp"
+
+#pragma unmanaged
 
 class ClutterReader
 {
@@ -23,9 +25,6 @@ public:
 		ClutterReader::Read(bytes, part);
 	}
 
-#pragma warning(push)
-#pragma warning(disable : 4996)
-
 	inline static std::vector<Byte> Read(CellHeader* header, MemoryWrapper& memory, ConvertError& cError)
 	{
 		DebugOutL("Clutter: ", header->clutterCompressedSize, " ", header->clutterSize);
@@ -37,7 +36,7 @@ public:
 		std::vector<Byte> bytes = {};
 		bytes.resize(header->clutterSize);
 
-		const int debugSize = LZ4_decompress_fast(reinterpret_cast<const char*>(compressed.data()),
+		const int debugSize = Lz4::DecompressFast(reinterpret_cast<const char*>(compressed.data()),
 			reinterpret_cast<char*>(bytes.data()), header->clutterSize);
 		DebugOutL("DebugSize: ", debugSize, ", ClutterCompressedSize: ", header->clutterCompressedSize);
 		if (debugSize != header->clutterCompressedSize)
@@ -48,8 +47,6 @@ public:
 
 		return bytes;
 	}
-
-#pragma warning(pop)
 
 	inline static void Read(const std::vector<Byte>& bytes, TilePart* part)
 	{
@@ -123,3 +120,5 @@ public:
 		}
 	}
 };
+
+#pragma managed

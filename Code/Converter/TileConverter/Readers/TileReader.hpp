@@ -88,6 +88,7 @@ public:
 		TileHeader* header = TileHeader::ReadTile(tile_data, cError);
 		if (!header) return nullptr;
 
+	#if defined(DEBUG) || defined(_DEBUG)
 		DebugOutL("TileFileVersion: ", header->m_data.version);
 		DebugOutL("TileUuid: ", header->m_data.uuid.ToString());
 		DebugOutL("CreatorId: ", header->m_data.creator_id);
@@ -106,6 +107,7 @@ public:
 			DebugOutL("\tBLOB(", x, ", ", y, "):");
 			DebugOutL("\t\t", String::BytesToHexString(bytes, header->m_data.cell_header_size, 32));
 		}
+	#endif
 
 		MemoryWrapper reader(header->TileData());
 

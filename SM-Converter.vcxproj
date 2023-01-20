@@ -440,6 +440,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</CompileAsManaged>
     </ClCompile>
+    <ClCompile Include="Code\Utils\Lz4Lib.cpp" />
     <ClCompile Include="Dependencies\simdjson\simdjson\simdjson.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
@@ -535,6 +536,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\Utils\File.hpp" />
     <ClInclude Include="Code\Utils\GlmUnmanaged.hpp" />
     <ClInclude Include="Code\Utils\Json.hpp" />
+    <ClInclude Include="Code\Utils\Lz4Lib.hpp" />
     <ClInclude Include="Code\Utils\Memory.hpp" />
     <ClInclude Include="Code\Utils\String.hpp" />
     <ClInclude Include="Code\UStd\UnmanagedAlgorithm.hpp" />

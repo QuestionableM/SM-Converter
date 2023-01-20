@@ -7,19 +7,17 @@
 #include "Converter\Entity\Prefab.hpp"
 
 #include "ObjectDatabase\KeywordReplacer.hpp"
-#include "Utils\Memory.hpp"
 
-#include <lz4\lz4.h>
+#include "Utils\Memory.hpp"
+#include "Utils\Lz4Lib.hpp"
+
+#pragma unmanaged
 
 class PrefabReader
 {
 	PrefabReader() = default;
 
 public:
-
-#pragma warning(push)
-#pragma warning(disable : 4996)
-
 	static void Read(CellHeader* header, MemoryWrapper& reader, TilePart* part, ConvertError& cError)
 	{
 		if (cError || !TileConverterSettings::ExportPrefabs) return;
@@ -32,7 +30,7 @@ public:
 		std::vector<Byte> bytes = {};
 		bytes.resize(header->prefabSize);
 
-		int debugSize = LZ4_decompress_fast(reinterpret_cast<const char*>(compressed.data()),
+		int debugSize = Lz4::DecompressFast(reinterpret_cast<const char*>(compressed.data()),
 			reinterpret_cast<char*>(bytes.data()), header->prefabSize);
 		if (debugSize != header->prefabCompressedSize)
 		{
@@ -47,8 +45,6 @@ public:
 			return;
 		}
 	}
-
-#pragma warning(pop)
 
 	static int Read(const std::vector<Byte>& bytes, const int& prefabCount, TilePart* part, ConvertError& cError)
 	{
@@ -103,3 +99,5 @@ public:
 		return index;
 	}
 };
+
+#pragma managed

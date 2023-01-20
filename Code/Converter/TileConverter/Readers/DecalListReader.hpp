@@ -6,19 +6,17 @@
 #include "Converter\Entity\Decal.hpp"
 
 #include "ObjectDatabase\Mods\Mod.hpp"
-#include "Utils\Memory.hpp"
 
-#include <lz4\lz4.h>
+#include "Utils\Memory.hpp"
+#include "Utils\Lz4Lib.hpp"
+
+#pragma unmanaged
 
 class DecalListReader
 {
 	DecalListReader() = default;
 
 public:
-
-#pragma warning(push)
-#pragma warning(disable : 4996)
-
 	inline static void Read(CellHeader* header, MemoryWrapper& reader, TilePart* part, ConvertError& cError)
 	{
 		if (cError || !TileConverterSettings::ExportDecals) return;
@@ -32,7 +30,7 @@ public:
 			std::vector<Byte> bytes = {};
 			bytes.resize(header->decalSize);
 
-			int debugSize = LZ4_decompress_fast(reinterpret_cast<const char*>(compressed.data()),
+			int debugSize = Lz4::DecompressFast(reinterpret_cast<const char*>(compressed.data()),
 				reinterpret_cast<char*>(bytes.data()), header->decalSize);
 			if (debugSize != header->decalCompressedSize)
 			{
@@ -49,8 +47,6 @@ public:
 			}
 		}
 	}
-
-#pragma warning(pop)
 
 	inline static int Read(const std::vector<Byte>& bytes, const int& decal_count, TilePart* part)
 	{
@@ -96,3 +92,5 @@ public:
 		return index;
 	}
 };
+
+#pragma managed

@@ -8,8 +8,9 @@
 
 #include "Utils\ByteImpl.hpp"
 #include "Utils\Memory.hpp"
+#include "Utils\Lz4Lib.hpp"
 
-#include <lz4\lz4.h>
+#pragma unmanaged
 
 class MipReader
 {
@@ -26,9 +27,6 @@ public:
 		MipReader::Read(bytes, part);
 	}
 
-#pragma warning(push)
-#pragma warning(disable : 4996)
-
 	inline static std::vector<Byte> Read(CellHeader* header, const int& mipOrLevel, MemoryWrapper& reader, ConvertError& cError)
 	{
 		DebugOutL("MipIndex: ", header->mipIndex[mipOrLevel], ", MipCompressedSize: ", header->mipCompressedSize[mipOrLevel]);
@@ -39,7 +37,7 @@ public:
 		std::vector<Byte> decompressed_bytes = {};
 		decompressed_bytes.resize(header->mipSize[mipOrLevel]);
 
-		const int debugSize = LZ4_decompress_fast(reinterpret_cast<const char*>(compressed.data()),
+		const int debugSize = Lz4::DecompressFast(reinterpret_cast<const char*>(compressed.data()),
 			reinterpret_cast<char*>(decompressed_bytes.data()), header->mipSize[mipOrLevel]);
 		DebugOutL(0b0111_fg, "Debug Size: ", debugSize, ", Compressed size: ", header->mipCompressedSize[mipOrLevel]);
 		if (debugSize != header->mipCompressedSize[mipOrLevel])
@@ -50,8 +48,6 @@ public:
 
 		return decompressed_bytes;
 	}
-
-#pragma warning(pop)
 
 	inline static void Read(const std::vector<Byte>& bytes, TilePart* part)
 	{
@@ -72,3 +68,5 @@ public:
 		memory.ObjectsRef<long long>(part->m_Ground.data(), wh_mul_8, 0x41 * 0x41);
 	}
 };
+
+#pragma managed

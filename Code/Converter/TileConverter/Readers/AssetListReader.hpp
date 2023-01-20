@@ -6,18 +6,17 @@
 
 #include "ObjectDatabase\ObjectDatabase.hpp"
 #include "ObjectDatabase\Mods\Mod.hpp"
-#include "Utils\String.hpp"
 
-#include <lz4\lz4.h>
+#include "Utils\String.hpp"
+#include "Utils\Lz4Lib.hpp"
+
+#pragma unmanaged
 
 class AssetListReader
 {
 	AssetListReader() = default;
 
 public:
-
-#pragma warning(push)
-#pragma warning(disable : 4996)
 
 	static void Read(CellHeader* header, MemoryWrapper& reader, TilePart* part, ConvertError& cError)
 	{
@@ -38,7 +37,7 @@ public:
 				std::vector<Byte> bytes = {};
 				bytes.resize(assetListSize);
 
-				int debugSize = LZ4_decompress_fast(reinterpret_cast<const char*>(compressed.data()),
+				int debugSize = Lz4::DecompressFast(reinterpret_cast<const char*>(compressed.data()),
 					reinterpret_cast<char*>(bytes.data()), assetListSize);
 				if (debugSize != assetListCompressedSize)
 				{
@@ -56,8 +55,6 @@ public:
 			}
 		}
 	}
-
-#pragma warning(pop)
 
 	static int Read(const std::vector<Byte>& bytes, const int& asset_idx, const int& len, const int& version, TilePart* part)
 	{
@@ -145,3 +142,5 @@ public:
 		return index;
 	}
 };
+
+#pragma managed

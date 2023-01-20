@@ -165,6 +165,9 @@
     <ClCompile Include="Code\Gui\SettingsGuiChangeDetector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Code\Utils\Lz4Lib.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\Gui\MainGui.h">
@@ -420,6 +423,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Code\UStd\UnmanagedIomanip.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Utils\Lz4Lib.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
