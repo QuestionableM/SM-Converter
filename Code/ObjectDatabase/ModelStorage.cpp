@@ -6,16 +6,19 @@
 #include "Utils\Console.hpp"
 #include "Utils\String.hpp"
 
+#include <string.h>
+
 #pragma unmanaged
 
-static char g_indexWriterBuffer[256];
+static char g_indexWriterBuffer[sizeof(unsigned long long)*8*3+10];
 
 void SubMeshData::IndexWriter_None(const IndexWriterArguments& v_data, const VertexData& v_vert)
 {
 	const glm::vec3& v_vertex = (*v_data.translated_vertices)[v_vert.m_Vert];
 	const std::size_t& v_idx = v_data.offset->VertexMap.at(v_vertex);
 
-	sprintf_s(g_indexWriterBuffer, " %lld", v_idx + 1);
+	g_indexWriterBuffer[0] = ' ';
+	String::FromInteger<std::size_t, 10>(v_idx + 1, g_indexWriterBuffer + 1);
 }
 
 void SubMeshData::IndexWriter_Normals(const IndexWriterArguments& v_data, const VertexData& v_vert)
@@ -26,7 +29,11 @@ void SubMeshData::IndexWriter_Normals(const IndexWriterArguments& v_data, const 
 	const std::size_t& v_vert_idx = v_data.offset->VertexMap.at(v_vertex);
 	const std::size_t& v_norm_idx = v_data.offset->NormalMap.at(v_normal);
 
-	sprintf_s(g_indexWriterBuffer, " %lld//%lld", v_vert_idx + 1, v_norm_idx + 1);
+	g_indexWriterBuffer[0] = ' ';
+	char* v_return = String::FromInteger<std::size_t, 10>(v_vert_idx + 1, g_indexWriterBuffer + 1);
+	*(v_return + 1) = '/';
+	*(v_return + 2) = '/';
+	String::FromInteger<std::size_t, 10>(v_norm_idx + 1, v_return + 3);
 }
 
 void SubMeshData::IndexWriter_Uvs(const IndexWriterArguments& v_data, const VertexData& v_vert)
@@ -37,7 +44,10 @@ void SubMeshData::IndexWriter_Uvs(const IndexWriterArguments& v_data, const Vert
 	const std::size_t& v_vert_idx = v_data.offset->VertexMap.at(v_vertex);
 	const std::size_t& v_uv_idx = v_data.offset->UvMap.at(v_uv);
 
-	sprintf_s(g_indexWriterBuffer, " %lld/%lld", v_vert_idx + 1, v_uv_idx + 1);
+	g_indexWriterBuffer[0] = ' ';
+	char* v_return = String::FromInteger<std::size_t, 10>(v_vert_idx + 1, g_indexWriterBuffer + 1);
+	*(v_return + 1) = '/';
+	String::FromInteger<std::size_t, 10>(v_uv_idx + 1, v_return + 2);
 }
 
 void SubMeshData::IndexWriter_UvsAndNormals(const IndexWriterArguments& v_data, const VertexData& v_vert)
@@ -50,7 +60,12 @@ void SubMeshData::IndexWriter_UvsAndNormals(const IndexWriterArguments& v_data, 
 	const std::size_t& v_uv_idx = v_data.offset->UvMap.at(v_uv);
 	const std::size_t& v_norm_idx = v_data.offset->NormalMap.at(v_normal);
 
-	sprintf_s(g_indexWriterBuffer, " %lld/%lld/%lld", v_vert_idx + 1, v_uv_idx + 1, v_norm_idx + 1);
+	g_indexWriterBuffer[0] = ' ';
+	char* v_return = String::FromInteger<std::size_t, 10>(v_vert_idx + 1, g_indexWriterBuffer + 1);
+	*v_return = '/';
+	v_return = String::FromInteger<std::size_t, 10>(v_uv_idx + 1, v_return + 1);
+	*v_return = '/';
+	String::FromInteger<std::size_t, 10>(v_norm_idx + 1, v_return + 1);
 }
 
 SubMeshData::IndexWriterFunction SubMeshData::GetWriterFunction() const
@@ -76,7 +91,7 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 	mTranslatedNormals.resize (this->normals.size());
 
 	//Used by the writers
-	char v_sprintf_buffer[128];
+	char v_sprintf_buffer[196];
 
 	for (std::size_t a = 0; a < this->vertices.size(); a++)
 	{

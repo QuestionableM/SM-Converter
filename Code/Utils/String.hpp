@@ -238,6 +238,42 @@ namespace String
 			return v_output;
 		}
 	}
+
+	/*
+	 * C++ version 0.4 char* style "itoa":
+	 * Written by Lukás Chmela
+	 * Released under GPLv3.
+	*/
+	template<typename T, T t_base>
+	inline char* FromInteger(T value, char* result)
+	{
+		// check that the base if valid
+		static_assert(t_base >= 2 && t_base <= 36, "Base sould be in range of [2, 36]");
+		static_assert(std::is_integral_v<T>, "IntegerToString type must be integral");
+
+		char* ptr = result, *ptr1 = result, *v_end_ptr, tmp_char;
+		T tmp_value;
+
+		do {
+			tmp_value = value;
+			value /= t_base;
+			*ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz"[35 + (tmp_value - value * t_base)];
+		} while (value);
+
+		// Apply negative sign
+		if (tmp_value < 0) *ptr++ = '-';
+
+		*ptr = '\0';
+		v_end_ptr = ptr--;
+
+		while (ptr1 < ptr) {
+			tmp_char = *ptr;
+			*ptr-- = *ptr1;
+			*ptr1++ = tmp_char;
+		}
+
+		return v_end_ptr;
+	}
 }
 
 #pragma managed
