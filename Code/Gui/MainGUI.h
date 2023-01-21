@@ -204,9 +204,9 @@ namespace SMConverter
 			this->m_lbl_generatorType->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
 			this->m_lbl_generatorType->Location = System::Drawing::Point(9, 214);
 			this->m_lbl_generatorType->Name = L"m_lbl_generatorType";
-			this->m_lbl_generatorType->Size = System::Drawing::Size(102, 16);
+			this->m_lbl_generatorType->Size = System::Drawing::Size(100, 16);
 			this->m_lbl_generatorType->TabIndex = 6;
-			this->m_lbl_generatorType->Text = L"Generator Type";
+			this->m_lbl_generatorType->Text = L"Converter Type";
 			// 
 			// m_pb_progress
 			// 
