@@ -127,6 +127,7 @@ void DatabaseConfig::ReadProgramSettings(const nlohmann::json& config_json)
 	KeywordReplacer::LoadResourceUpgradesFromConfig();
 
 	DatabaseConfig::JsonStrArrayToStrMap(program_settings, "ScrapAssetDatabase", DatabaseConfig::AssetListFolders, true);
+	DatabaseConfig::JsonStrArrayToStrMap(program_settings, "TileFolders", DatabaseConfig::TileFolders, true);
 }
 
 using vdf_childs_table = std::unordered_map<std::string, std::shared_ptr<tyti::vdf::object>>;
@@ -357,6 +358,29 @@ nlohmann::json DatabaseConfig::GetConfigJson(bool* should_write, const bool& rea
 		v_programSettings["ResourceUpgradeFiles"] =
 		{
 			"$GAME_DATA/upgrade_resources.json"
+		};
+
+		if (should_write)
+			(*should_write) = true;
+	}
+
+	if (!v_programSettings.contains("TileFolders"))
+	{
+		v_programSettings["TileFolders"] =
+		{
+			"$SURVIVAL_DATA/Terrain/Tiles/autumn_forest",
+			"$SURVIVAL_DATA/Terrain/Tiles/burnt_forest",
+			"$SURVIVAL_DATA/Terrain/Tiles/desert",
+			"$SURVIVAL_DATA/Terrain/Tiles/field",
+			"$SURVIVAL_DATA/Terrain/Tiles/forest",
+			"$SURVIVAL_DATA/Terrain/Tiles/lake",
+			"$SURVIVAL_DATA/Terrain/Tiles/meadow",
+			"$SURVIVAL_DATA/Terrain/Tiles/poi",
+			"$SURVIVAL_DATA/Terrain/Tiles/roads_and_cliffs",
+			"$SURVIVAL_DATA/Terrain/Tiles/start_area",
+
+			"$GAME_DATA/Terrain/Tiles/ClassicCreativeTiles",
+			"$GAME_DATA/Terrain/Tiles/CreativeTiles"
 		};
 
 		if (should_write)
