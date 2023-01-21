@@ -294,6 +294,7 @@ namespace SMConverter
 		m_tb_path->Enabled = db_loaded_and_obj_converted;
 		m_btn_folderDialog->Enabled = db_loaded_and_obj_converted;
 		m_tb_searchBox->Enabled = objlist_and_obj_loaded;
+		m_btn_searchFilter->Enabled = objlist_and_obj_loaded;
 
 		m_btn_reloadUserObjects->Enabled = objlist_and_obj_loaded;
 		m_btn_reloadDatabase->Enabled = db_loaded_and_obj_converted;

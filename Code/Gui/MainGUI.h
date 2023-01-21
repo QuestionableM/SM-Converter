@@ -30,6 +30,7 @@ namespace SMConverter
 		int m_lastSearchLength = 0;
 
 		System::Windows::Forms::Button^ m_btn_folderDialog;
+		System::Windows::Forms::Button^ m_btn_searchFilter;
 		System::Windows::Forms::Button^ m_btn_convert;
 
 		System::Windows::Forms::ToolStripMenuItem^ m_btn_reloadDatabase;
@@ -71,6 +72,7 @@ namespace SMConverter
 		System::Windows::Forms::ToolStripMenuItem^ m_btn_aboutProgram;
 
 		System::Windows::Forms::ToolStripSeparator^ m_ts_settings_separator;
+
 		System::ComponentModel::IContainer^ components;
 
 #pragma region Windows Form Designer generated code
@@ -110,6 +112,7 @@ namespace SMConverter
 			this->m_btn_openTileFolder = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->m_cms_tile_separator = (gcnew System::Windows::Forms::ToolStripSeparator());
 			this->m_btn_findTileCreatorInSteam = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->m_btn_searchFilter = (gcnew System::Windows::Forms::Button());
 			this->m_menuStrip->SuspendLayout();
 			this->m_cms_blueprint->SuspendLayout();
 			this->m_cms_tile->SuspendLayout();
@@ -119,9 +122,9 @@ namespace SMConverter
 			// 
 			this->m_btn_folderDialog->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Right));
 			this->m_btn_folderDialog->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
-			this->m_btn_folderDialog->Location = System::Drawing::Point(428, 27);
+			this->m_btn_folderDialog->Location = System::Drawing::Point(408, 27);
 			this->m_btn_folderDialog->Name = L"m_btn_folderDialog";
-			this->m_btn_folderDialog->Size = System::Drawing::Size(44, 22);
+			this->m_btn_folderDialog->Size = System::Drawing::Size(64, 22);
 			this->m_btn_folderDialog->TabIndex = 0;
 			this->m_btn_folderDialog->Text = L"...";
 			this->m_btn_folderDialog->UseVisualStyleBackColor = true;
@@ -148,7 +151,7 @@ namespace SMConverter
 			this->m_tb_path->Location = System::Drawing::Point(12, 27);
 			this->m_tb_path->MaxLength = 256;
 			this->m_tb_path->Name = L"m_tb_path";
-			this->m_tb_path->Size = System::Drawing::Size(410, 22);
+			this->m_tb_path->Size = System::Drawing::Size(390, 22);
 			this->m_tb_path->TabIndex = 2;
 			this->m_tb_path->TextChanged += gcnew System::EventHandler(this, &MainGui::PathTextBox_TextChanged);
 			// 
@@ -160,7 +163,7 @@ namespace SMConverter
 			this->m_tb_searchBox->Location = System::Drawing::Point(12, 55);
 			this->m_tb_searchBox->MaxLength = 64;
 			this->m_tb_searchBox->Name = L"m_tb_searchBox";
-			this->m_tb_searchBox->Size = System::Drawing::Size(460, 22);
+			this->m_tb_searchBox->Size = System::Drawing::Size(390, 22);
 			this->m_tb_searchBox->TabIndex = 3;
 			this->m_tb_searchBox->TextChanged += gcnew System::EventHandler(this, &MainGui::MainGui_SearchBox_TextChanged);
 			// 
@@ -405,11 +408,23 @@ namespace SMConverter
 			this->m_btn_findTileCreatorInSteam->Text = L"Find Creator in Steam";
 			this->m_btn_findTileCreatorInSteam->Click += gcnew System::EventHandler(this, &MainGui::MainGui_FindTileCreator_Click);
 			// 
+			// m_btn_searchFilter
+			// 
+			this->m_btn_searchFilter->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Right));
+			this->m_btn_searchFilter->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
+			this->m_btn_searchFilter->Location = System::Drawing::Point(408, 55);
+			this->m_btn_searchFilter->Name = L"m_btn_searchFilter";
+			this->m_btn_searchFilter->Size = System::Drawing::Size(64, 22);
+			this->m_btn_searchFilter->TabIndex = 11;
+			this->m_btn_searchFilter->Text = L"Filter";
+			this->m_btn_searchFilter->UseVisualStyleBackColor = true;
+			// 
 			// MainGui
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(484, 311);
+			this->Controls->Add(this->m_btn_searchFilter);
 			this->Controls->Add(this->m_lbl_objSelectorStatus);
 			this->Controls->Add(this->m_lbl_progressStatus);
 			this->Controls->Add(this->m_pb_progress);
