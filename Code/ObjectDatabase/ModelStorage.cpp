@@ -17,7 +17,7 @@ void SubMeshData::IndexWriter_None(const IndexWriterArguments& v_data, const Ver
 	const std::size_t& v_vert_idx = v_data.offset->VertexMap.at(v_vertex);
 
 	*g_modelWriterPtr++ = ' ';
-	g_modelWriterPtr = String::FromInteger<std::size_t, 10>(v_vert_idx + 1, g_modelWriterPtr);
+	g_modelWriterPtr = String::FromInteger<std::size_t>(v_vert_idx + 1, g_modelWriterPtr);
 }
 
 void SubMeshData::IndexWriter_Normals(const IndexWriterArguments& v_data, const VertexData& v_vert)
@@ -29,10 +29,10 @@ void SubMeshData::IndexWriter_Normals(const IndexWriterArguments& v_data, const 
 	const std::size_t& v_norm_idx = v_data.offset->NormalMap.at(v_normal);
 
 	*g_modelWriterPtr++ = ' ';
-	g_modelWriterPtr = String::FromInteger<std::size_t, 10>(v_vert_idx + 1, g_modelWriterPtr);
+	g_modelWriterPtr = String::FromInteger<std::size_t>(v_vert_idx + 1, g_modelWriterPtr);
 	*g_modelWriterPtr++ = '/';
 	*g_modelWriterPtr++ = '/';
-	g_modelWriterPtr = String::FromInteger<std::size_t, 10>(v_norm_idx + 1, g_modelWriterPtr);
+	g_modelWriterPtr = String::FromInteger<std::size_t>(v_norm_idx + 1, g_modelWriterPtr);
 }
 
 void SubMeshData::IndexWriter_Uvs(const IndexWriterArguments& v_data, const VertexData& v_vert)
@@ -44,9 +44,9 @@ void SubMeshData::IndexWriter_Uvs(const IndexWriterArguments& v_data, const Vert
 	const std::size_t& v_uv_idx = v_data.offset->UvMap.at(v_uv);
 
 	*g_modelWriterPtr++ = ' ';
-	g_modelWriterPtr = String::FromInteger<std::size_t, 10>(v_vert_idx + 1, g_modelWriterPtr);
+	g_modelWriterPtr = String::FromInteger<std::size_t>(v_vert_idx + 1, g_modelWriterPtr);
 	*g_modelWriterPtr++ = '/';
-	g_modelWriterPtr = String::FromInteger<std::size_t, 10>(v_uv_idx + 1, g_modelWriterPtr);
+	g_modelWriterPtr = String::FromInteger<std::size_t>(v_uv_idx + 1, g_modelWriterPtr);
 }
 
 void SubMeshData::IndexWriter_UvsAndNormals(const IndexWriterArguments& v_data, const VertexData& v_vert)
@@ -60,11 +60,11 @@ void SubMeshData::IndexWriter_UvsAndNormals(const IndexWriterArguments& v_data, 
 	const std::size_t& v_norm_idx = v_data.offset->NormalMap.at(v_normal);
 
 	*g_modelWriterPtr++ = ' ';
-	g_modelWriterPtr = String::FromInteger<std::size_t, 10>(v_vert_idx + 1, g_modelWriterPtr);
+	g_modelWriterPtr = String::FromInteger<std::size_t>(v_vert_idx + 1, g_modelWriterPtr);
 	*g_modelWriterPtr++ = '/';
-	g_modelWriterPtr = String::FromInteger<std::size_t, 10>(v_uv_idx + 1, g_modelWriterPtr);
+	g_modelWriterPtr = String::FromInteger<std::size_t>(v_uv_idx + 1, g_modelWriterPtr);
 	*g_modelWriterPtr++ = '/';
-	g_modelWriterPtr = String::FromInteger<std::size_t, 10>(v_norm_idx + 1, g_modelWriterPtr);
+	g_modelWriterPtr = String::FromInteger<std::size_t>(v_norm_idx + 1, g_modelWriterPtr);
 }
 
 SubMeshData::IndexWriterFunction SubMeshData::GetWriterFunction() const
@@ -101,14 +101,11 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 			offset.Vertex++;
 
 			//This is actually faster than sprintf("%g %g %g")
-			g_modelWriterPtr = _gcvt(pVertPos.x, 6, g_modelWriterBuf + 2);
-			while (*g_modelWriterPtr != '\0') g_modelWriterPtr++;
+			g_modelWriterPtr = String::FromFloat(pVertPos.x, g_modelWriterBuf + 2);
 			*g_modelWriterPtr++ = ' ';
-			_gcvt(pVertPos.y, 6, g_modelWriterPtr);
-			while (*g_modelWriterPtr != '\0') g_modelWriterPtr++;
+			g_modelWriterPtr = String::FromFloat(pVertPos.y, g_modelWriterPtr);
 			*g_modelWriterPtr++ = ' ';
-			_gcvt(pVertPos.z, 6, g_modelWriterPtr);
-			while (*g_modelWriterPtr != '\0') g_modelWriterPtr++;
+			g_modelWriterPtr = String::FromFloat(pVertPos.z, g_modelWriterPtr);
 			*g_modelWriterPtr++ = '\n';
 			*g_modelWriterPtr = '\0';
 
@@ -130,13 +127,11 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 				offset.UvMap.insert(std::make_pair(uv, offset.Uv));
 				offset.Uv++;
 
-				g_modelWriterPtr = _gcvt(uv.x, 6, g_modelWriterBuf + 3);
-				while (*g_modelWriterPtr != '\0') g_modelWriterPtr++;
+				g_modelWriterPtr = String::FromFloat(uv.x, g_modelWriterBuf + 3);
 				*g_modelWriterPtr++ = ' ';
-				_gcvt(uv.y, 6, g_modelWriterPtr);
-				while (*g_modelWriterPtr != '\0') g_modelWriterPtr++;
+				g_modelWriterPtr = String::FromFloat(uv.y, g_modelWriterPtr);
 				*g_modelWriterPtr++ = '\n';
-				g_modelWriterPtr = '\0';
+				*g_modelWriterPtr = '\0';
 
 				file.write(g_modelWriterBuf, g_modelWriterPtr - g_modelWriterBuf);
 			}
@@ -161,14 +156,11 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 				offset.NormalMap.insert(std::make_pair(pNormal, offset.Normal));
 				offset.Normal++;
 
-				g_modelWriterPtr = _gcvt(pNormal.x, 6, g_modelWriterBuf + 3);
-				while (*g_modelWriterPtr != '\0') g_modelWriterPtr++;
+				g_modelWriterPtr = String::FromFloat(pNormal.x, g_modelWriterBuf + 3);
 				*g_modelWriterPtr++ = ' ';
-				_gcvt(pNormal.y, 6, g_modelWriterPtr);
-				while (*g_modelWriterPtr != '\0') g_modelWriterPtr++;
+				g_modelWriterPtr = String::FromFloat(pNormal.y, g_modelWriterPtr);
 				*g_modelWriterPtr++ = ' ';
-				_gcvt(pNormal.z, 6, g_modelWriterPtr);
-				while (*g_modelWriterPtr != '\0') g_modelWriterPtr++;
+				g_modelWriterPtr = String::FromFloat(pNormal.z, g_modelWriterPtr);
 				*g_modelWriterPtr++ = '\n';
 				*g_modelWriterPtr = '\0';
 

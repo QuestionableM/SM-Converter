@@ -244,14 +244,14 @@ namespace String
 	 * Written by Lukás Chmela
 	 * Released under GPLv3.
 	*/
-	template<typename T, T t_base>
+	template<typename T, T t_base = 10>
 	inline char* FromInteger(T value, char* result)
 	{
 		// check that the base if valid
 		static_assert(t_base >= 2 && t_base <= 36, "Base sould be in range of [2, 36]");
 		static_assert(std::is_integral_v<T>, "IntegerToString type must be integral");
 
-		char* ptr = result, *ptr1 = result, *v_end_ptr, tmp_char;
+		char* ptr = result, * v_end_ptr, tmp_char;
 		T tmp_value;
 
 		do {
@@ -266,14 +266,130 @@ namespace String
 		*ptr = '\0';
 		v_end_ptr = ptr--;
 
-		while (ptr1 < ptr) {
+		while (result < ptr) {
 			tmp_char = *ptr;
-			*ptr-- = *ptr1;
-			*ptr1++ = tmp_char;
+			*ptr-- = *result;
+			*result++ = tmp_char;
 		}
 
 		return v_end_ptr;
 	}
+
+#pragma warning(push)
+#pragma warning(disable : 4996)
+
+	template<std::uint8_t t_precision = 6>
+	inline char* FromFloat(float f, char* p)
+	{
+		typedef union
+		{
+			int32_t Long;
+			float Float;
+		} int32_Float_t;
+
+		int32_t mantissa, int_part, frac_part;
+		int16_t exp2;
+		int32_Float_t x;
+
+		if (f == 0.0)
+		{
+			*p++ = '0';
+			if constexpr (t_precision > (std::uint8_t)0)
+			{
+				*p++ = '.';
+				*p++ = '0';
+			}
+			*p = 0;
+
+			return p;
+		}
+
+		x.Float = f;
+		exp2 = (unsigned char)(x.Long >> 23) - 127;
+		mantissa = (x.Long & 0xFFFFFF) | 0x800000;
+		frac_part = 0;
+		int_part = 0;
+
+		if (exp2 >= 31)
+		{
+			*p++ = '2';
+			*p++ = '1';
+			*p++ = '4';
+			*p++ = '7';
+			*p++ = '4';
+			*p++ = '8';
+			*p++ = '3';
+			*p++ = '5';
+			*p++ = '2';
+			*p++ = '0';
+			*p = 0;
+
+			return p;
+
+		}
+		else if (exp2 < -23)
+		{
+			*p++ = '0';
+			*p = 0;
+
+			return p;
+		}
+		else if (exp2 >= 23)
+			int_part = mantissa << (exp2 - 23);
+		else if (exp2 >= 0)
+		{
+			int_part = mantissa >> (23 - exp2);
+			frac_part = (mantissa << (exp2 + 1)) & 0xFFFFFF;
+		}
+		else
+		{
+			//if (exp2 < 0)
+			frac_part = (mantissa & 0xFFFFFF) >> -(exp2 + 1);
+		}
+
+		if (x.Long < 0)
+		{
+			*p++ = '-';
+		}
+
+		if (int_part == 0)
+			*p++ = '0';
+		else
+		{
+			_ltoa(int_part, p, 10);
+			while (*p) p++;
+		}
+
+		if constexpr (t_precision > (std::uint8_t)0)
+		{
+			*p++ = '.';
+			if (frac_part == 0)
+			{
+				*p++ = '0';
+			}
+			else
+			{
+				char m;
+
+				for (m = 0; m < t_precision; m++)
+				{
+					//frac_part *= 10;
+					frac_part = (frac_part << 3) + (frac_part << 1);
+					*p++ = (frac_part >> 24) + '0';
+					frac_part &= 0xFFFFFF;
+				}
+
+				//delete ending zeroes
+				for (--p; p[0] == '0' && p[-1] != '.'; --p) {}
+				++p;
+			}
+		}
+		*p = 0;
+
+		return p;
+	}
+
+#pragma warning(pop)
 }
 
 #pragma managed
