@@ -23,7 +23,8 @@ public:
 	inline void SetColor(const SMColor& color) { this->m_color = color; }
 
 	inline EntityType Type() const override { return EntityType::Clutter; }
-	std::string GetMtlName(const std::string& mat_name, const std::size_t& mIdx) const override;
+	char* GetMtlNameCStr(const std::string& v_mat_name, const std::size_t& v_idx, char* v_ptr) const override;
+	std::string GetMtlName(const std::size_t& mIdx) const override;
 	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const override;
 
 private:

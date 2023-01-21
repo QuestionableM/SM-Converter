@@ -18,12 +18,10 @@ void MaterialManager::Initialize()
 
 	for (const auto v_object : v_doc.root().get_object())
 	{
-		if (!v_object.value.is_string()) continue;
+		if (!v_object.value.is_number()) continue;
 
 		const std::string v_key(v_object.key.data(), v_object.key.size());
-
-		const std::string_view v_value_view = v_object.value.get_string();
-		const std::string v_value(v_value_view.data(), v_value_view.size());
+		const std::size_t v_value = JsonReader::GetNumber<std::size_t>(v_object.value);
 
 		if (m_materialStorage.find(v_key) != m_materialStorage.end())
 			continue;
@@ -32,11 +30,24 @@ void MaterialManager::Initialize()
 	}
 }
 
+char* MaterialManager::GetMaterialACStr(const std::string& mat_name, char* v_ptr)
+{
+	*v_ptr++ = 'm';
+
+	const MaterialMap::const_iterator v_iter = m_materialStorage.find(mat_name);
+	if (v_iter != m_materialStorage.end())
+		v_ptr = String::FromInteger<std::size_t>(v_iter->second, v_ptr);
+	else
+		*v_ptr++ = '1';
+
+	return v_ptr;
+}
+
 std::string MaterialManager::GetMaterialA(const std::string& mat_name)
 {
 	const MaterialMap::const_iterator v_iter = m_materialStorage.find(mat_name);
 	if (v_iter != m_materialStorage.end())
-		return "m" + v_iter->second;
+		return "m" + std::to_string(v_iter->second);
 
 	DebugOutL("Couldn't find the specified material: ", mat_name);
 

@@ -117,6 +117,9 @@ void TileFolderReader::ReadTilesFromConfig()
 {
 	TileFolderReader::ClearStorage();
 
+	for (const auto& v_tile_folder : DatabaseConfig::GameTileFolders)
+		TileFolderReader::ReadTilesFromFolder(v_tile_folder.first);
+
 	for (const auto& v_tile_folder : DatabaseConfig::TileFolders)
 		TileFolderReader::ReadTilesFromFolder(v_tile_folder.first);
 

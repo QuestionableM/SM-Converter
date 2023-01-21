@@ -84,8 +84,8 @@ class ModelStorage
 {
 	using ModelMap = std::unordered_map<std::wstring, Model*>;
 
-	static ModelMap CachedModels;
-	static Assimp::Importer Importer;
+	inline static ModelMap CachedModels = {};
+	inline static Assimp::Importer Importer = Assimp::Importer();
 
 	static const aiScene* LoadScene(const std::wstring& path);
 	static void LoadVertices(const aiMesh*& mesh, Model*& model);

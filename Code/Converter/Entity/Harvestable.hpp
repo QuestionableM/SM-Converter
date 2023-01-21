@@ -23,7 +23,7 @@ public:
 
 	inline SMColor GetColor() const override { return m_color; }
 	inline EntityType Type() const { return EntityType::Harvestable; }
-	std::string GetMtlName(const std::string& mat_name, const std::size_t& mIdx) const override;
+	char* GetMtlNameCStr(const std::string& v_mat_name, const std::size_t& v_idx, char* v_ptr) const override;
 	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const override;
 	bool GetCanWrite(const std::string& name, const std::size_t& v_idx) const override;
 

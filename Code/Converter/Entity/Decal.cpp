@@ -8,7 +8,19 @@
 
 #pragma unmanaged
 
-std::string SMDecal::GetMtlName(const std::string& mat_name, const std::size_t& mIdx) const
+char* SMDecal::GetMtlNameCStr(const std::string& v_mat_name, const std::size_t& v_idx, char* v_ptr) const
+{
+	v_ptr = m_data->m_uuid.ToCString(v_ptr);
+	*v_ptr++ = ' ';
+	v_ptr = m_color.StringHexCStr(v_ptr);
+	*v_ptr++ = ' ';
+	v_ptr = String::FromInteger<std::size_t>(v_idx + 1, v_ptr);
+	*v_ptr++ = ' ';
+
+	return MaterialManager::GetMaterialACStr(v_mat_name, v_ptr);
+}
+
+std::string SMDecal::GetMtlName(const std::size_t& mIdx) const
 {
 	const std::string v_materialIdx = MaterialManager::GetMaterialA(m_data->m_textures.material);
 
@@ -17,7 +29,7 @@ std::string SMDecal::GetMtlName(const std::string& mat_name, const std::size_t& 
 
 void SMDecal::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
 {
-	const std::string v_mtlName = this->GetMtlName("", 0);
+	const std::string v_mtlName = this->GetMtlName(0);
 	if (tex_map.find(v_mtlName) != tex_map.end())
 		return;
 

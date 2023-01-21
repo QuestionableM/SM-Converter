@@ -89,6 +89,31 @@ public:
 		return (std::hash<unsigned long long>{}(m_Data64[0]) >> 1) ^ (std::hash<unsigned long long>{}(m_Data64[1]) << 2);
 	}
 
+	//Returns the end of the uuid
+	inline char* ToCString(char* v_beginning) const
+	{
+		v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[0], v_beginning);
+		v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[1], v_beginning);
+		v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[2], v_beginning);
+		v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[3], v_beginning);
+		*v_beginning++ = '-';
+		v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[4], v_beginning);
+		v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[5], v_beginning);
+		*v_beginning++ = '-';
+		v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[6], v_beginning);
+		v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[7], v_beginning);
+		*v_beginning++ = '-';
+		v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[8], v_beginning);
+		v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[9], v_beginning);
+		*v_beginning++ = '-';
+		v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[10], v_beginning);
+		v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[11], v_beginning);
+		v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[12], v_beginning);
+		v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[13], v_beginning);
+		v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[14], v_beginning);
+		return String::FromInteger<unsigned char, 16>(m_Data8[15], v_beginning);
+	}
+
 	inline std::string ToString() const
 	{
 		char v_buffer[37];

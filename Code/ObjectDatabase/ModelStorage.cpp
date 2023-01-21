@@ -9,6 +9,7 @@
 #pragma unmanaged
 
 static char g_modelWriterBuf[1024];
+static char* g_modelWriterBufferEnd = g_modelWriterBuf + sizeof(g_modelWriterBuf);
 static char* g_modelWriterPtr;
 
 void SubMeshData::IndexWriter_None(const IndexWriterArguments& v_data, const VertexData& v_vert)
@@ -107,7 +108,6 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 			*g_modelWriterPtr++ = ' ';
 			g_modelWriterPtr = String::FromFloat(pVertPos.z, g_modelWriterPtr);
 			*g_modelWriterPtr++ = '\n';
-			*g_modelWriterPtr = '\0';
 
 			file.write(g_modelWriterBuf, g_modelWriterPtr - g_modelWriterBuf);
 		}
@@ -131,7 +131,6 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 				*g_modelWriterPtr++ = ' ';
 				g_modelWriterPtr = String::FromFloat(uv.y, g_modelWriterPtr);
 				*g_modelWriterPtr++ = '\n';
-				*g_modelWriterPtr = '\0';
 
 				file.write(g_modelWriterBuf, g_modelWriterPtr - g_modelWriterBuf);
 			}
@@ -162,7 +161,6 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 				*g_modelWriterPtr++ = ' ';
 				g_modelWriterPtr = String::FromFloat(pNormal.z, g_modelWriterPtr);
 				*g_modelWriterPtr++ = '\n';
-				*g_modelWriterPtr = '\0';
 
 				file.write(g_modelWriterBuf, g_modelWriterPtr - g_modelWriterBuf);
 			}
@@ -187,8 +185,19 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 
 			if (SharedConverterSettings::ExportMaterials)
 			{
-				const std::string v_mtl_name = "usemtl " + pEntity->GetMtlName(pSubMesh->m_MaterialName, mIdx) + '\n';
-				file.write(v_mtl_name.c_str(), v_mtl_name.size());
+				g_modelWriterPtr = g_modelWriterBuf;
+				*g_modelWriterPtr++ = 'u';
+				*g_modelWriterPtr++ = 's';
+				*g_modelWriterPtr++ = 'e';
+				*g_modelWriterPtr++ = 'm';
+				*g_modelWriterPtr++ = 't';
+				*g_modelWriterPtr++ = 'l';
+				*g_modelWriterPtr++ = ' ';
+
+				g_modelWriterPtr = pEntity->GetMtlNameCStr(pSubMesh->m_MaterialName, mIdx, g_modelWriterPtr);
+				*g_modelWriterPtr++ = '\n';
+
+				file.write(g_modelWriterBuf, g_modelWriterPtr - g_modelWriterBuf);
 			}
 		}
 
@@ -203,11 +212,32 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 			*g_modelWriterPtr++ = 'f';
 
 			const std::vector<VertexData>& v_vert_vec = pSubMesh->m_DataIdx[a];
-			for (std::size_t b = 0; b < v_vert_vec.size(); b++)
-				v_writer_func(v_idx_writer_arg, v_vert_vec[b]);
+			if (v_vert_vec.size() > 30) //The N-Gon is too big to be handled with a fast for loop
+			{
+				for (std::size_t b = 0; b < 30; b++)
+					v_writer_func(v_idx_writer_arg, v_vert_vec[b]);
+
+				for (std::size_t b = 30; b < v_vert_vec.size(); b++)
+				{
+					v_writer_func(v_idx_writer_arg, v_vert_vec[b]);
+
+					//never let the writer reach the end of the buffer
+					if ((g_modelWriterBufferEnd - g_modelWriterPtr) < 100)
+					{
+						DebugOutL("Reaching the end of the model writer buffer, resetting... (Remaining space: ", std::size_t(g_modelWriterBufferEnd - g_modelWriterPtr), ")");
+
+						file.write(g_modelWriterBuf, g_modelWriterPtr - g_modelWriterBuf);
+						g_modelWriterPtr = g_modelWriterBuf;
+					}
+				}
+			}
+			else
+			{
+				for (std::size_t b = 0; b < v_vert_vec.size(); b++)
+					v_writer_func(v_idx_writer_arg, v_vert_vec[b]);
+			}
 
 			*g_modelWriterPtr++ = '\n';
-			*g_modelWriterPtr = '\0';
 
 			file.write(g_modelWriterBuf, g_modelWriterPtr - g_modelWriterBuf);
 		}
@@ -222,8 +252,6 @@ Model::~Model()
 
 
 
-std::unordered_map<std::wstring, Model*> ModelStorage::CachedModels = {};
-Assimp::Importer ModelStorage::Importer = Assimp::Importer();
 
 const aiScene* ModelStorage::LoadScene(const std::wstring& path)
 {

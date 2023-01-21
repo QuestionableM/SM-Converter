@@ -127,13 +127,14 @@ void DatabaseConfig::ReadProgramSettings(const nlohmann::json& config_json)
 	KeywordReplacer::LoadResourceUpgradesFromConfig();
 
 	DatabaseConfig::JsonStrArrayToStrMap(program_settings, "ScrapAssetDatabase", DatabaseConfig::AssetListFolders, true);
-	DatabaseConfig::JsonStrArrayToStrMap(program_settings, "TileFolders", DatabaseConfig::TileFolders, true);
+	DatabaseConfig::JsonStrArrayToStrMap(program_settings, "TileFolders", DatabaseConfig::GameTileFolders, true);
 }
 
-using vdf_childs_table = std::unordered_map<std::string, std::shared_ptr<tyti::vdf::object>>;
-using vdf_attrib_table = std::unordered_map<std::string, std::string>;
 bool DatabaseConfig::GetSteamPaths(std::wstring& r_game_path, std::wstring& r_workshop_path)
 {
+	using vdf_childs_table = std::unordered_map<std::string, std::shared_ptr<tyti::vdf::object>>;
+	using vdf_attrib_table = std::unordered_map<std::string, std::string>;
+
 	std::wstring v_steamPath;
 	if (!String::ReadRegistryKey(L"SOFTWARE\\Valve\\Steam", L"SteamPath", v_steamPath))
 	{

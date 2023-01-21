@@ -243,6 +243,7 @@ namespace String
 	 * C++ version 0.4 char* style "itoa":
 	 * Written by Lukás Chmela
 	 * Released under GPLv3.
+	 * This function does not put a null character at the end, so it's up to you to null terminate the string
 	*/
 	template<typename T, T t_base = 10>
 	inline char* FromInteger(T value, char* result)
@@ -260,10 +261,18 @@ namespace String
 			*ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz"[35 + (tmp_value - value * t_base)];
 		} while (value);
 
-		// Apply negative sign
-		if (tmp_value < 0) *ptr++ = '-';
+		if constexpr (t_base == 16 && std::is_same_v<unsigned char, T>)
+		{
+			if ((ptr - result) == 1)
+				*ptr++ = '0';
+		}
 
-		*ptr = '\0';
+		if constexpr (!std::is_unsigned_v<T>)
+		{
+			// Apply negative sign
+			if (tmp_value < 0) *ptr++ = '-';
+		}
+
 		v_end_ptr = ptr--;
 
 		while (result < ptr) {
@@ -278,6 +287,7 @@ namespace String
 #pragma warning(push)
 #pragma warning(disable : 4996)
 
+	//This function does not put a null character at the end, so it's up to you to null terminate the string
 	template<std::uint8_t t_precision = 6>
 	inline char* FromFloat(float f, char* p)
 	{
@@ -299,7 +309,6 @@ namespace String
 				*p++ = '.';
 				*p++ = '0';
 			}
-			*p = 0;
 
 			return p;
 		}
@@ -322,7 +331,6 @@ namespace String
 			*p++ = '5';
 			*p++ = '2';
 			*p++ = '0';
-			*p = 0;
 
 			return p;
 
@@ -330,7 +338,6 @@ namespace String
 		else if (exp2 < -23)
 		{
 			*p++ = '0';
-			*p = 0;
 
 			return p;
 		}
@@ -384,7 +391,6 @@ namespace String
 				++p;
 			}
 		}
-		*p = 0;
 
 		return p;
 	}

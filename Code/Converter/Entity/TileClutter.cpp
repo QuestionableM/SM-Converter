@@ -4,7 +4,19 @@
 
 #pragma unmanaged
 
-std::string	SMTileClutter::GetMtlName(const std::string& mat_name, const std::size_t& mIdx) const
+char* SMTileClutter::GetMtlNameCStr(const std::string& v_mat_name, const std::size_t& v_idx, char* v_ptr) const
+{
+	v_ptr = m_uuid.ToCString(v_ptr);
+	*v_ptr++ = ' ';
+	v_ptr = m_color.StringHexCStr(v_ptr);
+	*v_ptr++ = ' ';
+	v_ptr = String::FromInteger<std::size_t>(v_idx + 1, v_ptr);
+	*v_ptr++ = ' ';
+
+	return MaterialManager::GetMaterialACStr(m_parent->m_textures.material, v_ptr);
+}
+
+std::string	SMTileClutter::GetMtlName(const std::size_t& mIdx) const
 {
 	const std::string tex_mat = MaterialManager::GetMaterialA(m_parent->m_textures.material);
 
@@ -13,7 +25,7 @@ std::string	SMTileClutter::GetMtlName(const std::string& mat_name, const std::si
 
 void SMTileClutter::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
 {
-	const std::string mtl_name = this->GetMtlName("", 0);
+	const std::string mtl_name = this->GetMtlName(0);
 	if (tex_map.find(mtl_name) != tex_map.end())
 		return;
 

@@ -25,6 +25,7 @@ public:
 	inline static PathChecker AssetListFolders     = {};
 	inline static PathChecker BlueprintFolders     = {};
 	inline static PathChecker TileFolders          = {};
+	inline static PathChecker GameTileFolders      = {};
 	inline static PathChecker ResourceUpgradeFiles = {};
 
 	inline static PathChecker ModPathChecker = {};

@@ -7,9 +7,12 @@
 
 class MaterialManager
 {
-	using MaterialMap = std::unordered_map<std::string, std::string>;
+	using MaterialMap = std::unordered_map<std::string, std::size_t>;
 public:
 	static void Initialize();
+
+	//Returns the end of the material string
+	static char* GetMaterialACStr(const std::string& mat_name, char* v_ptr);
 
 	static std::string GetMaterialA(const std::string& mat_name);
 	static std::wstring GetMaterialW(const std::string& mat_name);

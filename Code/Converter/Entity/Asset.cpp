@@ -23,19 +23,29 @@ SMColor SMAsset::GetColor(const std::string& color) const
 	return SMColor(static_cast<unsigned int>(0x000000));
 }
 
-std::string SMAsset::GetMtlName(const std::string& mat_name, const std::size_t& mIdx) const
+char* SMAsset::GetMtlNameCStr(const std::string& v_mat_name, const std::size_t& v_idx, char* v_ptr) const
 {
-	std::string v_mat_idx = "m1";
-	SMColor v_color;
+	v_ptr = m_uuid.ToCString(v_ptr);
+	*v_ptr++ = ' ';
 
-	const SMTextureList* v_tex_list = m_parent->m_textures->GetTexList(mat_name, mIdx);
+	const SMTextureList* v_tex_list = m_parent->m_textures->GetTexList(v_mat_name, v_idx);
 	if (v_tex_list)
 	{
-		v_color = this->GetColor(v_tex_list->def_color_idx);
-		v_mat_idx = MaterialManager::GetMaterialA(v_tex_list->material);
+		v_ptr = this->GetColor(v_tex_list->def_color_idx).StringHexCStr(v_ptr);
+		*v_ptr++ = ' ';
+		v_ptr = String::FromInteger<std::size_t>(v_idx + 1, v_ptr);
+		*v_ptr++ = ' ';
+		return MaterialManager::GetMaterialACStr(v_tex_list->material, v_ptr);
 	}
 
-	return m_uuid.ToString() + " " + v_color.StringHex() + " " + std::to_string(mIdx + 1) + " " + v_mat_idx;
+	v_ptr = SMColor::WriteEmptyHex(v_ptr);
+	*v_ptr++ = ' ';
+	v_ptr = String::FromInteger<std::size_t>(v_idx + 1, v_ptr);
+	*v_ptr++ = ' ';
+	*v_ptr++ = 'm';
+	*v_ptr++ = '1';
+
+	return v_ptr;
 }
 
 void SMAsset::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const

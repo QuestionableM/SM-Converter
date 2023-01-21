@@ -93,6 +93,26 @@ public:
 		return std::to_string(v_norm_r) + " " + std::to_string(v_norm_g) + " " + std::to_string(v_norm_b);
 	}
 
+	inline static char* WriteEmptyHex(char* v_ptr)
+	{
+		*v_ptr++ = '0';
+		*v_ptr++ = '0';
+		*v_ptr++ = '0';
+		*v_ptr++ = '0';
+		*v_ptr++ = '0';
+		*v_ptr++ = '0';
+
+		return v_ptr;
+	}
+
+	//Returns the end of the hex string
+	inline char* StringHexCStr(char* v_ptr) const
+	{
+		v_ptr = String::FromInteger<unsigned char, 16>(this->r, v_ptr);
+		v_ptr = String::FromInteger<unsigned char, 16>(this->g, v_ptr);
+		return String::FromInteger<unsigned char, 16>(this->b, v_ptr);
+	}
+
 	inline std::string StringHex() const
 	{
 		char v_buffer[7];

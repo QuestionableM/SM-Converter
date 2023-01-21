@@ -7,17 +7,24 @@
 
 #pragma unmanaged
 
-std::string SMPart::GetMtlName(const std::string& mat_name, const std::size_t& mIdx) const
+char* SMPart::GetMtlNameCStr(const std::string& v_mat_name, const std::size_t& v_idx, char* v_ptr) const
 {
-	const SubMeshData* pSubMesh = m_model->subMeshData[mIdx];
+	v_ptr = m_uuid.ToCString(v_ptr);
+	*v_ptr++ = ' ';
+	v_ptr = m_color.StringHexCStr(v_ptr);
+	*v_ptr++ = ' ';
+	v_ptr = String::FromInteger<std::size_t>(v_idx + 1, v_ptr);
+	*v_ptr++ = ' ';
 
-	std::string material_idx = "m1";
-
-	const SMTextureList* v_tex_data = m_parent->m_textures->GetTexList(pSubMesh->m_MaterialName, mIdx);
+	const SubMeshData* v_SubMesh = m_model->subMeshData[v_idx];
+	const SMTextureList* v_tex_data = m_parent->m_textures->GetTexList(v_mat_name, v_idx);
 	if (v_tex_data)
-		material_idx = MaterialManager::GetMaterialA(v_tex_data->material);
+		return MaterialManager::GetMaterialACStr(v_tex_data->material, v_ptr);
 
-	return m_uuid.ToString() + ' ' + m_color.StringHex() + ' ' + std::to_string(mIdx + 1) + ' ' + material_idx;
+	*v_ptr++ = 'm';
+	*v_ptr++ = '1';
+
+	return v_ptr;
 }
 
 void SMPart::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
