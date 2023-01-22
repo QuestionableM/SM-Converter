@@ -280,7 +280,9 @@ void DatabaseConfig::FindLocalUsers()
 
 void DatabaseConfig::FindGamePath(const nlohmann::json& config_json, bool& should_write)
 {
-	if (DatabaseConfig::GamePath.empty() || !File::Exists(DatabaseConfig::GamePath))
+	if (
+		(DatabaseConfig::GamePath.empty() || !File::Exists(DatabaseConfig::GamePath)) ||
+		(DatabaseConfig::WorkshopFolder.empty() || !File::Exists(DatabaseConfig::WorkshopFolder)))
 	{
 		std::wstring game_path, ws_path;
 		if (DatabaseConfig::GetSteamPaths(game_path, ws_path))
@@ -295,24 +297,30 @@ void DatabaseConfig::FindGamePath(const nlohmann::json& config_json, bool& shoul
 	}
 }
 
+inline void ReadJsonDirectory(const nlohmann::json& config_json, const std::string& key, std::wstring& v_output)
+{
+	const auto& v_dir_json = JsonReader::Get(config_json, key);
+	if (!v_dir_json.is_string())
+		return;
+
+	const std::wstring v_dir = String::ToWide(v_dir_json.get_ref<const std::string&>());
+	if (File::IsDirectory(v_dir))
+	{
+		v_output = v_dir;
+	}
+	else
+	{
+		DebugErrorL("The specified path is not a directory!");
+	}
+}
+
 void DatabaseConfig::ReadUserSettings(const nlohmann::json& config_json, bool& should_write)
 {
 	const auto& user_settings = JsonReader::Get(config_json, "UserSettings");
 	if (user_settings.is_object())
 	{
-		const auto& game_path = JsonReader::Get(user_settings, "GamePath");
-		if (game_path.is_string())
-		{
-			DatabaseConfig::GamePath = String::ToWide(game_path.get_ref<const std::string&>());
-			DebugOutL("Game Path: ", DatabaseConfig::GamePath);
-		}
-
-		const auto& v_workshop_path = JsonReader::Get(user_settings, "WorkshopPath");
-		if (v_workshop_path.is_string())
-		{
-			DatabaseConfig::WorkshopFolder = String::ToWide(v_workshop_path.get_ref<const std::string&>());
-			DebugOutL("Workshop Path: ", DatabaseConfig::WorkshopFolder);
-		}
+		ReadJsonDirectory(user_settings, "GameDirectory", DatabaseConfig::GamePath);
+		ReadJsonDirectory(user_settings, "WorkshopDirectory", DatabaseConfig::WorkshopFolder);
 
 		const auto& v_open_in_steam = JsonReader::Get(user_settings, "OpenLinksInSteam");
 		DatabaseConfig::OpenLinksInSteam = v_open_in_steam.is_boolean() ? v_open_in_steam.get<bool>() : false;
@@ -439,8 +447,8 @@ void DatabaseConfig::SaveConfig()
 	{
 		nlohmann::json user_settings = nlohmann::json::object();
 
-		user_settings["GamePath"] = String::ToUtf8(DatabaseConfig::GamePath);
-		user_settings["WorkshopPath"] = String::ToUtf8(DatabaseConfig::WorkshopFolder);
+		user_settings["GameDirectory"] = String::ToUtf8(DatabaseConfig::GamePath);
+		user_settings["WorkshopDirectory"] = String::ToUtf8(DatabaseConfig::WorkshopFolder);
 
 		user_settings["OpenLinksInSteam"] = DatabaseConfig::OpenLinksInSteam;
 
