@@ -418,6 +418,7 @@ namespace SMConverter
 			this->m_btn_searchFilter->TabIndex = 11;
 			this->m_btn_searchFilter->Text = L"Filter";
 			this->m_btn_searchFilter->UseVisualStyleBackColor = true;
+			this->m_btn_searchFilter->Click += gcnew System::EventHandler(this, &MainGui::MainGui_Filter_Click);
 			// 
 			// MainGui
 			// 
@@ -506,5 +507,6 @@ namespace SMConverter
 
 		System::Void MainGui_OpenBlueprintOutputFolder_Click(System::Object^ sender, System::EventArgs^ e);
 		System::Void MainGui_OpenTileOutputFolder_Click(System::Object^ sender, System::EventArgs^ e);
+		System::Void MainGui_Filter_Click(System::Object^ sender, System::EventArgs^ e);
 	};
 }

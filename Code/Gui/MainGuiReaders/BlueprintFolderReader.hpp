@@ -4,6 +4,8 @@
 #include "Ustd\UnmanagedString.hpp"
 #include "Ustd\UnmanagedVector.hpp"
 
+#include "FilterSettingsData.hpp"
+
 #pragma unmanaged
 
 struct BlueprintInstance
@@ -18,6 +20,7 @@ struct BlueprintInstance
 	std::wstring preview_image;
 
 	unsigned long long workshop_id;
+	unsigned char v_filter;
 
 	BlueprintInstance() = default;
 	BlueprintInstance(const BlueprintInstance&) = delete;
@@ -31,7 +34,12 @@ public:
 	using InstanceType = BlueprintInstance;
 
 	inline static std::vector<BlueprintInstance*> Storage = {};
+	inline static std::vector<BlueprintInstance*> FilteredStorage = {};
 	inline static std::vector<BlueprintInstance*> SearchResults = {};
+
+	static bool ShouldUseFilteredStorage();
+	static std::vector<BlueprintInstance*>& GetCurrentStorage();
+	static void FilterStorage();
 
 	static void ReadBlueprintFromFile(const std::filesystem::path& path);
 	static void ReadBlueprintFromFolder(const std::wstring& folder);

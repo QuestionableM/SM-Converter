@@ -27,26 +27,29 @@ void DatabaseLoader::LoadGameDatabase()
 	Mod::ModVector.push_back(pGameData);
 }
 
-void DatabaseLoader::LoadModsFromPaths(const std::vector<std::wstring>& path_vector, const bool& is_local)
+void DatabaseLoader::LoadModsFromPath(const std::wstring& path, const bool& is_local)
 {
 	namespace fs = std::filesystem;
 
-	for (const std::wstring& v_modDir : path_vector)
+	std::error_code v_errorCode;
+	fs::directory_iterator v_dirIter(path, fs::directory_options::skip_permission_denied, v_errorCode);
+
+	for (const auto& v_curDir : v_dirIter)
 	{
-		std::error_code v_errorCode;
-		fs::directory_iterator v_dirIter(v_modDir, fs::directory_options::skip_permission_denied, v_errorCode);
+		if (v_errorCode || !v_curDir.is_directory())
+			continue;
 
-		for (const auto& v_curDir : v_dirIter)
-		{
-			if (v_errorCode || !v_curDir.is_directory())
-				continue;
+		Mod* v_newMod = Mod::LoadFromDescription(v_curDir.path().wstring(), is_local);
+		if (!v_newMod) continue;
 
-			Mod* v_newMod = Mod::LoadFromDescription(v_curDir.path().wstring(), is_local);
-			if (!v_newMod) continue;
-
-			v_newMod->LoadObjectDatabase();
-		}
+		v_newMod->LoadObjectDatabase();
 	}
+}
+
+void DatabaseLoader::LoadModsFromPaths(const std::vector<std::wstring>& path_vector, const bool& is_local)
+{
+	for (const std::wstring& v_modDir : path_vector)
+		DatabaseLoader::LoadModsFromPath(v_modDir, is_local);
 }
 
 void DatabaseLoader::LoadModDatabase()
@@ -55,6 +58,7 @@ void DatabaseLoader::LoadModDatabase()
 	DebugOutL(0b0100_fg, "Loading mod data...");
 
 	DatabaseLoader::LoadModsFromPaths(DatabaseConfig::LocalModFolders, true);
+	DatabaseLoader::LoadModsFromPath(DatabaseConfig::WorkshopFolder, false);
 	DatabaseLoader::LoadModsFromPaths(DatabaseConfig::ModFolders, false);
 }
 

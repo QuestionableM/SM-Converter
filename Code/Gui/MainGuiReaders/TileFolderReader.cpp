@@ -11,6 +11,43 @@
 
 #pragma unmanaged
 
+bool TileFolderReader::ShouldUseFilteredStorage()
+{
+	return (FilterSettingsData::TileSizeFilter != TileSizeFilter_Any || FilterSettingsData::UserDataFilter != UserDataFilter_Any);
+}
+
+std::vector<TileInstance*>& TileFolderReader::GetCurrentStorage()
+{
+	return TileFolderReader::ShouldUseFilteredStorage()
+		? TileFolderReader::FilteredStorage
+		: TileFolderReader::Storage;
+}
+
+void TileFolderReader::FilterStorage()
+{
+	TileFolderReader::FilteredStorage.clear();
+
+	for (TileInstance* v_tile_instance : TileFolderReader::Storage)
+		if ((v_tile_instance->v_filter & FilterSettingsData::UserDataFilter) != 0 &&
+			(v_tile_instance->v_size_filter & FilterSettingsData::TileSizeFilter) != 0)
+			TileFolderReader::FilteredStorage.push_back(v_tile_instance);
+}
+
+TileSizeFilter TileFolderReader::GetTileSize(const int& v_sz)
+{
+	switch (v_sz)
+	{
+	case 0: case 1:
+		return TileSizeFilter_Small;
+	case 2:
+		return TileSizeFilter_Medium;
+	case 3: case 4:
+		return TileSizeFilter_Large;
+	default:
+		return TileSizeFilter_ExtraLarge;
+	}
+}
+
 void TileFolderReader::LoadFromFile(const std::filesystem::path& path)
 {
 	if (!(path.has_stem() && path.has_filename() && path.has_parent_path()))
@@ -30,6 +67,9 @@ void TileFolderReader::LoadFromFile(const std::filesystem::path& path)
 
 	v_new_tile->creator_id = v_tile_info.creator_id;
 	v_new_tile->workshop_id = 0ull;
+
+	v_new_tile->v_size_filter = TileFolderReader::GetTileSize(v_tile_info.width);
+	v_new_tile->v_filter = FilterSettingsData::GetUserDataFilter(v_new_tile->path);
 
 	const std::wstring v_preview_img = path.parent_path().wstring() + L"/" + v_tile_info.uuid.ToWstring() + L".png";
 	if (File::Exists(v_preview_img))
@@ -85,6 +125,9 @@ void TileFolderReader::LoadFromDirectory(const std::wstring& path)
 	v_new_tile->workshop_id = (v_workshop_id.is_number() ? JsonReader::GetNumber<unsigned long long>(v_workshop_id) : 0ull);
 	v_new_tile->creator_id = v_tile_info.creator_id;
 
+	v_new_tile->v_size_filter = TileFolderReader::GetTileSize(v_tile_info.width);
+	v_new_tile->v_filter = FilterSettingsData::GetUserDataFilter(v_new_tile->path);
+
 	TileFolderReader::Storage.push_back(v_new_tile);
 }
 
@@ -122,6 +165,8 @@ void TileFolderReader::ReadTilesFromConfig()
 
 	for (const auto& v_tile_folder : DatabaseConfig::TileFolders)
 		TileFolderReader::ReadTilesFromFolder(v_tile_folder.first);
+
+	TileFolderReader::ReadTilesFromFolder(DatabaseConfig::WorkshopFolder);
 
 	DebugOutL("[TileFolderReader] Successfully loaded ", TileFolderReader::Storage.size(), " tiles from ", DatabaseConfig::TileFolders.size(), " folders");
 }

@@ -130,6 +130,16 @@ bool File::IsPathLegal(const std::wstring& path)
 	return !v_error;
 }
 
+bool File::IsSubPath(const std::wstring& parent_dir, const std::wstring& sub_dir)
+{
+	std::error_code v_ec;
+	const std::wstring v_relative = std::filesystem::relative(sub_dir, parent_dir, v_ec);
+
+	if (v_ec) return false;
+
+	return v_relative.size() == 1 || (v_relative[0] != L'.' && v_relative[1] != L'.');
+}
+
 bool File::Equivalent(const std::wstring& p1, const std::wstring& p2)
 {
 	std::error_code ec;

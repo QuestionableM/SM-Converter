@@ -9,6 +9,27 @@
 
 #pragma unmanaged
 
+bool BlueprintFolderReader::ShouldUseFilteredStorage()
+{
+	return (FilterSettingsData::UserDataFilter != UserDataFilter_Any);
+}
+
+std::vector<BlueprintInstance*>& BlueprintFolderReader::GetCurrentStorage()
+{
+	return BlueprintFolderReader::ShouldUseFilteredStorage()
+		? BlueprintFolderReader::FilteredStorage
+		: BlueprintFolderReader::Storage;
+}
+
+void BlueprintFolderReader::FilterStorage()
+{
+	BlueprintFolderReader::FilteredStorage.clear();
+
+	for (BlueprintInstance* v_bp_instance : BlueprintFolderReader::Storage)
+		if (v_bp_instance->v_filter & FilterSettingsData::UserDataFilter)
+			BlueprintFolderReader::FilteredStorage.push_back(v_bp_instance);
+}
+
 void BlueprintFolderReader::ReadBlueprintFromFile(const std::filesystem::path& path)
 {
 	if (!(path.has_stem() && path.has_parent_path()))
@@ -20,6 +41,7 @@ void BlueprintFolderReader::ReadBlueprintFromFile(const std::filesystem::path& p
 	v_new_bp->path = path.wstring();
 	v_new_bp->directory = path.parent_path().wstring();
 	v_new_bp->workshop_id = 0ull;
+	v_new_bp->v_filter = FilterSettingsData::GetUserDataFilter(v_new_bp->path);
 
 	BlueprintFolderReader::Storage.push_back(v_new_bp);
 }
@@ -53,6 +75,8 @@ void BlueprintFolderReader::ReadBlueprintFromFolder(const std::wstring& folder)
 	v_new_bp->lower_name = String::ToLower(v_new_bp->name);
 	v_new_bp->path = v_blueprint_path;
 	v_new_bp->directory = folder;
+
+	v_new_bp->v_filter = FilterSettingsData::GetUserDataFilter(v_new_bp->path);
 
 	const std::wstring v_preview_img = folder + L"/icon.png";
 	if (File::Exists(v_preview_img))
@@ -97,6 +121,8 @@ void BlueprintFolderReader::ReadBlueprintsFromConfig()
 	for (const auto& v_bp_folder : DatabaseConfig::BlueprintFolders)
 		BlueprintFolderReader::ReadBlueprintsFromFolder(v_bp_folder.first);
 
+	BlueprintFolderReader::ReadBlueprintsFromFolder(DatabaseConfig::WorkshopFolder);
+
 	DebugOutL("[BlueprintFolderReader] Successfully loaded ", BlueprintFolderReader::Storage.size(), " blueprints from ", DatabaseConfig::BlueprintFolders.size(), " folders");
 }
 
@@ -107,4 +133,5 @@ void BlueprintFolderReader::ClearStorage()
 
 	BlueprintFolderReader::Storage.clear();
 	BlueprintFolderReader::SearchResults.clear();
+	BlueprintFolderReader::FilteredStorage.clear();
 }

@@ -4,6 +4,8 @@
 #include "UStd\UnmanagedString.hpp"
 #include "UStd\UnmanagedVector.hpp"
 
+#include "FilterSettingsData.hpp"
+
 #pragma unmanaged
 
 struct TileInstance
@@ -19,6 +21,9 @@ struct TileInstance
 	unsigned long long workshop_id;
 	unsigned long long creator_id;
 
+	unsigned char v_filter;
+	unsigned char v_size_filter;
+
 	TileInstance() = default;
 	TileInstance(const TileInstance&) = delete;
 	TileInstance(TileInstance&) = delete;
@@ -31,7 +36,14 @@ public:
 	using InstanceType = TileInstance;
 
 	inline static std::vector<TileInstance*> Storage = {};
+	inline static std::vector<TileInstance*> FilteredStorage = {};
 	inline static std::vector<TileInstance*> SearchResults = {};
+
+	static bool ShouldUseFilteredStorage();
+	static std::vector<TileInstance*>& GetCurrentStorage();
+	static void FilterStorage();
+
+	static TileSizeFilter GetTileSize(const int& v_sz);
 
 	static void LoadFromFile(const std::filesystem::path& path);
 	static void LoadFromDirectory(const std::wstring& path);

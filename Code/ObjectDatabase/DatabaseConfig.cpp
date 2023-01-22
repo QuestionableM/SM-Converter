@@ -286,10 +286,7 @@ void DatabaseConfig::FindGamePath(const nlohmann::json& config_json, bool& shoul
 		if (DatabaseConfig::GetSteamPaths(game_path, ws_path))
 		{
 			DatabaseConfig::GamePath = game_path;
-
-			DatabaseConfig::AddToStrVec(DatabaseConfig::ModFolders, DatabaseConfig::ModPathChecker, ws_path);
-			DatabaseConfig::AddToStrMap(DatabaseConfig::BlueprintFolders, ws_path);
-			DatabaseConfig::AddToStrMap(DatabaseConfig::TileFolders, ws_path);
+			DatabaseConfig::WorkshopFolder = ws_path;
 
 			should_write = true;
 		}
@@ -310,11 +307,18 @@ void DatabaseConfig::ReadUserSettings(const nlohmann::json& config_json, bool& s
 			DebugOutL("Game Path: ", DatabaseConfig::GamePath);
 		}
 
+		const auto& v_workshop_path = JsonReader::Get(user_settings, "WorkshopPath");
+		if (v_workshop_path.is_string())
+		{
+			DatabaseConfig::WorkshopFolder = String::ToWide(v_workshop_path.get_ref<const std::string&>());
+			DebugOutL("Workshop Path: ", DatabaseConfig::WorkshopFolder);
+		}
+
 		const auto& v_open_in_steam = JsonReader::Get(user_settings, "OpenLinksInSteam");
 		DatabaseConfig::OpenLinksInSteam = v_open_in_steam.is_boolean() ? v_open_in_steam.get<bool>() : false;
 
 		DatabaseConfig::JsonStrArrayToStrVec(user_settings, "LocalModFolders", DatabaseConfig::LocalModFolders, DatabaseConfig::ModPathChecker, false);
-		DatabaseConfig::JsonStrArrayToStrVec(user_settings, "WorkshopModFolders", DatabaseConfig::ModFolders, DatabaseConfig::ModPathChecker, false);
+		DatabaseConfig::JsonStrArrayToStrVec(user_settings, "ModFolders", DatabaseConfig::ModFolders, DatabaseConfig::ModPathChecker, false);
 
 		DatabaseConfig::JsonStrArrayToStrMap(user_settings, "BlueprintFolders", DatabaseConfig::BlueprintFolders, false);
 		DatabaseConfig::JsonStrArrayToStrMap(user_settings, "TileFolders", DatabaseConfig::TileFolders, false);
@@ -436,9 +440,11 @@ void DatabaseConfig::SaveConfig()
 		nlohmann::json user_settings = nlohmann::json::object();
 
 		user_settings["GamePath"] = String::ToUtf8(DatabaseConfig::GamePath);
+		user_settings["WorkshopPath"] = String::ToUtf8(DatabaseConfig::WorkshopFolder);
+
 		user_settings["OpenLinksInSteam"] = DatabaseConfig::OpenLinksInSteam;
 
-		DatabaseConfig::WstrVecToJson(user_settings, "WorkshopModFolders", DatabaseConfig::ModFolders);
+		DatabaseConfig::WstrVecToJson(user_settings, "ModFolders", DatabaseConfig::ModFolders);
 		DatabaseConfig::WstrVecToJson(user_settings, "LocalModFolders", DatabaseConfig::LocalModFolders);
 		DatabaseConfig::WstrMapToJson(user_settings, "BlueprintFolders", DatabaseConfig::BlueprintFolders);
 		DatabaseConfig::WstrMapToJson(user_settings, "TileFolders", DatabaseConfig::TileFolders);

@@ -20,6 +20,8 @@ public:
 	constexpr static const std::wstring_view GroundTexturesPath = L"./Resources/GroundTextures.json";
 
 	inline static std::wstring GamePath = L"";
+	inline static std::wstring WorkshopFolder = L"";
+
 	inline static bool OpenLinksInSteam = false;
 
 	inline static PathChecker AssetListFolders     = {};

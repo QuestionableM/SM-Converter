@@ -2,6 +2,7 @@
 
 #include "BlueprintConvertSettings.h"
 #include "TileConvertSettings.h"
+#include "FilterSettingsGui.h"
 #include "SettingsGui.h"
 #include "AboutGui.h"
 
@@ -466,14 +467,39 @@ namespace SMConverter
 		{
 			T::SearchResults.clear();
 
-			for (T::InstanceType* v_cur_instance : T::Storage)
+			const std::vector<T::InstanceType*>& v_cur_array = T::GetCurrentStorage();
+			for (T::InstanceType* v_cur_instance : v_cur_array)
 				if (v_cur_instance->lower_name.find(search_str) != std::wstring::npos)
 					T::SearchResults.push_back(v_cur_instance);
 		}
 	}
 
+	template<typename T>
+	inline constexpr void UpdateUserStorage()
+	{
+		if (T::ShouldUseFilteredStorage())
+			T::FilterStorage();
+	}
+
+	inline void FilterStorageIfNeeded(int selected_index)
+	{
+		switch (selected_index)
+		{
+		case Generator_BlueprintConverter:
+			UpdateUserStorage<BlueprintFolderReader>();
+			break;
+		case Generator_TileConverter:
+			UpdateUserStorage<TileFolderReader>();
+			break;
+		case Generator_ScriptConverter:
+			break;
+		}
+	}
+
 	void MainGui::UpdateSearchResults(int last_search_length)
 	{
+		FilterStorageIfNeeded(m_cb_selectedGenerator->SelectedIndex);
+
 		if (m_tb_searchBox->TextLength > 0)
 		{
 			std::wstring v_search_str = msclr::interop::marshal_as<std::wstring>(m_tb_searchBox->Text);
@@ -661,7 +687,7 @@ namespace SMConverter
 
 	std::vector<BlueprintInstance*>& MainGui::GetCurrentBlueprintList()
 	{
-		return (m_tb_searchBox->TextLength > 0) ? BlueprintFolderReader::SearchResults : BlueprintFolderReader::Storage;
+		return (m_tb_searchBox->TextLength > 0) ? BlueprintFolderReader::SearchResults : BlueprintFolderReader::GetCurrentStorage();
 	}
 
 	BlueprintInstance* MainGui::GetCurrentBlueprint()
@@ -674,7 +700,7 @@ namespace SMConverter
 
 	std::vector<TileInstance*>& MainGui::GetCurrentTileList()
 	{
-		return (m_tb_searchBox->TextLength > 0) ? TileFolderReader::SearchResults : TileFolderReader::Storage;
+		return (m_tb_searchBox->TextLength > 0) ? TileFolderReader::SearchResults : TileFolderReader::GetCurrentStorage();
 	}
 
 	TileInstance* MainGui::GetCurrentTile()
@@ -904,10 +930,10 @@ namespace SMConverter
 		switch (m_cb_selectedGenerator->SelectedIndex)
 		{
 		case Generator_BlueprintConverter:
-			v_path_to_open = this->GetCurrentBlueprint()->directory;
+			v_path_to_open = this->GetCurrentBlueprint()->path;
 			break;
 		case Generator_TileConverter:
-			v_path_to_open = this->GetCurrentTile()->directory;
+			v_path_to_open = this->GetCurrentTile()->path;
 			break;
 		case Generator_ScriptConverter:
 			break;
@@ -920,7 +946,8 @@ namespace SMConverter
 			return;
 		}
 
-		System::Diagnostics::Process::Start("explorer.exe", gcnew System::String(v_path_to_open.c_str()));
+		const std::wstring v_final_path = L"/select,\"" + v_path_to_open + L'\"';
+		System::Diagnostics::Process::Start("explorer.exe", gcnew System::String(v_final_path.c_str()));
 	}
 
 	void MainGui::UpdateContextMenuStrip()
@@ -1007,5 +1034,14 @@ namespace SMConverter
 			System::Diagnostics::Process::Start("explorer.exe", gcnew System::String(v_tile_out_dir.c_str()));
 		else
 			WF_SHOW_ERROR("Error", "Failed to create the tile output directory!");
+	}
+
+	void MainGui::MainGui_Filter_Click(System::Object^ sender, System::EventArgs^ e)
+	{
+		FilterSettingsGui^ v_filter_settings = gcnew FilterSettingsGui();
+		v_filter_settings->ShowDialog();
+
+		if (v_filter_settings->m_shouldReload)
+			this->UpdateSearchResults(0);
 	}
 }

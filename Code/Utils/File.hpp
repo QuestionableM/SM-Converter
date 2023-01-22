@@ -28,6 +28,7 @@ namespace File
 	bool IsDirectory(const std::wstring& path);
 	bool IsRegularFile(const std::wstring& path);
 	bool IsPathLegal(const std::wstring& path);
+	bool IsSubPath(const std::wstring& parent_dir, const std::wstring& sub_dir);
 
 	bool Equivalent(const std::wstring& p1, const std::wstring& p2);
 

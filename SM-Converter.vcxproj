@@ -289,8 +289,10 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     </ClCompile>
     <ClCompile Include="Code\Gui\AboutGui.cpp" />
     <ClCompile Include="Code\Gui\BlueprintConvertSettings.cpp" />
+    <ClCompile Include="Code\Gui\FilterSettingsGui.cpp" />
     <ClCompile Include="Code\Gui\MainGui.cpp" />
     <ClCompile Include="Code\Gui\MainGuiReaders\BlueprintFolderReader.cpp" />
+    <ClCompile Include="Code\Gui\MainGuiReaders\FilterSettingsData.cpp" />
     <ClCompile Include="Code\Gui\SettingsGuiChangeDetector.cpp" />
     <ClCompile Include="Code\Gui\MainGuiReaders\TileFolderReader.cpp" />
     <ClCompile Include="Code\Gui\SettingsGui.cpp" />
@@ -494,10 +496,14 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\Gui\BlueprintConvertSettings.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="Code\Gui\FilterSettingsGui.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
     <ClInclude Include="Code\Gui\MainGui.h">
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="Code\Gui\MainGuiReaders\BlueprintFolderReader.hpp" />
+    <ClInclude Include="Code\Gui\MainGuiReaders\FilterSettingsData.hpp" />
     <ClInclude Include="Code\Gui\SettingsGuiChangeDetector.hpp" />
     <ClInclude Include="Code\Gui\MainGuiReaders\TileFolderReader.hpp" />
     <ClInclude Include="Code\Gui\SettingsGui.h">
@@ -559,6 +565,9 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     </EmbeddedResource>
     <EmbeddedResource Include="Code\Gui\BlueprintConvertSettings.resx">
       <DependentUpon>Code\Gui\BlueprintConvertSettings.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Code\Gui\FilterSettingsGui.resx">
+      <DependentUpon>Code\Gui\FilterSettingsGui.h</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Code\Gui\MainGui.resx">
       <DependentUpon>Code\Gui\MainGui.h</DependentUpon>
