@@ -378,6 +378,7 @@ namespace SMConverter
 			return;
 		}
 
-		System::Diagnostics::Process::Start("explorer.exe", gcnew System::String(v_selected_path.c_str()));
+		const std::wstring v_full_command = L"/select,\"" + v_selected_path + L'\"';
+		System::Diagnostics::Process::Start("explorer.exe", gcnew System::String(v_full_command.c_str()));
 	}
 }

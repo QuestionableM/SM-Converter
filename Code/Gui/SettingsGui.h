@@ -189,13 +189,13 @@ namespace SMConverter
 			this->m_cms_pathListMenu->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->m_btn_openPathInExplorer });
 			this->m_cms_pathListMenu->Name = L"m_cms_pathListMenu";
 			this->m_cms_pathListMenu->RenderMode = System::Windows::Forms::ToolStripRenderMode::System;
-			this->m_cms_pathListMenu->Size = System::Drawing::Size(181, 48);
+			this->m_cms_pathListMenu->Size = System::Drawing::Size(163, 26);
 			// 
 			// m_btn_openPathInExplorer
 			// 
 			this->m_btn_openPathInExplorer->Enabled = false;
 			this->m_btn_openPathInExplorer->Name = L"m_btn_openPathInExplorer";
-			this->m_btn_openPathInExplorer->Size = System::Drawing::Size(180, 22);
+			this->m_btn_openPathInExplorer->Size = System::Drawing::Size(162, 22);
 			this->m_btn_openPathInExplorer->Text = L"Open in Explorer";
 			this->m_btn_openPathInExplorer->Click += gcnew System::EventHandler(this, &SettingsGui::Settings_OpenPathInExplorer_Click);
 			// 
@@ -207,8 +207,8 @@ namespace SMConverter
 			this->m_cb_fileOption->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
 			this->m_cb_fileOption->FormattingEnabled = true;
 			this->m_cb_fileOption->Items->AddRange(gcnew cli::array< System::Object^  >(4) {
-				L"Local Mod Folders", L"Workshop Mod Folders",
-					L"Blueprint Folders", L"Tile Folders"
+				L"Local Mod Folders", L"Mod Folders", L"Blueprint Folders",
+					L"Tile Folders"
 			});
 			this->m_cb_fileOption->Location = System::Drawing::Point(6, 240);
 			this->m_cb_fileOption->Name = L"m_cb_fileOption";
