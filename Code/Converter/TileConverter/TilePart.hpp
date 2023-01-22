@@ -28,7 +28,7 @@ public:
 	std::array<SMTileClutter*, 128 * 128> m_ClutterMap;
 
 	/*
-		the 1st vector contains: harvestables, assets, prefabs and blueprints
+		the 1st vector contains: harvestables, assets, prefabs, decals and blueprints
 		the 2nd-4th vectors contain: assets and harvestables
 	*/
 	std::array<std::vector<SMEntity*>, 4> m_Objects = {};

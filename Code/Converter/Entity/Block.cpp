@@ -11,7 +11,6 @@
 
 char* SMBlock::GetMtlNameCStr(const std::string& v_mat_name, const std::size_t& v_idx, char* v_ptr) const
 {
-	//This shit is A LOT faster than the commented out code
 	v_ptr = m_uuid.ToCString(v_ptr);
 	*v_ptr++ = ' ';
 	v_ptr = m_color.StringHexCStr(v_ptr);

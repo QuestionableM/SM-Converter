@@ -20,6 +20,7 @@ public:
 		if (header->blueprintListCount == 0 || header->blueprintListIndex == 0) return;
 
 		DebugOutL("BlueprintList: ", header->blueprintListSize, " / ", header->blueprintListCompressedSize);
+		const int v_tile_version = part->GetParent()->GetVersion();
 
 		std::vector<Byte> compressed = reader.Objects<Byte>(header->blueprintListIndex, header->blueprintListCompressedSize);
 
@@ -30,14 +31,14 @@ public:
 			reinterpret_cast<char*>(bytes.data()), header->blueprintListSize);
 		if (debugSize != header->blueprintListCompressedSize)
 		{
-			cError = ConvertError(1, L"BlueprintListReader::Read -> debugSize != header->blueprintListCompressedSize");
+			cError = ConvertError(1, L"BlueprintListReader::Read -> debugSize != header->blueprintListCompressedSize\nTile Version: " + std::to_wstring(v_tile_version));
 			return;
 		}
 
 		debugSize = BlueprintListReader::Read(bytes, header->blueprintListCount, part);
 		if (debugSize != header->blueprintListSize)
 		{
-			cError = ConvertError(1, L"BlueprintListReader::Read -> debugSize != header->blueprintListSize");
+			cError = ConvertError(1, L"BlueprintListReader::Read -> debugSize != header->blueprintListSize\nTile Version: " + std::to_wstring(v_tile_version));
 			return;
 		}
 	}

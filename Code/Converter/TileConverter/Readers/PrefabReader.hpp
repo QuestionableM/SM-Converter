@@ -30,18 +30,20 @@ public:
 		std::vector<Byte> bytes = {};
 		bytes.resize(header->prefabSize);
 
+		const int v_tile_version = part->GetParent()->GetVersion();
+
 		int debugSize = Lz4::DecompressFast(reinterpret_cast<const char*>(compressed.data()),
 			reinterpret_cast<char*>(bytes.data()), header->prefabSize);
 		if (debugSize != header->prefabCompressedSize)
 		{
-			cError = ConvertError(1, L"PrefabReader::Read -> debugSize != header->prefabCompressedSize");
+			cError = ConvertError(1, L"PrefabReader::Read -> debugSize != header->prefabCompressedSize\nTile Version: " + std::to_wstring(v_tile_version));
 			return;
 		}
 
 		debugSize = PrefabReader::Read(bytes, header->prefabCount, part, cError);
 		if (debugSize != header->prefabSize)
 		{
-			cError = ConvertError(1, L"PrefabReader::Read -> debugSize != header->prefabSize");
+			cError = ConvertError(1, L"PrefabReader::Read -> debugSize != header->prefabSize\nTile Version: " + std::to_wstring(v_tile_version));
 			return;
 		}
 	}

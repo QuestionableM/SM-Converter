@@ -16,7 +16,6 @@ char* SMPart::GetMtlNameCStr(const std::string& v_mat_name, const std::size_t& v
 	v_ptr = String::FromInteger<std::size_t>(v_idx + 1, v_ptr);
 	*v_ptr++ = ' ';
 
-	const SubMeshData* v_SubMesh = m_model->subMeshData[v_idx];
 	const SMTextureList* v_tex_data = m_parent->m_textures->GetTexList(v_mat_name, v_idx);
 	if (v_tex_data)
 		return MaterialManager::GetMaterialACStr(v_tex_data->material, v_ptr);

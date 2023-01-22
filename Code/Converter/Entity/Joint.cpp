@@ -15,9 +15,15 @@ char* SMJoint::GetMtlNameCStr(const std::string& v_mat_name, const std::size_t& 
 	v_ptr = m_color.StringHexCStr(v_ptr);
 	*v_ptr++ = ' ';
 	v_ptr = String::FromInteger<std::size_t>(v_idx + 1, v_ptr);
-	*v_ptr++ = ' ';
 
-	return MaterialManager::GetMaterialACStr(v_mat_name, v_ptr);
+	const SMTextureList* v_tex_data = m_parent->m_textures->GetTexList(v_mat_name, v_idx);
+	if (v_tex_data)
+		return MaterialManager::GetMaterialACStr(v_tex_data->material, v_ptr);
+
+	*v_ptr++ = 'm';
+	*v_ptr++ = '1';
+
+	return v_ptr;
 }
 
 void SMJoint::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const

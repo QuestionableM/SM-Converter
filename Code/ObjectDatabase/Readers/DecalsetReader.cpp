@@ -70,7 +70,7 @@ void DecalsetReader::LoadFromFile(const std::wstring& path, Mod* mod)
 		v_new_decal->m_mod = mod;
 
 		for (std::size_t a = 0; a < 4; a++)
-			v_new_decal->m_ranges[a] = v_decal_reg_array.at(a);
+			v_new_decal->m_ranges[a] = JsonReader::GetNumber<int>(v_decal_reg_array.at(a));
 
 		const auto v_decal_pair = std::make_pair(v_new_decal->m_uuid, v_new_decal);
 		Mod::DecalStorage.insert(v_decal_pair);

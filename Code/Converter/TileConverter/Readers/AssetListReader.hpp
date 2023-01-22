@@ -22,6 +22,8 @@ public:
 	{
 		if (cError || !TileConverterSettings::ExportAssets) return;
 
+		const int v_tile_version = part->GetParent()->GetVersion();
+
 		for (int a = 0; a < 4; a++)
 		{
 			const int assetListCompressedSize = header->assetListCompressedSize[a];
@@ -41,15 +43,15 @@ public:
 					reinterpret_cast<char*>(bytes.data()), assetListSize);
 				if (debugSize != assetListCompressedSize)
 				{
-					cError = ConvertError(1, L"AssetListReader::Read -> debugSize != assetListCompressedSize");
+					cError = ConvertError(1, L"AssetListReader::Read -> debugSize != assetListCompressedSize\nTile Version: " + std::to_wstring(v_tile_version));
 					return;
 				}
 
-				debugSize = AssetListReader::Read(bytes, a, header->assetListCount[a], part->GetParent()->GetVersion(), part);
+				debugSize = AssetListReader::Read(bytes, a, header->assetListCount[a], v_tile_version, part);
 				DebugOutL(0b0111_fg, "Debug Size: ", debugSize, ", AssetListSize: ", assetListSize);
 				if (debugSize != assetListSize)
 				{
-					cError = ConvertError(1, L"AssetListReader::Read -> debugSize != assetListSize");
+					cError = ConvertError(1, L"AssetListReader::Read -> debugSize != assetListSize\nTile Version: " + std::to_wstring(v_tile_version));
 					return;
 				}
 			}
@@ -119,7 +121,7 @@ public:
 				}
 			}
 
-			if (version >= 13)
+			if (version >= 12)
 			{
 				//Skip one byte that was added in the newest version of .tile files
 				index++;

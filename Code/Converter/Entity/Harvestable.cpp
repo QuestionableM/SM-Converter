@@ -13,12 +13,19 @@ char* SMHarvestable::GetMtlNameCStr(const std::string& v_mat_name, const std::si
 	v_ptr = String::FromInteger<std::size_t>(v_idx + 1, v_ptr);
 	*v_ptr++ = ' ';
 
-	return MaterialManager::GetMaterialACStr(v_mat_name, v_ptr);
+	const SMTextureList* v_tex_list = m_parent->m_textures->GetTexList(v_mat_name, v_idx);
+	if (v_tex_list)
+		return MaterialManager::GetMaterialACStr(v_tex_list->material, v_ptr);
+
+	*v_ptr++ = 'm';
+	*v_ptr++ = '1';
+
+	return v_ptr;
 }
 
 void SMHarvestable::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
 {
-	const std::string mtl_first_part = m_uuid.ToString() + " " + m_color.StringHex() + " ";
+	const std::string mtl_first_part = m_uuid.ToString() + ' ' + m_color.StringHex() + ' ';
 	for (std::size_t a = 0; a < m_model->subMeshData.size(); a++)
 	{
 		const SubMeshData* pSubMesh = m_model->subMeshData[a];

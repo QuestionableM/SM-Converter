@@ -17,7 +17,7 @@ char* SMDecal::GetMtlNameCStr(const std::string& v_mat_name, const std::size_t& 
 	v_ptr = String::FromInteger<std::size_t>(v_idx + 1, v_ptr);
 	*v_ptr++ = ' ';
 
-	return MaterialManager::GetMaterialACStr(v_mat_name, v_ptr);
+	return MaterialManager::GetMaterialACStr(m_data->m_textures.material, v_ptr);
 }
 
 std::string SMDecal::GetMtlName(const std::size_t& mIdx) const

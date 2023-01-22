@@ -213,6 +213,28 @@ namespace SMConverter
 	{
 		AboutGui^ v_about_gui = gcnew AboutGui();
 		v_about_gui->ShowDialog();
+		/*
+		std::size_t v_successfull_loads = 0;
+		for (const TileInstance* v_tile_instance : TileFolderReader::Storage)
+		{
+			ConvertError v_error;
+			Tile* v_cur_tile = TileReader::ReadTile(v_tile_instance->path, v_error);
+			if (v_cur_tile)
+				delete v_cur_tile;
+
+			if (v_error)
+			{
+				DebugErrorL("Failed to load tile: ", v_tile_instance->path);
+				DebugErrorL("Error: ", v_error.GetErrorMsg(), "\n");
+			}
+			else
+			{
+				v_successfull_loads++;
+			}
+		}
+
+		DebugOutL("Self-Diagnosis finished! Loaded: ", v_successfull_loads, "/", TileFolderReader::Storage.size(), " tiles");
+		*/
 	}
 
 	void MainGui::MainGui_Resize(System::Object^ sender, System::EventArgs^ e)

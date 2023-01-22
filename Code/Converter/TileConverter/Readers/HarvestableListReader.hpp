@@ -40,18 +40,22 @@ public:
 			std::vector<Byte> bytes = {};
 			bytes.resize(harvestableListSize);
 
+			const int v_tile_version = part->GetParent()->GetVersion();
+
 			int debugSize = Lz4::DecompressFast(reinterpret_cast<const char*>(compressed.data()),
 				reinterpret_cast<char*>(bytes.data()), header->harvestableListSize[a]);
 			if (debugSize != harvestableListCompressedSize)
 			{
-				cError = ConvertError(1, L"HarvestableListReader::Read -> debugSize != harvestableListCompressedSize");
+				DebugErrorL("debugSize: ", debugSize, ", harvestableListCompressedSize: ", harvestableListCompressedSize);
+				cError = ConvertError(1, L"HarvestableListReader::Read -> debugSize != harvestableListCompressedSize\nTile Version: " + std::to_wstring(v_tile_version));
 				return;
 			}
 
-			debugSize = HarvestableListReader::Read(bytes, a, header->harvestableListCount[a], part->GetParent()->GetVersion(), part);
+			debugSize = HarvestableListReader::Read(bytes, a, header->harvestableListCount[a], v_tile_version, part);
 			if (debugSize != header->harvestableListSize[a])
 			{
-				cError = ConvertError(1, L"HarvestableListReader::Read -> debugSize != header->harvestableListSize[a]");
+				DebugErrorL("debugSize: ", debugSize, ", header->harvestableListSize[", a, "]: ", header->harvestableListSize[a]);
+				cError = ConvertError(1, L"HarvestableListReader::Read -> debugSize != header->harvestableListSize[a]\nTile Version: " + std::to_wstring(v_tile_version));
 				return;
 			}
 		}
@@ -73,11 +77,12 @@ public:
 
 			index += 0x3c;
 
-			if (version >= 13)
-			{
-				//Skip 5 unknown bytes that were added in the newest version of tiles
-				index += 0x5;
-			}
+			//VERSION 9 no null bytes
+			//VERSION 11 has 4 null bytes
+			//VERSION 12 seems to have 5 null bytes
+			//VERSION 13 also has 5 null bytes
+			if (version >= 11) index += 0x4;
+			if (version >= 12) index += 0x1;
 
 			HarvestableData* hvs_data = Mod::GetGlobalHarvestbale(f_uuid);
 			if (!hvs_data) continue;

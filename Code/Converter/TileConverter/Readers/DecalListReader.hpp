@@ -24,6 +24,7 @@ public:
 		if (header->decalCount != 0)
 		{
 			DebugOutL("Decal: ", header->decalSize, " / ", header->decalCompressedSize);
+			const int v_tile_version = part->GetParent()->GetVersion();
 
 			const std::vector<Byte> compressed = reader.Objects<Byte>(header->decalIndex, header->decalCompressedSize);
 
@@ -34,7 +35,7 @@ public:
 				reinterpret_cast<char*>(bytes.data()), header->decalSize);
 			if (debugSize != header->decalCompressedSize)
 			{
-				cError = ConvertError(1, L"DecalListReader::Read -> debugSize != header->decalCompressedSize");
+				cError = ConvertError(1, L"DecalListReader::Read -> debugSize != header->decalCompressedSize\nTile Version: " + std::to_wstring(v_tile_version));
 				return;
 			}
 
@@ -42,7 +43,7 @@ public:
 			DebugOutL(0b0111_fg, "Debug Size: ", debugSize, ", DecalSize: ", header->decalSize);
 			if (debugSize != header->decalSize)
 			{
-				cError = ConvertError(1, L"DecalListReader::Read -> debugSize != header->decalSize");
+				cError = ConvertError(1, L"DecalListReader::Read -> debugSize != header->decalSize\nTile Version: " + std::to_wstring(v_tile_version));
 				return;
 			}
 		}

@@ -415,7 +415,9 @@ nlohmann::json DatabaseConfig::GetConfigJson(bool* should_write, const bool& rea
 			"$SURVIVAL_DATA/Objects/Database/ShapeSets",
 
 			"$GAME_DATA/Terrain/Database/clutter.json",
-			"$SURVIVAL_DATA/Terrain/Database/clutter.json"
+			"$SURVIVAL_DATA/Terrain/Database/clutter.json",
+
+			"$SURVIVAL_DATA/Decals/decalsets.json"
 		};
 
 		if (should_write)
