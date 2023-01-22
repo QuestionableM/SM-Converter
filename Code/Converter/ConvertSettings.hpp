@@ -11,7 +11,7 @@ struct TileConverterSettings
 	inline static bool ExportClutter = true;
 	inline static bool ExportPrefabs = true;
 	inline static bool ExportAssets = true;
-	inline static bool ExportDecals = true;
+	inline static bool ExportDecals = false;
 
 private:
 	TileConverterSettings() = default;
