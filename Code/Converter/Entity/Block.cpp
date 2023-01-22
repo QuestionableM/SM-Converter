@@ -98,7 +98,7 @@ void FillCustomCube(Model& model, const glm::vec3& bounds)
 	model.subMeshData.push_back(new_subMesh);
 }
 
-void AlignUvs(Model& model, const glm::vec3& bounds, const glm::vec3& pos, const int& tiling)
+inline void AlignUvs(Model& model, const glm::vec3& bounds, const glm::vec3& pos, const int& tiling)
 {
 	float f_tiling = (float)tiling;
 

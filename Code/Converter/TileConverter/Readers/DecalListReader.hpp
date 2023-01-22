@@ -72,7 +72,6 @@ public:
 			//Some value that takes 4 bytes
 			index += 0x4;
 
-			//TODO: Verify on version 12 tiles
 			if (version >= 12)
 			{
 				//Skip a random byte that was added in the newest versions of tiles

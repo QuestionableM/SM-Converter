@@ -46,8 +46,9 @@ void SMDecal::WriteObjectToFile(std::ofstream& file, WriterOffsetData& mOffset, 
 {
 	const glm::mat4 decal_matrix = transform_matrix * this->GetTransformMatrix();
 
-	Model* v_newModel = ModelStorage::LoadModel(L"./Resources/test_model.obj");
-	v_newModel->WriteToFile(decal_matrix, mOffset, file, this);
+	Model* v_newModel = ModelStorage::LoadModel(L"./Resources/DecalDefault.obj");
+	if (v_newModel)
+		v_newModel->WriteToFile(decal_matrix, mOffset, file, this);
 
 	ProgCounter::ProgressValue++;
 }
