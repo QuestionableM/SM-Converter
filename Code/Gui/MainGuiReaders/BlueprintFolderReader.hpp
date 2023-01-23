@@ -4,7 +4,9 @@
 #include "Ustd\UnmanagedString.hpp"
 #include "Ustd\UnmanagedVector.hpp"
 
+#include "ObjectDatabase/Mods/Mod.hpp"
 #include "FilterSettingsData.hpp"
+#include "Utils\Uuid.hpp"
 
 #pragma unmanaged
 
@@ -13,10 +15,10 @@ struct BlueprintInstance
 	std::wstring name;
 	//Used for more optimized search
 	std::wstring lower_name;
+	SMUuid uuid;
 
 	std::wstring path;
 	std::wstring directory;
-
 	std::wstring preview_image;
 
 	unsigned long long workshop_id;
@@ -40,6 +42,9 @@ public:
 	static bool ShouldUseFilteredStorage();
 	static std::vector<BlueprintInstance*>& GetCurrentStorage();
 	static void FilterStorage();
+
+	static void GetBlueprintData(BlueprintInstance* v_bp_instance,
+		std::unordered_map<SMUuid, class Mod*>& v_mod_storage, std::size_t& v_part_count);
 
 	static void ReadBlueprintFromFile(const std::filesystem::path& path);
 	static void ReadBlueprintFromFolder(const std::wstring& folder);

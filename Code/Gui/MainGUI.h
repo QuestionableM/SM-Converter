@@ -46,6 +46,7 @@ namespace SMConverter
 		System::Windows::Forms::ContextMenuStrip^ m_cms_blueprint;
 		System::Windows::Forms::ToolStripMenuItem^ m_btn_openBlueprintFolder;
 		System::Windows::Forms::ToolStripMenuItem^ m_btn_openBlueprintInSteamWorkshop;
+		System::Windows::Forms::ToolStripMenuItem^ m_btn_blueprintInfo;
 
 		System::Windows::Forms::Label^ m_lbl_generatorType;
 		System::Windows::Forms::Label^ m_lbl_progressStatus;
@@ -64,6 +65,8 @@ namespace SMConverter
 		System::Windows::Forms::ToolStripMenuItem^ m_btn_findTileCreatorInSteam;
 		System::Windows::Forms::ToolStripMenuItem^ m_btn_openTileFolder;
 		System::Windows::Forms::ToolStripSeparator^ m_cms_tile_separator;
+		System::Windows::Forms::ToolStripSeparator^ m_cms_tile_separator2;
+		System::Windows::Forms::ToolStripMenuItem^ m_btn_showTileInfo;
 
 		System::Windows::Forms::ToolStripMenuItem^ m_menuItem_open;
 		System::Windows::Forms::ToolStripMenuItem^ m_btn_openBlueprintOutputDirectory;
@@ -72,6 +75,7 @@ namespace SMConverter
 		System::Windows::Forms::ToolStripMenuItem^ m_btn_aboutProgram;
 
 		System::Windows::Forms::ToolStripSeparator^ m_ts_settings_separator;
+		System::Windows::Forms::ToolStripSeparator^ m_cms_toolStrip;
 
 		System::ComponentModel::IContainer^ components;
 
@@ -107,11 +111,15 @@ namespace SMConverter
 			this->m_cms_blueprint = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
 			this->m_btn_openBlueprintInSteamWorkshop = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->m_btn_openBlueprintFolder = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->m_cms_toolStrip = (gcnew System::Windows::Forms::ToolStripSeparator());
+			this->m_btn_blueprintInfo = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->m_cms_tile = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
 			this->m_btn_openTileInSteamWorkshop = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->m_btn_openTileFolder = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->m_cms_tile_separator = (gcnew System::Windows::Forms::ToolStripSeparator());
 			this->m_btn_findTileCreatorInSteam = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->m_cms_tile_separator2 = (gcnew System::Windows::Forms::ToolStripSeparator());
+			this->m_btn_showTileInfo = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->m_btn_searchFilter = (gcnew System::Windows::Forms::Button());
 			this->m_menuStrip->SuspendLayout();
 			this->m_cms_blueprint->SuspendLayout();
@@ -350,13 +358,13 @@ namespace SMConverter
 			// m_cms_blueprint
 			// 
 			this->m_cms_blueprint->ImeMode = System::Windows::Forms::ImeMode::NoControl;
-			this->m_cms_blueprint->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
+			this->m_cms_blueprint->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(4) {
 				this->m_btn_openBlueprintInSteamWorkshop,
-					this->m_btn_openBlueprintFolder
+					this->m_btn_openBlueprintFolder, this->m_cms_toolStrip, this->m_btn_blueprintInfo
 			});
 			this->m_cms_blueprint->Name = L"m_cms_blueprint";
 			this->m_cms_blueprint->RenderMode = System::Windows::Forms::ToolStripRenderMode::System;
-			this->m_cms_blueprint->Size = System::Drawing::Size(210, 48);
+			this->m_cms_blueprint->Size = System::Drawing::Size(210, 98);
 			// 
 			// m_btn_openBlueprintInSteamWorkshop
 			// 
@@ -372,15 +380,27 @@ namespace SMConverter
 			this->m_btn_openBlueprintFolder->Text = L"Open in Explorer";
 			this->m_btn_openBlueprintFolder->Click += gcnew System::EventHandler(this, &MainGui::MainGui_OpenItemDirectory);
 			// 
+			// m_cms_toolStrip
+			// 
+			this->m_cms_toolStrip->Name = L"m_cms_toolStrip";
+			this->m_cms_toolStrip->Size = System::Drawing::Size(206, 6);
+			// 
+			// m_btn_blueprintInfo
+			// 
+			this->m_btn_blueprintInfo->Name = L"m_btn_blueprintInfo";
+			this->m_btn_blueprintInfo->Size = System::Drawing::Size(209, 22);
+			this->m_btn_blueprintInfo->Text = L"Show Blueprint Info";
+			this->m_btn_blueprintInfo->Click += gcnew System::EventHandler(this, &MainGui::MainGui_ShowBlueprintInfo_Click);
+			// 
 			// m_cms_tile
 			// 
-			this->m_cms_tile->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(4) {
+			this->m_cms_tile->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(6) {
 				this->m_btn_openTileInSteamWorkshop,
-					this->m_btn_openTileFolder, this->m_cms_tile_separator, this->m_btn_findTileCreatorInSteam
+					this->m_btn_openTileFolder, this->m_cms_tile_separator, this->m_btn_findTileCreatorInSteam, this->m_cms_tile_separator2, this->m_btn_showTileInfo
 			});
 			this->m_cms_tile->Name = L"m_cms_tile";
 			this->m_cms_tile->RenderMode = System::Windows::Forms::ToolStripRenderMode::System;
-			this->m_cms_tile->Size = System::Drawing::Size(210, 76);
+			this->m_cms_tile->Size = System::Drawing::Size(210, 104);
 			// 
 			// m_btn_openTileInSteamWorkshop
 			// 
@@ -407,6 +427,17 @@ namespace SMConverter
 			this->m_btn_findTileCreatorInSteam->Size = System::Drawing::Size(209, 22);
 			this->m_btn_findTileCreatorInSteam->Text = L"Find Creator in Steam";
 			this->m_btn_findTileCreatorInSteam->Click += gcnew System::EventHandler(this, &MainGui::MainGui_FindTileCreator_Click);
+			// 
+			// m_cms_tile_separator2
+			// 
+			this->m_cms_tile_separator2->Name = L"m_cms_tile_separator2";
+			this->m_cms_tile_separator2->Size = System::Drawing::Size(206, 6);
+			// 
+			// m_btn_showTileInfo
+			// 
+			this->m_btn_showTileInfo->Name = L"m_btn_showTileInfo";
+			this->m_btn_showTileInfo->Size = System::Drawing::Size(209, 22);
+			this->m_btn_showTileInfo->Text = L"Show Tile Info";
 			// 
 			// m_btn_searchFilter
 			// 
@@ -508,5 +539,7 @@ namespace SMConverter
 		System::Void MainGui_OpenBlueprintOutputFolder_Click(System::Object^ sender, System::EventArgs^ e);
 		System::Void MainGui_OpenTileOutputFolder_Click(System::Object^ sender, System::EventArgs^ e);
 		System::Void MainGui_Filter_Click(System::Object^ sender, System::EventArgs^ e);
+
+		System::Void MainGui_ShowBlueprintInfo_Click(System::Object^ sender, System::EventArgs^ e);
 	};
 }

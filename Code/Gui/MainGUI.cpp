@@ -3,6 +3,7 @@
 #include "BlueprintConvertSettings.h"
 #include "TileConvertSettings.h"
 #include "FilterSettingsGui.h"
+#include "BlueprintInfoGui.h"
 #include "SettingsGui.h"
 #include "AboutGui.h"
 
@@ -1065,5 +1066,14 @@ namespace SMConverter
 
 		if (v_filter_settings->m_shouldReload)
 			this->UpdateSearchResults(0);
+	}
+
+	void MainGui::MainGui_ShowBlueprintInfo_Click(System::Object^ sender, System::EventArgs^ e)
+	{
+		BlueprintInstance* v_cur_bp = this->GetCurrentBlueprint();
+		if (!v_cur_bp) return;
+
+		BlueprintInfoGui^ v_bp_info_gui = gcnew BlueprintInfoGui(v_cur_bp);
+		v_bp_info_gui->ShowDialog();
 	}
 }

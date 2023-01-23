@@ -30,6 +30,16 @@ void BlueprintFolderReader::FilterStorage()
 			BlueprintFolderReader::FilteredStorage.push_back(v_bp_instance);
 }
 
+static void GetBlueprintData(BlueprintInstance* v_bp_instance,
+	std::unordered_map<SMUuid, Mod*>& v_mod_storage, std::size_t& v_part_count)
+{
+	simdjson::dom::document v_doc;
+	if (!JsonReader::LoadParseSimdjsonC(v_bp_instance->path, v_doc, simdjson::dom::element_type::OBJECT))
+		return;
+
+
+}
+
 void BlueprintFolderReader::ReadBlueprintFromFile(const std::filesystem::path& path)
 {
 	if (!(path.has_stem() && path.has_parent_path()))
@@ -75,6 +85,7 @@ void BlueprintFolderReader::ReadBlueprintFromFolder(const std::wstring& folder)
 	v_new_bp->lower_name = String::ToLower(v_new_bp->name);
 	v_new_bp->path = v_blueprint_path;
 	v_new_bp->directory = folder;
+	v_new_bp->uuid = v_bp_uuid.get_c_str().value_unsafe();
 
 	v_new_bp->v_filter = FilterSettingsData::GetUserDataFilter(v_new_bp->path);
 
