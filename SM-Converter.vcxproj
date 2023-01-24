@@ -289,8 +289,8 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     </ClCompile>
     <ClCompile Include="Code\Gui\AboutGui.cpp" />
     <ClCompile Include="Code\Gui\BlueprintConvertSettings.cpp" />
-    <ClCompile Include="Code\Gui\BlueprintInfoGui.cpp" />
     <ClCompile Include="Code\Gui\FilterSettingsGui.cpp" />
+    <ClCompile Include="Code\Gui\ItemInfoGui.cpp" />
     <ClCompile Include="Code\Gui\MainGui.cpp" />
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\BlueprintFolderReader.cpp" />
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\FilterSettingsData.cpp" />
@@ -497,10 +497,10 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\Gui\BlueprintConvertSettings.h">
       <FileType>CppForm</FileType>
     </ClInclude>
-    <ClInclude Include="Code\Gui\BlueprintInfoGui.h">
+    <ClInclude Include="Code\Gui\FilterSettingsGui.h">
       <FileType>CppForm</FileType>
     </ClInclude>
-    <ClInclude Include="Code\Gui\FilterSettingsGui.h">
+    <ClInclude Include="Code\Gui\ItemInfoGui.h">
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="Code\Gui\MainGui.h">
@@ -570,11 +570,11 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <EmbeddedResource Include="Code\Gui\BlueprintConvertSettings.resx">
       <DependentUpon>Code\Gui\BlueprintConvertSettings.h</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Code\Gui\BlueprintInfoGui.resx">
-      <DependentUpon>Code\Gui\BlueprintInfoGui.h</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Code\Gui\FilterSettingsGui.resx">
       <DependentUpon>Code\Gui\FilterSettingsGui.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Code\Gui\ItemInfoGui.resx">
+      <DependentUpon>Code\Gui\ItemInfoGui.h</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Code\Gui\MainGui.resx">
       <DependentUpon>Code\Gui\MainGui.h</DependentUpon>

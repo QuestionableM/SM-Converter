@@ -5,6 +5,7 @@
 #include "UStd\UnmanagedVector.hpp"
 
 #include "FilterSettingsData.hpp"
+#include "Utils\Uuid.hpp"
 
 #pragma unmanaged
 
@@ -12,6 +13,7 @@ struct TileInstance
 {
 	std::wstring name;
 	std::wstring lower_name;
+	SMUuid uuid;
 
 	std::wstring path;
 	std::wstring directory;

@@ -174,7 +174,7 @@
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\FilterSettingsData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Code\Gui\BlueprintInfoGui.cpp">
+    <ClCompile Include="Code\Gui\ItemInfoGui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -443,7 +443,7 @@
     <ClInclude Include="Code\ObjectDatabase\UserDataReaders\FilterSettingsData.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Code\Gui\BlueprintInfoGui.h">
+    <ClInclude Include="Code\Gui\ItemInfoGui.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

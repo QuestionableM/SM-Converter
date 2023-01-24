@@ -30,29 +30,29 @@ struct FilterSettingsData
 
 	static unsigned char GetUserDataFilter(const std::wstring& path);
 
-	inline static char* GetTileSizeName(const unsigned char& v_id)
+	inline static wchar_t* GetTileSizeName(const unsigned char& v_id)
 	{
 		switch (v_id)
 		{
-		case TileSizeFilter_Small: return "Small";
-		case TileSizeFilter_Medium: return "Medium";
-		case TileSizeFilter_Large: return "Large";
-		case TileSizeFilter_ExtraLarge: return "Extra Large";
+		case TileSizeFilter_Small: return L"Small";
+		case TileSizeFilter_Medium: return L"Medium";
+		case TileSizeFilter_Large: return L"Large";
+		case TileSizeFilter_ExtraLarge: return L"Extra Large";
 		}
 
-		return "UNKNOWN";
+		return L"UNKNOWN";
 	}
-	
-	inline static char* GetFilterName(const unsigned char& v_id)
+
+	inline static wchar_t* GetFilterName(const unsigned char& v_id)
 	{
 		switch (v_id)
 		{
-		case UserDataFilter_GameItems: return "Game Item";
-		case UserDataFilter_WorkshopItems: return "Workshop Item";
-		case UserDataFilter_UserItems: return "User Item";
+		case UserDataFilter_GameItems: return L"Game Item";
+		case UserDataFilter_WorkshopItems: return L"Workshop Item";
+		case UserDataFilter_UserItems: return L"User Item";
 		}
 
-		return "UNKNOWN";
+		return L"UNKNOWN";
 	}
 
 private:

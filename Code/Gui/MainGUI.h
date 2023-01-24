@@ -363,7 +363,7 @@ namespace SMConverter
 			});
 			this->m_cms_blueprint->Name = L"m_cms_blueprint";
 			this->m_cms_blueprint->RenderMode = System::Windows::Forms::ToolStripRenderMode::System;
-			this->m_cms_blueprint->Size = System::Drawing::Size(210, 98);
+			this->m_cms_blueprint->Size = System::Drawing::Size(210, 76);
 			// 
 			// m_btn_openBlueprintInSteamWorkshop
 			// 
@@ -399,7 +399,7 @@ namespace SMConverter
 			});
 			this->m_cms_tile->Name = L"m_cms_tile";
 			this->m_cms_tile->RenderMode = System::Windows::Forms::ToolStripRenderMode::System;
-			this->m_cms_tile->Size = System::Drawing::Size(210, 104);
+			this->m_cms_tile->Size = System::Drawing::Size(210, 126);
 			// 
 			// m_btn_openTileInSteamWorkshop
 			// 
@@ -437,6 +437,7 @@ namespace SMConverter
 			this->m_btn_showTileInfo->Name = L"m_btn_showTileInfo";
 			this->m_btn_showTileInfo->Size = System::Drawing::Size(209, 22);
 			this->m_btn_showTileInfo->Text = L"Show Tile Info";
+			this->m_btn_showTileInfo->Click += gcnew System::EventHandler(this, &MainGui::MainGui_ShowTileInfo_Click);
 			// 
 			// m_btn_searchFilter
 			// 
@@ -540,5 +541,6 @@ namespace SMConverter
 		System::Void MainGui_Filter_Click(System::Object^ sender, System::EventArgs^ e);
 
 		System::Void MainGui_ShowBlueprintInfo_Click(System::Object^ sender, System::EventArgs^ e);
+		System::Void MainGui_ShowTileInfo_Click(System::Object^ sender, System::EventArgs^ e);
 	};
 }

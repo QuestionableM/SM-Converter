@@ -61,6 +61,7 @@ void TileFolderReader::LoadFromFile(const std::filesystem::path& path)
 	TileInstance* v_new_tile = new TileInstance();
 	v_new_tile->name = path.stem().wstring();
 	v_new_tile->lower_name = String::ToLower(v_new_tile->name);
+	v_new_tile->uuid = v_tile_info.uuid;
 
 	v_new_tile->path = path.wstring();
 	v_new_tile->directory = path.parent_path().wstring();
@@ -114,6 +115,8 @@ void TileFolderReader::LoadFromDirectory(const std::wstring& path)
 	TileInstance* v_new_tile = new TileInstance();
 	v_new_tile->name = v_tile_path.stem().wstring();
 	v_new_tile->lower_name = String::ToLower(v_new_tile->name);
+	v_new_tile->uuid = v_tile_info.uuid;
+
 	v_new_tile->path = v_tile_path.wstring();
 	v_new_tile->directory = path;
 

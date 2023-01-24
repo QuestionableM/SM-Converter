@@ -1,8 +1,9 @@
 #pragma once
 
 #include "ObjectDatabase\UserDataReaders\BlueprintFolderReader.hpp"
+#include "ObjectDatabase\UserDataReaders\TileFolderReader.hpp"
 
-namespace SMConverter
+namespace SMConverter 
 {
 	using namespace System;
 	using namespace System::ComponentModel;
@@ -11,27 +12,23 @@ namespace SMConverter
 	using namespace System::Data;
 	using namespace System::Drawing;
 
-	public ref class BlueprintInfoGui : public System::Windows::Forms::Form
+	public ref class ItemInfoGui : public System::Windows::Forms::Form
 	{
 	public:
-		BlueprintInfoGui(BlueprintInstance* v_blueprint);
-		BlueprintInstance* m_blueprint;
+		ItemInfoGui(BlueprintInstance* v_blueprint);
+		ItemInfoGui(TileInstance* v_tile);
 
 	protected:
-		~BlueprintInfoGui();
-		
+		~ItemInfoGui();
+
 	private:
 		System::Windows::Forms::PictureBox^ m_bp_blueprintPreview;
-		System::Windows::Forms::Label^ m_lbl_blueprintName;
-		System::Windows::Forms::Label^ m_lbl_blueprintUuid;
-		System::Windows::Forms::Label^ m_lbl_contentType;
 		System::Windows::Forms::ListBox^ m_lb_modSelector;
-		System::Windows::Forms::Label^ label1;
-		System::Windows::Forms::Label^ m_lbl_partCount;
-		System::Windows::Forms::Label^ m_lbl_modCount;
+		System::Windows::Forms::Label^ m_lbl_modList;
 		System::Windows::Forms::ContextMenuStrip^ m_cms_modOptions;
 		System::Windows::Forms::ToolStripMenuItem^ m_btn_openInSteamWorkshop;
 		System::Windows::Forms::ToolStripMenuItem^ m_btn_openInExplorer;
+		System::Windows::Forms::TextBox^ m_tb_itemInfo;
 
 		System::ComponentModel::IContainer^ components;
 
@@ -40,16 +37,12 @@ namespace SMConverter
 		{
 			this->components = (gcnew System::ComponentModel::Container());
 			this->m_bp_blueprintPreview = (gcnew System::Windows::Forms::PictureBox());
-			this->m_lbl_blueprintName = (gcnew System::Windows::Forms::Label());
-			this->m_lbl_blueprintUuid = (gcnew System::Windows::Forms::Label());
-			this->m_lbl_contentType = (gcnew System::Windows::Forms::Label());
 			this->m_lb_modSelector = (gcnew System::Windows::Forms::ListBox());
 			this->m_cms_modOptions = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
 			this->m_btn_openInSteamWorkshop = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->m_btn_openInExplorer = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->label1 = (gcnew System::Windows::Forms::Label());
-			this->m_lbl_partCount = (gcnew System::Windows::Forms::Label());
-			this->m_lbl_modCount = (gcnew System::Windows::Forms::Label());
+			this->m_lbl_modList = (gcnew System::Windows::Forms::Label());
+			this->m_tb_itemInfo = (gcnew System::Windows::Forms::TextBox());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->m_bp_blueprintPreview))->BeginInit();
 			this->m_cms_modOptions->SuspendLayout();
 			this->SuspendLayout();
@@ -65,36 +58,6 @@ namespace SMConverter
 			this->m_bp_blueprintPreview->TabIndex = 0;
 			this->m_bp_blueprintPreview->TabStop = false;
 			// 
-			// m_lbl_blueprintName
-			// 
-			this->m_lbl_blueprintName->AutoSize = true;
-			this->m_lbl_blueprintName->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
-			this->m_lbl_blueprintName->Location = System::Drawing::Point(118, 12);
-			this->m_lbl_blueprintName->Name = L"m_lbl_blueprintName";
-			this->m_lbl_blueprintName->Size = System::Drawing::Size(50, 16);
-			this->m_lbl_blueprintName->TabIndex = 1;
-			this->m_lbl_blueprintName->Text = L"Name: ";
-			// 
-			// m_lbl_blueprintUuid
-			// 
-			this->m_lbl_blueprintUuid->AutoSize = true;
-			this->m_lbl_blueprintUuid->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
-			this->m_lbl_blueprintUuid->Location = System::Drawing::Point(118, 28);
-			this->m_lbl_blueprintUuid->Name = L"m_lbl_blueprintUuid";
-			this->m_lbl_blueprintUuid->Size = System::Drawing::Size(41, 16);
-			this->m_lbl_blueprintUuid->TabIndex = 2;
-			this->m_lbl_blueprintUuid->Text = L"Uuid: ";
-			// 
-			// m_lbl_contentType
-			// 
-			this->m_lbl_contentType->AutoSize = true;
-			this->m_lbl_contentType->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
-			this->m_lbl_contentType->Location = System::Drawing::Point(118, 44);
-			this->m_lbl_contentType->Name = L"m_lbl_contentType";
-			this->m_lbl_contentType->Size = System::Drawing::Size(93, 16);
-			this->m_lbl_contentType->TabIndex = 3;
-			this->m_lbl_contentType->Text = L"Content Type: ";
-			// 
 			// m_lb_modSelector
 			// 
 			this->m_lb_modSelector->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left)
@@ -108,8 +71,8 @@ namespace SMConverter
 			this->m_lb_modSelector->Name = L"m_lb_modSelector";
 			this->m_lb_modSelector->Size = System::Drawing::Size(410, 120);
 			this->m_lb_modSelector->TabIndex = 4;
-			this->m_lb_modSelector->SelectedIndexChanged += gcnew System::EventHandler(this, &BlueprintInfoGui::ModList_SelectedIndexChanged);
-			this->m_lb_modSelector->MouseDown += gcnew System::Windows::Forms::MouseEventHandler(this, &BlueprintInfoGui::ModSelector_MouseDown);
+			this->m_lb_modSelector->SelectedIndexChanged += gcnew System::EventHandler(this, &ItemInfoGui::ModList_SelectedIndexChanged);
+			this->m_lb_modSelector->MouseDown += gcnew System::Windows::Forms::MouseEventHandler(this, &ItemInfoGui::ModSelector_MouseDown);
 			// 
 			// m_cms_modOptions
 			// 
@@ -119,7 +82,7 @@ namespace SMConverter
 			});
 			this->m_cms_modOptions->Name = L"m_cms_modOptions";
 			this->m_cms_modOptions->RenderMode = System::Windows::Forms::ToolStripRenderMode::System;
-			this->m_cms_modOptions->Size = System::Drawing::Size(210, 70);
+			this->m_cms_modOptions->Size = System::Drawing::Size(210, 48);
 			// 
 			// m_btn_openInSteamWorkshop
 			// 
@@ -127,7 +90,7 @@ namespace SMConverter
 			this->m_btn_openInSteamWorkshop->Name = L"m_btn_openInSteamWorkshop";
 			this->m_btn_openInSteamWorkshop->Size = System::Drawing::Size(209, 22);
 			this->m_btn_openInSteamWorkshop->Text = L"Open in Steam Workshop";
-			this->m_btn_openInSteamWorkshop->Click += gcnew System::EventHandler(this, &BlueprintInfoGui::ModList_OpenInSteamWorkshop_Click);
+			this->m_btn_openInSteamWorkshop->Click += gcnew System::EventHandler(this, &ItemInfoGui::ModList_OpenInSteamWorkshop_Click);
 			// 
 			// m_btn_openInExplorer
 			// 
@@ -135,57 +98,48 @@ namespace SMConverter
 			this->m_btn_openInExplorer->Name = L"m_btn_openInExplorer";
 			this->m_btn_openInExplorer->Size = System::Drawing::Size(209, 22);
 			this->m_btn_openInExplorer->Text = L"Open in Explorer";
-			this->m_btn_openInExplorer->Click += gcnew System::EventHandler(this, &BlueprintInfoGui::ModList_OpenInExplorer_Click);
+			this->m_btn_openInExplorer->Click += gcnew System::EventHandler(this, &ItemInfoGui::ModList_OpenInExplorer_Click);
 			// 
-			// label1
+			// m_lbl_modList
 			// 
-			this->label1->AutoSize = true;
-			this->label1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
-			this->label1->Location = System::Drawing::Point(9, 119);
-			this->label1->Name = L"label1";
-			this->label1->Size = System::Drawing::Size(57, 16);
-			this->label1->TabIndex = 5;
-			this->label1->Text = L"Mod List";
+			this->m_lbl_modList->AutoSize = true;
+			this->m_lbl_modList->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
+			this->m_lbl_modList->Location = System::Drawing::Point(9, 119);
+			this->m_lbl_modList->Name = L"m_lbl_modList";
+			this->m_lbl_modList->Size = System::Drawing::Size(57, 16);
+			this->m_lbl_modList->TabIndex = 5;
+			this->m_lbl_modList->Text = L"Mod List";
 			// 
-			// m_lbl_partCount
+			// m_tb_itemInfo
 			// 
-			this->m_lbl_partCount->AutoSize = true;
-			this->m_lbl_partCount->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
-			this->m_lbl_partCount->Location = System::Drawing::Point(118, 60);
-			this->m_lbl_partCount->Name = L"m_lbl_partCount";
-			this->m_lbl_partCount->Size = System::Drawing::Size(133, 16);
-			this->m_lbl_partCount->TabIndex = 6;
-			this->m_lbl_partCount->Text = L"Part Count: LOADING";
+			this->m_tb_itemInfo->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left)
+				| System::Windows::Forms::AnchorStyles::Right));
+			this->m_tb_itemInfo->BorderStyle = System::Windows::Forms::BorderStyle::None;
+			this->m_tb_itemInfo->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
+			this->m_tb_itemInfo->ImeMode = System::Windows::Forms::ImeMode::Disable;
+			this->m_tb_itemInfo->Location = System::Drawing::Point(118, 12);
+			this->m_tb_itemInfo->Multiline = true;
+			this->m_tb_itemInfo->Name = L"m_tb_itemInfo";
+			this->m_tb_itemInfo->ReadOnly = true;
+			this->m_tb_itemInfo->ShortcutsEnabled = false;
+			this->m_tb_itemInfo->Size = System::Drawing::Size(304, 100);
+			this->m_tb_itemInfo->TabIndex = 6;
 			// 
-			// m_lbl_modCount
-			// 
-			this->m_lbl_modCount->AutoSize = true;
-			this->m_lbl_modCount->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
-			this->m_lbl_modCount->Location = System::Drawing::Point(118, 76);
-			this->m_lbl_modCount->Name = L"m_lbl_modCount";
-			this->m_lbl_modCount->Size = System::Drawing::Size(136, 16);
-			this->m_lbl_modCount->TabIndex = 7;
-			this->m_lbl_modCount->Text = L"Mod Count: LOADING";
-			// 
-			// BlueprintInfoGui
+			// ItemInfoGui
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(434, 270);
-			this->Controls->Add(this->m_lbl_modCount);
-			this->Controls->Add(this->m_lbl_partCount);
-			this->Controls->Add(this->label1);
+			this->Controls->Add(this->m_tb_itemInfo);
+			this->Controls->Add(this->m_lbl_modList);
 			this->Controls->Add(this->m_lb_modSelector);
-			this->Controls->Add(this->m_lbl_contentType);
-			this->Controls->Add(this->m_lbl_blueprintUuid);
-			this->Controls->Add(this->m_lbl_blueprintName);
 			this->Controls->Add(this->m_bp_blueprintPreview);
 			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedSingle;
 			this->MaximizeBox = false;
 			this->MinimizeBox = false;
-			this->Name = L"BlueprintInfoGui";
+			this->Name = L"ItemInfoGui";
 			this->ShowIcon = false;
-			this->Text = L"Blueprint Info";
+			this->Text = L"ITEM_INFO";
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->m_bp_blueprintPreview))->EndInit();
 			this->m_cms_modOptions->ResumeLayout(false);
 			this->ResumeLayout(false);
