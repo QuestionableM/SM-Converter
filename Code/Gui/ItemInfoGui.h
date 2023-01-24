@@ -28,7 +28,13 @@ namespace SMConverter
 		System::Windows::Forms::ContextMenuStrip^ m_cms_modOptions;
 		System::Windows::Forms::ToolStripMenuItem^ m_btn_openInSteamWorkshop;
 		System::Windows::Forms::ToolStripMenuItem^ m_btn_openInExplorer;
-		System::Windows::Forms::TextBox^ m_tb_itemInfo;
+
+		System::Windows::Forms::Label^ m_lbl_line1;
+		System::Windows::Forms::Label^ m_lbl_line2;
+		System::Windows::Forms::Label^ m_lbl_line3;
+		System::Windows::Forms::Label^ m_lbl_line4;
+		System::Windows::Forms::Label^ m_lbl_line5;
+		System::Windows::Forms::Label^ m_lbl_line6;
 
 		System::ComponentModel::IContainer^ components;
 
@@ -42,7 +48,12 @@ namespace SMConverter
 			this->m_btn_openInSteamWorkshop = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->m_btn_openInExplorer = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->m_lbl_modList = (gcnew System::Windows::Forms::Label());
-			this->m_tb_itemInfo = (gcnew System::Windows::Forms::TextBox());
+			this->m_lbl_line1 = (gcnew System::Windows::Forms::Label());
+			this->m_lbl_line2 = (gcnew System::Windows::Forms::Label());
+			this->m_lbl_line3 = (gcnew System::Windows::Forms::Label());
+			this->m_lbl_line4 = (gcnew System::Windows::Forms::Label());
+			this->m_lbl_line5 = (gcnew System::Windows::Forms::Label());
+			this->m_lbl_line6 = (gcnew System::Windows::Forms::Label());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->m_bp_blueprintPreview))->BeginInit();
 			this->m_cms_modOptions->SuspendLayout();
 			this->SuspendLayout();
@@ -110,27 +121,78 @@ namespace SMConverter
 			this->m_lbl_modList->TabIndex = 5;
 			this->m_lbl_modList->Text = L"Mod List";
 			// 
-			// m_tb_itemInfo
+			// m_lbl_line1
 			// 
-			this->m_tb_itemInfo->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left)
-				| System::Windows::Forms::AnchorStyles::Right));
-			this->m_tb_itemInfo->BorderStyle = System::Windows::Forms::BorderStyle::None;
-			this->m_tb_itemInfo->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
-			this->m_tb_itemInfo->ImeMode = System::Windows::Forms::ImeMode::Disable;
-			this->m_tb_itemInfo->Location = System::Drawing::Point(118, 12);
-			this->m_tb_itemInfo->Multiline = true;
-			this->m_tb_itemInfo->Name = L"m_tb_itemInfo";
-			this->m_tb_itemInfo->ReadOnly = true;
-			this->m_tb_itemInfo->ShortcutsEnabled = false;
-			this->m_tb_itemInfo->Size = System::Drawing::Size(304, 100);
-			this->m_tb_itemInfo->TabIndex = 6;
+			this->m_lbl_line1->AutoSize = true;
+			this->m_lbl_line1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
+			this->m_lbl_line1->Location = System::Drawing::Point(118, 12);
+			this->m_lbl_line1->Name = L"m_lbl_line1";
+			this->m_lbl_line1->Size = System::Drawing::Size(50, 16);
+			this->m_lbl_line1->TabIndex = 6;
+			this->m_lbl_line1->Text = L"Name: ";
+			// 
+			// m_lbl_line2
+			// 
+			this->m_lbl_line2->AutoSize = true;
+			this->m_lbl_line2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
+			this->m_lbl_line2->Location = System::Drawing::Point(118, 28);
+			this->m_lbl_line2->Name = L"m_lbl_line2";
+			this->m_lbl_line2->Size = System::Drawing::Size(41, 16);
+			this->m_lbl_line2->TabIndex = 7;
+			this->m_lbl_line2->Text = L"Uuid: ";
+			// 
+			// m_lbl_line3
+			// 
+			this->m_lbl_line3->AutoSize = true;
+			this->m_lbl_line3->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
+			this->m_lbl_line3->Location = System::Drawing::Point(118, 44);
+			this->m_lbl_line3->Name = L"m_lbl_line3";
+			this->m_lbl_line3->Size = System::Drawing::Size(90, 16);
+			this->m_lbl_line3->TabIndex = 8;
+			this->m_lbl_line3->Text = L"LINE_THREE";
+			// 
+			// m_lbl_line4
+			// 
+			this->m_lbl_line4->AutoSize = true;
+			this->m_lbl_line4->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
+			this->m_lbl_line4->Location = System::Drawing::Point(118, 60);
+			this->m_lbl_line4->Name = L"m_lbl_line4";
+			this->m_lbl_line4->Size = System::Drawing::Size(81, 16);
+			this->m_lbl_line4->TabIndex = 9;
+			this->m_lbl_line4->Text = L"LINE_FOUR";
+			// 
+			// m_lbl_line5
+			// 
+			this->m_lbl_line5->AutoSize = true;
+			this->m_lbl_line5->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
+			this->m_lbl_line5->Location = System::Drawing::Point(118, 76);
+			this->m_lbl_line5->Name = L"m_lbl_line5";
+			this->m_lbl_line5->Size = System::Drawing::Size(72, 16);
+			this->m_lbl_line5->TabIndex = 10;
+			this->m_lbl_line5->Text = L"LINE_FIVE";
+			// 
+			// m_lbl_line6
+			// 
+			this->m_lbl_line6->AutoSize = true;
+			this->m_lbl_line6->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
+			this->m_lbl_line6->Location = System::Drawing::Point(118, 92);
+			this->m_lbl_line6->Name = L"m_lbl_line6";
+			this->m_lbl_line6->Size = System::Drawing::Size(63, 16);
+			this->m_lbl_line6->TabIndex = 11;
+			this->m_lbl_line6->Text = L"LINE_SIX";
+			this->m_lbl_line6->Visible = false;
 			// 
 			// ItemInfoGui
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(434, 270);
-			this->Controls->Add(this->m_tb_itemInfo);
+			this->Controls->Add(this->m_lbl_line6);
+			this->Controls->Add(this->m_lbl_line5);
+			this->Controls->Add(this->m_lbl_line4);
+			this->Controls->Add(this->m_lbl_line3);
+			this->Controls->Add(this->m_lbl_line2);
+			this->Controls->Add(this->m_lbl_line1);
 			this->Controls->Add(this->m_lbl_modList);
 			this->Controls->Add(this->m_lb_modSelector);
 			this->Controls->Add(this->m_bp_blueprintPreview);

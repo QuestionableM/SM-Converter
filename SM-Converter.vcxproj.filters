@@ -446,5 +446,11 @@
     <ClInclude Include="Code\Gui\ItemInfoGui.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Code\Converter\EmptyConverterClass.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\ObjectDatabase\UserDataReaders\ItemModCounter.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

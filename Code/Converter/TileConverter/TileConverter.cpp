@@ -37,7 +37,7 @@ void TileConv::ConvertToModel(const std::wstring& tile_path, const std::wstring&
 	}
 
 	{
-		Tile* pOutTile = TileReader::ReadTile(tile_path, cError);
+		Tile* pOutTile = TileReader::ReadTile<false>(tile_path, cError);
 
 		TileConv::WriteToFileInternal(pOutTile, tile_name, cError);
 

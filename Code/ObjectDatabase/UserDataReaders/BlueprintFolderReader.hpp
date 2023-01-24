@@ -30,14 +30,6 @@ struct BlueprintInstance
 	~BlueprintInstance() = default;
 };
 
-class SMMod;
-
-struct BlueprintModStats
-{
-	SMMod* mod;
-	std::size_t part_count;
-};
-
 class BlueprintFolderReader
 {
 public:
@@ -51,9 +43,7 @@ public:
 	static std::vector<BlueprintInstance*>& GetCurrentStorage();
 	static void FilterStorage();
 
-	static void IncrementUsageCounter(const SMUuid& uuid, SMMod* v_mod, std::unordered_map<SMUuid, BlueprintModStats>& v_mod_storage);
-	static void GetBlueprintData(BlueprintInstance* v_bp_instance,
-		std::unordered_map<SMUuid, BlueprintModStats>& v_mod_storage, std::size_t& v_part_count);
+	static void GetBlueprintData(BlueprintInstance* v_bp_instance);
 
 	static void ReadBlueprintFromFile(const std::filesystem::path& path);
 	static void ReadBlueprintFromFolder(const std::wstring& folder);

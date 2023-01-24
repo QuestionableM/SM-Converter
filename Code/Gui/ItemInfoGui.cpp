@@ -3,85 +3,76 @@
 #include "UStd\UnmanagedUnorderedMap.hpp"
 #include "UStd\UnmanagedVector.hpp"
 
+#include "ObjectDatabase\UserDataReaders\ItemModCounter.hpp"
 #include "ObjectDatabase\DatabaseConfig.hpp"
 #include "ObjectDatabase\Mods\Mod.hpp"
 
 #include "Utils\Console.hpp"
 #include "Utils\File.hpp"
 
-#pragma unmanaged
-
-struct ItemInfoData
-{
-	inline static std::unordered_map<SMUuid, BlueprintModStats> ModStorage = {};
-	inline static std::vector<BlueprintModStats> ModVector = {};
-	inline static std::size_t ObjectCount = 0;
-};
-
-#pragma managed
-
 namespace SMConverter
 {
 	ItemInfoGui::ItemInfoGui(BlueprintInstance* v_blueprint)
 	{
+		ItemModStats::Reset();
+
 		this->InitializeComponent();
 		this->Text = "Blueprint Info";
 
-		ItemInfoData::ModStorage.clear();
-		ItemInfoData::ModVector.clear();
-		ItemInfoData::ObjectCount = 0;
-
-		std::wstring v_info_str;
-		v_info_str.append(L"Name: " + v_blueprint->name + L"\r\n");
-		v_info_str.append(L"Uuid: " + v_blueprint->uuid.ToWstring() + L"\r\n");
+		m_lbl_line1->Text += gcnew System::String(v_blueprint->name.c_str());
+		m_lbl_line2->Text += gcnew System::String(v_blueprint->uuid.ToString().c_str());
 		
 		const std::wstring v_filter_name = FilterSettingsData::GetFilterName(v_blueprint->v_filter);
-		v_info_str.append(L"Content Type: " + v_filter_name + L"\r\n");
+		m_lbl_line3->Text = gcnew System::String((L"Content Type: " + v_filter_name).c_str());
 
 		const std::wstring& v_bp_preview = v_blueprint->preview_image;
 		if (!v_bp_preview.empty() && File::Exists(v_bp_preview))
 			m_bp_blueprintPreview->ImageLocation = gcnew System::String(v_bp_preview.c_str());
 
-		BlueprintFolderReader::GetBlueprintData(v_blueprint, ItemInfoData::ModStorage, ItemInfoData::ObjectCount);
+		BlueprintFolderReader::GetBlueprintData(v_blueprint);
 
-		ItemInfoData::ModVector.reserve(ItemInfoData::ModStorage.size());
-		for (const auto& v_mod_item : ItemInfoData::ModStorage)
-			ItemInfoData::ModVector.push_back(v_mod_item.second);
-
-		v_info_str.append(L"Part Count: " + std::to_wstring(ItemInfoData::ObjectCount) + L"\r\n");
-		v_info_str.append(L"Mod Count: " + std::to_wstring(ItemInfoData::ModStorage.size()) + L"\r\n");
-
-		m_tb_itemInfo->Text = gcnew System::String(v_info_str.c_str());
+		m_lbl_line4->Text = gcnew System::String(("Part Count: " + std::to_string(ItemModStats::GetTotalPartCount())).c_str());
+		m_lbl_line5->Text = gcnew System::String(("Mod Count: " + std::to_string(ItemModStats::ModStorage.size())).c_str());
+		
 		this->UpdateModList();
 	}
 
 	ItemInfoGui::ItemInfoGui(TileInstance* v_tile)
 	{
+		ItemModStats::Reset();
+
 		this->InitializeComponent();
 		this->Text = "Tile Info";
 
-		ItemInfoData::ModStorage.clear();
-		ItemInfoData::ModVector.clear();
-		ItemInfoData::ObjectCount = 0;
-
-		std::wstring v_info_str;
-		v_info_str.append(L"Name: " + v_tile->name + L"\r\n");
-		v_info_str.append(L"Uuid: " + v_tile->uuid.ToWstring() + L"\r\n");
+		m_lbl_line1->Text += gcnew System::String(v_tile->name.c_str());
+		m_lbl_line2->Text += gcnew System::String(v_tile->uuid.ToString().c_str());
 		
 		const std::wstring v_size_name = FilterSettingsData::GetTileSizeName(v_tile->v_size_filter);
-		v_info_str.append(L"Tile Size: " + v_size_name + L"\r\n");
+		m_lbl_line3->Text = gcnew System::String((L"Tile Size: " + v_size_name).c_str());
 
 		const std::wstring v_filter_name = FilterSettingsData::GetFilterName(v_tile->v_filter);
-		v_info_str.append(L"Content Type: " + v_filter_name + L"\r\n");
+		m_lbl_line4->Text = gcnew System::String((L"Content Type: " + v_filter_name).c_str());
 
 		const std::wstring& v_tile_preview = v_tile->preview_image;
 		if (!v_tile_preview.empty() && File::Exists(v_tile_preview))
 			m_bp_blueprintPreview->ImageLocation = gcnew System::String(v_tile_preview.c_str());
 
-		v_info_str.append(L"Part Count: NOT_IMPLEMENTED\r\n");
-		v_info_str.append(L"Mod Count: NOT_IMPLEMENTED\r\n");
-		
-		m_tb_itemInfo->Text = gcnew System::String(v_info_str.c_str());
+		ConvertError v_error;
+		TileFolderReader::GetTileData(v_tile, v_error);
+
+		if (v_error)
+		{
+			m_lbl_line5->Text = "Part Count: Tile Read Error";
+			m_lbl_line6->Text = "Mod Count: Tile Read Error";
+		}
+		else
+		{
+			m_lbl_line5->Text = gcnew System::String(("Part Count: " + std::to_string(ItemModStats::GetTotalPartCount())).c_str());
+			m_lbl_line6->Text = gcnew System::String(("Mod Count: " + std::to_string(ItemModStats::ModStorage.size())).c_str());
+		}
+
+		m_lbl_line6->Visible = true;
+
 		this->UpdateModList();
 	}
 
@@ -97,12 +88,12 @@ namespace SMConverter
 		m_lb_modSelector->BeginUpdate();
 		m_lb_modSelector->Items->Clear();
 
-		for (const BlueprintModStats& v_mod_data : ItemInfoData::ModVector)
+		for (const ItemModInstance* v_mod_data : ItemModStats::ModVector)
 		{
-			std::wstring v_mod_name = (v_mod_data.mod != nullptr) ? v_mod_data.mod->GetName() : L"UNKNOWN_MOD";
+			std::wstring v_mod_name = (v_mod_data->mod != nullptr) ? v_mod_data->mod->GetName() : L"UNKNOWN_MOD";
 
 			v_mod_name.append(L" (");
-			v_mod_name.append(std::to_wstring(v_mod_data.part_count));
+			v_mod_name.append(std::to_wstring(v_mod_data->part_count));
 			v_mod_name.append(L")");
 
 			m_lb_modSelector->Items->Add(gcnew System::String(v_mod_name.c_str()));
@@ -115,7 +106,7 @@ namespace SMConverter
 	{
 		if (m_lb_modSelector->SelectedIndex == -1) return nullptr;
 
-		return ItemInfoData::ModVector[m_lb_modSelector->SelectedIndex].mod;
+		return ItemModStats::ModVector[m_lb_modSelector->SelectedIndex]->mod;
 	}
 
 	void ItemInfoGui::ModSelector_MouseDown(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e)

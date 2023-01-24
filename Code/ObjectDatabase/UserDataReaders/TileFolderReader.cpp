@@ -48,6 +48,12 @@ TileSizeFilter TileFolderReader::GetTileSize(const int& v_sz)
 	}
 }
 
+void TileFolderReader::GetTileData(TileInstance* v_tile_instance, ConvertError& v_error)
+{
+	Tile* v_tile = TileReader::ReadTile<true>(v_tile_instance->path, v_error);
+	if (v_tile) delete v_tile;
+}
+
 void TileFolderReader::LoadFromFile(const std::filesystem::path& path)
 {
 	if (!(path.has_stem() && path.has_filename() && path.has_parent_path()))

@@ -1,5 +1,6 @@
 #include "BlueprintFolderReader.hpp"
 
+#include "ObjectDatabase\UserDataReaders\ItemModCounter.hpp"
 #include "ObjectDatabase\DatabaseConfig.hpp"
 
 #include "Utils\Console.hpp"
@@ -30,26 +31,14 @@ void BlueprintFolderReader::FilterStorage()
 			BlueprintFolderReader::FilteredStorage.push_back(v_bp_instance);
 }
 
-void BlueprintFolderReader::IncrementUsageCounter(const SMUuid& uuid, SMMod* v_mod, std::unordered_map<SMUuid, BlueprintModStats>& v_mod_storage)
-{
-	const auto v_iter = v_mod_storage.find(uuid);
-	if (v_iter == v_mod_storage.end())
-	{
-		v_mod_storage.insert(std::make_pair(uuid, BlueprintModStats{ v_mod, 1 }));
-		return;
-	}
-
-	v_iter->second.part_count++;
-}
-
-void BlueprintFolderReader::GetBlueprintData(BlueprintInstance* v_bp_instance,
-	std::unordered_map<SMUuid, BlueprintModStats>& v_mod_storage, std::size_t& v_part_count)
+void BlueprintFolderReader::GetBlueprintData(BlueprintInstance* v_bp_instance)
 {
 	simdjson::dom::document v_doc;
 	if (!JsonReader::LoadParseSimdjsonC(v_bp_instance->path, v_doc, simdjson::dom::element_type::OBJECT))
 		return;
 
 	const auto v_root = v_doc.root();
+	SMUuid v_null_uuid;
 
 	const auto v_body_obj = v_root["bodies"];
 	if (v_body_obj.is_array())
@@ -66,17 +55,7 @@ void BlueprintFolderReader::GetBlueprintData(BlueprintInstance* v_bp_instance,
 
 				const SMUuid v_uuid = v_uuid_obj.get_c_str().value_unsafe();
 				SMMod* v_cur_mod = SMMod::GetModFromBlocksAndParts(v_uuid);
-				if (v_cur_mod)
-				{
-					BlueprintFolderReader::IncrementUsageCounter(v_cur_mod->GetUuid(), v_cur_mod, v_mod_storage);
-				}
-				else
-				{
-					SMUuid v_null_uuid;
-					BlueprintFolderReader::IncrementUsageCounter(v_null_uuid, nullptr, v_mod_storage);
-				}
-
-				v_part_count++;
+				ItemModStats::IncrementModPart(v_cur_mod);
 			}
 		}
 	}
@@ -91,17 +70,7 @@ void BlueprintFolderReader::GetBlueprintData(BlueprintInstance* v_bp_instance,
 
 			const SMUuid v_uuid = v_uuid_obj.get_c_str().value_unsafe();
 			SMMod* v_cur_mod = SMMod::GetModFromBlocksAndParts<false>(v_uuid);
-			if (v_cur_mod)
-			{
-				BlueprintFolderReader::IncrementUsageCounter(v_cur_mod->GetUuid(), v_cur_mod, v_mod_storage);
-			}
-			else
-			{
-				SMUuid v_null_uuid;
-				BlueprintFolderReader::IncrementUsageCounter(v_null_uuid, nullptr, v_mod_storage);
-			}
-
-			v_part_count++;
+			ItemModStats::IncrementModPart(v_cur_mod);
 		}
 	}
 }

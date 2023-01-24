@@ -1,9 +1,11 @@
 #pragma once
 
 #include "Converter\TileConverter\CellHeader.hpp"
+#include "Converter\EmptyConverterClass.hpp"
 #include "Converter\TileConverter\Tile.hpp"
 #include "Converter\Entity\Asset.hpp"
 
+#include "ObjectDatabase\UserDataReaders\ItemModCounter.hpp"
 #include "ObjectDatabase\ObjectDatabase.hpp"
 #include "ObjectDatabase\Mods\Mod.hpp"
 
@@ -17,7 +19,7 @@ class AssetListReader
 	AssetListReader() = default;
 
 public:
-
+	template<bool t_mod_counter>
 	static void Read(CellHeader* header, MemoryWrapper& reader, TilePart* part, ConvertError& cError)
 	{
 		if (cError || !TileConverterSettings::ExportAssets) return;
@@ -47,7 +49,7 @@ public:
 					return;
 				}
 
-				debugSize = AssetListReader::Read(bytes, a, header->assetListCount[a], v_tile_version, part);
+				debugSize = AssetListReader::Read<t_mod_counter>(bytes, a, header->assetListCount[a], v_tile_version, part);
 				DebugOutL(0b0111_fg, "Debug Size: ", debugSize, ", AssetListSize: ", assetListSize);
 				if (debugSize != assetListSize)
 				{
@@ -58,6 +60,7 @@ public:
 		}
 	}
 
+	template<bool t_mod_counter>
 	static int Read(const std::vector<Byte>& bytes, const int& asset_idx, const int& len, const int& version, TilePart* part)
 	{
 		MemoryWrapper memory(bytes);
@@ -128,17 +131,25 @@ public:
 			}
 
 			AssetData* asset_data = SMMod::GetGlobalAsset(f_uuid);
-			if (!asset_data) continue;
 
-			Model* pModel = ModelStorage::LoadModel(asset_data->m_mesh);
-			if (!pModel) continue;
+			if constexpr (t_mod_counter)
+			{
+				ItemModStats::IncrementModPart(asset_data->m_mod);
+			}
+			else
+			{
+				if (!asset_data) continue;
 
-			SMAsset* pNewAsset = new SMAsset(asset_data, pModel, color_map);
-			pNewAsset->SetPosition(f_pos);
-			pNewAsset->SetRotation(f_quat);
-			pNewAsset->SetSize(f_size);
+				Model* pModel = ModelStorage::LoadModel(asset_data->m_mesh);
+				if (!pModel) continue;
 
-			part->AddObject(pNewAsset, asset_idx);
+				SMAsset* pNewAsset = new SMAsset(asset_data, pModel, color_map);
+				pNewAsset->SetPosition(f_pos);
+				pNewAsset->SetRotation(f_quat);
+				pNewAsset->SetSize(f_size);
+
+				part->AddObject(pNewAsset, asset_idx);
+			}
 		}
 
 		return index;

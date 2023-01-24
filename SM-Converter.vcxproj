@@ -463,6 +463,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\Converter\BlueprintConverter\BlueprintConverter.hpp" />
     <ClInclude Include="Code\Converter\ConvertError.hpp" />
     <ClInclude Include="Code\Converter\ConvertSettings.hpp" />
+    <ClInclude Include="Code\Converter\EmptyConverterClass.hpp" />
     <ClInclude Include="Code\Converter\Entity\Asset.hpp" />
     <ClInclude Include="Code\Converter\Entity\Block.hpp" />
     <ClInclude Include="Code\Converter\Entity\Blueprint.hpp" />
@@ -509,6 +510,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\ObjectDatabase\UserDataReaders\BlueprintFolderReader.hpp" />
     <ClInclude Include="Code\ObjectDatabase\UserDataReaders\FilterSettingsData.hpp" />
     <ClInclude Include="Code\Gui\SettingsGuiChangeDetector.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\UserDataReaders\ItemModCounter.hpp" />
     <ClInclude Include="Code\ObjectDatabase\UserDataReaders\TileFolderReader.hpp" />
     <ClInclude Include="Code\Gui\SettingsGui.h">
       <FileType>CppForm</FileType>

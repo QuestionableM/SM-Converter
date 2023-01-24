@@ -74,13 +74,15 @@ public:
 		return true;
 	}
 
+	template<bool t_mod_counter>
 	static Tile* ReadTile(const std::wstring& path, ConvertError& cError)
 	{
 		std::vector<Byte> file_bytes = File::ReadFileBytes(path);
 
-		return TileReader::ReadTile(file_bytes, cError);
+		return TileReader::ReadTile<t_mod_counter>(file_bytes, cError);
 	}
 
+	template<bool t_mod_counter>
 	static Tile* ReadTile(const std::vector<Byte>& tile_data, ConvertError& cError)
 	{
 		ProgCounter::SetState(ProgState::ReadingTile, 0);
@@ -136,7 +138,7 @@ public:
 						ClutterReader::Read(h, reader, part, cError);
 					}
 				
-					AssetListReader::Read      (h, reader, part, cError);
+					AssetListReader::Read<t_mod_counter>(h, reader, part, cError);
 					PrefabReader::Read         (h, reader, part, cError);
 					BlueprintListReader::Read  (h, reader, part, cError);
 					HarvestableListReader::Read(h, reader, part, cError);

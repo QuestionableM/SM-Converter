@@ -4,6 +4,7 @@
 #include "UStd\UnmanagedString.hpp"
 #include "UStd\UnmanagedVector.hpp"
 
+#include "Converter\ConvertError.hpp"
 #include "FilterSettingsData.hpp"
 #include "Utils\Uuid.hpp"
 
@@ -46,6 +47,7 @@ public:
 	static void FilterStorage();
 
 	static TileSizeFilter GetTileSize(const int& v_sz);
+	static void GetTileData(TileInstance* v_tile_instance, ConvertError& v_error);
 
 	static void LoadFromFile(const std::filesystem::path& path);
 	static void LoadFromDirectory(const std::wstring& path);
