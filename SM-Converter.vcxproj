@@ -292,10 +292,10 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClCompile Include="Code\Gui\BlueprintInfoGui.cpp" />
     <ClCompile Include="Code\Gui\FilterSettingsGui.cpp" />
     <ClCompile Include="Code\Gui\MainGui.cpp" />
-    <ClCompile Include="Code\Gui\MainGuiReaders\BlueprintFolderReader.cpp" />
-    <ClCompile Include="Code\Gui\MainGuiReaders\FilterSettingsData.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\UserDataReaders\BlueprintFolderReader.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\UserDataReaders\FilterSettingsData.cpp" />
     <ClCompile Include="Code\Gui\SettingsGuiChangeDetector.cpp" />
-    <ClCompile Include="Code\Gui\MainGuiReaders\TileFolderReader.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\UserDataReaders\TileFolderReader.cpp" />
     <ClCompile Include="Code\Gui\SettingsGui.cpp" />
     <ClCompile Include="Code\Gui\TileConvertSettings.cpp" />
     <ClCompile Include="Code\main.cpp" />
@@ -506,10 +506,10 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\Gui\MainGui.h">
       <FileType>CppForm</FileType>
     </ClInclude>
-    <ClInclude Include="Code\Gui\MainGuiReaders\BlueprintFolderReader.hpp" />
-    <ClInclude Include="Code\Gui\MainGuiReaders\FilterSettingsData.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\UserDataReaders\BlueprintFolderReader.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\UserDataReaders\FilterSettingsData.hpp" />
     <ClInclude Include="Code\Gui\SettingsGuiChangeDetector.hpp" />
-    <ClInclude Include="Code\Gui\MainGuiReaders\TileFolderReader.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\UserDataReaders\TileFolderReader.hpp" />
     <ClInclude Include="Code\Gui\SettingsGui.h">
       <FileType>CppForm</FileType>
     </ClInclude>

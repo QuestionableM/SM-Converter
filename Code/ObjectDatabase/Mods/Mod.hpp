@@ -57,6 +57,7 @@ protected:
 	SMUuid m_Uuid;
 	std::wstring m_Name;
 	std::wstring m_Directory;
+	unsigned long long m_WorkshopId;
 	bool m_isLocal;
 
 	Mod() = default;
@@ -78,6 +79,23 @@ public:
 	static ClutterData* GetGlobalClutter(const SMUuid& uuid);
 	static ClutterData* GetGlobalClutterById(const std::size_t& idx);
 
+	template<bool t_check_blocks = true>
+	inline static Mod* GetModFromBlocksAndParts(const SMUuid& uuid)
+	{
+		const UuidObjMapIterator<PartData*> v_part_iter = Mod::PartStorage.find(uuid);
+		if (v_part_iter != Mod::PartStorage.end())
+			return v_part_iter->second->m_mod;
+
+		if constexpr (t_check_blocks)
+		{
+			const UuidObjMapIterator<BlockData*> v_block_iter = Mod::BlockStorage.find(uuid);
+			if (v_block_iter != Mod::BlockStorage.end())
+				return v_block_iter->second->m_mod;
+		}
+
+		return nullptr;
+	}
+
 	inline static std::size_t GetAmountOfObjects()
 	{
 		return (Mod::BlockStorage.size() + Mod::PartStorage.size() + Mod::AssetStorage.size()
@@ -90,6 +108,11 @@ public:
 
 	void ScanDatabaseFolderRecursive(const std::wstring& folder);
 	void ScanDatabaseFolder(const std::wstring& folder);
+
+	inline const SMUuid& GetUuid() const { return m_Uuid; }
+	inline const std::wstring& GetName() const { return m_Name; }
+	inline const unsigned long long& GetWorkshopId() const { return m_WorkshopId; }
+	inline const std::wstring& GetDirectory() const { return m_Directory; }
 
 	virtual ModType Type() const = 0;
 	virtual void LoadObjectDatabase() = 0;

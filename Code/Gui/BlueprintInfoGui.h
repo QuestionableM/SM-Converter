@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MainGuiReaders\BlueprintFolderReader.hpp"
+#include "ObjectDatabase\UserDataReaders\BlueprintFolderReader.hpp"
 
 namespace SMConverter
 {
@@ -19,35 +19,44 @@ namespace SMConverter
 
 	protected:
 		~BlueprintInfoGui();
-	private: System::Windows::Forms::PictureBox^ m_bp_blueprintPreview;
-	protected:
-	private: System::Windows::Forms::Label^ m_lbl_blueprintName;
-	private: System::Windows::Forms::Label^ m_lbl_blueprintUuid;
-	private: System::Windows::Forms::Label^ m_lbl_contentType;
-	private: System::Windows::Forms::ListBox^ m_lb_modSelector;
-	private: System::Windows::Forms::Label^ label1;
-	private: System::Windows::Forms::Label^ m_lbl_partCount;
-	private: System::Windows::Forms::Label^ m_lbl_modCount;
-
+		
 	private:
-		System::ComponentModel::Container ^components;
+		System::Windows::Forms::PictureBox^ m_bp_blueprintPreview;
+		System::Windows::Forms::Label^ m_lbl_blueprintName;
+		System::Windows::Forms::Label^ m_lbl_blueprintUuid;
+		System::Windows::Forms::Label^ m_lbl_contentType;
+		System::Windows::Forms::ListBox^ m_lb_modSelector;
+		System::Windows::Forms::Label^ label1;
+		System::Windows::Forms::Label^ m_lbl_partCount;
+		System::Windows::Forms::Label^ m_lbl_modCount;
+		System::Windows::Forms::ContextMenuStrip^ m_cms_modOptions;
+		System::Windows::Forms::ToolStripMenuItem^ m_btn_openInSteamWorkshop;
+		System::Windows::Forms::ToolStripMenuItem^ m_btn_openInExplorer;
+
+		System::ComponentModel::IContainer^ components;
 
 #pragma region Windows Form Designer generated code
 		void InitializeComponent(void)
 		{
+			this->components = (gcnew System::ComponentModel::Container());
 			this->m_bp_blueprintPreview = (gcnew System::Windows::Forms::PictureBox());
 			this->m_lbl_blueprintName = (gcnew System::Windows::Forms::Label());
 			this->m_lbl_blueprintUuid = (gcnew System::Windows::Forms::Label());
 			this->m_lbl_contentType = (gcnew System::Windows::Forms::Label());
 			this->m_lb_modSelector = (gcnew System::Windows::Forms::ListBox());
+			this->m_cms_modOptions = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
+			this->m_btn_openInSteamWorkshop = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->m_btn_openInExplorer = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->m_lbl_partCount = (gcnew System::Windows::Forms::Label());
 			this->m_lbl_modCount = (gcnew System::Windows::Forms::Label());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->m_bp_blueprintPreview))->BeginInit();
+			this->m_cms_modOptions->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// m_bp_blueprintPreview
 			// 
+			this->m_bp_blueprintPreview->BackColor = System::Drawing::SystemColors::ControlLightLight;
 			this->m_bp_blueprintPreview->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
 			this->m_bp_blueprintPreview->Location = System::Drawing::Point(12, 12);
 			this->m_bp_blueprintPreview->Name = L"m_bp_blueprintPreview";
@@ -90,14 +99,43 @@ namespace SMConverter
 			// 
 			this->m_lb_modSelector->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left)
 				| System::Windows::Forms::AnchorStyles::Right));
+			this->m_lb_modSelector->ContextMenuStrip = this->m_cms_modOptions;
 			this->m_lb_modSelector->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
 			this->m_lb_modSelector->FormattingEnabled = true;
 			this->m_lb_modSelector->IntegralHeight = false;
 			this->m_lb_modSelector->ItemHeight = 16;
 			this->m_lb_modSelector->Location = System::Drawing::Point(12, 138);
 			this->m_lb_modSelector->Name = L"m_lb_modSelector";
-			this->m_lb_modSelector->Size = System::Drawing::Size(462, 119);
+			this->m_lb_modSelector->Size = System::Drawing::Size(410, 120);
 			this->m_lb_modSelector->TabIndex = 4;
+			this->m_lb_modSelector->SelectedIndexChanged += gcnew System::EventHandler(this, &BlueprintInfoGui::ModList_SelectedIndexChanged);
+			this->m_lb_modSelector->MouseDown += gcnew System::Windows::Forms::MouseEventHandler(this, &BlueprintInfoGui::ModSelector_MouseDown);
+			// 
+			// m_cms_modOptions
+			// 
+			this->m_cms_modOptions->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
+				this->m_btn_openInSteamWorkshop,
+					this->m_btn_openInExplorer
+			});
+			this->m_cms_modOptions->Name = L"m_cms_modOptions";
+			this->m_cms_modOptions->RenderMode = System::Windows::Forms::ToolStripRenderMode::System;
+			this->m_cms_modOptions->Size = System::Drawing::Size(210, 70);
+			// 
+			// m_btn_openInSteamWorkshop
+			// 
+			this->m_btn_openInSteamWorkshop->Enabled = false;
+			this->m_btn_openInSteamWorkshop->Name = L"m_btn_openInSteamWorkshop";
+			this->m_btn_openInSteamWorkshop->Size = System::Drawing::Size(209, 22);
+			this->m_btn_openInSteamWorkshop->Text = L"Open in Steam Workshop";
+			this->m_btn_openInSteamWorkshop->Click += gcnew System::EventHandler(this, &BlueprintInfoGui::ModList_OpenInSteamWorkshop_Click);
+			// 
+			// m_btn_openInExplorer
+			// 
+			this->m_btn_openInExplorer->Enabled = false;
+			this->m_btn_openInExplorer->Name = L"m_btn_openInExplorer";
+			this->m_btn_openInExplorer->Size = System::Drawing::Size(209, 22);
+			this->m_btn_openInExplorer->Text = L"Open in Explorer";
+			this->m_btn_openInExplorer->Click += gcnew System::EventHandler(this, &BlueprintInfoGui::ModList_OpenInExplorer_Click);
 			// 
 			// label1
 			// 
@@ -133,7 +171,7 @@ namespace SMConverter
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(486, 323);
+			this->ClientSize = System::Drawing::Size(434, 270);
 			this->Controls->Add(this->m_lbl_modCount);
 			this->Controls->Add(this->m_lbl_partCount);
 			this->Controls->Add(this->label1);
@@ -149,10 +187,19 @@ namespace SMConverter
 			this->ShowIcon = false;
 			this->Text = L"Blueprint Info";
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->m_bp_blueprintPreview))->EndInit();
+			this->m_cms_modOptions->ResumeLayout(false);
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
 		}
 #pragma endregion
+
+		System::Void UpdateModList();
+		Mod* GetCurrentMod();
+
+		System::Void ModSelector_MouseDown(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e);
+		System::Void ModList_OpenInSteamWorkshop_Click(System::Object^ sender, System::EventArgs^ e);
+		System::Void ModList_OpenInExplorer_Click(System::Object^ sender, System::EventArgs^ e);
+		System::Void ModList_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e);
 	};
 }

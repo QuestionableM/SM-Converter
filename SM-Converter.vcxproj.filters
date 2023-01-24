@@ -138,10 +138,10 @@
     <ClCompile Include="Code\Gui\AboutGui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Code\Gui\MainGuiReaders\BlueprintFolderReader.cpp">
+    <ClCompile Include="Code\ObjectDatabase\UserDataReaders\BlueprintFolderReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Code\Gui\MainGuiReaders\TileFolderReader.cpp">
+    <ClCompile Include="Code\ObjectDatabase\UserDataReaders\TileFolderReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Code\Gui\TileConvertSettings.cpp">
@@ -171,7 +171,7 @@
     <ClCompile Include="Code\Gui\FilterSettingsGui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Code\Gui\MainGuiReaders\FilterSettingsData.cpp">
+    <ClCompile Include="Code\ObjectDatabase\UserDataReaders\FilterSettingsData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Code\Gui\BlueprintInfoGui.cpp">
@@ -374,10 +374,10 @@
     <ClInclude Include="Code\Gui\AboutGui.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Code\Gui\MainGuiReaders\BlueprintFolderReader.hpp">
+    <ClInclude Include="Code\ObjectDatabase\UserDataReaders\BlueprintFolderReader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Code\Gui\MainGuiReaders\TileFolderReader.hpp">
+    <ClInclude Include="Code\ObjectDatabase\UserDataReaders\TileFolderReader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Code\Gui\TileConvertSettings.h">
@@ -440,7 +440,7 @@
     <ClInclude Include="Code\Gui\FilterSettingsGui.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Code\Gui\MainGuiReaders\FilterSettingsData.hpp">
+    <ClInclude Include="Code\ObjectDatabase\UserDataReaders\FilterSettingsData.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Code\Gui\BlueprintInfoGui.h">

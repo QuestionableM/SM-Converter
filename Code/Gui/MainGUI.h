@@ -1,10 +1,9 @@
 #pragma once
 
-#include "MainGuiReaders\BlueprintFolderReader.hpp"
-#include "MainGuiReaders\TileFolderReader.hpp"
+#include "ObjectDatabase\UserDataReaders\BlueprintFolderReader.hpp"
+#include "ObjectDatabase\UserDataReaders\TileFolderReader.hpp"
 
 #include "Converter\ConvertError.hpp"
-
 #include "UStd\UnmanagedVector.hpp"
 
 namespace SMConverter

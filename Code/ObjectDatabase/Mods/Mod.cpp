@@ -112,6 +112,9 @@ Mod* Mod::LoadFromDescription(const std::wstring& mod_folder, const bool& is_loc
 	v_newMod->m_Uuid = v_mod_uuid;
 	v_newMod->m_isLocal = is_local;
 
+	const auto v_mod_ws_id = v_root["fileId"];
+	v_newMod->m_WorkshopId = v_mod_ws_id.is_number() ? JsonReader::GetNumber<unsigned long long>(v_mod_ws_id) : 0ull;
+
 	DebugOutL("Mod: ", 0b1101_fg, v_newMod->m_Name, 0b1110_fg, ", Uuid: ", 0b1101_fg, v_newMod->m_Uuid.ToString(), 0b1110_fg, ", Type: ", 0b1101_fg, v_mod_type_str);
 	Mod::ModStorage.insert(std::make_pair(v_newMod->m_Uuid, v_newMod));
 	Mod::ModVector.push_back(v_newMod);

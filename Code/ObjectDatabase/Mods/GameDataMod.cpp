@@ -10,7 +10,8 @@ GameDataMod::GameDataMod()
 {
 	this->m_Name = L"Vanilla Data";
 	this->m_Directory = DatabaseConfig::GamePath;
-	this->m_Uuid = SMUuid();
+	this->m_Uuid = SMUuid(0x45157449ee614269, 0xa6ab3137e2945fca);
+	this->m_WorkshopId = 0;
 }
 
 void GameDataMod::LoadObjectDatabase()

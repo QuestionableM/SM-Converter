@@ -30,14 +30,80 @@ void BlueprintFolderReader::FilterStorage()
 			BlueprintFolderReader::FilteredStorage.push_back(v_bp_instance);
 }
 
-static void GetBlueprintData(BlueprintInstance* v_bp_instance,
-	std::unordered_map<SMUuid, Mod*>& v_mod_storage, std::size_t& v_part_count)
+void BlueprintFolderReader::IncrementUsageCounter(const SMUuid& uuid, class Mod* v_mod, std::unordered_map<SMUuid, BlueprintModStats>& v_mod_storage)
+{
+	const auto v_iter = v_mod_storage.find(uuid);
+	if (v_iter == v_mod_storage.end())
+	{
+		v_mod_storage.insert(std::make_pair(uuid, BlueprintModStats{ v_mod, 1 }));
+		return;
+	}
+
+	v_iter->second.part_count++;
+}
+
+void BlueprintFolderReader::GetBlueprintData(BlueprintInstance* v_bp_instance,
+	std::unordered_map<SMUuid, BlueprintModStats>& v_mod_storage, std::size_t& v_part_count)
 {
 	simdjson::dom::document v_doc;
 	if (!JsonReader::LoadParseSimdjsonC(v_bp_instance->path, v_doc, simdjson::dom::element_type::OBJECT))
 		return;
 
+	const auto v_root = v_doc.root();
 
+	const auto v_body_obj = v_root["bodies"];
+	if (v_body_obj.is_array())
+	{
+		for (const auto v_body : v_body_obj.get_array())
+		{
+			const auto v_childs_obj = v_body["childs"];
+			if (!v_childs_obj.is_array()) continue;
+
+			for (const auto v_child : v_childs_obj.get_array())
+			{
+				const auto v_uuid_obj = v_child["shapeId"];
+				if (!v_uuid_obj.is_string()) continue;
+
+				const SMUuid v_uuid = v_uuid_obj.get_c_str().value_unsafe();
+				Mod* v_cur_mod = Mod::GetModFromBlocksAndParts(v_uuid);
+				if (v_cur_mod)
+				{
+					BlueprintFolderReader::IncrementUsageCounter(v_cur_mod->GetUuid(), v_cur_mod, v_mod_storage);
+				}
+				else
+				{
+					SMUuid v_null_uuid;
+					BlueprintFolderReader::IncrementUsageCounter(v_null_uuid, nullptr, v_mod_storage);
+				}
+
+				v_part_count++;
+			}
+		}
+	}
+
+	const auto v_joint_obj = v_root["joints"];
+	if (v_joint_obj.is_array())
+	{
+		for (const auto v_joint : v_joint_obj.get_array())
+		{
+			const auto v_uuid_obj = v_joint["shapeId"];
+			if (!v_uuid_obj.is_string()) continue;
+
+			const SMUuid v_uuid = v_uuid_obj.get_c_str().value_unsafe();
+			Mod* v_cur_mod = Mod::GetModFromBlocksAndParts<false>(v_uuid);
+			if (v_cur_mod)
+			{
+				BlueprintFolderReader::IncrementUsageCounter(v_cur_mod->GetUuid(), v_cur_mod, v_mod_storage);
+			}
+			else
+			{
+				SMUuid v_null_uuid;
+				BlueprintFolderReader::IncrementUsageCounter(v_null_uuid, nullptr, v_mod_storage);
+			}
+
+			v_part_count++;
+		}
+	}
 }
 
 void BlueprintFolderReader::ReadBlueprintFromFile(const std::filesystem::path& path)
