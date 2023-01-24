@@ -79,7 +79,7 @@ namespace SMConverter
 		m_lb_modSelector->EndUpdate();
 	}
 
-	Mod* BlueprintInfoGui::GetCurrentMod()
+	SMMod* BlueprintInfoGui::GetCurrentMod()
 	{
 		if (m_lb_modSelector->SelectedIndex == -1) return nullptr;
 
@@ -98,7 +98,7 @@ namespace SMConverter
 
 	void BlueprintInfoGui::ModList_OpenInSteamWorkshop_Click(System::Object^ sender, System::EventArgs^ e)
 	{
-		Mod* v_mod = this->GetCurrentMod();
+		SMMod* v_mod = this->GetCurrentMod();
 		if (!v_mod) return;
 
 		const unsigned long long& v_workshop_id = v_mod->GetWorkshopId();
@@ -116,7 +116,7 @@ namespace SMConverter
 
 	void BlueprintInfoGui::ModList_OpenInExplorer_Click(System::Object^ sender, System::EventArgs^ e)
 	{
-		Mod* v_mod = this->GetCurrentMod();
+		SMMod* v_mod = this->GetCurrentMod();
 		if (!v_mod) return;
 
 		const std::wstring v_mod_dir = ::String::ReplaceAll(v_mod->GetDirectory(), L'/', L'\\');
@@ -140,7 +140,7 @@ namespace SMConverter
 		bool v_has_workshop_id = false;
 		bool v_has_directory = false;
 
-		Mod* v_mod = this->GetCurrentMod();
+		SMMod* v_mod = this->GetCurrentMod();
 		if (v_mod)
 		{
 			v_has_workshop_id = (v_mod->GetWorkshopId() != 0);

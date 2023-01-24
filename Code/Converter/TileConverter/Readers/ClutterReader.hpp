@@ -75,7 +75,7 @@ public:
 				}
 
 				const SMUuid clutter_uuid = memory.Object<SMUuid>(offset);
-				const ClutterData* pData = Mod::GetGlobalClutter(clutter_uuid);
+				const ClutterData* pData = SMMod::GetGlobalClutter(clutter_uuid);
 				if (pData)
 				{
 					DebugOutL(0b1101_fg, "Clutter: ", clutter_uuid.ToString(), " -> ", uVar7);
@@ -110,7 +110,7 @@ public:
 
 			if (cur_byte < 0) continue;
 
-			ClutterData* clData = Mod::GetGlobalClutterById(cur_byte);
+			ClutterData* clData = SMMod::GetGlobalClutterById(cur_byte);
 			if (!clData) continue;
 
 			Model* pModel = ModelStorage::LoadModel(clData->m_mesh);

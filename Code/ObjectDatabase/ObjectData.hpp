@@ -11,7 +11,7 @@
 
 #pragma unmanaged
 
-class Mod;
+class SMMod;
 
 class AssetData
 {
@@ -19,7 +19,7 @@ public:
 	SMUuid m_uuid;
 	std::unordered_map<std::string, SMColor> m_defaultColors;
 	SMSubMeshBase* m_textures;
-	Mod* m_mod;
+	SMMod* m_mod;
 	std::wstring m_mesh;
 
 	AssetData() = default;
@@ -37,7 +37,7 @@ class HarvestableData
 public:
 	SMUuid m_uuid;
 	SMSubMeshBase* m_textures;
-	Mod* m_mod;
+	SMMod* m_mod;
 	std::wstring m_mesh;
 
 	HarvestableData() = default;
@@ -55,7 +55,7 @@ class BlockData
 public:
 	SMUuid m_uuid;
 	SMTextureList m_textures;
-	Mod* m_mod;
+	SMMod* m_mod;
 	SMColor m_defaultColor;
 	int m_tiling;
 
@@ -73,7 +73,7 @@ public:
 	SMColor m_defaultColor;
 	glm::vec3 m_bounds;
 	std::wstring m_mesh;
-	Mod* m_mod;
+	SMMod* m_mod;
 
 	PartData() = default;
 	PartData(const PartData&) = delete;
@@ -94,7 +94,7 @@ public:
 	float m_height;
 	float m_scaleVariance;
 	bool m_groundNormal;
-	Mod* m_mod;
+	SMMod* m_mod;
 
 	ClutterData() = default;
 	ClutterData(const ClutterData&) = delete;
@@ -109,7 +109,7 @@ public:
 	SMUuid m_uuid;
 	SMTextureList m_textures;
 	int m_ranges[4];
-	Mod* m_mod;
+	SMMod* m_mod;
 
 	DecalData() = default;
 	DecalData(const DecalData&) = delete;

@@ -9,7 +9,7 @@
 class DecalsetReader
 {
 public:
-	static void LoadFromFile(const std::wstring& path, Mod* mod);
+	static void LoadFromFile(const std::wstring& path, SMMod* mod);
 };
 
 #pragma managed

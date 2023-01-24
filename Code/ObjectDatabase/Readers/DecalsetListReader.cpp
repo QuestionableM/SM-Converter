@@ -8,7 +8,7 @@
 
 #pragma unmanaged
 
-void DecalsetListReader::Load(const simdjson::dom::element& j_data, Mod* mod)
+void DecalsetListReader::Load(const simdjson::dom::element& j_data, SMMod* mod)
 {
 	if (!j_data.is_array()) return;
 

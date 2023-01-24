@@ -5,7 +5,7 @@
 
 #pragma unmanaged
 
-class Mod;
+class SMMod;
 
 class PartListLoader
 {
@@ -19,7 +19,7 @@ class PartListLoader
 	static glm::vec3 LoadPartCollision(const simdjson::dom::element& collision);
 
 public:
-	static void Load(const simdjson::dom::element& fParts, Mod* mod);
+	static void Load(const simdjson::dom::element& fParts, SMMod* mod);
 
 private:
 	struct __CollisionLoaderData

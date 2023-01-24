@@ -78,7 +78,7 @@ public:
 				index++;
 			}
 
-			const DecalData* v_decalData = Mod::GetGlobalDecal(v_uuid);
+			const DecalData* v_decalData = SMMod::GetGlobalDecal(v_uuid);
 			if (!v_decalData) continue;
 
 			SMDecal* v_newDecal = new SMDecal(v_decalData, v_color);

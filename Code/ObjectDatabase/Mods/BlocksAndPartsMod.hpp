@@ -4,10 +4,10 @@
 
 #pragma unmanaged
 
-class BlocksAndPartsMod : public Mod
+class BlocksAndPartsMod : public SMMod
 {
 	static bool GetShapeSetDatabaseFile(const std::wstring& mod_folder, std::wstring& r_shapedb_path);
-	static void LoadShapeSetDatabase(const std::wstring& path, Mod* pMod);
+	static void LoadShapeSetDatabase(const std::wstring& path, SMMod* pMod);
 
 public:
 	BlocksAndPartsMod() = default;

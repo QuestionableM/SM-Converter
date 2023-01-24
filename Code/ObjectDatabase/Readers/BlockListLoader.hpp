@@ -4,7 +4,7 @@
 
 #pragma unmanaged
 
-class Mod;
+class SMMod;
 class SMTextureList;
 
 class BlockListLoader
@@ -15,7 +15,7 @@ class BlockListLoader
 	static void GetBlockMaterial(const simdjson::dom::element& block, SMTextureList& tex);
 
 public:
-	static void Load(const simdjson::dom::element& fBlocks, Mod* mod);
+	static void Load(const simdjson::dom::element& fBlocks, SMMod* mod);
 };
 
 #pragma managed

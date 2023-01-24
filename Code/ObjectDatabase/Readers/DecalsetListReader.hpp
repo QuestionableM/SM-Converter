@@ -8,7 +8,7 @@
 class DecalsetListReader
 {
 public:
-	static void Load(const simdjson::dom::element& j_data, Mod* mod);
+	static void Load(const simdjson::dom::element& j_data, SMMod* mod);
 };
 
 #pragma managed

@@ -4,13 +4,13 @@
 
 #pragma unmanaged
 
-class Mod;
+class SMMod;
 
 class HarvestableListLoader
 {
 	HarvestableListLoader() = default;
 public:
-	static void Load(const simdjson::dom::element& fHarvestables, Mod* mod);
+	static void Load(const simdjson::dom::element& fHarvestables, SMMod* mod);
 };
 
 #pragma managed

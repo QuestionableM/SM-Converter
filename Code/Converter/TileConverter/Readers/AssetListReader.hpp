@@ -127,7 +127,7 @@ public:
 				index++;
 			}
 
-			AssetData* asset_data = Mod::GetGlobalAsset(f_uuid);
+			AssetData* asset_data = SMMod::GetGlobalAsset(f_uuid);
 			if (!asset_data) continue;
 
 			Model* pModel = ModelStorage::LoadModel(asset_data->m_mesh);

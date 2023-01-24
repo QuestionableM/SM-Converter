@@ -30,7 +30,7 @@ void BlueprintFolderReader::FilterStorage()
 			BlueprintFolderReader::FilteredStorage.push_back(v_bp_instance);
 }
 
-void BlueprintFolderReader::IncrementUsageCounter(const SMUuid& uuid, class Mod* v_mod, std::unordered_map<SMUuid, BlueprintModStats>& v_mod_storage)
+void BlueprintFolderReader::IncrementUsageCounter(const SMUuid& uuid, SMMod* v_mod, std::unordered_map<SMUuid, BlueprintModStats>& v_mod_storage)
 {
 	const auto v_iter = v_mod_storage.find(uuid);
 	if (v_iter == v_mod_storage.end())
@@ -65,7 +65,7 @@ void BlueprintFolderReader::GetBlueprintData(BlueprintInstance* v_bp_instance,
 				if (!v_uuid_obj.is_string()) continue;
 
 				const SMUuid v_uuid = v_uuid_obj.get_c_str().value_unsafe();
-				Mod* v_cur_mod = Mod::GetModFromBlocksAndParts(v_uuid);
+				SMMod* v_cur_mod = SMMod::GetModFromBlocksAndParts(v_uuid);
 				if (v_cur_mod)
 				{
 					BlueprintFolderReader::IncrementUsageCounter(v_cur_mod->GetUuid(), v_cur_mod, v_mod_storage);
@@ -90,7 +90,7 @@ void BlueprintFolderReader::GetBlueprintData(BlueprintInstance* v_bp_instance,
 			if (!v_uuid_obj.is_string()) continue;
 
 			const SMUuid v_uuid = v_uuid_obj.get_c_str().value_unsafe();
-			Mod* v_cur_mod = Mod::GetModFromBlocksAndParts<false>(v_uuid);
+			SMMod* v_cur_mod = SMMod::GetModFromBlocksAndParts<false>(v_uuid);
 			if (v_cur_mod)
 			{
 				BlueprintFolderReader::IncrementUsageCounter(v_cur_mod->GetUuid(), v_cur_mod, v_mod_storage);

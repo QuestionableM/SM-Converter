@@ -4,7 +4,7 @@
 
 #pragma unmanaged
 
-class GameDataMod : public Mod
+class GameDataMod : public SMMod
 {
 public:
 	GameDataMod();

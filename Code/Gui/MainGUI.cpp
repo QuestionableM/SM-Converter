@@ -300,8 +300,8 @@ namespace SMConverter
 		ProgCounter::SetState(ProgState::None, 0);
 		this->ResetProgressBar();
 
-		const std::size_t v_mod_count = Mod::GetAmountOfMods();
-		const std::size_t v_obj_count = Mod::GetAmountOfObjects();
+		const std::size_t v_mod_count = SMMod::GetAmountOfMods();
+		const std::size_t v_obj_count = SMMod::GetAmountOfObjects();
 
 		const std::wstring v_load_msg = L"Successfully loaded " + std::to_wstring(v_obj_count) + L" objects from " + std::to_wstring(v_mod_count) + L" mods";
 		m_lbl_progressStatus->Text = gcnew System::String(v_load_msg.c_str());
@@ -356,6 +356,7 @@ namespace SMConverter
 		m_lb_objectSelector->SelectedIndex = -1;
 
 		this->UpdateObjectListStatus();
+		this->MainGui_UpdatePathTextBox();
 
 		this->MainGui_ChangeGuiState(m_database_isLoaded, false, true);
 		m_bw_objectLoader->RunWorkerAsync();

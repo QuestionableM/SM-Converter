@@ -4,7 +4,7 @@
 
 #pragma unmanaged
 
-class Mod;
+class SMMod;
 class ClutterData;
 class SMTextureList;
 
@@ -15,7 +15,7 @@ class ClutterListLoader
 	static bool LoadTextureData(const simdjson::dom::element& fClutter, SMTextureList& tList, std::wstring& mesh);
 	static void LoadClutterData(const simdjson::dom::element& fClutter, ClutterData* pClutter);
 public:
-	static void Load(const simdjson::dom::element& fClutter, Mod* mod);
+	static void Load(const simdjson::dom::element& fClutter, SMMod* mod);
 };
 
 #pragma managed

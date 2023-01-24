@@ -83,7 +83,7 @@ glm::vec3 PartListLoader::LoadPartCollision(const simdjson::dom::element& collis
 	return v_out_collision;
 }
 
-void PartListLoader::Load(const simdjson::dom::element& fParts, Mod* mod)
+void PartListLoader::Load(const simdjson::dom::element& fParts, SMMod* mod)
 {
 	if (!fParts.is_array()) return;
 
@@ -100,7 +100,7 @@ void PartListLoader::Load(const simdjson::dom::element& fParts, Mod* mod)
 		if (!v_uuid.is_string()) continue;
 
 		const SMUuid v_prt_uuid = v_uuid.get_c_str();
-		if (Mod::PartStorage.find(v_prt_uuid) != Mod::PartStorage.end())
+		if (SMMod::PartStorage.find(v_prt_uuid) != SMMod::PartStorage.end())
 		{
 			DebugWarningL("Part with the same uuid already exists! (", v_prt_uuid.ToString(), ")");
 			continue;
@@ -121,7 +121,7 @@ void PartListLoader::Load(const simdjson::dom::element& fParts, Mod* mod)
 
 		const auto v_new_pair = std::make_pair(v_new_part->m_uuid, v_new_part);
 
-		Mod::PartStorage.insert(v_new_pair);
+		SMMod::PartStorage.insert(v_new_pair);
 		mod->m_Parts.insert(v_new_pair);
 
 		ProgCounter::ProgressValue++;

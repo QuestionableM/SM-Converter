@@ -27,7 +27,7 @@ bool BlocksAndPartsMod::GetShapeSetDatabaseFile(const std::wstring& mod_folder, 
 	return false;
 }
 
-void BlocksAndPartsMod::LoadShapeSetDatabase(const std::wstring& path, Mod* pMod)
+void BlocksAndPartsMod::LoadShapeSetDatabase(const std::wstring& path, SMMod* pMod)
 {
 	simdjson::dom::document v_shapedb_doc;
 	if (!JsonReader::LoadParseSimdjsonCommentsC(path, v_shapedb_doc, simdjson::dom::element_type::OBJECT))

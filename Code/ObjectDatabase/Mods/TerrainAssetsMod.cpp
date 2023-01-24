@@ -44,7 +44,7 @@ bool TerrainAssetsMod::GetAssetSetDatabaseFile(const std::wstring& asset_db_dir,
 	return false;
 }
 
-void TerrainAssetsMod::LoadAssetSetDatabase(const std::wstring& path, Mod* pMod)
+void TerrainAssetsMod::LoadAssetSetDatabase(const std::wstring& path, SMMod* pMod)
 {
 	simdjson::dom::document v_assetset_doc;
 	if (!JsonReader::LoadParseSimdjsonCommentsC(path, v_assetset_doc, simdjson::dom::element_type::OBJECT))

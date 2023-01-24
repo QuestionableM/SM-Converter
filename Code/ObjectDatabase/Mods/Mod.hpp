@@ -17,7 +17,7 @@ enum class ModType
 	GameData
 };
 
-class Mod
+class SMMod
 {
 	friend class DatabaseLoader;
 	friend class AssetListLoader;
@@ -34,8 +34,8 @@ class Mod
 	template<class T>
 	using UuidObjMapIterator = typename UuidObjectMap<T>::const_iterator;
 
-	inline static UuidObjectMap<Mod*> ModStorage = {};
-	inline static std::vector<Mod*> ModVector = {};
+	inline static UuidObjectMap<SMMod*> ModStorage = {};
+	inline static std::vector<SMMod*> ModVector = {};
 
 	inline static UuidObjectMap<BlockData*> BlockStorage             = {};
 	inline static UuidObjectMap<PartData*> PartStorage               = {};
@@ -60,16 +60,16 @@ protected:
 	unsigned long long m_WorkshopId;
 	bool m_isLocal;
 
-	Mod() = default;
+	SMMod() = default;
 
 public:
-	Mod(const Mod&) = delete;
-	Mod(Mod&&)      = delete;
-	Mod(Mod&)       = delete;
-	virtual ~Mod();
+	SMMod(const SMMod&) = delete;
+	SMMod(SMMod&&)      = delete;
+	SMMod(SMMod&)       = delete;
+	virtual ~SMMod();
 
 	static void ClearModStorage();
-	static Mod* LoadFromDescription(const std::wstring& mod_folder, const bool& is_local);
+	static SMMod* LoadFromDescription(const std::wstring& mod_folder, const bool& is_local);
 
 	static BlockData* GetGlobalBlock(const SMUuid& uuid);
 	static PartData* GetGlobalPart(const SMUuid& uuid);
@@ -80,16 +80,16 @@ public:
 	static ClutterData* GetGlobalClutterById(const std::size_t& idx);
 
 	template<bool t_check_blocks = true>
-	inline static Mod* GetModFromBlocksAndParts(const SMUuid& uuid)
+	inline static SMMod* GetModFromBlocksAndParts(const SMUuid& uuid)
 	{
-		const UuidObjMapIterator<PartData*> v_part_iter = Mod::PartStorage.find(uuid);
-		if (v_part_iter != Mod::PartStorage.end())
+		const UuidObjMapIterator<PartData*> v_part_iter = SMMod::PartStorage.find(uuid);
+		if (v_part_iter != SMMod::PartStorage.end())
 			return v_part_iter->second->m_mod;
 
 		if constexpr (t_check_blocks)
 		{
-			const UuidObjMapIterator<BlockData*> v_block_iter = Mod::BlockStorage.find(uuid);
-			if (v_block_iter != Mod::BlockStorage.end())
+			const UuidObjMapIterator<BlockData*> v_block_iter = SMMod::BlockStorage.find(uuid);
+			if (v_block_iter != SMMod::BlockStorage.end())
 				return v_block_iter->second->m_mod;
 		}
 
@@ -98,11 +98,11 @@ public:
 
 	inline static std::size_t GetAmountOfObjects()
 	{
-		return (Mod::BlockStorage.size() + Mod::PartStorage.size() + Mod::AssetStorage.size()
-			+ Mod::HarvestableStorage.size() + Mod::ClutterStorage.size() + Mod::DecalStorage.size());
+		return (SMMod::BlockStorage.size() + SMMod::PartStorage.size() + SMMod::AssetStorage.size()
+			+ SMMod::HarvestableStorage.size() + SMMod::ClutterStorage.size() + SMMod::DecalStorage.size());
 	}
 
-	inline static std::size_t GetAmountOfMods() { return Mod::ModVector.size(); }
+	inline static std::size_t GetAmountOfMods() { return SMMod::ModVector.size(); }
 
 	void LoadFile(const std::wstring& path);
 

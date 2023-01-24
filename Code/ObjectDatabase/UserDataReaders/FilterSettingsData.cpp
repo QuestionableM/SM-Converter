@@ -3,6 +3,8 @@
 #include "ObjectDatabase\DatabaseConfig.hpp"
 #include "Utils\File.hpp"
 
+#pragma unmanaged
+
 unsigned char FilterSettingsData::GetUserDataFilter(const std::wstring& path)
 {
 	if (File::IsSubPath(DatabaseConfig::GamePath, path))

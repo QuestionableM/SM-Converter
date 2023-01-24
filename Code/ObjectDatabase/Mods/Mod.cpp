@@ -19,7 +19,7 @@
 
 #pragma unmanaged
 
-Mod::~Mod()
+SMMod::~SMMod()
 {
 	for (const auto& pBlock : m_Blocks)
 		delete pBlock.second;
@@ -40,24 +40,24 @@ Mod::~Mod()
 		delete pDecal.second;
 }
 
-void Mod::ClearModStorage()
+void SMMod::ClearModStorage()
 {
-	Mod::BlockStorage.clear();
-	Mod::PartStorage.clear();
-	Mod::AssetStorage.clear();
-	Mod::HarvestableStorage.clear();
-	Mod::ClutterStorage.clear();
-	Mod::ClutterVector.clear();
-	Mod::DecalStorage.clear();
+	SMMod::BlockStorage.clear();
+	SMMod::PartStorage.clear();
+	SMMod::AssetStorage.clear();
+	SMMod::HarvestableStorage.clear();
+	SMMod::ClutterStorage.clear();
+	SMMod::ClutterVector.clear();
+	SMMod::DecalStorage.clear();
 
-	for (std::size_t a = 0; a < Mod::ModVector.size(); a++)
-		delete Mod::ModVector[a];
+	for (std::size_t a = 0; a < SMMod::ModVector.size(); a++)
+		delete SMMod::ModVector[a];
 
-	Mod::ModStorage.clear();
-	Mod::ModVector.clear();
+	SMMod::ModStorage.clear();
+	SMMod::ModVector.clear();
 }
 
-Mod* Mod::LoadFromDescription(const std::wstring& mod_folder, const bool& is_local)
+SMMod* SMMod::LoadFromDescription(const std::wstring& mod_folder, const bool& is_local)
 {
 	const std::wstring mDescPath = mod_folder + L"/description.json";
 	if (!File::Exists(mDescPath)) return nullptr;
@@ -80,10 +80,10 @@ Mod* Mod::LoadFromDescription(const std::wstring& mod_folder, const bool& is_loc
 	const SMUuid v_mod_uuid = v_mod_uuid_obj.get_c_str();
 	const std::wstring v_mod_name = String::ToWide(v_mod_name_obj.get_c_str());
 
-	const UuidObjMapIterator<Mod*> v_iter = Mod::ModStorage.find(v_mod_uuid);
-	if (v_iter != Mod::ModStorage.end())
+	const UuidObjMapIterator<SMMod*> v_iter = SMMod::ModStorage.find(v_mod_uuid);
+	if (v_iter != SMMod::ModStorage.end())
 	{
-		const Mod* v_modPtr = v_iter->second;
+		const SMMod* v_modPtr = v_iter->second;
 
 		if (v_iter->second->m_isLocal && !is_local)
 		{
@@ -98,7 +98,7 @@ Mod* Mod::LoadFromDescription(const std::wstring& mod_folder, const bool& is_loc
 		}
 	}
 
-	Mod* v_newMod;
+	SMMod* v_newMod;
 	const char* v_mod_type_str = v_mod_type.get_c_str();
 	if (strcmp(v_mod_type_str, "Blocks and Parts") == 0)
 		v_newMod = new BlocksAndPartsMod();
@@ -116,84 +116,84 @@ Mod* Mod::LoadFromDescription(const std::wstring& mod_folder, const bool& is_loc
 	v_newMod->m_WorkshopId = v_mod_ws_id.is_number() ? JsonReader::GetNumber<unsigned long long>(v_mod_ws_id) : 0ull;
 
 	DebugOutL("Mod: ", 0b1101_fg, v_newMod->m_Name, 0b1110_fg, ", Uuid: ", 0b1101_fg, v_newMod->m_Uuid.ToString(), 0b1110_fg, ", Type: ", 0b1101_fg, v_mod_type_str);
-	Mod::ModStorage.insert(std::make_pair(v_newMod->m_Uuid, v_newMod));
-	Mod::ModVector.push_back(v_newMod);
+	SMMod::ModStorage.insert(std::make_pair(v_newMod->m_Uuid, v_newMod));
+	SMMod::ModVector.push_back(v_newMod);
 
 	return v_newMod;
 }
 
-BlockData* Mod::GetGlobalBlock(const SMUuid& uuid)
+BlockData* SMMod::GetGlobalBlock(const SMUuid& uuid)
 {
-	const UuidObjMapIterator<BlockData*> v_iter = Mod::BlockStorage.find(uuid);
-	if (v_iter != Mod::BlockStorage.end())
+	const UuidObjMapIterator<BlockData*> v_iter = SMMod::BlockStorage.find(uuid);
+	if (v_iter != SMMod::BlockStorage.end())
 		return v_iter->second;
 
 	DebugErrorL("Couldn't find a block with the specified uuid: ", uuid.ToString());
 	return nullptr;
 }
 
-PartData* Mod::GetGlobalPart(const SMUuid& uuid)
+PartData* SMMod::GetGlobalPart(const SMUuid& uuid)
 {
-	const UuidObjMapIterator<PartData*> v_iter = Mod::PartStorage.find(uuid);
-	if (v_iter != Mod::PartStorage.end())
+	const UuidObjMapIterator<PartData*> v_iter = SMMod::PartStorage.find(uuid);
+	if (v_iter != SMMod::PartStorage.end())
 		return v_iter->second;
 
 	DebugErrorL("Couldn't find a part with the specified uuid: ", uuid.ToString());
 	return nullptr;
 }
 
-AssetData* Mod::GetGlobalAsset(const SMUuid& uuid)
+AssetData* SMMod::GetGlobalAsset(const SMUuid& uuid)
 {
-	const UuidObjMapIterator<AssetData*> v_iter = Mod::AssetStorage.find(uuid);
-	if (v_iter != Mod::AssetStorage.end())
+	const UuidObjMapIterator<AssetData*> v_iter = SMMod::AssetStorage.find(uuid);
+	if (v_iter != SMMod::AssetStorage.end())
 		return v_iter->second;
 
 	DebugErrorL("Couldn't find an asset with the specified uuid: ", uuid.ToString());
 	return nullptr;
 }
 
-HarvestableData* Mod::GetGlobalHarvestbale(const SMUuid& uuid)
+HarvestableData* SMMod::GetGlobalHarvestbale(const SMUuid& uuid)
 {
-	const UuidObjMapIterator<HarvestableData*> v_iter = Mod::HarvestableStorage.find(uuid);
-	if (v_iter != Mod::HarvestableStorage.end())
+	const UuidObjMapIterator<HarvestableData*> v_iter = SMMod::HarvestableStorage.find(uuid);
+	if (v_iter != SMMod::HarvestableStorage.end())
 		return v_iter->second;
 
 	DebugErrorL("Couldn't find a harvestable with the specified uuid: ", uuid.ToString());
 	return nullptr;
 }
 
-DecalData* Mod::GetGlobalDecal(const SMUuid& uuid)
+DecalData* SMMod::GetGlobalDecal(const SMUuid& uuid)
 {
-	const UuidObjMapIterator<DecalData*> v_iter = Mod::DecalStorage.find(uuid);
-	if (v_iter != Mod::DecalStorage.end())
+	const UuidObjMapIterator<DecalData*> v_iter = SMMod::DecalStorage.find(uuid);
+	if (v_iter != SMMod::DecalStorage.end())
 		return v_iter->second;
 
 	DebugErrorL("Couldn't find a decal with the specified uuid: ", uuid.ToString());
 	return nullptr;
 }
 
-ClutterData* Mod::GetGlobalClutter(const SMUuid& uuid)
+ClutterData* SMMod::GetGlobalClutter(const SMUuid& uuid)
 {
-	const UuidObjMapIterator<ClutterData*> v_iter = Mod::ClutterStorage.find(uuid);
-	if (v_iter != Mod::ClutterStorage.end())
+	const UuidObjMapIterator<ClutterData*> v_iter = SMMod::ClutterStorage.find(uuid);
+	if (v_iter != SMMod::ClutterStorage.end())
 		return v_iter->second;
 
 	DebugErrorL("Couldn't find clutter with the specified uuid: ", uuid.ToString());
 	return nullptr;
 }
 
-ClutterData* Mod::GetGlobalClutterById(const std::size_t& idx)
+ClutterData* SMMod::GetGlobalClutterById(const std::size_t& idx)
 {
-	if (Mod::ClutterVector.size() <= idx)
+	if (SMMod::ClutterVector.size() <= idx)
 	{
-		DebugErrorL("The clutter index is out of bounds! (Size: ", Mod::ClutterVector.size(), ", Index: ", idx, ")");
+		DebugErrorL("The clutter index is out of bounds! (Size: ", SMMod::ClutterVector.size(), ", Index: ", idx, ")");
 		return nullptr;
 	}
 
-	return Mod::ClutterVector[idx];
+	return SMMod::ClutterVector[idx];
 }
 
-using DataLoaderMap = std::unordered_map<std::string, void (*)(const simdjson::dom::element&, Mod*)>;
+using DataLoaderMap = std::unordered_map<std::string, void (*)(const simdjson::dom::element&, SMMod*)>;
 static const DataLoaderMap g_DataLoaders =
 {
 	{ "assetListRenderable", AssetListLoader::Load       },
@@ -204,7 +204,7 @@ static const DataLoaderMap g_DataLoaders =
 	{ "decalSetList",        DecalsetListReader::Load    }
 };
 
-void Mod::LoadFile(const std::wstring& path)
+void SMMod::LoadFile(const std::wstring& path)
 {
 	simdjson::dom::document v_doc;
 	if (!JsonReader::LoadParseSimdjsonCommentsC(path, v_doc, simdjson::dom::element_type::OBJECT))
@@ -236,7 +236,7 @@ inline bool IsShapeSetExtensionValid(const std::string& extension)
 	return false;
 }
 
-void Mod::ScanDatabaseFolderRecursive(const std::wstring& folder)
+void SMMod::ScanDatabaseFolderRecursive(const std::wstring& folder)
 {
 	namespace fs = std::filesystem;
 
@@ -254,7 +254,7 @@ void Mod::ScanDatabaseFolderRecursive(const std::wstring& folder)
 	}
 }
 
-void Mod::ScanDatabaseFolder(const std::wstring& folder)
+void SMMod::ScanDatabaseFolder(const std::wstring& folder)
 {
 	namespace fs = std::filesystem;
 

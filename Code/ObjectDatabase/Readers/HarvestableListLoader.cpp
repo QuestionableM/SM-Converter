@@ -8,7 +8,7 @@
 
 #pragma unmanaged
 
-void HarvestableListLoader::Load(const simdjson::dom::element& fHarvestables, Mod* mod)
+void HarvestableListLoader::Load(const simdjson::dom::element& fHarvestables, SMMod* mod)
 {
 	if (!fHarvestables.is_array()) return;
 	
@@ -23,7 +23,7 @@ void HarvestableListLoader::Load(const simdjson::dom::element& fHarvestables, Mo
 		if (!v_uuid_obj.is_string()) continue;
 
 		const SMUuid v_hvs_uuid = v_uuid_obj.get_c_str();
-		if (Mod::HarvestableStorage.find(v_hvs_uuid) != Mod::HarvestableStorage.end())
+		if (SMMod::HarvestableStorage.find(v_hvs_uuid) != SMMod::HarvestableStorage.end())
 		{
 			DebugWarningL("Harvestable with the specified uuid already exists! (", v_hvs_uuid.ToString(), ")");
 			continue;
@@ -43,7 +43,7 @@ void HarvestableListLoader::Load(const simdjson::dom::element& fHarvestables, Mo
 		const auto v_new_pair = std::make_pair(v_new_hvs->m_uuid, v_new_hvs);
 
 		mod->m_Harvestables.insert(v_new_pair);
-		Mod::HarvestableStorage.insert(v_new_pair);
+		SMMod::HarvestableStorage.insert(v_new_pair);
 
 		ProgCounter::ProgressValue++;
 	}

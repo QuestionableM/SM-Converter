@@ -21,10 +21,10 @@ void DatabaseLoader::LoadGameDatabase()
 	ProgCounter::SetState(ProgState::LoadingVanilla, 0);
 	DebugOutL(0b0010_fg, "Loading game data...");
 
-	Mod* pGameData = new GameDataMod();
+	SMMod* pGameData = new GameDataMod();
 	pGameData->LoadObjectDatabase();
 
-	Mod::ModVector.push_back(pGameData);
+	SMMod::ModVector.push_back(pGameData);
 }
 
 void DatabaseLoader::LoadModsFromPath(const std::wstring& path, const bool& is_local)
@@ -39,7 +39,7 @@ void DatabaseLoader::LoadModsFromPath(const std::wstring& path, const bool& is_l
 		if (v_errorCode || !v_curDir.is_directory())
 			continue;
 
-		Mod* v_newMod = Mod::LoadFromDescription(v_curDir.path().wstring(), is_local);
+		SMMod* v_newMod = SMMod::LoadFromDescription(v_curDir.path().wstring(), is_local);
 		if (!v_newMod) continue;
 
 		v_newMod->LoadObjectDatabase();
@@ -64,14 +64,18 @@ void DatabaseLoader::LoadModDatabase()
 
 void DatabaseLoader::LoadDatabase()
 {
-	Mod::ClearModStorage();
+	SMMod::ClearModStorage();
 
 	DatabaseLoader::LoadGameDatabase();
 	DatabaseLoader::LoadModDatabase();
 
 	KeywordReplacer::ClearContentKey();
 
-	DebugOutL(0b0101_fg, "Finished! (Blocks: ", Mod::BlockStorage.size(), ", Parts: ", Mod::PartStorage.size(), ", Harvestables: ", Mod::HarvestableStorage.size(), ", Assets: ", Mod::AssetStorage.size(), ")");
+	DebugOutL(0b0101_fg,
+		"Finished! (Blocks: ", SMMod::BlockStorage.size(),
+		", Parts: ", SMMod::PartStorage.size(),
+		", Harvestables: ", SMMod::HarvestableStorage.size(),
+		", Assets: ", SMMod::AssetStorage.size(), ")");
 }
 
 void DatabaseLoader::InitializeDatabase()

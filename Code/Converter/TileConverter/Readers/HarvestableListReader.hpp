@@ -84,7 +84,7 @@ public:
 			if (version >= 11) index += 0x4;
 			if (version >= 12) index += 0x1;
 
-			HarvestableData* hvs_data = Mod::GetGlobalHarvestbale(f_uuid);
+			HarvestableData* hvs_data = SMMod::GetGlobalHarvestbale(f_uuid);
 			if (!hvs_data) continue;
 
 			Model* hvs_model = ModelStorage::LoadModel(hvs_data->m_mesh);

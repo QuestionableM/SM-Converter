@@ -47,7 +47,7 @@ void BlockListLoader::GetBlockMaterial(const simdjson::dom::element& block, SMTe
 	}
 }
 
-void BlockListLoader::Load(const simdjson::dom::element& fBlocks, Mod* mod)
+void BlockListLoader::Load(const simdjson::dom::element& fBlocks, SMMod* mod)
 {
 	if (!fBlocks.is_array()) return;
 
@@ -65,7 +65,7 @@ void BlockListLoader::Load(const simdjson::dom::element& fBlocks, Mod* mod)
 		if (!v_uuid.is_string()) continue;
 
 		const SMUuid v_blk_uuid = v_uuid.get_c_str();
-		if (Mod::BlockStorage.find(v_blk_uuid) != Mod::BlockStorage.end())
+		if (SMMod::BlockStorage.find(v_blk_uuid) != SMMod::BlockStorage.end())
 		{
 			DebugWarningL("Block with the same uuid already exists! (", v_blk_uuid.ToString(), ")");
 			continue;
@@ -87,7 +87,7 @@ void BlockListLoader::Load(const simdjson::dom::element& fBlocks, Mod* mod)
 
 		const auto v_new_pair = std::make_pair(v_new_blk->m_uuid, v_new_blk);
 
-		Mod::BlockStorage.insert(v_new_pair);
+		SMMod::BlockStorage.insert(v_new_pair);
 		mod->m_Blocks.insert(v_new_pair);
 
 		ProgCounter::ProgressValue++;

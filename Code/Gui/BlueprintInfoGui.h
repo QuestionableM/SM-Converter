@@ -195,7 +195,7 @@ namespace SMConverter
 #pragma endregion
 
 		System::Void UpdateModList();
-		Mod* GetCurrentMod();
+		SMMod* GetCurrentMod();
 
 		System::Void ModSelector_MouseDown(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e);
 		System::Void ModList_OpenInSteamWorkshop_Click(System::Object^ sender, System::EventArgs^ e);

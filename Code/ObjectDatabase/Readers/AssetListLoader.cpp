@@ -32,7 +32,7 @@ void AssetListLoader::LoadDefaultColors(const simdjson::dom::element& jAsset, st
 	}
 }
 
-void AssetListLoader::Load(const simdjson::dom::element& fAssets, Mod* mod)
+void AssetListLoader::Load(const simdjson::dom::element& fAssets, SMMod* mod)
 {
 	if (!fAssets.is_array()) return;
 
@@ -47,7 +47,7 @@ void AssetListLoader::Load(const simdjson::dom::element& fAssets, Mod* mod)
 		if (!v_uuid.is_string()) continue;
 
 		const SMUuid v_asset_uuid = v_uuid.get_c_str();
-		if (Mod::AssetStorage.find(v_asset_uuid) != Mod::AssetStorage.end())
+		if (SMMod::AssetStorage.find(v_asset_uuid) != SMMod::AssetStorage.end())
 		{
 			DebugWarningL("Asset with the same uuid already exists! (", v_asset_uuid.ToString(), ")");
 			continue;
@@ -68,7 +68,7 @@ void AssetListLoader::Load(const simdjson::dom::element& fAssets, Mod* mod)
 		const auto v_new_pair = std::make_pair(v_new_asset->m_uuid, v_new_asset);
 
 		mod->m_Assets.insert(v_new_pair);
-		Mod::AssetStorage.insert(v_new_pair);
+		SMMod::AssetStorage.insert(v_new_pair);
 
 		ProgCounter::ProgressValue++;
 	}

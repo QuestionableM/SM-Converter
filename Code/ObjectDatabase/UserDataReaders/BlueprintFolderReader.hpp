@@ -30,11 +30,11 @@ struct BlueprintInstance
 	~BlueprintInstance() = default;
 };
 
-class Mod;
+class SMMod;
 
 struct BlueprintModStats
 {
-	Mod* mod;
+	SMMod* mod;
 	std::size_t part_count;
 };
 
@@ -51,7 +51,7 @@ public:
 	static std::vector<BlueprintInstance*>& GetCurrentStorage();
 	static void FilterStorage();
 
-	static void IncrementUsageCounter(const SMUuid& uuid, class Mod* v_mod, std::unordered_map<SMUuid, BlueprintModStats>& v_mod_storage);
+	static void IncrementUsageCounter(const SMUuid& uuid, SMMod* v_mod, std::unordered_map<SMUuid, BlueprintModStats>& v_mod_storage);
 	static void GetBlueprintData(BlueprintInstance* v_bp_instance,
 		std::unordered_map<SMUuid, BlueprintModStats>& v_mod_storage, std::size_t& v_part_count);
 
