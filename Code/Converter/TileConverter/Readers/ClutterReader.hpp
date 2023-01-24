@@ -38,9 +38,9 @@ public:
 
 		const int debugSize = Lz4::DecompressFast(reinterpret_cast<const char*>(compressed.data()),
 			reinterpret_cast<char*>(bytes.data()), header->clutterSize);
-		DebugOutL("DebugSize: ", debugSize, ", ClutterCompressedSize: ", header->clutterCompressedSize);
 		if (debugSize != header->clutterCompressedSize)
 		{
+			DebugErrorL("DebugSize: ", debugSize, ", header->clutterCompressedSize: ", header->clutterCompressedSize);
 			cError = ConvertError(1, L"ClutterReader::Read -> debugSize != header->clutterCompressedSize");
 			return {};
 		}

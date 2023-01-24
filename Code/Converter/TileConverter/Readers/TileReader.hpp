@@ -132,17 +132,20 @@ public:
 					CellHeader* h  = header->GetHeader(x, y);
 					TilePart* part = tile->GetPart(x, y);
 
-					if (header->m_data.type == 0)
+					if constexpr (!t_mod_counter) //mod counter doesn't need any information about the clutter, so it is skipped to improve performance
 					{
-						MipReader::Read    (h, reader, part, cError);
-						ClutterReader::Read(h, reader, part, cError);
+						if (header->m_data.type == 0)
+						{
+							MipReader::Read(h, reader, part, cError);
+							ClutterReader::Read(h, reader, part, cError);
+						}
 					}
 				
-					AssetListReader::Read<t_mod_counter>(h, reader, part, cError);
-					PrefabReader::Read         (h, reader, part, cError);
-					BlueprintListReader::Read  (h, reader, part, cError);
-					HarvestableListReader::Read(h, reader, part, cError);
-					DecalListReader::Read      (h, reader, part, cError);
+					AssetListReader::Read<t_mod_counter>      (h, reader, part, cError);
+					PrefabReader::Read<t_mod_counter>         (h, reader, part, cError);
+					BlueprintListReader::Read<t_mod_counter>  (h, reader, part, cError);
+					HarvestableListReader::Read<t_mod_counter>(h, reader, part, cError);
+					DecalListReader::Read<t_mod_counter>      (h, reader, part, cError);
 				}
 			}
 		}

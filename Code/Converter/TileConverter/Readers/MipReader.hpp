@@ -39,9 +39,9 @@ public:
 
 		const int debugSize = Lz4::DecompressFast(reinterpret_cast<const char*>(compressed.data()),
 			reinterpret_cast<char*>(decompressed_bytes.data()), header->mipSize[mipOrLevel]);
-		DebugOutL(0b0111_fg, "Debug Size: ", debugSize, ", Compressed size: ", header->mipCompressedSize[mipOrLevel]);
 		if (debugSize != header->mipCompressedSize[mipOrLevel])
 		{
+			DebugErrorL("Debug Size: ", debugSize, ", header->mipCompressedSize[mipOrLevel]: ", header->mipCompressedSize[mipOrLevel]);
 			cError = ConvertError(1, L"MipReader::Read -> debugSize != header->mipCompressedSize[mipOrLevel]");
 			return {};
 		}

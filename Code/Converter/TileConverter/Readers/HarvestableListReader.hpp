@@ -8,6 +8,7 @@
 #include "Converter\TileConverter\TilePart.hpp"
 #include "Converter\TileConverter\Tile.hpp"
 
+#include "ObjectDatabase\UserDataReaders\ItemModCounter.hpp"
 #include "ObjectDatabase\Mods\Mod.hpp"
 
 #include "Utils\Console.hpp"
@@ -21,9 +22,14 @@ class HarvestableListReader
 	HarvestableListReader() = default;
 
 public:
+	template<bool t_mod_counter>
 	static void Read(CellHeader* header, MemoryWrapper& reader, TilePart* part, ConvertError& cError)
 	{
-		if (cError || !TileConverterSettings::ExportHarvestables) return;
+		if (cError) return;
+
+		if constexpr (!t_mod_counter) {
+			if (!TileConverterSettings::ExportHarvestables) return;
+		}
 
 		for (int a = 0; a < 4; a++)
 		{
@@ -51,7 +57,7 @@ public:
 				return;
 			}
 
-			debugSize = HarvestableListReader::Read(bytes, a, header->harvestableListCount[a], v_tile_version, part);
+			debugSize = HarvestableListReader::Read<t_mod_counter>(bytes, a, header->harvestableListCount[a], v_tile_version, part);
 			if (debugSize != header->harvestableListSize[a])
 			{
 				DebugErrorL("debugSize: ", debugSize, ", header->harvestableListSize[", a, "]: ", header->harvestableListSize[a]);
@@ -61,6 +67,7 @@ public:
 		}
 	}
 
+	template<bool t_mod_counter>
 	static int Read(const std::vector<Byte>& bytes, const int& hvs_index, const int& len, const int& version, TilePart* part)
 	{
 		MemoryWrapper memory(bytes);
@@ -85,17 +92,25 @@ public:
 			if (version >= 12) index += 0x1;
 
 			HarvestableData* hvs_data = SMMod::GetGlobalHarvestbale(f_uuid);
-			if (!hvs_data) continue;
 
-			Model* hvs_model = ModelStorage::LoadModel(hvs_data->m_mesh);
-			if (!hvs_model) continue;
+			if constexpr (t_mod_counter)
+			{
+				ItemModStats::IncrementModPart((hvs_data != nullptr) ? hvs_data->m_mod : nullptr);
+			}
+			else
+			{
+				if (!hvs_data) continue;
 
-			SMHarvestable* pNewHvs = new SMHarvestable(hvs_data, hvs_model, f_color);
-			pNewHvs->SetPosition(f_pos);
-			pNewHvs->SetRotation(f_quat);
-			pNewHvs->SetSize(f_size);
+				Model* hvs_model = ModelStorage::LoadModel(hvs_data->m_mesh);
+				if (!hvs_model) continue;
 
-			part->AddObject(pNewHvs, hvs_index);
+				SMHarvestable* pNewHvs = new SMHarvestable(hvs_data, hvs_model, f_color);
+				pNewHvs->SetPosition(f_pos);
+				pNewHvs->SetRotation(f_quat);
+				pNewHvs->SetSize(f_size);
+
+				part->AddObject(pNewHvs, hvs_index);
+			}
 		}
 
 		return index;

@@ -22,7 +22,11 @@ public:
 	template<bool t_mod_counter>
 	static void Read(CellHeader* header, MemoryWrapper& reader, TilePart* part, ConvertError& cError)
 	{
-		if (cError || !TileConverterSettings::ExportAssets) return;
+		if (cError) return;
+
+		if constexpr (!t_mod_counter) {
+			if (!TileConverterSettings::ExportAssets) return;
+		}
 
 		const int v_tile_version = part->GetParent()->GetVersion();
 
@@ -31,31 +35,32 @@ public:
 			const int assetListCompressedSize = header->assetListCompressedSize[a];
 			const int assetListSize = header->assetListSize[a];
 
-			if (header->assetListCount[a] != 0)
+			if (header->assetListCount[a] == 0)
+				continue;
+			
+			DebugOutL("Asset[", a, "]: ", header->assetListSize[a], ", ", header->assetListCompressedSize[a]);
+			const int assetListIndex = header->assetListIndex[a];
+
+			const std::vector<Byte> compressed = reader.Objects<Byte>(assetListIndex, assetListCompressedSize);
+
+			std::vector<Byte> bytes = {};
+			bytes.resize(assetListSize);
+
+			int debugSize = Lz4::DecompressFast(reinterpret_cast<const char*>(compressed.data()),
+				reinterpret_cast<char*>(bytes.data()), assetListSize);
+			if (debugSize != assetListCompressedSize)
 			{
-				DebugOutL("Asset[", a, "]: ", header->assetListSize[a], ", ", header->assetListCompressedSize[a]);
-				const int assetListIndex = header->assetListIndex[a];
+				DebugErrorL("Debug Size:", debugSize, ", assetListCompressedSize: ", assetListCompressedSize);
+				cError = ConvertError(1, L"AssetListReader::Read -> debugSize != assetListCompressedSize\nTile Version: " + std::to_wstring(v_tile_version));
+				return;
+			}
 
-				const std::vector<Byte> compressed = reader.Objects<Byte>(assetListIndex, assetListCompressedSize);
-
-				std::vector<Byte> bytes = {};
-				bytes.resize(assetListSize);
-
-				int debugSize = Lz4::DecompressFast(reinterpret_cast<const char*>(compressed.data()),
-					reinterpret_cast<char*>(bytes.data()), assetListSize);
-				if (debugSize != assetListCompressedSize)
-				{
-					cError = ConvertError(1, L"AssetListReader::Read -> debugSize != assetListCompressedSize\nTile Version: " + std::to_wstring(v_tile_version));
-					return;
-				}
-
-				debugSize = AssetListReader::Read<t_mod_counter>(bytes, a, header->assetListCount[a], v_tile_version, part);
-				DebugOutL(0b0111_fg, "Debug Size: ", debugSize, ", AssetListSize: ", assetListSize);
-				if (debugSize != assetListSize)
-				{
-					cError = ConvertError(1, L"AssetListReader::Read -> debugSize != assetListSize\nTile Version: " + std::to_wstring(v_tile_version));
-					return;
-				}
+			debugSize = AssetListReader::Read<t_mod_counter>(bytes, a, header->assetListCount[a], v_tile_version, part);
+			if (debugSize != assetListSize)
+			{
+				DebugErrorL("Debug Size: ", debugSize, ", assetListSize: ", assetListSize);
+				cError = ConvertError(1, L"AssetListReader::Read -> debugSize != assetListSize\nTile Version: " + std::to_wstring(v_tile_version));
+				return;
 			}
 		}
 	}
@@ -134,7 +139,7 @@ public:
 
 			if constexpr (t_mod_counter)
 			{
-				ItemModStats::IncrementModPart(asset_data->m_mod);
+				ItemModStats::IncrementModPart((asset_data != nullptr) ? asset_data->m_mod : nullptr);
 			}
 			else
 			{

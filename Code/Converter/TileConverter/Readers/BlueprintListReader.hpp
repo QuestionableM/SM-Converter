@@ -14,9 +14,15 @@ class BlueprintListReader
 	BlueprintListReader() = default;
 
 public:
+	template<bool t_mod_counter>
 	static void Read(CellHeader* header, MemoryWrapper& reader, TilePart* part, ConvertError& cError)
 	{
-		if (cError || !TileConverterSettings::ExportBlueprints) return;
+		if (cError) return;
+
+		if constexpr (!t_mod_counter) {
+			if (!TileConverterSettings::ExportBlueprints) return;
+		}
+
 		if (header->blueprintListCount == 0 || header->blueprintListIndex == 0) return;
 
 		DebugOutL("BlueprintList: ", header->blueprintListSize, " / ", header->blueprintListCompressedSize);
@@ -31,18 +37,21 @@ public:
 			reinterpret_cast<char*>(bytes.data()), header->blueprintListSize);
 		if (debugSize != header->blueprintListCompressedSize)
 		{
+			DebugErrorL("DebugSize: ", debugSize, ", header->blueprintListCompressedSize: ", header->blueprintListCompressedSize);
 			cError = ConvertError(1, L"BlueprintListReader::Read -> debugSize != header->blueprintListCompressedSize\nTile Version: " + std::to_wstring(v_tile_version));
 			return;
 		}
 
-		debugSize = BlueprintListReader::Read(bytes, header->blueprintListCount, part);
+		debugSize = BlueprintListReader::Read<t_mod_counter>(bytes, header->blueprintListCount, part);
 		if (debugSize != header->blueprintListSize)
 		{
+			DebugErrorL("DebugSize: ", debugSize, ", header->blueprintListSize: ", header->blueprintListSize);
 			cError = ConvertError(1, L"BlueprintListReader::Read -> debugSize != header->blueprintListSize\nTile Version: " + std::to_wstring(v_tile_version));
 			return;
 		}
 	}
 
+	template<bool t_mod_counter>
 	static int Read(const std::vector<Byte>& bytes, const int& count, TilePart* part)
 	{
 		const int version = part->GetParent()->GetVersion();
@@ -83,13 +92,20 @@ public:
 				index++;
 			}
 
-			SMBlueprint* pNewBlueprint = SMBlueprint::LoadAutomatic(value);
-			if (!pNewBlueprint) continue;
+			if constexpr (t_mod_counter)
+			{
+				SMBlueprint::LoadAndCountAutomatic(value);
+			}
+			else
+			{
+				SMBlueprint* pNewBlueprint = SMBlueprint::LoadAutomatic(value);
+				if (!pNewBlueprint) continue;
 
-			pNewBlueprint->SetPosition(f_pos);
-			pNewBlueprint->SetRotation(f_quat);
+				pNewBlueprint->SetPosition(f_pos);
+				pNewBlueprint->SetRotation(f_quat);
 
-			part->AddObject(pNewBlueprint);
+				part->AddObject(pNewBlueprint);
+			}
 		}
 
 		return index;

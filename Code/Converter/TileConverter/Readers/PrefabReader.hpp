@@ -18,9 +18,15 @@ class PrefabReader
 	PrefabReader() = default;
 
 public:
+	template<bool t_mod_counter>
 	static void Read(CellHeader* header, MemoryWrapper& reader, TilePart* part, ConvertError& cError)
 	{
-		if (cError || !TileConverterSettings::ExportPrefabs) return;
+		if (cError) return;
+
+		if constexpr (!t_mod_counter) {
+			if (!TileConverterSettings::ExportPrefabs) return;
+		}
+
 		if (header->prefabCount == 0 || header->prefabIndex == 0) return;
 
 		DebugOutL("Prefab: ", header->prefabSize, " / ", header->prefabCompressedSize);
@@ -36,18 +42,21 @@ public:
 			reinterpret_cast<char*>(bytes.data()), header->prefabSize);
 		if (debugSize != header->prefabCompressedSize)
 		{
+			DebugErrorL("DebugSize: ", debugSize, ", header->prefabCompressedSize: ", header->prefabCompressedSize);
 			cError = ConvertError(1, L"PrefabReader::Read -> debugSize != header->prefabCompressedSize\nTile Version: " + std::to_wstring(v_tile_version));
 			return;
 		}
 
-		debugSize = PrefabReader::Read(bytes, header->prefabCount, part, cError);
+		debugSize = PrefabReader::Read<t_mod_counter>(bytes, header->prefabCount, part, cError);
 		if (debugSize != header->prefabSize)
 		{
+			DebugErrorL("DebugSize: ", debugSize, ", header->prefabSize: ", header->prefabSize);
 			cError = ConvertError(1, L"PrefabReader::Read -> debugSize != header->prefabSize\nTile Version: " + std::to_wstring(v_tile_version));
 			return;
 		}
 	}
 
+	template<bool t_mod_counter>
 	static int Read(const std::vector<Byte>& bytes, const int& prefabCount, TilePart* part, ConvertError& cError)
 	{
 		int index = 0;
@@ -88,14 +97,17 @@ public:
 			const std::wstring pref_flag = String::ToWide(std::string(flag.begin(), flag.end()));
 			DebugOutL("Prefab Path: ", pref_path);
 
-			SMPrefab* pNewPrefab = PrefabFileReader::Read(pref_path, pref_flag);
-			if (!pNewPrefab) continue;
+			SMPrefab* v_new_prefab = PrefabFileReader::Read<t_mod_counter>(pref_path, pref_flag);
+			if constexpr (!t_mod_counter)
+			{
+				if (!v_new_prefab) continue;
 
-			pNewPrefab->SetPosition(f_pos);
-			pNewPrefab->SetRotation(f_quat);
-			pNewPrefab->SetSize(f_size);
+				v_new_prefab->SetPosition(f_pos);
+				v_new_prefab->SetRotation(f_quat);
+				v_new_prefab->SetSize(f_size);
 
-			part->AddObject(pNewPrefab);
+				part->AddObject(v_new_prefab);
+			}
 		}
 
 		return index;

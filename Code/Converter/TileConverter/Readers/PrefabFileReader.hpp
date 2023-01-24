@@ -24,6 +24,7 @@ class PrefabFileReader
 	PrefabFileReader() = default;
 
 public:
+	template<bool t_mod_counter>
 	static SMPrefab* Read(const std::wstring& path, const std::wstring& flag)
 	{
 		std::vector<Byte> bytes = File::ReadFileBytes(path);
@@ -34,9 +35,10 @@ public:
 			return nullptr;
 		}
 
-		return PrefabFileReader::Read(bytes, path, flag);
+		return PrefabFileReader::Read<t_mod_counter>(bytes, path, flag);
 	}
 
+	template<bool t_mod_counter>
 	static SMPrefab* Read(const std::vector<Byte>& bytes, const std::wstring& ppath, const std::wstring& pflag)
 	{
 		MemoryWrapper reader(bytes);
@@ -49,7 +51,10 @@ public:
 			return nullptr;
 		}
 
-		SMPrefab* prefab = new SMPrefab(ppath, pflag);
+		SMPrefab* prefab = nullptr;
+		if constexpr (!t_mod_counter) {
+			prefab = new SMPrefab(ppath, pflag);
+		}
 		
 		const int version = reader.NextObject<int, true>();
 		DebugOutL("Prefab Version: ", version);
@@ -61,12 +66,12 @@ public:
 
 		if (pHeader.hasBlueprints != 0)
 		{
-			PrefabFileReader::ReadBlueprints(stream, prefab, pHeader.blueprintCount);
+			PrefabFileReader::ReadBlueprints<t_mod_counter>(stream, prefab, pHeader.blueprintCount);
 		}
 
 		if (pHeader.hasPrefabs != 0)
 		{
-			PrefabFileReader::ReadPrefabs(stream, prefab, pHeader.prefabCount, version);
+			PrefabFileReader::ReadPrefabs<t_mod_counter>(stream, prefab, pHeader.prefabCount, version);
 		}
 
 		if (pHeader.hasNodes != 0)
@@ -76,12 +81,12 @@ public:
 
 		if (pHeader.hasAssets != 0)
 		{
-			PrefabFileReader::ReadAssets(stream, prefab, pHeader.assetCount);
+			PrefabFileReader::ReadAssets<t_mod_counter>(stream, prefab, pHeader.assetCount);
 		}
 
 		if (pHeader.hasDecals != 0)
 		{
-			PrefabFileReader::ReadDecals(stream, prefab, pHeader.decalsCount, version);
+			PrefabFileReader::ReadDecals<t_mod_counter>(stream, prefab, pHeader.decalsCount, version);
 		}
 
 		if (pHeader.has_0x5c != 0)
@@ -102,6 +107,7 @@ public:
 		return prefab;
 	}
 
+	template<bool t_mod_counter>
 	static void ReadBlueprints(BitStream& stream, SMPrefab* prefab, const int& count)
 	{
 		for (int a = 0; a < count; a++)
@@ -114,19 +120,27 @@ public:
 
 			stream.ReadInt();
 
-			if (TileConverterSettings::ExportBlueprints)
+			if constexpr (t_mod_counter)
 			{
-				SMBlueprint* blueprint = SMBlueprint::LoadAutomatic(value);
-				if (!blueprint) continue;
+				SMBlueprint::LoadAndCountAutomatic(value);
+			}
+			else
+			{
+				if (TileConverterSettings::ExportBlueprints)
+				{
+					SMBlueprint* blueprint = SMBlueprint::LoadAutomatic(value);
+					if (!blueprint) continue;
 
-				blueprint->SetPosition(f_pos);
-				blueprint->SetRotation(f_quat);
+					blueprint->SetPosition(f_pos);
+					blueprint->SetRotation(f_quat);
 
-				prefab->AddObject(blueprint);
+					prefab->AddObject(blueprint);
+				}
 			}
 		}
 	}
 
+	template<bool t_mod_counter>
 	static void ReadPrefabs(BitStream& stream, SMPrefab* prefab, const int& count, const int& version)
 	{
 		for (int a = 0; a < count; a++)
@@ -152,16 +166,23 @@ public:
 			stream.ReadInt();
 			stream.ReadInt();
 
-			if (TileConverterSettings::ExportPrefabs)
+			if constexpr (t_mod_counter)
 			{
-				SMPrefab* rec_prefab = PrefabFileReader::Read(l_PrefFullPath, L"");
-				if (!rec_prefab) continue;
+				PrefabFileReader::Read<t_mod_counter>(l_PrefFullPath, L"");
+			}
+			else
+			{
+				if (TileConverterSettings::ExportPrefabs)
+				{
+					SMPrefab* rec_prefab = PrefabFileReader::Read<t_mod_counter>(l_PrefFullPath, L"");
+					if (!rec_prefab) continue;
 
-				rec_prefab->SetPosition(f_pos);
-				rec_prefab->SetRotation(f_quat);
-				rec_prefab->SetSize(f_size);
+					rec_prefab->SetPosition(f_pos);
+					rec_prefab->SetRotation(f_quat);
+					rec_prefab->SetSize(f_size);
 
-				prefab->AddObject(rec_prefab);
+					prefab->AddObject(rec_prefab);
+				}
 			}
 		}
 	}
@@ -217,6 +238,7 @@ public:
 		}
 	}
 
+	template<bool t_mod_counter>
 	static void ReadAssets(BitStream& stream, SMPrefab* prefab, const int& count)
 	{
 		for (int a = 0; a < count; a++)
@@ -244,24 +266,33 @@ public:
 				}
 			}
 
-			if (TileConverterSettings::ExportAssets)
+			if constexpr (t_mod_counter)
 			{
-				AssetData* asset_data = SMMod::GetGlobalAsset(uuid);
-				if (!asset_data) continue;
+				AssetData* v_asset_data = SMMod::GetGlobalAsset(uuid);
+				ItemModStats::IncrementModPart((v_asset_data != nullptr) ? v_asset_data->m_mod : nullptr);
+			}
+			else
+			{
+				if (TileConverterSettings::ExportAssets)
+				{
+					AssetData* asset_data = SMMod::GetGlobalAsset(uuid);
+					if (!asset_data) continue;
 
-				Model* pModel = ModelStorage::LoadModel(asset_data->m_mesh);
-				if (!pModel) continue;
+					Model* pModel = ModelStorage::LoadModel(asset_data->m_mesh);
+					if (!pModel) continue;
 
-				SMAsset* nAsset = new SMAsset(asset_data, pModel, color_map);
-				nAsset->SetPosition(f_pos);
-				nAsset->SetRotation(f_quat);
-				nAsset->SetSize(f_size);
+					SMAsset* nAsset = new SMAsset(asset_data, pModel, color_map);
+					nAsset->SetPosition(f_pos);
+					nAsset->SetRotation(f_quat);
+					nAsset->SetSize(f_size);
 
-				prefab->AddObject(nAsset);
+					prefab->AddObject(nAsset);
+				}
 			}
 		}
 	}
 
+	template<bool t_mod_counter>
 	static void ReadDecals(BitStream& stream, SMPrefab* prefab, const int& count, const int& version)
 	{
 		DebugOutL("Reading ", count, " decals...");
@@ -278,17 +309,25 @@ public:
 			//Read a random 4 byte value
 			stream.ReadInt();
 
-			if (TileConverterSettings::ExportDecals)
+			if constexpr (t_mod_counter)
 			{
-				const DecalData* v_decalData = SMMod::GetGlobalDecal(v_uuid);
-				if (!v_decalData) continue;
+				const DecalData* v_decal_data = SMMod::GetGlobalDecal(v_uuid);
+				ItemModStats::IncrementModPart((v_decal_data != nullptr) ? v_decal_data->m_mod : nullptr);
+			}
+			else
+			{
+				if (TileConverterSettings::ExportDecals)
+				{
+					const DecalData* v_decalData = SMMod::GetGlobalDecal(v_uuid);
+					if (!v_decalData) continue;
 
-				SMDecal* v_newDecal = new SMDecal(v_decalData, v_color);
-				v_newDecal->SetPosition(v_pos);
-				v_newDecal->SetRotation(v_quat);
-				v_newDecal->SetSize(v_size);
+					SMDecal* v_newDecal = new SMDecal(v_decalData, v_color);
+					v_newDecal->SetPosition(v_pos);
+					v_newDecal->SetRotation(v_quat);
+					v_newDecal->SetSize(v_size);
 
-				prefab->AddObject(v_newDecal);
+					prefab->AddObject(v_newDecal);
+				}
 			}
 		}
 	}

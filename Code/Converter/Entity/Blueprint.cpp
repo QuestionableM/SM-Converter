@@ -1,5 +1,6 @@
 #include "Blueprint.hpp"
 
+#include "ObjectDatabase\UserDataReaders\ItemModCounter.hpp"
 #include "ObjectDatabase\KeywordReplacer.hpp"
 #include "ObjectDatabase\ObjectRotations.hpp"
 #include "ObjectDatabase\ProgCounter.hpp"
@@ -12,30 +13,105 @@
 
 #pragma unmanaged
 
-static const std::string bp_secret = "?JB:";
+void SMBlueprint::LoadAndCountAutomatic(const std::string& str)
+{
+	const std::size_t v_secret_idx = str.find("?JB:");
+	if (v_secret_idx != std::string::npos)
+	{
+		const std::string v_bp_str = str.substr(v_secret_idx + 4);
+
+		DebugOutL(0b0101_fg, "CountingBlueprintJsonString: ", v_bp_str);
+
+		SMBlueprint::CountFromJsonString(v_bp_str);
+		return;
+	}
+
+	const std::wstring v_wide_str = String::ToWide(str);
+	const std::wstring v_bp_path = KeywordReplacer::ReplaceKey(v_wide_str);
+
+	DebugOutL(0b0011_fg, "CountingBlueprintPath: ", v_bp_path);
+
+	SMBlueprint::CountFromFile(v_bp_path);
+}
+
+void SMBlueprint::CountFromFile(const std::wstring& path)
+{
+	std::string v_file_str;
+	if (!File::ReadToString(path, v_file_str))
+	{
+		DebugErrorL("Couldn't count the specified blueprint: ", path);
+		return;
+	}
+
+	return SMBlueprint::CountFromJsonString(v_file_str);
+}
+
+void SMBlueprint::CountFromJsonString(const std::string& str)
+{
+	simdjson::dom::document v_bp_doc;
+	if (!JsonReader::ParseSimdjsonString(str, v_bp_doc))
+		return;
+
+	const auto v_root = v_bp_doc.root();
+	if (!v_root.is_object()) return;
+
+	const auto v_bodies_obj = v_root["bodies"];
+	if (v_bodies_obj.is_array())
+	{
+		for (const auto v_body : v_bodies_obj.get_array())
+		{
+			const auto v_childs_obj = v_body["childs"];
+			if (!v_childs_obj.is_array()) continue;
+
+			for (const auto v_child : v_childs_obj.get_array())
+			{
+				if (!v_child.is_object()) continue;
+
+				const auto v_uuid_obj = v_child["shapeId"];
+				if (!v_uuid_obj.is_string()) continue;
+
+				const SMUuid v_uuid = v_uuid_obj.get_c_str().value_unsafe();
+				SMMod* v_cur_mod = SMMod::GetModFromBlocksAndParts(v_uuid);
+				ItemModStats::IncrementModPart(v_cur_mod);
+			}
+		}
+	}
+
+	const auto v_joints_obj = v_root["joints"];
+	if (v_joints_obj.is_array())
+	{
+		for (const auto v_joint : v_joints_obj.get_array())
+		{
+			if (!v_joint.is_object()) continue;
+
+			const auto v_uuid_obj = v_joint["shapeId"];
+			if (!v_uuid_obj.is_string()) continue;
+
+			const SMUuid v_uuid = v_uuid_obj.get_c_str().value_unsafe();
+			SMMod* v_cur_mod = SMMod::GetModFromBlocksAndParts<false>(v_uuid);
+			ItemModStats::IncrementModPart(v_cur_mod);
+		}
+	}
+}
 
 SMBlueprint* SMBlueprint::LoadAutomatic(const std::string& str)
 {
-	const std::size_t secret_idx = str.find(bp_secret);
+	const std::size_t secret_idx = str.find("?JB:");
 	if (secret_idx != std::string::npos)
 	{
-		const std::string bp_str = str.substr(secret_idx + bp_secret.size());
+		const std::string bp_str = str.substr(secret_idx + 4);
 
 		DebugOutL(0b0101_fg, "LoadingBlueprintJsonString: ", bp_str);
 
 		return SMBlueprint::FromJsonString(bp_str);
 	}
-	else
-	{
-		const std::wstring wide_str = String::ToWide(str);
-		const std::wstring bp_path = KeywordReplacer::ReplaceKey(wide_str);
 
-		DebugOutL(0b0011_fg, "LoadingBlueprintPath: ", bp_path);
+	const std::wstring wide_str = String::ToWide(str);
+	const std::wstring bp_path = KeywordReplacer::ReplaceKey(wide_str);
 
-		return SMBlueprint::FromFile(bp_path);
-	}
+	DebugOutL(0b0011_fg, "LoadingBlueprintPath: ", bp_path);
 
-	return nullptr;
+	return SMBlueprint::FromFile(bp_path);
 }
 
 SMBlueprint* SMBlueprint::FromFile(const std::wstring& path)

@@ -22,6 +22,12 @@ class SMBlueprint : public SMEntity
 public:
 	using AddObjectFunction = void (*)(SMBlueprint*, SMEntity*);
 
+	//For object counter
+	static void LoadAndCountAutomatic(const std::string& str);
+	static void CountFromFile(const std::wstring& path);
+	static void CountFromJsonString(const std::string& str);
+
+	//For object loader
 	static SMBlueprint* LoadAutomatic(const std::string& str);
 	static SMBlueprint* FromFile(const std::wstring& path);
 	//Used by blueprint converter as it reports the conversion status
