@@ -174,6 +174,7 @@ namespace SMConverter
 			this->m_lb_pathList->ContextMenuStrip = this->m_cms_pathListMenu;
 			this->m_lb_pathList->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
 			this->m_lb_pathList->FormattingEnabled = true;
+			this->m_lb_pathList->HorizontalScrollbar = true;
 			this->m_lb_pathList->IntegralHeight = false;
 			this->m_lb_pathList->ItemHeight = 16;
 			this->m_lb_pathList->Location = System::Drawing::Point(6, 34);
