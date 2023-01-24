@@ -31,50 +31,6 @@ void BlueprintFolderReader::FilterStorage()
 			BlueprintFolderReader::FilteredStorage.push_back(v_bp_instance);
 }
 
-void BlueprintFolderReader::GetBlueprintData(BlueprintInstance* v_bp_instance)
-{
-	simdjson::dom::document v_doc;
-	if (!JsonReader::LoadParseSimdjsonC(v_bp_instance->path, v_doc, simdjson::dom::element_type::OBJECT))
-		return;
-
-	const auto v_root = v_doc.root();
-	SMUuid v_null_uuid;
-
-	const auto v_body_obj = v_root["bodies"];
-	if (v_body_obj.is_array())
-	{
-		for (const auto v_body : v_body_obj.get_array())
-		{
-			const auto v_childs_obj = v_body["childs"];
-			if (!v_childs_obj.is_array()) continue;
-
-			for (const auto v_child : v_childs_obj.get_array())
-			{
-				const auto v_uuid_obj = v_child["shapeId"];
-				if (!v_uuid_obj.is_string()) continue;
-
-				const SMUuid v_uuid = v_uuid_obj.get_c_str().value_unsafe();
-				SMMod* v_cur_mod = SMMod::GetModFromBlocksAndParts(v_uuid);
-				ItemModStats::IncrementModPart(v_cur_mod);
-			}
-		}
-	}
-
-	const auto v_joint_obj = v_root["joints"];
-	if (v_joint_obj.is_array())
-	{
-		for (const auto v_joint : v_joint_obj.get_array())
-		{
-			const auto v_uuid_obj = v_joint["shapeId"];
-			if (!v_uuid_obj.is_string()) continue;
-
-			const SMUuid v_uuid = v_uuid_obj.get_c_str().value_unsafe();
-			SMMod* v_cur_mod = SMMod::GetModFromBlocksAndParts<false>(v_uuid);
-			ItemModStats::IncrementModPart(v_cur_mod);
-		}
-	}
-}
-
 void BlueprintFolderReader::ReadBlueprintFromFile(const std::filesystem::path& path)
 {
 	if (!(path.has_stem() && path.has_parent_path()))

@@ -7,6 +7,7 @@
 #include "ObjectDatabase\DatabaseConfig.hpp"
 #include "ObjectDatabase\Mods\Mod.hpp"
 
+#include "Converter\Entity\Blueprint.hpp"
 #include "Utils\Console.hpp"
 #include "Utils\File.hpp"
 
@@ -29,7 +30,7 @@ namespace SMConverter
 		if (!v_bp_preview.empty() && File::Exists(v_bp_preview))
 			m_bp_blueprintPreview->ImageLocation = gcnew System::String(v_bp_preview.c_str());
 
-		BlueprintFolderReader::GetBlueprintData(v_blueprint);
+		SMBlueprint::CountFromFile(v_blueprint->path);
 
 		m_lbl_line4->Text = gcnew System::String(("Part Count: " + std::to_string(ItemModStats::GetTotalPartCount())).c_str());
 		m_lbl_line5->Text = gcnew System::String(("Mod Count: " + std::to_string(ItemModStats::ModStorage.size())).c_str());

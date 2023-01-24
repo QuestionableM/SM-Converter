@@ -43,8 +43,6 @@ public:
 	static std::vector<BlueprintInstance*>& GetCurrentStorage();
 	static void FilterStorage();
 
-	static void GetBlueprintData(BlueprintInstance* v_bp_instance);
-
 	static void ReadBlueprintFromFile(const std::filesystem::path& path);
 	static void ReadBlueprintFromFolder(const std::wstring& folder);
 	static void ReadBlueprintsFromFolder(const std::wstring& path);
