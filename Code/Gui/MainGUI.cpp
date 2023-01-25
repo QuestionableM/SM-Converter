@@ -20,6 +20,8 @@
 
 #include "UStd\UnmanagedFilesystem.hpp"
 
+#include "Converter\TileConverter\Readers\TileReader.hpp"
+
 #include "Utils\WinInclude.hpp"
 #include "Utils\Console.hpp"
 #include "Utils\String.hpp"
@@ -219,7 +221,7 @@ namespace SMConverter
 		for (const TileInstance* v_tile_instance : TileFolderReader::Storage)
 		{
 			ConvertError v_error;
-			Tile* v_cur_tile = TileReader::ReadTile(v_tile_instance->path, v_error);
+			Tile* v_cur_tile = TileReader::ReadTile<true>(v_tile_instance->path, v_error);
 			if (v_cur_tile)
 				delete v_cur_tile;
 
@@ -1084,6 +1086,7 @@ namespace SMConverter
 		if (!v_cur_tile) return;
 
 		ItemInfoGui^ v_tile_info_gui = gcnew ItemInfoGui(v_cur_tile);
-		v_tile_info_gui->ShowDialog();
+		if (v_tile_info_gui->m_isSuccess)
+			v_tile_info_gui->ShowDialog();
 	}
 }

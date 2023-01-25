@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Converter\TileConverter\CellHeader.hpp"
-#include "Converter\EmptyConverterClass.hpp"
 #include "Converter\TileConverter\Tile.hpp"
 #include "Converter\Entity\Asset.hpp"
 
@@ -117,10 +116,9 @@ public:
 				for (int j = 0; j < length; j++)
 				{
 					bVar4 = (int)memory.Object<Byte>(index++) & 0xff;
-					const std::vector<char> str_vec = memory.Objects<char>(index, bVar4);
-
-					const std::string v_str_data = std::string(str_vec.begin(), str_vec.end());
+					const std::string v_str_data = memory.String(index, bVar4);
 					index += bVar4;
+
 					const unsigned int color = memory.Object<unsigned int>(index);
 					index += 4;
 

@@ -18,6 +18,8 @@ namespace SMConverter
 		ItemInfoGui(BlueprintInstance* v_blueprint);
 		ItemInfoGui(TileInstance* v_tile);
 
+		bool m_isSuccess = true;
+
 	protected:
 		~ItemInfoGui();
 
@@ -35,6 +37,7 @@ namespace SMConverter
 		System::Windows::Forms::Label^ m_lbl_line4;
 		System::Windows::Forms::Label^ m_lbl_line5;
 		System::Windows::Forms::Label^ m_lbl_line6;
+		System::Windows::Forms::Label^ m_lbl_noItems;
 
 		System::ComponentModel::IContainer^ components;
 
@@ -54,6 +57,7 @@ namespace SMConverter
 			this->m_lbl_line4 = (gcnew System::Windows::Forms::Label());
 			this->m_lbl_line5 = (gcnew System::Windows::Forms::Label());
 			this->m_lbl_line6 = (gcnew System::Windows::Forms::Label());
+			this->m_lbl_noItems = (gcnew System::Windows::Forms::Label());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->m_bp_blueprintPreview))->BeginInit();
 			this->m_cms_modOptions->SuspendLayout();
 			this->SuspendLayout();
@@ -82,6 +86,7 @@ namespace SMConverter
 			this->m_lb_modSelector->Name = L"m_lb_modSelector";
 			this->m_lb_modSelector->Size = System::Drawing::Size(410, 120);
 			this->m_lb_modSelector->TabIndex = 4;
+			this->m_lb_modSelector->TabStop = false;
 			this->m_lb_modSelector->SelectedIndexChanged += gcnew System::EventHandler(this, &ItemInfoGui::ModList_SelectedIndexChanged);
 			this->m_lb_modSelector->MouseDown += gcnew System::Windows::Forms::MouseEventHandler(this, &ItemInfoGui::ModSelector_MouseDown);
 			// 
@@ -182,11 +187,26 @@ namespace SMConverter
 			this->m_lbl_line6->Text = L"LINE_SIX";
 			this->m_lbl_line6->Visible = false;
 			// 
+			// m_lbl_noItems
+			// 
+			this->m_lbl_noItems->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Bottom)
+				| System::Windows::Forms::AnchorStyles::Left)
+				| System::Windows::Forms::AnchorStyles::Right));
+			this->m_lbl_noItems->AutoSize = true;
+			this->m_lbl_noItems->BackColor = System::Drawing::SystemColors::ButtonHighlight;
+			this->m_lbl_noItems->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
+			this->m_lbl_noItems->Location = System::Drawing::Point(192, 190);
+			this->m_lbl_noItems->Name = L"m_lbl_noItems";
+			this->m_lbl_noItems->Size = System::Drawing::Size(60, 16);
+			this->m_lbl_noItems->TabIndex = 12;
+			this->m_lbl_noItems->Text = L"No Items";
+			// 
 			// ItemInfoGui
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(434, 270);
+			this->Controls->Add(this->m_lbl_noItems);
 			this->Controls->Add(this->m_lbl_line6);
 			this->Controls->Add(this->m_lbl_line5);
 			this->Controls->Add(this->m_lbl_line4);
@@ -217,5 +237,6 @@ namespace SMConverter
 		System::Void ModList_OpenInSteamWorkshop_Click(System::Object^ sender, System::EventArgs^ e);
 		System::Void ModList_OpenInExplorer_Click(System::Object^ sender, System::EventArgs^ e);
 		System::Void ModList_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e);
+		System::Void UpdateContextMenuStrip();
 	};
 }

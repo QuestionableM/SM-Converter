@@ -65,6 +65,15 @@ namespace SMConverter
 		{
 			m_lbl_line5->Text = "Part Count: Tile Read Error";
 			m_lbl_line6->Text = "Mod Count: Tile Read Error";
+
+			System::Windows::Forms::MessageBox::Show(
+				gcnew System::String((L"Error: " + v_error.GetErrorMsg()).c_str()),
+				"Tile Read Error",
+				System::Windows::Forms::MessageBoxButtons::OK,
+				System::Windows::Forms::MessageBoxIcon::Error
+			);
+
+			m_isSuccess = false;
 		}
 		else
 		{
@@ -84,7 +93,8 @@ namespace SMConverter
 
 	void ItemInfoGui::UpdateModList()
 	{
-		m_lb_modSelector->SelectedIndex = -1;
+		m_lbl_noItems->Visible = ItemModStats::ModVector.empty();
+		m_lb_modSelector->Enabled = !ItemModStats::ModVector.empty();
 
 		m_lb_modSelector->BeginUpdate();
 		m_lb_modSelector->Items->Clear();
@@ -101,6 +111,8 @@ namespace SMConverter
 		}
 
 		m_lb_modSelector->EndUpdate();
+
+		this->UpdateContextMenuStrip();
 	}
 
 	SMMod* ItemInfoGui::GetCurrentMod()
@@ -160,6 +172,11 @@ namespace SMConverter
 	}
 
 	void ItemInfoGui::ModList_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e)
+	{
+		this->UpdateContextMenuStrip();
+	}
+
+	void ItemInfoGui::UpdateContextMenuStrip()
 	{
 		bool v_has_workshop_id = false;
 		bool v_has_directory = false;
