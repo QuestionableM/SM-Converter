@@ -109,7 +109,16 @@ void TileFolderReader::LoadFromDirectory(const std::wstring& path)
 		return;
 
 	const std::wstring v_tile_filename = String::ToWide(v_name.get_string());
-	const fs::path v_tile_path = path + L"/" + v_tile_filename;
+
+	std::wstring v_tile_path_str = path + L"/" + v_tile_filename;
+	if (!File::Exists(v_tile_path_str))
+	{
+		v_tile_path_str.append(L".tile");
+		if (!File::Exists(v_tile_path_str))
+			return;
+	}
+
+	fs::path v_tile_path = v_tile_path_str;
 	if (!v_tile_path.has_stem())
 		return;
 

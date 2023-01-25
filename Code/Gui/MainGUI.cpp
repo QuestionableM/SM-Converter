@@ -29,6 +29,11 @@
 #include <CommCtrl.h>
 #include <msclr\marshal_cppstd.h>
 
+#define SMC_TILE_TESTER
+#if defined(SMC_TILE_TESTER)
+#include "Converter\TileConverter\Readers\TileReader.hpp"
+#endif
+
 #define WF_SHOW_WARNING(title, message) \
 	System::Windows::Forms::MessageBox::Show( \
 		message, title, \
@@ -215,7 +220,7 @@ namespace SMConverter
 		AboutGui^ v_about_gui = gcnew AboutGui();
 		v_about_gui->ShowDialog();
 		
-		/*
+	#if defined(SMC_TILE_TESTER)
 		std::size_t v_successfull_loads = 0;
 		for (const TileInstance* v_tile_instance : TileFolderReader::Storage)
 		{
@@ -236,7 +241,7 @@ namespace SMConverter
 		}
 
 		DebugOutL("Self-Diagnosis finished! Loaded: ", v_successfull_loads, "/", TileFolderReader::Storage.size(), " tiles");
-		*/
+	#endif
 	}
 
 	void MainGui::MainGui_Resize(System::Object^ sender, System::EventArgs^ e)
