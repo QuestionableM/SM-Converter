@@ -29,9 +29,7 @@ public:
 		const int v_tile_version = part->GetParent()->GetVersion();
 
 		std::vector<Byte> compressed = reader.Objects<Byte>(header->blueprintListIndex, header->blueprintListCompressedSize);
-
-		std::vector<Byte> bytes;
-		bytes.resize(header->blueprintListSize);
+		std::vector<Byte> bytes(header->blueprintListSize);
 
 		int debugSize = Lz4::DecompressFast(reinterpret_cast<const char*>(compressed.data()),
 			reinterpret_cast<char*>(bytes.data()), header->blueprintListSize);

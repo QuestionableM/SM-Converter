@@ -115,8 +115,11 @@ public:
 
 	inline std::string StringHex() const
 	{
-		char v_buffer[7];
-		sprintf_s(v_buffer, "%02x%02x%02x", this->r, this->g, this->b);
+		char v_buffer[7], *v_ptr;
+
+		v_ptr = String::FromInteger<unsigned char, 16>(this->r, v_buffer);
+		v_ptr = String::FromInteger<unsigned char, 16>(this->g, v_ptr);
+		String::FromInteger<unsigned char, 16>(this->b, v_ptr);
 
 		return std::string(v_buffer, 6);
 	}
@@ -124,8 +127,12 @@ public:
 	//Convert to string with alpha component
 	inline std::string StringHexAlpha() const
 	{
-		char v_buffer[9];
-		sprintf_s(v_buffer, "%02x%02x%02x%02x", this->r, this->g, this->b, this->a);
+		char v_buffer[9], *v_ptr;
+
+		v_ptr = String::FromInteger<unsigned char, 16>(this->r, v_buffer);
+		v_ptr = String::FromInteger<unsigned char, 16>(this->g, v_ptr);
+		v_ptr = String::FromInteger<unsigned char, 16>(this->b, v_ptr);
+		String::FromInteger<unsigned char, 16>(this->a, v_ptr);
 
 		return std::string(v_buffer, 8);
 	}

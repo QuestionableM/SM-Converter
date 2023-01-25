@@ -33,17 +33,15 @@ public:
 		{
 			const int assetListCompressedSize = header->assetListCompressedSize[a];
 			const int assetListSize = header->assetListSize[a];
+			const int assetListCount = header->assetListCount[a];
 
-			if (header->assetListCount[a] == 0)
+			if (assetListCount == 0)
 				continue;
 			
 			DebugOutL("Asset[", a, "]: ", header->assetListSize[a], ", ", header->assetListCompressedSize[a]);
-			const int assetListIndex = header->assetListIndex[a];
 
-			const std::vector<Byte> compressed = reader.Objects<Byte>(assetListIndex, assetListCompressedSize);
-
-			std::vector<Byte> bytes = {};
-			bytes.resize(assetListSize);
+			const std::vector<Byte> compressed = reader.Objects<Byte>(header->assetListIndex[a], assetListCompressedSize);
+			std::vector<Byte> bytes(assetListSize);
 
 			int debugSize = Lz4::DecompressFast(reinterpret_cast<const char*>(compressed.data()),
 				reinterpret_cast<char*>(bytes.data()), assetListSize);
@@ -54,7 +52,7 @@ public:
 				return;
 			}
 
-			debugSize = AssetListReader::Read<t_mod_counter>(bytes, a, header->assetListCount[a], v_tile_version, part);
+			debugSize = AssetListReader::Read<t_mod_counter>(bytes, a, assetListCount, v_tile_version, part);
 			if (debugSize != assetListSize)
 			{
 				DebugErrorL("Debug Size: ", debugSize, ", assetListSize: ", assetListSize);

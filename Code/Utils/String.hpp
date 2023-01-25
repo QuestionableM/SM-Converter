@@ -284,6 +284,51 @@ namespace String
 		return v_end_ptr;
 	}
 
+	/*
+	 * C++ version 0.4 char* style "itoa":
+	 * Written by Lukás Chmela
+	 * Released under GPLv3.
+	 * This function does not put a null character at the end, so it's up to you to null terminate the string
+	*/
+	template<typename T, T t_base = 10>
+	inline wchar_t* FromIntegerW(T value, wchar_t* result)
+	{
+		// check that the base if valid
+		static_assert(t_base >= 2 && t_base <= 36, "Base sould be in range of [2, 36]");
+		static_assert(std::is_integral_v<T>, "IntegerToString type must be integral");
+
+		wchar_t* ptr = result, * v_end_ptr, tmp_char;
+		T tmp_value;
+
+		do {
+			tmp_value = value;
+			value /= t_base;
+			*ptr++ = L"zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz"[35 + (tmp_value - value * t_base)];
+		} while (value);
+
+		if constexpr (t_base == 16 && std::is_same_v<unsigned char, T>)
+		{
+			if ((ptr - result) == 1)
+				*ptr++ = L'0';
+		}
+
+		if constexpr (!std::is_unsigned_v<T>)
+		{
+			// Apply negative sign
+			if (tmp_value < 0) *ptr++ = L'-';
+		}
+
+		v_end_ptr = ptr--;
+
+		while (result < ptr) {
+			tmp_char = *ptr;
+			*ptr-- = *result;
+			*result++ = tmp_char;
+		}
+
+		return v_end_ptr;
+	}
+
 #pragma warning(push)
 #pragma warning(disable : 4996)
 

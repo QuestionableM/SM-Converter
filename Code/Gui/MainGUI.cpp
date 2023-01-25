@@ -20,8 +20,6 @@
 
 #include "UStd\UnmanagedFilesystem.hpp"
 
-#include "Converter\TileConverter\Readers\TileReader.hpp"
-
 #include "Utils\WinInclude.hpp"
 #include "Utils\Console.hpp"
 #include "Utils\String.hpp"
@@ -216,6 +214,7 @@ namespace SMConverter
 	{
 		AboutGui^ v_about_gui = gcnew AboutGui();
 		v_about_gui->ShowDialog();
+		
 		/*
 		std::size_t v_successfull_loads = 0;
 		for (const TileInstance* v_tile_instance : TileFolderReader::Storage)

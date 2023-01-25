@@ -4,6 +4,7 @@
 #include "UStd\UnmanagedVector.hpp"
 
 #include "Utils\WinInclude.hpp"
+#include "Utils\Console.hpp"
 #include "Utils\String.hpp"
 #include "Utils\Crypt.hpp"
 
@@ -114,15 +115,35 @@ public:
 		return String::FromInteger<unsigned char, 16>(m_Data8[15], v_beginning);
 	}
 
+	inline wchar_t* ToCStringW(wchar_t* v_beginning) const
+	{
+		v_beginning = String::FromIntegerW<unsigned char, 16>(m_Data8[0], v_beginning);
+		v_beginning = String::FromIntegerW<unsigned char, 16>(m_Data8[1], v_beginning);
+		v_beginning = String::FromIntegerW<unsigned char, 16>(m_Data8[2], v_beginning);
+		v_beginning = String::FromIntegerW<unsigned char, 16>(m_Data8[3], v_beginning);
+		*v_beginning++ = '-';
+		v_beginning = String::FromIntegerW<unsigned char, 16>(m_Data8[4], v_beginning);
+		v_beginning = String::FromIntegerW<unsigned char, 16>(m_Data8[5], v_beginning);
+		*v_beginning++ = '-';
+		v_beginning = String::FromIntegerW<unsigned char, 16>(m_Data8[6], v_beginning);
+		v_beginning = String::FromIntegerW<unsigned char, 16>(m_Data8[7], v_beginning);
+		*v_beginning++ = '-';
+		v_beginning = String::FromIntegerW<unsigned char, 16>(m_Data8[8], v_beginning);
+		v_beginning = String::FromIntegerW<unsigned char, 16>(m_Data8[9], v_beginning);
+		*v_beginning++ = '-';
+		v_beginning = String::FromIntegerW<unsigned char, 16>(m_Data8[10], v_beginning);
+		v_beginning = String::FromIntegerW<unsigned char, 16>(m_Data8[11], v_beginning);
+		v_beginning = String::FromIntegerW<unsigned char, 16>(m_Data8[12], v_beginning);
+		v_beginning = String::FromIntegerW<unsigned char, 16>(m_Data8[13], v_beginning);
+		v_beginning = String::FromIntegerW<unsigned char, 16>(m_Data8[14], v_beginning);
+		return String::FromIntegerW<unsigned char, 16>(m_Data8[15], v_beginning);
+	}
+
 	inline std::string ToString() const
 	{
 		char v_buffer[37];
-		sprintf_s(v_buffer, "%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
-			m_Data8[0], m_Data8[1], m_Data8[2], m_Data8[3],
-			m_Data8[4], m_Data8[5],
-			m_Data8[6], m_Data8[7],
-			m_Data8[8], m_Data8[9],
-			m_Data8[10], m_Data8[11], m_Data8[12], m_Data8[13], m_Data8[14], m_Data8[15]);
+		v_buffer[36] = '\0';
+		this->ToCString(v_buffer);
 
 		return std::string(v_buffer, 36);
 	}
@@ -130,12 +151,8 @@ public:
 	inline std::wstring ToWstring() const
 	{
 		wchar_t v_buffer[37];
-		swprintf_s(v_buffer, L"%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
-			m_Data8[0], m_Data8[1], m_Data8[2], m_Data8[3],
-			m_Data8[4], m_Data8[5],
-			m_Data8[6], m_Data8[7],
-			m_Data8[8], m_Data8[9],
-			m_Data8[10], m_Data8[11], m_Data8[12], m_Data8[13], m_Data8[14], m_Data8[15]);
+		v_buffer[36] = L'\0';
+		this->ToCStringW(v_buffer);
 
 		return std::wstring(v_buffer, 36);
 	}

@@ -32,9 +32,7 @@ public:
 		DebugOutL("Prefab: ", header->prefabSize, " / ", header->prefabCompressedSize);
 
 		std::vector<Byte> compressed = reader.Objects<Byte>(header->prefabIndex, header->prefabCompressedSize);
-		
-		std::vector<Byte> bytes = {};
-		bytes.resize(header->prefabSize);
+		std::vector<Byte> bytes(header->prefabSize);
 
 		const int v_tile_version = part->GetParent()->GetVersion();
 

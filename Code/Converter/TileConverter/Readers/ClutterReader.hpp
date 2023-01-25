@@ -33,8 +33,7 @@ public:
 		if (compressed.empty())
 			return {};
 
-		std::vector<Byte> bytes = {};
-		bytes.resize(header->clutterSize);
+		std::vector<Byte> bytes(header->clutterSize);
 
 		const int debugSize = Lz4::DecompressFast(reinterpret_cast<const char*>(compressed.data()),
 			reinterpret_cast<char*>(bytes.data()), header->clutterSize);

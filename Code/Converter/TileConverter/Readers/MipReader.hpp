@@ -34,8 +34,7 @@ public:
 		if (compressed.empty())
 			return {};
 
-		std::vector<Byte> decompressed_bytes = {};
-		decompressed_bytes.resize(header->mipSize[mipOrLevel]);
+		std::vector<Byte> decompressed_bytes(header->mipSize[mipOrLevel]);
 
 		const int debugSize = Lz4::DecompressFast(reinterpret_cast<const char*>(compressed.data()),
 			reinterpret_cast<char*>(decompressed_bytes.data()), header->mipSize[mipOrLevel]);

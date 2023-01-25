@@ -33,9 +33,7 @@ public:
 		const int v_tile_version = part->GetParent()->GetVersion();
 
 		const std::vector<Byte> compressed = reader.Objects<Byte>(header->decalIndex, header->decalCompressedSize);
-
-		std::vector<Byte> bytes = {};
-		bytes.resize(header->decalSize);
+		std::vector<Byte> bytes(header->decalSize);
 
 		int debugSize = Lz4::DecompressFast(reinterpret_cast<const char*>(compressed.data()),
 			reinterpret_cast<char*>(bytes.data()), header->decalSize);

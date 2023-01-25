@@ -393,7 +393,9 @@ nlohmann::json DatabaseConfig::GetConfigJson(bool* should_write, const bool& rea
 			"$SURVIVAL_DATA/Terrain/Tiles/start_area",
 
 			"$GAME_DATA/Terrain/Tiles/ClassicCreativeTiles",
-			"$GAME_DATA/Terrain/Tiles/CreativeTiles"
+			"$GAME_DATA/Terrain/Tiles/CreativeTiles",
+
+			"$SURVIVAL_DATA/DungeonTiles"
 		};
 
 		if (should_write)
