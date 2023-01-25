@@ -29,7 +29,7 @@
 #include <CommCtrl.h>
 #include <msclr\marshal_cppstd.h>
 
-#define SMC_TILE_TESTER
+//#define SMC_TILE_TESTER
 #if defined(SMC_TILE_TESTER)
 #include "Converter\TileConverter\Readers\TileReader.hpp"
 #endif
