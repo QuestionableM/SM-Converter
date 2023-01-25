@@ -36,9 +36,7 @@ public:
 
 		MemoryWrapper mMemory = v_file_bytes;
 
-		std::vector<char> v_tile_keyword = mMemory.NextObjects<char>(4);
-		std::string v_tile_key(v_tile_keyword.begin(), v_tile_keyword.end());
-
+		const std::string v_tile_key = mMemory.NextString(4);
 		if (v_tile_key != "TILE")
 		{
 			cError = ConvertError(1, L"TileReader::ReadTile -> Invalid File");

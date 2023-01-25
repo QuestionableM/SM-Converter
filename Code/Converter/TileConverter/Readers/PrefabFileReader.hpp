@@ -43,9 +43,8 @@ public:
 	{
 		MemoryWrapper reader(bytes);
 
-		const std::vector<char> magic = reader.NextObjects<char, true>(4);
-
-		if (std::string(magic.begin(), magic.end()) != "PREF")
+		const std::string v_pref_magic = reader.NextString<true>(4);
+		if (v_pref_magic != "PREF")
 		{
 			DebugErrorL("The specified prefab contains wrong magic value");
 			return nullptr;

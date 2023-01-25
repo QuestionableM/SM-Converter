@@ -128,6 +128,23 @@ public:
 		return v_string;
 	}
 
+	template<bool is_big_endian = false>
+	inline std::string NextString(const std::size_t& size)
+	{
+		std::string v_string;
+		v_string.resize(size);
+
+		std::memcpy(v_string.data(), this->bytes.data() + this->index, sizeof(char) * size);
+		this->index += size;
+
+		if constexpr (is_big_endian)
+		{
+			std::reverse(v_string.begin(), v_string.end());
+		}
+
+		return v_string;
+	}
+
 	template<typename T, bool is_big_endian = false>
 	inline std::vector<T> Objects(const std::size_t& offset, const std::size_t& amount)
 	{
