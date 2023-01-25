@@ -64,7 +64,7 @@ public:
 
 		if (pHeader.hasBlueprints != 0)
 		{
-			PrefabFileReader::ReadBlueprints<t_mod_counter>(stream, prefab, pHeader.blueprintCount);
+			PrefabFileReader::ReadBlueprints<t_mod_counter>(stream, prefab, pHeader.blueprintCount, version);
 		}
 
 		if (pHeader.hasPrefabs != 0)
@@ -79,7 +79,7 @@ public:
 
 		if (pHeader.hasAssets != 0)
 		{
-			PrefabFileReader::ReadAssets<t_mod_counter>(stream, prefab, pHeader.assetCount);
+			PrefabFileReader::ReadAssets<t_mod_counter>(stream, prefab, pHeader.assetCount, version);
 		}
 
 		if (pHeader.hasDecals != 0)
@@ -106,7 +106,7 @@ public:
 	}
 
 	template<bool t_mod_counter>
-	static void ReadBlueprints(BitStream& stream, SMPrefab* prefab, const int& count)
+	static void ReadBlueprints(BitStream& stream, SMPrefab* prefab, const int& count, const int& version)
 	{
 		for (int a = 0; a < count; a++)
 		{
@@ -117,6 +117,10 @@ public:
 			const glm::quat f_quat = stream.ReadQuat();
 
 			stream.ReadInt();
+
+			//a random byte was added in the version 10 of prefabs
+			if (version >= 10)
+				stream.ReadByte();
 
 			if constexpr (t_mod_counter)
 			{
@@ -238,8 +242,24 @@ public:
 	}
 
 	template<bool t_mod_counter>
-	static void ReadAssets(BitStream& stream, SMPrefab* prefab, const int& count)
+	static void ReadAssets(BitStream& stream, SMPrefab* prefab, const int& count, const int& version)
 	{
+		const int v_idx = stream.Index();
+
+		std::ofstream v_blueprint_dump("./asset_dump.txt");
+		if (v_blueprint_dump.is_open())
+		{
+			for (std::size_t a = 0; a < 200; a++)
+			{
+				unsigned char cur_byte = static_cast<unsigned char>(stream.ReadByte());
+				v_blueprint_dump.write(reinterpret_cast<const char*>(&cur_byte), 1);
+			}
+
+			v_blueprint_dump.close();
+		}
+
+		stream.SetIndex(v_idx);
+
 		for (int a = 0; a < count; a++)
 		{
 			const glm::vec3 f_pos = stream.ReadVec3();
@@ -264,6 +284,9 @@ public:
 						color_map.insert(std::make_pair(str, color));
 				}
 			}
+
+			if (version >= 10)
+				stream.ReadByte();
 
 			if constexpr (t_mod_counter)
 			{
