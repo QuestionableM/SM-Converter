@@ -615,7 +615,7 @@ namespace SMConverter
 		if (!v_conv_settings->m_ready_to_convert)
 			return;
 
-		System::Array^ v_thread_data = gcnew cli::array<System::Object^>(14);
+		System::Array^ v_thread_data = gcnew cli::array<System::Object^>(15);
 
 		//Data type
 		v_thread_data->SetValue(static_cast<int>(Generator_TileConverter), static_cast<int>(0));
@@ -638,6 +638,8 @@ namespace SMConverter
 		v_thread_data->SetValue(v_conv_settings->m_cb_exportMaterials->Checked    , static_cast<int>(11));
 		v_thread_data->SetValue(v_conv_settings->m_cb_exportNormals->Checked      , static_cast<int>(12));
 		v_thread_data->SetValue(v_conv_settings->m_cb_exportUvs->Checked          , static_cast<int>(13));
+
+		v_thread_data->SetValue(v_conv_settings->m_cb_customGame->SelectedIndex, static_cast<int>(14));
 
 		this->MainGui_ChangeGuiState(m_database_isLoaded, m_obj_isLoaded, false);
 		m_progressBarUpdater->Start();
@@ -815,12 +817,17 @@ namespace SMConverter
 		SharedConverterSettings::ExportNormals        = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(12)));
 		SharedConverterSettings::ExportUvs            = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(13)));
 
+		const int v_custom_game_idx = safe_cast<int>(v_conv_data->GetValue(static_cast<int>(14)));
+		CustomGame* v_custom_game = nullptr;
+		if (v_custom_game_idx > 0)
+			v_custom_game = SMMod::GetCustomGames()[v_custom_game_idx - 1];
+
 		//Error check some settings
 		TileConverterSettings::Export8kGroundTextures &= TileConverterSettings::ExportGroundTextures;
 		SharedConverterSettings::ExportMaterials &= SharedConverterSettings::ExportUvs;
 
 		ConvertError v_conv_error;
-		TileConv::ConvertToModel(v_tile_path, v_tile_name, v_conv_error);
+		TileConv::ConvertToModel(v_tile_path, v_tile_name, v_conv_error, v_custom_game);
 
 		this->MainGui_HandleConvertError(v_conv_error, Generator_TileConverter, e);
 	}

@@ -32,7 +32,17 @@ void AssetListLoader::LoadDefaultColors(const simdjson::dom::element& jAsset, st
 	}
 }
 
-void AssetListLoader::Load(const simdjson::dom::element& fAssets, SMMod* mod)
+bool AssetListLoader::CheckAssetExists(const SMUuid& v_uuid, SMMod* v_mod, const bool& add_to_global_db)
+{
+	const std::unordered_map<SMUuid, AssetData*>& v_cur_map = add_to_global_db ? SMMod::AssetStorage : v_mod->m_Assets;
+	if (v_cur_map.find(v_uuid) == v_cur_map.end())
+		return false;
+
+	DebugWarningL("Asset with the same uuid already exists! (", v_uuid.ToString(), ")");
+	return true;
+}
+
+void AssetListLoader::Load(const simdjson::dom::element& fAssets, SMMod* mod, const bool& add_to_global_db)
 {
 	if (!fAssets.is_array()) return;
 
@@ -47,11 +57,8 @@ void AssetListLoader::Load(const simdjson::dom::element& fAssets, SMMod* mod)
 		if (!v_uuid.is_string()) continue;
 
 		const SMUuid v_asset_uuid = v_uuid.get_c_str();
-		if (SMMod::AssetStorage.find(v_asset_uuid) != SMMod::AssetStorage.end())
-		{
-			DebugWarningL("Asset with the same uuid already exists! (", v_asset_uuid.ToString(), ")");
+		if (AssetListLoader::CheckAssetExists(v_asset_uuid, mod, add_to_global_db))
 			continue;
-		}
 
 		std::wstring v_tMesh;
 		SMSubMeshBase* v_tData;
@@ -68,7 +75,9 @@ void AssetListLoader::Load(const simdjson::dom::element& fAssets, SMMod* mod)
 		const auto v_new_pair = std::make_pair(v_new_asset->m_uuid, v_new_asset);
 
 		mod->m_Assets.insert(v_new_pair);
-		SMMod::AssetStorage.insert(v_new_pair);
+
+		if (add_to_global_db)
+			SMMod::AssetStorage.insert(v_new_pair);
 
 		ProgCounter::ProgressValue++;
 	}

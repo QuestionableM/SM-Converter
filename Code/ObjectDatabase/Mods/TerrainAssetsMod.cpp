@@ -44,50 +44,27 @@ bool TerrainAssetsMod::GetAssetSetDatabaseFile(const std::wstring& asset_db_dir,
 	return false;
 }
 
-void TerrainAssetsMod::LoadAssetSetDatabase(const std::wstring& path, SMMod* pMod)
-{
-	simdjson::dom::document v_assetset_doc;
-	if (!JsonReader::LoadParseSimdjsonCommentsC(path, v_assetset_doc, simdjson::dom::element_type::OBJECT))
-		return;
-
-	const auto v_assetset_list = v_assetset_doc.root()["assetSetList"];
-	if (!v_assetset_list.is_array()) return;
-
-	for (const auto v_asset_set : v_assetset_list.get_array())
-	{
-		if (!v_asset_set.is_object()) continue;
-
-		const auto v_assetset_path_obj = v_asset_set["assetSet"];
-		if (!v_assetset_path_obj.is_string()) continue;
-
-		std::wstring v_assetset_path = String::ToWide(v_assetset_path_obj.get_string());
-		KeywordReplacer::ReplaceKeyR(v_assetset_path);
-
-		pMod->LoadFile(v_assetset_path);
-	}
-}
-
 void TerrainAssetsMod::LoadObjectDatabase()
 {
 	KeywordReplacer::SetModData(m_Directory, m_Uuid);
 
-	std::wstring l_AssetDatabaseDir;
-	if (!TerrainAssetsMod::GetValidAssetDatabaseFolder(m_Directory, l_AssetDatabaseDir))
+	std::wstring v_database_dir;
+	if (!TerrainAssetsMod::GetValidAssetDatabaseFolder(m_Directory, v_database_dir))
 	{
 		DebugErrorL("Couldn't find a valid asset database directory!");
 		return;
 	}
 
-	std::wstring l_AssetSetDatabasePath;
-	if (TerrainAssetsMod::GetAssetSetDatabaseFile(l_AssetDatabaseDir, l_AssetSetDatabasePath))
+	std::wstring v_assetdb_path;
+	if (TerrainAssetsMod::GetAssetSetDatabaseFile(v_database_dir, v_assetdb_path))
 	{
-		TerrainAssetsMod::LoadAssetSetDatabase(l_AssetSetDatabasePath, this);
+		SMMod::LoadAssetSetList(v_assetdb_path, this, true);
 	}
 	else
 	{
-		const std::wstring l_AssetSetsFolder = l_AssetDatabaseDir + L"AssetSets";
-		if (!File::Exists(l_AssetSetsFolder)) return;
+		const std::wstring v_asset_sets_folder = v_database_dir + L"AssetSets";
+		if (!File::Exists(v_asset_sets_folder)) return;
 
-		this->ScanDatabaseFolder(l_AssetSetsFolder);
+		this->ScanDatabaseFolder(v_asset_sets_folder, true);
 	}
 }

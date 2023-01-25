@@ -10,6 +10,7 @@
 
 #include "ObjectDatabase\Mods\BlocksAndPartsMod.hpp"
 #include "ObjectDatabase\Mods\TerrainAssetsMod.hpp"
+#include "ObjectDatabase\Mods\CustomGameMod.hpp"
 
 #include "UStd\UnmanagedFilesystem.hpp"
 
@@ -104,6 +105,8 @@ SMMod* SMMod::LoadFromDescription(const std::wstring& mod_folder, const bool& is
 		v_newMod = new BlocksAndPartsMod();
 	else if (strcmp(v_mod_type_str, "Terrain Assets") == 0)
 		v_newMod = new TerrainAssetsMod();
+	else if (strcmp(v_mod_type_str, "Custom Game") == 0)
+		v_newMod = new CustomGame();
 	else
 		return nullptr;
 
@@ -116,8 +119,12 @@ SMMod* SMMod::LoadFromDescription(const std::wstring& mod_folder, const bool& is
 	v_newMod->m_WorkshopId = v_mod_ws_id.is_number() ? JsonReader::GetNumber<unsigned long long>(v_mod_ws_id) : 0ull;
 
 	DebugOutL("Mod: ", 0b1101_fg, v_newMod->m_Name, 0b1110_fg, ", Uuid: ", 0b1101_fg, v_newMod->m_Uuid.ToString(), 0b1110_fg, ", Type: ", 0b1101_fg, v_mod_type_str);
+
 	SMMod::ModStorage.insert(std::make_pair(v_newMod->m_Uuid, v_newMod));
 	SMMod::ModVector.push_back(v_newMod);
+
+	if (v_newMod->Type() == ModType::CustomGame)
+		SMMod::CustomGameVector.push_back(reinterpret_cast<CustomGame*>(v_newMod));
 
 	return v_newMod;
 }
@@ -193,7 +200,7 @@ ClutterData* SMMod::GetGlobalClutterById(const std::size_t& idx)
 	return SMMod::ClutterVector[idx];
 }
 
-using DataLoaderMap = std::unordered_map<std::string, void (*)(const simdjson::dom::element&, SMMod*)>;
+using DataLoaderMap = std::unordered_map<std::string, void (*)(const simdjson::dom::element&, SMMod*, const bool&)>;
 static const DataLoaderMap g_DataLoaders =
 {
 	{ "assetListRenderable", AssetListLoader::Load       },
@@ -204,7 +211,7 @@ static const DataLoaderMap g_DataLoaders =
 	{ "decalSetList",        DecalsetListReader::Load    }
 };
 
-void SMMod::LoadFile(const std::wstring& path)
+void SMMod::LoadFile(const std::wstring& path, const bool& add_to_global_db)
 {
 	simdjson::dom::document v_doc;
 	if (!JsonReader::LoadParseSimdjsonCommentsC(path, v_doc, simdjson::dom::element_type::OBJECT))
@@ -223,7 +230,73 @@ void SMMod::LoadFile(const std::wstring& path)
 			continue;
 		}
 
-		v_iter->second(v_obj.value, this);
+		v_iter->second(v_obj.value, this, add_to_global_db);
+	}
+}
+
+void SMMod::LoadAssetSetList(const std::wstring& path, SMMod* v_mod, const bool& add_to_global_db)
+{
+	simdjson::dom::document v_assetset_doc;
+	if (!JsonReader::LoadParseSimdjsonCommentsC(path, v_assetset_doc, simdjson::dom::element_type::OBJECT))
+		return;
+
+	const auto v_assetset_list = v_assetset_doc.root()["assetSetList"];
+	if (!v_assetset_list.is_array()) return;
+
+	for (const auto v_asset_set : v_assetset_list.get_array())
+	{
+		if (!v_asset_set.is_object()) continue;
+
+		const auto v_assetset_path_obj = v_asset_set["assetSet"];
+		if (!v_assetset_path_obj.is_string()) continue;
+
+		std::wstring v_assetset_path = String::ToWide(v_assetset_path_obj.get_string());
+		KeywordReplacer::ReplaceKeyR(v_assetset_path);
+
+		v_mod->LoadFile(v_assetset_path, add_to_global_db);
+	}
+}
+
+void SMMod::LoadShapeSetList(const std::wstring& path, SMMod* v_mod, const bool& add_to_global_db)
+{
+	simdjson::dom::document v_shapedb_doc;
+	if (!JsonReader::LoadParseSimdjsonCommentsC(path, v_shapedb_doc, simdjson::dom::element_type::OBJECT))
+		return;
+
+	const auto v_shapeset_list = v_shapedb_doc.root()["shapeSetList"];
+	if (!v_shapeset_list.is_array()) return;
+
+	for (const auto v_shapeset : v_shapeset_list.get_array())
+	{
+		if (!v_shapeset.is_string()) continue;
+
+		std::wstring v_shapeset_path = String::ToWide(v_shapeset.get_string());
+		KeywordReplacer::ReplaceKeyR(v_shapeset_path);
+
+		v_mod->LoadFile(v_shapeset_path, add_to_global_db);
+	}
+}
+
+void SMMod::LoadHarvestableSetList(const std::wstring& path, SMMod* v_mod, const bool& add_to_global_db)
+{
+	simdjson::dom::document v_hvsdb_doc;
+	if (!JsonReader::LoadParseSimdjsonCommentsC(path, v_hvsdb_doc, simdjson::dom::element_type::OBJECT))
+		return;
+
+	const auto v_hvsset_list = v_hvsdb_doc.root()["harvestableSetList"];
+	if (!v_hvsset_list.is_array()) return;
+
+	for (const auto v_hvsset : v_hvsset_list.get_array())
+	{
+		if (!v_hvsset.is_object()) continue;
+
+		const auto v_hvsset_path_obj = v_hvsset["name"];
+		if (!v_hvsset_path_obj.is_string()) continue;
+
+		std::wstring v_hvsset_path = String::ToWide(v_hvsset_path_obj.get_string());
+		KeywordReplacer::ReplaceKeyR(v_hvsset_path);
+
+		v_mod->LoadFile(v_hvsset_path, add_to_global_db);
 	}
 }
 
@@ -236,7 +309,7 @@ inline bool IsShapeSetExtensionValid(const std::string& extension)
 	return false;
 }
 
-void SMMod::ScanDatabaseFolderRecursive(const std::wstring& folder)
+void SMMod::ScanDatabaseFolderRecursive(const std::wstring& folder, const bool& add_to_global_db)
 {
 	namespace fs = std::filesystem;
 
@@ -250,11 +323,11 @@ void SMMod::ScanDatabaseFolderRecursive(const std::wstring& folder)
 		const fs::path& dPath = dir.path();
 
 		if (dPath.has_extension() && IsShapeSetExtensionValid(dPath.extension().string()))
-			this->LoadFile(dPath.wstring());
+			this->LoadFile(dPath.wstring(), add_to_global_db);
 	}
 }
 
-void SMMod::ScanDatabaseFolder(const std::wstring& folder)
+void SMMod::ScanDatabaseFolder(const std::wstring& folder, const bool& add_to_global_db)
 {
 	namespace fs = std::filesystem;
 
@@ -268,6 +341,11 @@ void SMMod::ScanDatabaseFolder(const std::wstring& folder)
 		const fs::path& dir_path = cur_dir.path();
 
 		if (dir_path.has_extension() && IsShapeSetExtensionValid(dir_path.extension().string()))
-			this->LoadFile(dir_path.wstring());
+			this->LoadFile(dir_path.wstring(), add_to_global_db);
 	}
+}
+
+void SMMod::SetContentKey() const
+{
+	KeywordReplacer::SetModData(m_Directory, m_Uuid);
 }

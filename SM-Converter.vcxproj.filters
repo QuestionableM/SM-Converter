@@ -177,6 +177,9 @@
     <ClCompile Include="Code\Gui\ItemInfoGui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Code\ObjectDatabase\Mods\CustomGameMod.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\Gui\MainGui.h">
@@ -447,6 +450,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Code\ObjectDatabase\UserDataReaders\ItemModCounter.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\ObjectDatabase\Mods\CustomGameMod.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

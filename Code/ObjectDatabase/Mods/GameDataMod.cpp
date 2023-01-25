@@ -25,8 +25,8 @@ void GameDataMod::LoadObjectDatabase()
 		if (v_error) continue;
 
 		if (is_regular_file)
-			this->LoadFile(db_item.first);
+			this->LoadFile(db_item.first, true);
 		else
-			this->ScanDatabaseFolderRecursive(db_item.first);
+			this->ScanDatabaseFolderRecursive(db_item.first, true);
 	}
 }

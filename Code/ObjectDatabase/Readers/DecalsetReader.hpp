@@ -8,8 +8,10 @@
 
 class DecalsetReader
 {
+	static bool CheckDecalExists(const SMUuid& v_uuid, SMMod* v_mod, const bool& add_to_global_db);
+
 public:
-	static void LoadFromFile(const std::wstring& path, SMMod* mod);
+	static void LoadFromFile(const std::wstring& path, SMMod* mod, const bool& add_to_global_db);
 };
 
 #pragma managed

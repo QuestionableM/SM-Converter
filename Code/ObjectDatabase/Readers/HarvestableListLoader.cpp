@@ -8,7 +8,17 @@
 
 #pragma unmanaged
 
-void HarvestableListLoader::Load(const simdjson::dom::element& fHarvestables, SMMod* mod)
+bool HarvestableListLoader::CheckHarvestableExists(const SMUuid& v_uuid, SMMod* v_mod, const bool& add_to_global_db)
+{
+	const std::unordered_map<SMUuid, HarvestableData*>& v_cur_list = add_to_global_db ? SMMod::HarvestableStorage : v_mod->m_Harvestables;
+	if (v_cur_list.find(v_uuid) == v_cur_list.end())
+		return false;
+
+	DebugWarningL("Harvestable with the specified uuid already exists! (", v_uuid.ToString(), ")");
+	return true;
+}
+
+void HarvestableListLoader::Load(const simdjson::dom::element& fHarvestables, SMMod* mod, const bool& add_to_global_db)
 {
 	if (!fHarvestables.is_array()) return;
 	
@@ -23,11 +33,8 @@ void HarvestableListLoader::Load(const simdjson::dom::element& fHarvestables, SM
 		if (!v_uuid_obj.is_string()) continue;
 
 		const SMUuid v_hvs_uuid = v_uuid_obj.get_c_str();
-		if (SMMod::HarvestableStorage.find(v_hvs_uuid) != SMMod::HarvestableStorage.end())
-		{
-			DebugWarningL("Harvestable with the specified uuid already exists! (", v_hvs_uuid.ToString(), ")");
+		if (HarvestableListLoader::CheckHarvestableExists(v_hvs_uuid, mod, add_to_global_db))
 			continue;
-		}
 
 		std::wstring v_tMesh;
 		SMSubMeshBase* v_tData;
@@ -43,7 +50,9 @@ void HarvestableListLoader::Load(const simdjson::dom::element& fHarvestables, SM
 		const auto v_new_pair = std::make_pair(v_new_hvs->m_uuid, v_new_hvs);
 
 		mod->m_Harvestables.insert(v_new_pair);
-		SMMod::HarvestableStorage.insert(v_new_pair);
+
+		if (add_to_global_db)
+			SMMod::HarvestableStorage.insert(v_new_pair);
 
 		ProgCounter::ProgressValue++;
 	}

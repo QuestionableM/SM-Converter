@@ -14,8 +14,11 @@ enum class ModType
 {
 	BlocksAndParts,
 	TerrainAssets,
-	GameData
+	GameData,
+	CustomGame
 };
+
+class CustomGame;
 
 class SMMod
 {
@@ -27,6 +30,8 @@ class SMMod
 	friend class ClutterListLoader;
 	friend class DecalsetListReader;
 	friend class DecalsetReader;
+	friend class TileConv;
+	friend CustomGame;
 
 	template<class T>
 	using UuidObjectMap = std::unordered_map<SMUuid, T>;
@@ -36,6 +41,8 @@ class SMMod
 
 	inline static UuidObjectMap<SMMod*> ModStorage = {};
 	inline static std::vector<SMMod*> ModVector = {};
+
+	inline static std::vector<CustomGame*> CustomGameVector = {};
 
 	inline static UuidObjectMap<BlockData*> BlockStorage             = {};
 	inline static UuidObjectMap<PartData*> PartStorage               = {};
@@ -96,6 +103,11 @@ public:
 		return nullptr;
 	}
 
+	inline static std::vector<CustomGame*>& GetCustomGames()
+	{
+		return SMMod::CustomGameVector;
+	}
+
 	inline static std::size_t GetAmountOfObjects()
 	{
 		return (SMMod::BlockStorage.size() + SMMod::PartStorage.size() + SMMod::AssetStorage.size()
@@ -104,10 +116,15 @@ public:
 
 	inline static std::size_t GetAmountOfMods() { return SMMod::ModVector.size(); }
 
-	void LoadFile(const std::wstring& path);
+	void LoadFile(const std::wstring& path, const bool& add_to_global_db);
+	static void LoadShapeSetList(const std::wstring& path, SMMod* v_mod, const bool& add_to_global_db);
+	static void LoadAssetSetList(const std::wstring& path, SMMod* v_mod, const bool& add_to_global_db);
+	static void LoadHarvestableSetList(const std::wstring& path, SMMod* v_mod, const bool& add_to_global_db);
 
-	void ScanDatabaseFolderRecursive(const std::wstring& folder);
-	void ScanDatabaseFolder(const std::wstring& folder);
+	void ScanDatabaseFolderRecursive(const std::wstring& folder, const bool& add_to_global_db);
+	void ScanDatabaseFolder(const std::wstring& folder, const bool& add_to_global_db);
+
+	void SetContentKey() const;
 
 	inline const SMUuid& GetUuid() const { return m_Uuid; }
 	inline const std::wstring& GetName() const { return m_Name; }

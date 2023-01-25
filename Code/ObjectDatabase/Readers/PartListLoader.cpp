@@ -83,7 +83,17 @@ glm::vec3 PartListLoader::LoadPartCollision(const simdjson::dom::element& collis
 	return v_out_collision;
 }
 
-void PartListLoader::Load(const simdjson::dom::element& fParts, SMMod* mod)
+bool PartListLoader::CheckPartExists(const SMUuid& v_uuid, SMMod* v_mod, const bool& add_to_global_db)
+{
+	const std::unordered_map<SMUuid, PartData*>& v_cur_list = add_to_global_db ? SMMod::PartStorage : v_mod->m_Parts;
+	if (v_cur_list.find(v_uuid) == v_cur_list.end())
+		return false;
+
+	DebugWarningL("Part with the same uuid already exists! (", v_uuid.ToString(), ")");
+	return true;
+}
+
+void PartListLoader::Load(const simdjson::dom::element& fParts, SMMod* mod, const bool& add_to_global_db)
 {
 	if (!fParts.is_array()) return;
 
@@ -100,11 +110,8 @@ void PartListLoader::Load(const simdjson::dom::element& fParts, SMMod* mod)
 		if (!v_uuid.is_string()) continue;
 
 		const SMUuid v_prt_uuid = v_uuid.get_c_str();
-		if (SMMod::PartStorage.find(v_prt_uuid) != SMMod::PartStorage.end())
-		{
-			DebugWarningL("Part with the same uuid already exists! (", v_prt_uuid.ToString(), ")");
+		if (PartListLoader::CheckPartExists(v_prt_uuid, mod, add_to_global_db))
 			continue;
-		}
 
 		std::wstring v_mesh_path;
 		SMSubMeshBase* v_tex_data;
@@ -121,8 +128,10 @@ void PartListLoader::Load(const simdjson::dom::element& fParts, SMMod* mod)
 
 		const auto v_new_pair = std::make_pair(v_new_part->m_uuid, v_new_part);
 
-		SMMod::PartStorage.insert(v_new_pair);
 		mod->m_Parts.insert(v_new_pair);
+
+		if (add_to_global_db)
+			SMMod::PartStorage.insert(v_new_pair);
 
 		ProgCounter::ProgressValue++;
 	}

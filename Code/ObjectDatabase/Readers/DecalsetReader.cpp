@@ -8,6 +8,16 @@
 
 #pragma unmanaged
 
+bool DecalsetReader::CheckDecalExists(const SMUuid& v_uuid, SMMod* v_mod, const bool& add_to_global_db)
+{
+	const std::unordered_map<SMUuid, DecalData*>& v_cur_list = add_to_global_db ? SMMod::DecalStorage : v_mod->m_Decals;
+	if (v_cur_list.find(v_uuid) == v_cur_list.end())
+		return false;
+
+	DebugWarningL("A decal with the same uuid already exists! (uuid: ", v_uuid.ToString(), ")");
+	return true;
+}
+
 inline void GetWstringFromDecalset(const simdjson::dom::element& obj, const std::string& key, std::wstring& r_output)
 {
 	const auto v_json_str = obj[key];
@@ -18,7 +28,7 @@ inline void GetWstringFromDecalset(const simdjson::dom::element& obj, const std:
 	}
 }
 
-void DecalsetReader::LoadFromFile(const std::wstring& path, SMMod* mod)
+void DecalsetReader::LoadFromFile(const std::wstring& path, SMMod* mod, const bool& add_to_global_db)
 {
 	simdjson::dom::document v_json_doc;
 	if (!JsonReader::LoadParseSimdjsonCommentsC(path, v_json_doc, simdjson::dom::element_type::OBJECT))
@@ -54,11 +64,8 @@ void DecalsetReader::LoadFromFile(const std::wstring& path, SMMod* mod)
 			continue;
 
 		const SMUuid v_decal_uuid = v_uuid.get_c_str();
-		if (SMMod::DecalStorage.find(v_decal_uuid) != SMMod::DecalStorage.end())
-		{
-			DebugWarningL("A decal with the same uuid already exists! (uuid: ", v_decal_uuid.ToString(), ")");
+		if (DecalsetReader::CheckDecalExists(v_decal_uuid, mod, add_to_global_db))
 			continue;
-		}
 
 		const std::string_view v_mat_view = v_material.get_string();
 		v_texList.material = std::string(v_mat_view.data(), v_mat_view.size());
@@ -73,7 +80,9 @@ void DecalsetReader::LoadFromFile(const std::wstring& path, SMMod* mod)
 			v_new_decal->m_ranges[a] = JsonReader::GetNumber<int>(v_decal_reg_array.at(a));
 
 		const auto v_decal_pair = std::make_pair(v_new_decal->m_uuid, v_new_decal);
-		SMMod::DecalStorage.insert(v_decal_pair);
 		mod->m_Decals.insert(v_decal_pair);
+
+		if (add_to_global_db)
+			SMMod::DecalStorage.insert(v_decal_pair);
 	}
 }

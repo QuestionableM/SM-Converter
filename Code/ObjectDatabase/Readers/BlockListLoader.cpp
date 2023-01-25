@@ -47,7 +47,17 @@ void BlockListLoader::GetBlockMaterial(const simdjson::dom::element& block, SMTe
 	}
 }
 
-void BlockListLoader::Load(const simdjson::dom::element& fBlocks, SMMod* mod)
+bool BlockListLoader::CheckBlockExists(const SMUuid& v_uuid, SMMod* v_mod, const bool& add_to_global_db)
+{
+	const std::unordered_map<SMUuid, BlockData*>& v_cur_map = add_to_global_db ? SMMod::BlockStorage : v_mod->m_Blocks;
+	if (v_cur_map.find(v_uuid) == v_cur_map.end())
+		return false;
+
+	DebugWarningL("Block with the same uuid already exists! (", v_uuid.ToString(), ")");
+	return true;
+}
+
+void BlockListLoader::Load(const simdjson::dom::element& fBlocks, SMMod* mod, const bool& add_to_global_db)
 {
 	if (!fBlocks.is_array()) return;
 
@@ -65,11 +75,8 @@ void BlockListLoader::Load(const simdjson::dom::element& fBlocks, SMMod* mod)
 		if (!v_uuid.is_string()) continue;
 
 		const SMUuid v_blk_uuid = v_uuid.get_c_str();
-		if (SMMod::BlockStorage.find(v_blk_uuid) != SMMod::BlockStorage.end())
-		{
-			DebugWarningL("Block with the same uuid already exists! (", v_blk_uuid.ToString(), ")");
+		if (BlockListLoader::CheckBlockExists(v_blk_uuid, mod, add_to_global_db))
 			continue;
-		}
 
 		SMTextureList v_tList;
 		if (!BlockListLoader::GetBlockTextures(v_blk, v_tList)) continue;
@@ -87,8 +94,10 @@ void BlockListLoader::Load(const simdjson::dom::element& fBlocks, SMMod* mod)
 
 		const auto v_new_pair = std::make_pair(v_new_blk->m_uuid, v_new_blk);
 
-		SMMod::BlockStorage.insert(v_new_pair);
 		mod->m_Blocks.insert(v_new_pair);
+
+		if (add_to_global_db)
+			SMMod::BlockStorage.insert(v_new_pair);
 
 		ProgCounter::ProgressValue++;
 	}

@@ -27,41 +27,21 @@ bool BlocksAndPartsMod::GetShapeSetDatabaseFile(const std::wstring& mod_folder, 
 	return false;
 }
 
-void BlocksAndPartsMod::LoadShapeSetDatabase(const std::wstring& path, SMMod* pMod)
-{
-	simdjson::dom::document v_shapedb_doc;
-	if (!JsonReader::LoadParseSimdjsonCommentsC(path, v_shapedb_doc, simdjson::dom::element_type::OBJECT))
-		return;
-
-	const auto v_shapeset_list = v_shapedb_doc.root()["shapeSetList"];
-	if (!v_shapeset_list.is_array()) return;
-
-	for (const auto v_shapeset : v_shapeset_list.get_array())
-	{
-		if (!v_shapeset.is_string()) continue;
-
-		std::wstring v_shapeset_path = String::ToWide(v_shapeset.get_string());
-		KeywordReplacer::ReplaceKeyR(v_shapeset_path);
-
-		pMod->LoadFile(v_shapeset_path);
-	}
-}
-
 void BlocksAndPartsMod::LoadObjectDatabase()
 {
 	KeywordReplacer::SetModData(m_Directory, m_Uuid);
 
-	std::wstring lShapeSetDbPath;
-	if (BlocksAndPartsMod::GetShapeSetDatabaseFile(m_Directory, lShapeSetDbPath))
+	std::wstring v_shapedb_path;
+	if (BlocksAndPartsMod::GetShapeSetDatabaseFile(m_Directory, v_shapedb_path))
 	{
-		BlocksAndPartsMod::LoadShapeSetDatabase(lShapeSetDbPath, this);
+		SMMod::LoadShapeSetList(v_shapedb_path, this, true);
 	}
 	else
 	{
-		const std::wstring l_DatabaseFolder = m_Directory + L"/Objects/Database/ShapeSets";
-		if (File::Exists(l_DatabaseFolder))
+		const std::wstring v_shapesets_folder = m_Directory + L"/Objects/Database/ShapeSets";
+		if (File::Exists(v_shapesets_folder))
 		{
-			this->ScanDatabaseFolder(l_DatabaseFolder);
+			this->ScanDatabaseFolder(v_shapesets_folder, true);
 		}
 	}
 }

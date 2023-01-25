@@ -8,7 +8,6 @@ class TerrainAssetsMod : public SMMod
 {
 	static bool GetValidAssetDatabaseFolder(const std::wstring& mod_path, std::wstring& r_asset_db);
 	static bool GetAssetSetDatabaseFile(const std::wstring& asset_db_dir, std::wstring& r_asset_set);
-	static void LoadAssetSetDatabase(const std::wstring& path, SMMod* pMod);
 
 public:
 	TerrainAssetsMod() = default;

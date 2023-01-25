@@ -28,7 +28,7 @@ void TileConv::WriteToFileInternal(Tile* pTile, const std::wstring& tile_name, C
 	pTile->WriteToFile(tile_dir_path + L"/", tile_name);
 }
 
-void TileConv::ConvertToModel(const std::wstring& tile_path, const std::wstring& tile_name, ConvertError& cError)
+void TileConv::ConvertToModel(const std::wstring& tile_path, const std::wstring& tile_name, ConvertError& cError, CustomGame* v_custom_game)
 {
 	if (!File::IsRegularFile(tile_path))
 	{
@@ -36,13 +36,41 @@ void TileConv::ConvertToModel(const std::wstring& tile_path, const std::wstring&
 		return;
 	}
 
+	Tile* v_output_tile = nullptr;
+	if (v_custom_game)
 	{
-		Tile* pOutTile = TileReader::ReadTile<false>(tile_path, cError);
+		//Sets the path replacement for $CONTENT_DATA
+		SMMod* v_custom_game_mod = v_custom_game;
+		v_custom_game_mod->SetContentKey();
 
-		TileConv::WriteToFileInternal(pOutTile, tile_name, cError);
+		//Set the data from custom game
+		const auto v_part_list_copy = SMMod::PartStorage;
+		const auto v_block_list_copy = SMMod::BlockStorage;
+		const auto v_hvs_list_copy = SMMod::HarvestableStorage;
+		const auto v_asset_list_copy = SMMod::AssetStorage;
 
-		delete pOutTile; //clear the tile data
+		SMMod::PartStorage = v_custom_game_mod->m_Parts;
+		SMMod::BlockStorage = v_custom_game_mod->m_Blocks;
+		SMMod::HarvestableStorage = v_custom_game_mod->m_Harvestables;
+		SMMod::AssetStorage = v_custom_game_mod->m_Assets;
 
-		ModelStorage::ClearStorage(); // clear the cache
+		v_output_tile = TileReader::ReadTile<false>(tile_path, cError);
+
+		//Set the original content back
+		SMMod::PartStorage = v_part_list_copy;
+		SMMod::BlockStorage = v_block_list_copy;
+		SMMod::HarvestableStorage = v_hvs_list_copy;
+		SMMod::AssetStorage = v_asset_list_copy;
+
+		KeywordReplacer::ClearContentKey();
 	}
+	else
+	{
+		v_output_tile = TileReader::ReadTile<false>(tile_path, cError);
+	}
+
+	TileConv::WriteToFileInternal(v_output_tile, tile_name, cError);
+
+	delete v_output_tile;
+	ModelStorage::ClearStorage();
 }

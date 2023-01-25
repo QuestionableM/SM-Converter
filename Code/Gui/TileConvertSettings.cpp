@@ -1,6 +1,7 @@
 #include "TileConvertSettings.h"
 
 #include "Converter\ConvertSettings.hpp"
+#include "ObjectDatabase\Mods\CustomGameMod.hpp"
 
 #include "Utils\String.hpp"
 #include "Utils\File.hpp"
@@ -37,6 +38,12 @@ namespace SMConverter
 			0,
 			reinterpret_cast<LPARAM>(L"Enter a tile name")
 		);
+
+		m_cb_customGame->Items->Add(L"None");
+		for (const CustomGame* v_custom_game : SMMod::GetCustomGames())
+			m_cb_customGame->Items->Add(gcnew System::String(v_custom_game->GetName().c_str()));
+
+		m_cb_customGame->SelectedIndex = 0;
 	}
 
 	TileConvertSettings::~TileConvertSettings()

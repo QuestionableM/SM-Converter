@@ -8,7 +8,7 @@
 
 #pragma unmanaged
 
-void DecalsetListReader::Load(const simdjson::dom::element& j_data, SMMod* mod)
+void DecalsetListReader::Load(const simdjson::dom::element& j_data, SMMod* mod, const bool& add_to_global_db)
 {
 	if (!j_data.is_array()) return;
 
@@ -22,6 +22,6 @@ void DecalsetListReader::Load(const simdjson::dom::element& j_data, SMMod* mod)
 		std::wstring v_set_path_str = String::ToWide(v_set_path.get_string());
 		KeywordReplacer::ReplaceKeyR(v_set_path_str);
 
-		DecalsetReader::LoadFromFile(v_set_path_str, mod);
+		DecalsetReader::LoadFromFile(v_set_path_str, mod, add_to_global_db);
 	}
 }
