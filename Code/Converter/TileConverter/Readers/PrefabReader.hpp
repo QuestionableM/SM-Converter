@@ -83,21 +83,22 @@ public:
 
 			const int string_length = memory.Object<int>(index);
 			index += 4;
-			const std::vector<char> path = memory.Objects<char>(index, string_length);
+			const std::string v_path = memory.String(index, string_length);
 			index += string_length;
 
 			const int bVar2 = (int)memory.Object<Byte>(index) & 0xff;
 			index += 1;
-			const std::vector<char> flag = memory.Objects<char>(index, bVar2);
+			const std::string v_flag = memory.String(index, bVar2);
 			index += bVar2;
 			index += 4;
 
-			const std::wstring wide_path = String::ToWide(std::string(path.begin(), path.end()));
-			const std::wstring pref_path = KeywordReplacer::ReplaceKey(wide_path);
-			const std::wstring pref_flag = String::ToWide(std::string(flag.begin(), flag.end()));
-			DebugOutL("Prefab Path: ", pref_path);
+			std::wstring v_pref_path = String::ToWide(v_path);
+			KeywordReplacer::ReplaceKeyR(v_pref_path);
 
-			SMPrefab* v_new_prefab = PrefabFileReader::Read<t_mod_counter>(pref_path, pref_flag);
+			const std::wstring v_pref_flag = String::ToWide(v_flag);
+			DebugOutL("Prefab Path: ", v_pref_path);
+
+			SMPrefab* v_new_prefab = PrefabFileReader::Read<t_mod_counter>(v_pref_path, v_pref_flag);
 			if constexpr (!t_mod_counter)
 			{
 				if (!v_new_prefab) continue;

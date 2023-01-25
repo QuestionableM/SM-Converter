@@ -70,20 +70,16 @@ public:
 				const int val_len = (int)memory.Object<Byte>(index) & 0xff;
 				index++;
 
-				std::vector<char> value_data = memory.Objects<char>(index, val_len);
+				value = memory.String(index, val_len);
 				index += val_len;
-
-				value = std::string(value_data.begin(), value_data.end());
 			}
 			else
 			{
 				const int val_len = memory.Object<int>(index);
 				index += 4;
 
-				std::vector<char> value_data = memory.Objects<char>(index, val_len);
+				value = memory.String(index, val_len);
 				index += val_len;
-
-				value = std::string(value_data.begin(), value_data.end());
 			}
 
 			if (version >= 13)
