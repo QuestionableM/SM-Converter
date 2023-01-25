@@ -13,24 +13,19 @@ namespace fs = std::filesystem;
 
 #pragma unmanaged
 
-std::vector<Byte> File::ReadFileBytes(const std::wstring& path)
+bool File::ReadFileBytes(const std::wstring& path, std::vector<Byte>& bytes)
 {
 	std::ifstream input_file(path, std::ios::binary);
-	std::vector<Byte> file_bytes = {};
+	if (!input_file.is_open()) return false;
 
-	if (input_file.is_open())
-	{
-		input_file.seekg(0, std::ios::end);
-		const std::size_t file_size = static_cast<std::size_t>(input_file.tellg());
-		input_file.seekg(0, std::ios::beg);
+	input_file.seekg(0, std::ios::end);
+	bytes.resize(static_cast<std::size_t>(input_file.tellg()));
+	input_file.seekg(0, std::ios::beg);
 
-		file_bytes.resize(file_size);
-		input_file.read(reinterpret_cast<char*>(file_bytes.data()), file_size);
+	input_file.read(reinterpret_cast<char*>(bytes.data()), bytes.size());
 
-		input_file.close();
-	}
-
-	return file_bytes;
+	input_file.close();
+	return !bytes.empty();
 }
 
 bool File::ReadToString(const std::wstring& path, std::string& r_output)

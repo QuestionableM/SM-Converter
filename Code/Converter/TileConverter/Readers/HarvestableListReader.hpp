@@ -31,37 +31,35 @@ public:
 			if (!TileConverterSettings::ExportHarvestables) return;
 		}
 
+		const int v_tile_version = part->GetParent()->GetVersion();
 		for (int a = 0; a < 4; a++)
 		{
-			const int harvestableListCompressedSize = header->harvestableListCompressedSize[a];
-			const int harvestableListSize = header->harvestableListSize[a];
+			const int v_hvs_list_compressed_sz = header->harvestableListCompressedSize[a];
+			const int v_hvs_list_sz = header->harvestableListSize[a];
+			const int v_hvs_list_count = header->harvestableListCount[a];
 
-			if (header->harvestableListCount[a] == 0)
+			if (v_hvs_list_count == 0)
 				continue;
 
-			DebugOutL("Harvestable[", a, "]: ", harvestableListSize, ", ", harvestableListCompressedSize);
+			DebugOutL("Harvestable[", a, "]: ", v_hvs_list_sz, ", ", v_hvs_list_compressed_sz);
 
-			const std::vector<Byte> compressed = reader.Objects<Byte>(header->harvestableListIndex[a], harvestableListCompressedSize);
-
-			std::vector<Byte> bytes = {};
-			bytes.resize(harvestableListSize);
-
-			const int v_tile_version = part->GetParent()->GetVersion();
+			const std::vector<Byte> compressed = reader.Objects<Byte>(header->harvestableListIndex[a], v_hvs_list_compressed_sz);
+			std::vector<Byte> bytes(v_hvs_list_sz);
 
 			int debugSize = Lz4::DecompressFast(reinterpret_cast<const char*>(compressed.data()),
-				reinterpret_cast<char*>(bytes.data()), header->harvestableListSize[a]);
-			if (debugSize != harvestableListCompressedSize)
+				reinterpret_cast<char*>(bytes.data()), v_hvs_list_sz);
+			if (debugSize != v_hvs_list_compressed_sz)
 			{
-				DebugErrorL("debugSize: ", debugSize, ", harvestableListCompressedSize: ", harvestableListCompressedSize);
-				cError = ConvertError(1, L"HarvestableListReader::Read -> debugSize != harvestableListCompressedSize\nTile Version: " + std::to_wstring(v_tile_version));
+				DebugErrorL("debugSize: ", debugSize, ", v_hvs_list_compressed_sz: ", v_hvs_list_compressed_sz);
+				cError = ConvertError(1, L"HarvestableListReader::Read -> debugSize != v_hvs_list_compressed_sz\nTile Version: " + std::to_wstring(v_tile_version));
 				return;
 			}
 
-			debugSize = HarvestableListReader::Read<t_mod_counter>(bytes, a, header->harvestableListCount[a], v_tile_version, part);
-			if (debugSize != header->harvestableListSize[a])
+			debugSize = HarvestableListReader::Read<t_mod_counter>(bytes, a, v_hvs_list_count, v_tile_version, part);
+			if (debugSize != v_hvs_list_sz)
 			{
-				DebugErrorL("debugSize: ", debugSize, ", header->harvestableListSize[", a, "]: ", header->harvestableListSize[a]);
-				cError = ConvertError(1, L"HarvestableListReader::Read -> debugSize != header->harvestableListSize[a]\nTile Version: " + std::to_wstring(v_tile_version));
+				DebugErrorL("debugSize: ", debugSize, ", v_hvs_list_sz: ", v_hvs_list_sz);
+				cError = ConvertError(1, L"HarvestableListReader::Read -> debugSize != v_hvs_list_sz\nTile Version: " + std::to_wstring(v_tile_version));
 				return;
 			}
 		}

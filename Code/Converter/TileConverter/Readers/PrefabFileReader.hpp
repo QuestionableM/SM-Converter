@@ -27,15 +27,14 @@ public:
 	template<bool t_mod_counter>
 	static SMPrefab* Read(const std::wstring& path, const std::wstring& flag)
 	{
-		std::vector<Byte> bytes = File::ReadFileBytes(path);
-
-		if (bytes.size() == 0)
+		std::vector<Byte> v_bytes;
+		if (!File::ReadFileBytes(path, v_bytes))
 		{
 			DebugErrorL("Couldn't read the specified prefab file: ", path);
 			return nullptr;
 		}
 
-		return PrefabFileReader::Read<t_mod_counter>(bytes, path, flag);
+		return PrefabFileReader::Read<t_mod_counter>(v_bytes, path, flag);
 	}
 
 	template<bool t_mod_counter>
@@ -144,10 +143,11 @@ public:
 	{
 		for (int a = 0; a < count; a++)
 		{
-			const int l_StringLength = stream.ReadInt();
-			const std::wstring l_PrefLocalPath = String::ToWide(stream.ReadString(l_StringLength));
-			const std::wstring l_PrefFullPath = KeywordReplacer::ReplaceKey(l_PrefLocalPath);
-			DebugOutL(0b1011_fg, "Recursive Prefab Path: ", l_PrefFullPath);
+			const int v_str_length = stream.ReadInt();
+			std::wstring v_pref_path = String::ToWide(stream.ReadString(v_str_length));
+			KeywordReplacer::ReplaceKeyR(v_pref_path);
+
+			DebugOutL(0b1011_fg, "Recursive Prefab Path: ", v_pref_path);
 
 			const glm::vec3 f_pos = stream.ReadVec3();
 			const glm::quat f_quat = stream.ReadQuat();
@@ -167,13 +167,13 @@ public:
 
 			if constexpr (t_mod_counter)
 			{
-				PrefabFileReader::Read<t_mod_counter>(l_PrefFullPath, L"");
+				PrefabFileReader::Read<t_mod_counter>(v_pref_path, L"");
 			}
 			else
 			{
 				if (TileConverterSettings::ExportPrefabs)
 				{
-					SMPrefab* rec_prefab = PrefabFileReader::Read<t_mod_counter>(l_PrefFullPath, L"");
+					SMPrefab* rec_prefab = PrefabFileReader::Read<t_mod_counter>(v_pref_path, L"");
 					if (!rec_prefab) continue;
 
 					rec_prefab->SetPosition(f_pos);

@@ -27,8 +27,8 @@ class TileReader
 public:
 	static bool ReadTileHeader(const std::wstring& path, TileHeaderBaseInfo& v_header, ConvertError& cError)
 	{
-		std::vector<std::uint8_t> v_file_bytes = File::ReadFileBytes(path);
-		if (v_file_bytes.empty())
+		std::vector<Byte> v_file_bytes;
+		if (!File::ReadFileBytes(path, v_file_bytes))
 		{
 			cError = ConvertError(1, L"TileReader::ReadTile -> Couldn't read the file");
 			return false;
@@ -75,9 +75,11 @@ public:
 	template<bool t_mod_counter>
 	static Tile* ReadTile(const std::wstring& path, ConvertError& cError)
 	{
-		std::vector<Byte> file_bytes = File::ReadFileBytes(path);
+		std::vector<Byte> v_file_bytes;
+		if (!File::ReadFileBytes(path, v_file_bytes))
+			return nullptr;
 
-		return TileReader::ReadTile<t_mod_counter>(file_bytes, cError);
+		return TileReader::ReadTile<t_mod_counter>(v_file_bytes, cError);
 	}
 
 	template<bool t_mod_counter>

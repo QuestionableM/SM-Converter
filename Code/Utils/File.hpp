@@ -12,7 +12,7 @@
 
 namespace File
 {
-	std::vector<Byte> ReadFileBytes(const std::wstring& path);
+	bool ReadFileBytes(const std::wstring& path, std::vector<Byte>& bytes);
 
 	//Reads binary string
 	bool ReadToString(const std::wstring& path, std::string& r_output);

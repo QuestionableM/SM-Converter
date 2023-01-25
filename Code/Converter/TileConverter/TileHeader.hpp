@@ -60,11 +60,9 @@ public:
 	static TileHeader* ReadTile(const std::vector<Byte>& bytes, ConvertError& cError)
 	{
 		MemoryWrapper mMemory = bytes;
-	
-		std::vector<char> tile_keyword = mMemory.NextObjects<char>(4);
-		std::string tile_key(tile_keyword.begin(), tile_keyword.end());
 
-		if (tile_key != "TILE")
+		const std::string v_tile_key = mMemory.NextString(4);
+		if (v_tile_key != "TILE")
 		{
 			DebugOutL("Invalid File");
 			cError = ConvertError(1, L"TileHeader::ReadTile -> Invalid File");
