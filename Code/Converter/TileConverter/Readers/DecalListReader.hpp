@@ -18,7 +18,7 @@ class DecalListReader
 	DecalListReader() = default;
 
 public:
-	template<bool t_mod_counter>
+	template<bool t_mod_counter, int t_tile_version>
 	inline static void Read(CellHeader* header, MemoryWrapper& reader, TilePart* part, ConvertError& cError)
 	{
 		if (cError) return;
@@ -30,7 +30,6 @@ public:
 		if (header->decalCount == 0) return;
 
 		DebugOutL("Decal: ", header->decalSize, " / ", header->decalCompressedSize);
-		const int v_tile_version = part->GetParent()->GetVersion();
 
 		const std::vector<Byte> compressed = reader.Objects<Byte>(header->decalIndex, header->decalCompressedSize);
 		std::vector<Byte> bytes(header->decalSize);
@@ -40,47 +39,41 @@ public:
 		if (debugSize != header->decalCompressedSize)
 		{
 			DebugErrorL("Debug Size: ", debugSize, ", header->decalCompressedSize: ", header->decalCompressedSize);
-			cError = ConvertError(1, L"DecalListReader::Read -> debugSize != header->decalCompressedSize\nTile Version: " + std::to_wstring(v_tile_version));
+			cError = ConvertError(1, L"DecalListReader::Read -> debugSize != header->decalCompressedSize\nTile Version: " + std::to_wstring(t_tile_version));
 			return;
 		}
 
-		debugSize = DecalListReader::Read<t_mod_counter>(bytes, header->decalCount, part);
+		debugSize = DecalListReader::Read<t_mod_counter, t_tile_version>(bytes, header->decalCount, part);
 		if (debugSize != header->decalSize)
 		{
 			DebugErrorL("Debug Size: ", debugSize, ", header->decalSize: ", header->decalSize);
-			cError = ConvertError(1, L"DecalListReader::Read -> debugSize != header->decalSize\nTile Version: " + std::to_wstring(v_tile_version));
+			cError = ConvertError(1, L"DecalListReader::Read -> debugSize != header->decalSize\nTile Version: " + std::to_wstring(t_tile_version));
 			return;
 		}
 	}
 
-	template<bool t_mod_counter>
+	template<bool t_mod_counter, int t_tile_version>
 	inline static int Read(const std::vector<Byte>& bytes, const int& decal_count, TilePart* part)
 	{
-		const int version = part->GetParent()->GetVersion();
-
 		MemoryWrapper memory(bytes);
 
 		int index = 0;
 		for (int a = 0; a < decal_count; a++)
 		{
-			const glm::vec3 v_pos = memory.Object<glm::vec3>(index);
-			const glm::quat v_quat = memory.GetQuat(index + 0xc);
-			const glm::vec3 v_size = memory.Object<glm::vec3>(index + 0x1c);
-			index += 0x28;
+			const glm::vec3 v_pos = memory.Object<glm::vec3>(index); //12 bytes
+			const glm::quat v_quat = memory.GetQuat(index + 0xc); //16 bytes
+			const glm::vec3 v_size = memory.Object<glm::vec3>(index + 0x1c); //12 bytes
 
-			const SMUuid v_uuid = memory.Object<SMUuid>(index);
-			index += 0x10;
+			const SMUuid v_uuid = memory.Object<SMUuid>(index + 0x28); //16 bytes
+			const SMColor v_color = memory.Object<unsigned int>(index + 0x38); //4 bytes
+			//A random value that is 4 bytes (skipped)
 
-			const SMColor v_color = memory.Object<unsigned int>(index);
-			index += 0x4;
-
-			//Some value that takes 4 bytes
-			index += 0x4;
-
-			if (version >= 12)
-			{
+			//Final increment is 64
+			if constexpr (t_tile_version >= 12) {
 				//Skip a random byte that was added in the newest versions of tiles
-				index++;
+				index += 0x41;
+			} else {
+				index += 0x40;
 			}
 
 			const DecalData* v_decalData = SMMod::GetGlobalDecal(v_uuid);

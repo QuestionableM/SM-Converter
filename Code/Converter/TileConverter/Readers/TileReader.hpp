@@ -82,12 +82,22 @@ public:
 		return TileReader::ReadTile<t_mod_counter>(v_file_bytes, cError);
 	}
 
+	template<bool t_mod_counter, int t_tile_version>
+	inline static void ReadTileData(CellHeader* v_header, MemoryWrapper& v_reader, TilePart* v_part, ConvertError& v_error)
+	{
+		AssetListReader::Read<t_mod_counter, t_tile_version>      (v_header, v_reader, v_part, v_error);
+		PrefabReader::Read<t_mod_counter, t_tile_version>         (v_header, v_reader, v_part, v_error);
+		BlueprintListReader::Read<t_mod_counter, t_tile_version>  (v_header, v_reader, v_part, v_error);
+		HarvestableListReader::Read<t_mod_counter, t_tile_version>(v_header, v_reader, v_part, v_error);
+		DecalListReader::Read<t_mod_counter, t_tile_version>      (v_header, v_reader, v_part, v_error);
+	}
+
 	template<bool t_mod_counter>
-	static Tile* ReadTile(const std::vector<Byte>& tile_data, ConvertError& cError)
+	static Tile* ReadTile(const std::vector<Byte>& tile_data, ConvertError& v_error)
 	{
 		ProgCounter::SetState(ProgState::ReadingTile, 0);
 
-		TileHeader* header = TileHeader::ReadTile(tile_data, cError);
+		TileHeader* header = TileHeader::ReadTile(tile_data, v_error);
 		if (!header) return nullptr;
 
 	#if defined(DEBUG) || defined(_DEBUG)
@@ -111,6 +121,31 @@ public:
 		}
 	#endif
 
+		const int v_tileVersion = header->m_data.version;
+		if (v_tileVersion < 0 || v_tileVersion > 13)
+		{
+			v_error = ConvertError(1, L"Unsupported Tile Version: " + std::to_wstring(v_tileVersion));
+			return nullptr;
+		}
+
+		using u_tile_loader_function = void (*)(CellHeader*, MemoryWrapper&, TilePart*, ConvertError&);
+		const static u_tile_loader_function v_tile_loaders[] =
+		{
+			TileReader::ReadTileData<t_mod_counter, 1>,
+			TileReader::ReadTileData<t_mod_counter, 2>,
+			TileReader::ReadTileData<t_mod_counter, 3>,
+			TileReader::ReadTileData<t_mod_counter, 4>,
+			TileReader::ReadTileData<t_mod_counter, 5>,
+			TileReader::ReadTileData<t_mod_counter, 6>,
+			TileReader::ReadTileData<t_mod_counter, 7>,
+			TileReader::ReadTileData<t_mod_counter, 8>,
+			TileReader::ReadTileData<t_mod_counter, 9>,
+			TileReader::ReadTileData<t_mod_counter, 10>,
+			TileReader::ReadTileData<t_mod_counter, 11>,
+			TileReader::ReadTileData<t_mod_counter, 12>,
+			TileReader::ReadTileData<t_mod_counter, 13>
+		};
+
 		MemoryWrapper reader(header->TileData());
 
 		const int tileXSize = header->m_data.width;
@@ -123,9 +158,10 @@ public:
 
 		if (tileYSize > 0)
 		{
+			u_tile_loader_function v_current_loader = v_tile_loaders[v_tileVersion - 1];
 			for (int y = 0; y < tileYSize; y++)
 			{
-				if (cError) break;
+				if (v_error) break;
 
 				for (int x = 0; x < tileXSize; x++)
 				{
@@ -136,23 +172,19 @@ public:
 					{
 						if (header->m_data.type == 0)
 						{
-							MipReader::Read(h, reader, part, cError);
-							ClutterReader::Read(h, reader, part, cError);
+							MipReader::Read(h, reader, part, v_error);
+							ClutterReader::Read(h, reader, part, v_error);
 						}
 					}
 				
-					AssetListReader::Read<t_mod_counter>      (h, reader, part, cError);
-					PrefabReader::Read<t_mod_counter>         (h, reader, part, cError);
-					BlueprintListReader::Read<t_mod_counter>  (h, reader, part, cError);
-					HarvestableListReader::Read<t_mod_counter>(h, reader, part, cError);
-					DecalListReader::Read<t_mod_counter>      (h, reader, part, cError);
+					v_current_loader(h, reader, part, v_error);
 				}
 			}
 		}
 
 		delete header;
 
-		if (cError)
+		if (v_error)
 		{
 			delete tile;
 			return nullptr;

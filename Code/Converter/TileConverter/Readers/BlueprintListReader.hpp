@@ -14,7 +14,7 @@ class BlueprintListReader
 	BlueprintListReader() = default;
 
 public:
-	template<bool t_mod_counter>
+	template<bool t_mod_counter, int t_tile_version>
 	static void Read(CellHeader* header, MemoryWrapper& reader, TilePart* part, ConvertError& cError)
 	{
 		if (cError) return;
@@ -26,7 +26,6 @@ public:
 		if (header->blueprintListCount == 0 || header->blueprintListIndex == 0) return;
 
 		DebugOutL("BlueprintList: ", header->blueprintListSize, " / ", header->blueprintListCompressedSize);
-		const int v_tile_version = part->GetParent()->GetVersion();
 
 		std::vector<Byte> compressed = reader.Objects<Byte>(header->blueprintListIndex, header->blueprintListCompressedSize);
 		std::vector<Byte> bytes(header->blueprintListSize);
@@ -36,23 +35,22 @@ public:
 		if (debugSize != header->blueprintListCompressedSize)
 		{
 			DebugErrorL("DebugSize: ", debugSize, ", header->blueprintListCompressedSize: ", header->blueprintListCompressedSize);
-			cError = ConvertError(1, L"BlueprintListReader::Read -> debugSize != header->blueprintListCompressedSize\nTile Version: " + std::to_wstring(v_tile_version));
+			cError = ConvertError(1, L"BlueprintListReader::Read -> debugSize != header->blueprintListCompressedSize\nTile Version: " + std::to_wstring(t_tile_version));
 			return;
 		}
 
-		debugSize = BlueprintListReader::Read<t_mod_counter>(bytes, header->blueprintListCount, part);
+		debugSize = BlueprintListReader::Read<t_mod_counter, t_tile_version>(bytes, header->blueprintListCount, part);
 		if (debugSize != header->blueprintListSize)
 		{
 			DebugErrorL("DebugSize: ", debugSize, ", header->blueprintListSize: ", header->blueprintListSize);
-			cError = ConvertError(1, L"BlueprintListReader::Read -> debugSize != header->blueprintListSize\nTile Version: " + std::to_wstring(v_tile_version));
+			cError = ConvertError(1, L"BlueprintListReader::Read -> debugSize != header->blueprintListSize\nTile Version: " + std::to_wstring(t_tile_version));
 			return;
 		}
 	}
 
-	template<bool t_mod_counter>
+	template<bool t_mod_counter, int t_tile_version>
 	static int Read(const std::vector<Byte>& bytes, const int& count, TilePart* part)
 	{
-		const int version = part->GetParent()->GetVersion();
 		MemoryWrapper memory(bytes);
 
 		int index = 0;
@@ -63,7 +61,7 @@ public:
 			index += 0x1c;
 
 			std::string value;
-			if (version < 7)
+			if constexpr (t_tile_version < 7)
 			{
 				const int val_len = (int)memory.Object<Byte>(index) & 0xff;
 				index++;
@@ -80,7 +78,7 @@ public:
 				index += val_len;
 			}
 
-			if (version >= 13)
+			if constexpr (t_tile_version >= 13)
 			{
 				//Skip a random null byte that was added in the newest versions of tiles
 				index++;

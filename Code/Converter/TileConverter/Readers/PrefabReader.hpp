@@ -18,7 +18,7 @@ class PrefabReader
 	PrefabReader() = default;
 
 public:
-	template<bool t_mod_counter>
+	template<bool t_mod_counter, int t_tile_version>
 	static void Read(CellHeader* header, MemoryWrapper& reader, TilePart* part, ConvertError& v_error)
 	{
 		if (v_error) return;
@@ -34,36 +34,33 @@ public:
 		std::vector<Byte> compressed = reader.Objects<Byte>(header->prefabIndex, header->prefabCompressedSize);
 		std::vector<Byte> bytes(header->prefabSize);
 
-		const int v_tile_version = part->GetParent()->GetVersion();
-
 		int debugSize = Lz4::DecompressFast(reinterpret_cast<const char*>(compressed.data()),
 			reinterpret_cast<char*>(bytes.data()), header->prefabSize);
 		if (debugSize != header->prefabCompressedSize)
 		{
 			DebugErrorL("DebugSize: ", debugSize, ", header->prefabCompressedSize: ", header->prefabCompressedSize);
-			v_error = ConvertError(1, L"PrefabReader::Read -> debugSize != header->prefabCompressedSize\nTile Version: " + std::to_wstring(v_tile_version));
+			v_error = ConvertError(1, L"PrefabReader::Read -> debugSize != header->prefabCompressedSize\nTile Version: " + std::to_wstring(t_tile_version));
 			return;
 		}
 
-		debugSize = PrefabReader::Read<t_mod_counter>(bytes, header->prefabCount, part, v_error);
+		debugSize = PrefabReader::Read<t_mod_counter, t_tile_version>(bytes, header->prefabCount, part, v_error);
 		if (debugSize != header->prefabSize)
 		{
 			//If the error happened in the PrefabReader::Read, then don't overwrite it with the one below
 			if (v_error) return;
 
 			DebugErrorL("DebugSize: ", debugSize, ", header->prefabSize: ", header->prefabSize);
-			v_error = ConvertError(1, L"PrefabReader::Read -> debugSize != header->prefabSize\nTile Version: " + std::to_wstring(v_tile_version));
+			v_error = ConvertError(1, L"PrefabReader::Read -> debugSize != header->prefabSize\nTile Version: " + std::to_wstring(t_tile_version));
 			return;
 		}
 	}
 
-	template<bool t_mod_counter>
+	template<bool t_mod_counter, int t_tile_version>
 	static int Read(const std::vector<Byte>& bytes, const int& prefabCount, TilePart* part, ConvertError& v_error)
 	{
-		int index = 0;
 		MemoryWrapper memory(bytes);
-		const int version = part->GetParent()->GetVersion();
 
+		int index = 0;
 		for (int a = 0; a < prefabCount; a++)
 		{
 			const glm::vec3 f_pos = memory.Object<glm::vec3>(index);
@@ -71,7 +68,7 @@ public:
 			
 			glm::vec3 f_size;
 
-			if (version < 9)
+			if constexpr (t_tile_version < 9)
 			{
 				f_size = glm::vec3(1.0f);
 				index += 0x1c;
