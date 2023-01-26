@@ -399,7 +399,7 @@ namespace SMConverter
 			});
 			this->m_cms_tile->Name = L"m_cms_tile";
 			this->m_cms_tile->RenderMode = System::Windows::Forms::ToolStripRenderMode::System;
-			this->m_cms_tile->Size = System::Drawing::Size(210, 126);
+			this->m_cms_tile->Size = System::Drawing::Size(210, 104);
 			// 
 			// m_btn_openTileInSteamWorkshop
 			// 
@@ -473,6 +473,7 @@ namespace SMConverter
 			this->Name = L"MainGui";
 			this->ShowIcon = false;
 			this->Text = L"Scrap Mechanic Converter";
+			this->FormClosing += gcnew System::Windows::Forms::FormClosingEventHandler(this, &MainGui::MainGui_FormClosing);
 			this->Shown += gcnew System::EventHandler(this, &MainGui::MainGui_Shown);
 			this->Resize += gcnew System::EventHandler(this, &MainGui::MainGui_Resize);
 			this->m_menuStrip->ResumeLayout(false);
@@ -542,5 +543,7 @@ namespace SMConverter
 
 		System::Void MainGui_ShowBlueprintInfo_Click(System::Object^ sender, System::EventArgs^ e);
 		System::Void MainGui_ShowTileInfo_Click(System::Object^ sender, System::EventArgs^ e);
+
+		System::Void MainGui_FormClosing(System::Object^ sender, System::Windows::Forms::FormClosingEventArgs^ e);
 	};
 }

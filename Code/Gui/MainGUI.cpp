@@ -1107,4 +1107,21 @@ namespace SMConverter
 		if (v_tile_info_gui->m_isSuccess)
 			v_tile_info_gui->ShowDialog();
 	}
+
+	void MainGui::MainGui_FormClosing(System::Object^ sender, System::Windows::Forms::FormClosingEventArgs^ e)
+	{
+		namespace WForms = System::Windows::Forms;
+
+		if (!m_bw_objectConverter->IsBusy) return;
+
+		const WForms::DialogResult v_dialog_result = WForms::MessageBox::Show(
+			"Do you really want to close the program while an item is being converted?\n\nClosing the program might produce a corrupt model!",
+			"Closing",
+			WForms::MessageBoxButtons::YesNo,
+			WForms::MessageBoxIcon::Question
+		);
+
+		if (v_dialog_result != WForms::DialogResult::Yes)
+			e->Cancel = true;
+	}
 }
