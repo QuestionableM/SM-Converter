@@ -61,13 +61,13 @@ public:
 
 		if (v_header.hasBlueprints != 0)
 		{
-			const int v_blueprint_bytes = PrefabFileReader::ReadBlueprints<t_mod_counter>(v_stream, prefab, v_header.blueprintCount, version);
+			const int v_blueprint_bytes = PrefabFileReader::ReadBlueprints<t_mod_counter>(v_stream, prefab, v_header, version);
 			THROW_PREFAB_ERROR(v_blueprint_bytes != v_header.hasBlueprints, v_error);
 		}
 
 		if (v_header.hasPrefabs != 0)
 		{
-			const int v_prefab_bytes = PrefabFileReader::ReadPrefabs<t_mod_counter>(v_stream, prefab, v_header.prefabCount, version, v_error);
+			const int v_prefab_bytes = PrefabFileReader::ReadPrefabs<t_mod_counter>(v_stream, prefab, v_header, version, v_error);
 			if (v_error) return;
 
 			THROW_PREFAB_ERROR(v_prefab_bytes != v_header.hasPrefabs, v_error);
@@ -79,13 +79,13 @@ public:
 
 		if (v_header.hasAssets != 0)
 		{
-			const int v_asset_bytes = PrefabFileReader::ReadAssets<t_mod_counter>(v_stream, prefab, v_header.assetCount, version);
+			const int v_asset_bytes = PrefabFileReader::ReadAssets<t_mod_counter>(v_stream, prefab, v_header, version);
 			THROW_PREFAB_ERROR(v_asset_bytes != v_header.hasAssets, v_error);
 		}
 
 		if (v_header.hasDecals != 0)
 		{
-			const int v_decal_bytes = PrefabFileReader::ReadDecals<t_mod_counter>(v_stream, prefab, v_header.decalsCount, version);
+			const int v_decal_bytes = PrefabFileReader::ReadDecals<t_mod_counter>(v_stream, prefab, v_header, version);
 			THROW_PREFAB_ERROR(v_decal_bytes != v_header.hasDecals, v_error);
 		}
 
@@ -135,12 +135,18 @@ public:
 	}
 
 	template<bool t_mod_counter>
-	static int ReadBlueprints(BitStream& stream, SMPrefab* prefab, const int& count, const int& version)
+	static int ReadBlueprints(BitStream& stream, SMPrefab* prefab, PrefabHeader& v_header, const int& version)
 	{
+		if (!TileConverterSettings::ExportBlueprints)
+		{
+			stream.Move(v_header.hasBlueprints);
+			return v_header.hasBlueprints;
+		}
+
 		BIT_STREAM_DUMP_INTO_FILE(stream, L"./prefab_dump/prefab" + std::to_wstring(version) + L"_blueprints", 100);
 		const int v_idx_start = stream.Index();
 
-		for (int a = 0; a < count; a++)
+		for (int a = 0; a < v_header.blueprintCount; a++)
 		{
 			const int string_length = stream.ReadInt();
 			const std::string value = stream.ReadString(string_length);
@@ -160,16 +166,13 @@ public:
 			}
 			else
 			{
-				if (TileConverterSettings::ExportBlueprints)
-				{
-					SMBlueprint* blueprint = SMBlueprint::LoadAutomatic(value);
-					if (!blueprint) continue;
+				SMBlueprint* blueprint = SMBlueprint::LoadAutomatic(value);
+				if (!blueprint) continue;
 
-					blueprint->SetPosition(f_pos);
-					blueprint->SetRotation(f_quat);
+				blueprint->SetPosition(f_pos);
+				blueprint->SetRotation(f_quat);
 
-					prefab->AddObject(blueprint);
-				}
+				prefab->AddObject(blueprint);
 			}
 		}
 
@@ -177,12 +180,18 @@ public:
 	}
 
 	template<bool t_mod_counter>
-	static int ReadPrefabs(BitStream& stream, SMPrefab* prefab, const int& count, const int& version, ConvertError& v_error)
+	static int ReadPrefabs(BitStream& stream, SMPrefab* prefab, PrefabHeader& v_header, const int& version, ConvertError& v_error)
 	{
+		if (!TileConverterSettings::ExportPrefabs)
+		{
+			stream.Move(v_header.hasPrefabs);
+			return v_header.hasPrefabs;
+		}
+
 		BIT_STREAM_DUMP_INTO_FILE(stream, L"./prefab_dump/prefab" + std::to_wstring(version) + L"_prefabs", 100);
 		const int v_start_idx = stream.Index();
 
-		for (int a = 0; a < count; a++)
+		for (int a = 0; a < v_header.prefabCount; a++)
 		{
 			const int v_str_length = stream.ReadInt();
 			std::wstring v_pref_path = String::ToWide(stream.ReadString(v_str_length));
@@ -213,19 +222,16 @@ public:
 			}
 			else
 			{
-				if (TileConverterSettings::ExportPrefabs)
-				{
-					SMPrefab* rec_prefab = PrefabFileReader::Read<t_mod_counter>(v_pref_path, L"", v_error);
-					if (v_error) return 0;
+				SMPrefab* rec_prefab = PrefabFileReader::Read<t_mod_counter>(v_pref_path, L"", v_error);
+				if (v_error) return 0;
 
-					if (!rec_prefab) continue;
+				if (!rec_prefab) continue;
 
-					rec_prefab->SetPosition(f_pos);
-					rec_prefab->SetRotation(f_quat);
-					rec_prefab->SetSize(f_size);
+				rec_prefab->SetPosition(f_pos);
+				rec_prefab->SetRotation(f_quat);
+				rec_prefab->SetSize(f_size);
 
-					prefab->AddObject(rec_prefab);
-				}
+				prefab->AddObject(rec_prefab);
 			}
 		}
 
@@ -284,12 +290,18 @@ public:
 	}
 
 	template<bool t_mod_counter>
-	static int ReadAssets(BitStream& stream, SMPrefab* prefab, const int& count, const int& version)
+	static int ReadAssets(BitStream& stream, SMPrefab* prefab, PrefabHeader& v_header, const int& version)
 	{
+		if (!TileConverterSettings::ExportAssets)
+		{
+			stream.Move(v_header.hasAssets);
+			return v_header.hasAssets;
+		}
+
 		BIT_STREAM_DUMP_INTO_FILE(stream, L"./prefab_dump/prefab" + std::to_wstring(version) + L"_assets", 100);
 		const int v_idx_start = stream.Index();
 
-		for (int a = 0; a < count; a++)
+		for (int a = 0; a < v_header.assetCount; a++)
 		{
 			const glm::vec3 f_pos = stream.ReadVec3();
 			const glm::quat f_quat = stream.ReadQuat();
@@ -324,21 +336,18 @@ public:
 			}
 			else
 			{
-				if (TileConverterSettings::ExportAssets)
-				{
-					AssetData* asset_data = SMMod::GetGlobalAsset(uuid);
-					if (!asset_data) continue;
+				AssetData* asset_data = SMMod::GetGlobalAsset(uuid);
+				if (!asset_data) continue;
 
-					Model* pModel = ModelStorage::LoadModel(asset_data->m_mesh);
-					if (!pModel) continue;
+				Model* pModel = ModelStorage::LoadModel(asset_data->m_mesh);
+				if (!pModel) continue;
 
-					SMAsset* nAsset = new SMAsset(asset_data, pModel, color_map);
-					nAsset->SetPosition(f_pos);
-					nAsset->SetRotation(f_quat);
-					nAsset->SetSize(f_size);
+				SMAsset* nAsset = new SMAsset(asset_data, pModel, color_map);
+				nAsset->SetPosition(f_pos);
+				nAsset->SetRotation(f_quat);
+				nAsset->SetSize(f_size);
 
-					prefab->AddObject(nAsset);
-				}
+				prefab->AddObject(nAsset);
 			}
 		}
 
@@ -346,12 +355,18 @@ public:
 	}
 
 	template<bool t_mod_counter>
-	static int ReadDecals(BitStream& stream, SMPrefab* prefab, const int& count, const int& version)
+	static int ReadDecals(BitStream& stream, SMPrefab* prefab, PrefabHeader& v_header, const int& version)
 	{
+		if (!TileConverterSettings::ExportDecals)
+		{
+			stream.Move(v_header.hasDecals);
+			return v_header.hasDecals;
+		}
+
 		BIT_STREAM_DUMP_INTO_FILE(stream, L"./prefab_dump/prefab" + std::to_wstring(version) + L"_decals", 100);
 		const int v_start_idx = stream.Index();
 
-		for (int a = 0; a < count; a++)
+		for (int a = 0; a < v_header.decalsCount; a++)
 		{
 			const glm::vec3 v_pos = stream.ReadVec3();
 			const glm::quat v_quat = stream.ReadQuat();
@@ -370,18 +385,15 @@ public:
 			}
 			else
 			{
-				if (TileConverterSettings::ExportDecals)
-				{
-					const DecalData* v_decalData = SMMod::GetGlobalDecal(v_uuid);
-					if (!v_decalData) continue;
+				const DecalData* v_decalData = SMMod::GetGlobalDecal(v_uuid);
+				if (!v_decalData) continue;
 
-					SMDecal* v_newDecal = new SMDecal(v_decalData, v_color);
-					v_newDecal->SetPosition(v_pos);
-					v_newDecal->SetRotation(v_quat);
-					v_newDecal->SetSize(v_size);
+				SMDecal* v_newDecal = new SMDecal(v_decalData, v_color);
+				v_newDecal->SetPosition(v_pos);
+				v_newDecal->SetRotation(v_quat);
+				v_newDecal->SetSize(v_size);
 
-					prefab->AddObject(v_newDecal);
-				}
+				prefab->AddObject(v_newDecal);
 			}
 		}
 
