@@ -48,9 +48,6 @@ inline void MergeMaps(std::unordered_map<SMUuid, T*>& v_output, std::unordered_m
 
 void TileConv::ConvertToModel(const std::wstring& tile_path, const std::wstring& tile_name, ConvertError& cError, CustomGame* v_custom_game)
 {
-	const auto test = SMMod::PartStorage.find(SMUuid());
-
-
 	if (!File::IsRegularFile(tile_path))
 	{
 		cError = ConvertError(1, L"The specified path leads to a directory");

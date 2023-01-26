@@ -19,13 +19,27 @@
 
 #pragma unmanaged
 
+#define STR_WIDE(n) L ## n
+#define STR_WIDE2(n) STR_WIDE(#n)
+#define STR_WIDE3(n) STR_WIDE(n)
+
+#define STR_INDIR(A) #A
+#define STR(A) STR_INDIR(A)
+
+#define THROW_PREFAB_ERROR(expression, error) \
+	if ((expression)) { \
+		DebugErrorL("Prefab Error: ", #expression); \
+		error = ConvertError(1, STR_WIDE3(__FUNCTION__) L" (" STR_WIDE3(STR(__LINE__)) L") -> " STR_WIDE2(expression)); \
+		return; \
+	}
+
 class PrefabFileReader
 {
 	PrefabFileReader() = default;
 
 public:
 	template<bool t_mod_counter>
-	static SMPrefab* Read(const std::wstring& path, const std::wstring& flag)
+	inline static SMPrefab* Read(const std::wstring& path, const std::wstring& flag, ConvertError& v_error)
 	{
 		std::vector<Byte> v_bytes;
 		if (!File::ReadFileBytes(path, v_bytes))
@@ -34,11 +48,61 @@ public:
 			return nullptr;
 		}
 
-		return PrefabFileReader::Read<t_mod_counter>(v_bytes, path, flag);
+		return PrefabFileReader::Read<t_mod_counter>(v_bytes, path, flag, v_error);
 	}
 
 	template<bool t_mod_counter>
-	static SMPrefab* Read(const std::vector<Byte>& bytes, const std::wstring& ppath, const std::wstring& pflag)
+	inline static void ReadPrefabHeader(MemoryWrapper& v_reader, const int& version, SMPrefab* prefab, ConvertError& v_error)
+	{
+		BitStream v_stream(v_reader);
+
+		PrefabHeader v_header(version);
+		v_header.Read(v_stream);
+
+		if (v_header.hasBlueprints != 0)
+		{
+			const int v_blueprint_bytes = PrefabFileReader::ReadBlueprints<t_mod_counter>(v_stream, prefab, v_header.blueprintCount, version);
+			THROW_PREFAB_ERROR(v_blueprint_bytes != v_header.hasBlueprints, v_error);
+		}
+
+		if (v_header.hasPrefabs != 0)
+		{
+			const int v_prefab_bytes = PrefabFileReader::ReadPrefabs<t_mod_counter>(v_stream, prefab, v_header.prefabCount, version, v_error);
+			if (v_error) return;
+
+			THROW_PREFAB_ERROR(v_prefab_bytes != v_header.hasPrefabs, v_error);
+		}
+
+		//Skipped the node reader as it's not needed
+		if (v_header.hasNodes != 0)
+			v_stream.SetIndex(v_stream.Index() + v_header.hasNodes);
+
+		if (v_header.hasAssets != 0)
+		{
+			const int v_asset_bytes = PrefabFileReader::ReadAssets<t_mod_counter>(v_stream, prefab, v_header.assetCount, version);
+			THROW_PREFAB_ERROR(v_asset_bytes != v_header.hasAssets, v_error);
+		}
+
+		if (v_header.hasDecals != 0)
+		{
+			const int v_decal_bytes = PrefabFileReader::ReadDecals<t_mod_counter>(v_stream, prefab, v_header.decalsCount, version);
+			THROW_PREFAB_ERROR(v_decal_bytes != v_header.hasDecals, v_error);
+		}
+
+		//UNKNOWN READERS
+
+		if (v_header.has_0x5c != 0)
+			PrefabFileReader::Read_248(v_stream, prefab, v_header.count_0x54, version);
+
+		if (v_header.has_0x6c != 0)
+			PrefabFileReader::Read_1(v_stream, prefab, v_header.count_0x64, version);
+
+		if (v_header.has_0x7c != 0)
+			PrefabFileReader::Read_2(v_stream, prefab, v_header.count_0x74, version);
+	}
+
+	template<bool t_mod_counter>
+	inline static SMPrefab* Read(const std::vector<Byte>& bytes, const std::wstring& ppath, const std::wstring& pflag, ConvertError& v_error)
 	{
 		MemoryWrapper reader(bytes);
 
@@ -57,58 +121,24 @@ public:
 		const int version = reader.NextObject<int, true>();
 		DebugOutL("Prefab Version: ", version);
 
-		BitStream stream(reader);
+		PrefabFileReader::ReadPrefabHeader<t_mod_counter>(reader, version, prefab, v_error);
 
-		PrefabHeader pHeader(version);
-		pHeader.Read(stream);
-
-		if (pHeader.hasBlueprints != 0)
-		{
-			PrefabFileReader::ReadBlueprints<t_mod_counter>(stream, prefab, pHeader.blueprintCount, version);
-		}
-
-		if (pHeader.hasPrefabs != 0)
-		{
-			PrefabFileReader::ReadPrefabs<t_mod_counter>(stream, prefab, pHeader.prefabCount, version);
-		}
-
-		if (pHeader.hasNodes != 0)
-		{
-			PrefabFileReader::ReadNodes(stream, prefab, pHeader.nodeCount);
-		}
-
-		if (pHeader.hasAssets != 0)
-		{
-			PrefabFileReader::ReadAssets<t_mod_counter>(stream, prefab, pHeader.assetCount, version);
-		}
-
-		if (pHeader.hasDecals != 0)
-		{
-			PrefabFileReader::ReadDecals<t_mod_counter>(stream, prefab, pHeader.decalsCount, version);
-		}
-
-		if (pHeader.has_0x5c != 0)
-		{
-			PrefabFileReader::Read_248(stream, prefab, pHeader.count_0x54, version);
-		}
-
-		if (pHeader.has_0x6c != 0)
-		{
-			PrefabFileReader::Read_1(stream, prefab, pHeader.count_0x64, version);
-		}
-
-		if (pHeader.has_0x7c != 0)
-		{
-			PrefabFileReader::Read_2(stream, prefab, pHeader.count_0x74, version);
+		if constexpr (!t_mod_counter) {
+			if (v_error)
+			{
+				delete prefab;
+				return nullptr;
+			}
 		}
 
 		return prefab;
 	}
 
 	template<bool t_mod_counter>
-	static void ReadBlueprints(BitStream& stream, SMPrefab* prefab, const int& count, const int& version)
+	static int ReadBlueprints(BitStream& stream, SMPrefab* prefab, const int& count, const int& version)
 	{
 		BIT_STREAM_DUMP_INTO_FILE(stream, L"./prefab_dump/prefab" + std::to_wstring(version) + L"_blueprints", 100);
+		const int v_idx_start = stream.Index();
 
 		for (int a = 0; a < count; a++)
 		{
@@ -142,12 +172,15 @@ public:
 				}
 			}
 		}
+
+		return stream.Index() - v_idx_start;
 	}
 
 	template<bool t_mod_counter>
-	static void ReadPrefabs(BitStream& stream, SMPrefab* prefab, const int& count, const int& version)
+	static int ReadPrefabs(BitStream& stream, SMPrefab* prefab, const int& count, const int& version, ConvertError& v_error)
 	{
 		BIT_STREAM_DUMP_INTO_FILE(stream, L"./prefab_dump/prefab" + std::to_wstring(version) + L"_prefabs", 100);
+		const int v_start_idx = stream.Index();
 
 		for (int a = 0; a < count; a++)
 		{
@@ -175,13 +208,16 @@ public:
 
 			if constexpr (t_mod_counter)
 			{
-				PrefabFileReader::Read<t_mod_counter>(v_pref_path, L"");
+				PrefabFileReader::Read<t_mod_counter>(v_pref_path, L"", v_error);
+				if (v_error) return 0;
 			}
 			else
 			{
 				if (TileConverterSettings::ExportPrefabs)
 				{
-					SMPrefab* rec_prefab = PrefabFileReader::Read<t_mod_counter>(v_pref_path, L"");
+					SMPrefab* rec_prefab = PrefabFileReader::Read<t_mod_counter>(v_pref_path, L"", v_error);
+					if (v_error) return 0;
+
 					if (!rec_prefab) continue;
 
 					rec_prefab->SetPosition(f_pos);
@@ -192,6 +228,8 @@ public:
 				}
 			}
 		}
+
+		return stream.Index() - v_start_idx;
 	}
 
 	static void ReadNodes(BitStream& stream, SMPrefab* prefab, const int& count)
@@ -246,9 +284,10 @@ public:
 	}
 
 	template<bool t_mod_counter>
-	static void ReadAssets(BitStream& stream, SMPrefab* prefab, const int& count, const int& version)
+	static int ReadAssets(BitStream& stream, SMPrefab* prefab, const int& count, const int& version)
 	{
 		BIT_STREAM_DUMP_INTO_FILE(stream, L"./prefab_dump/prefab" + std::to_wstring(version) + L"_assets", 100);
+		const int v_idx_start = stream.Index();
 
 		for (int a = 0; a < count; a++)
 		{
@@ -302,13 +341,15 @@ public:
 				}
 			}
 		}
+
+		return stream.Index() - v_idx_start;
 	}
 
 	template<bool t_mod_counter>
-	static void ReadDecals(BitStream& stream, SMPrefab* prefab, const int& count, const int& version)
+	static int ReadDecals(BitStream& stream, SMPrefab* prefab, const int& count, const int& version)
 	{
 		BIT_STREAM_DUMP_INTO_FILE(stream, L"./prefab_dump/prefab" + std::to_wstring(version) + L"_decals", 100);
-		DebugOutL("Reading ", count, " decals...");
+		const int v_start_idx = stream.Index();
 
 		for (int a = 0; a < count; a++)
 		{
@@ -343,6 +384,8 @@ public:
 				}
 			}
 		}
+
+		return stream.Index() - v_start_idx;
 	}
 
 	static void Read_248(BitStream& stream, SMPrefab* prefab, const int& count, const int& version)

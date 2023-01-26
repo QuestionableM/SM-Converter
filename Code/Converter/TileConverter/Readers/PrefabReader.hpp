@@ -19,9 +19,9 @@ class PrefabReader
 
 public:
 	template<bool t_mod_counter>
-	static void Read(CellHeader* header, MemoryWrapper& reader, TilePart* part, ConvertError& cError)
+	static void Read(CellHeader* header, MemoryWrapper& reader, TilePart* part, ConvertError& v_error)
 	{
-		if (cError) return;
+		if (v_error) return;
 
 		if constexpr (!t_mod_counter) {
 			if (!TileConverterSettings::ExportPrefabs) return;
@@ -41,21 +41,24 @@ public:
 		if (debugSize != header->prefabCompressedSize)
 		{
 			DebugErrorL("DebugSize: ", debugSize, ", header->prefabCompressedSize: ", header->prefabCompressedSize);
-			cError = ConvertError(1, L"PrefabReader::Read -> debugSize != header->prefabCompressedSize\nTile Version: " + std::to_wstring(v_tile_version));
+			v_error = ConvertError(1, L"PrefabReader::Read -> debugSize != header->prefabCompressedSize\nTile Version: " + std::to_wstring(v_tile_version));
 			return;
 		}
 
-		debugSize = PrefabReader::Read<t_mod_counter>(bytes, header->prefabCount, part, cError);
+		debugSize = PrefabReader::Read<t_mod_counter>(bytes, header->prefabCount, part, v_error);
 		if (debugSize != header->prefabSize)
 		{
+			//If the error happened in the PrefabReader::Read, then don't overwrite it with the one below
+			if (v_error) return;
+
 			DebugErrorL("DebugSize: ", debugSize, ", header->prefabSize: ", header->prefabSize);
-			cError = ConvertError(1, L"PrefabReader::Read -> debugSize != header->prefabSize\nTile Version: " + std::to_wstring(v_tile_version));
+			v_error = ConvertError(1, L"PrefabReader::Read -> debugSize != header->prefabSize\nTile Version: " + std::to_wstring(v_tile_version));
 			return;
 		}
 	}
 
 	template<bool t_mod_counter>
-	static int Read(const std::vector<Byte>& bytes, const int& prefabCount, TilePart* part, ConvertError& cError)
+	static int Read(const std::vector<Byte>& bytes, const int& prefabCount, TilePart* part, ConvertError& v_error)
 	{
 		int index = 0;
 		MemoryWrapper memory(bytes);
@@ -96,7 +99,9 @@ public:
 			const std::wstring v_pref_flag = String::ToWide(v_flag);
 			DebugOutL("Prefab Path: ", v_pref_path);
 
-			SMPrefab* v_new_prefab = PrefabFileReader::Read<t_mod_counter>(v_pref_path, v_pref_flag);
+			SMPrefab* v_new_prefab = PrefabFileReader::Read<t_mod_counter>(v_pref_path, v_pref_flag, v_error);
+			if (v_error) return 0;
+
 			if constexpr (!t_mod_counter)
 			{
 				if (!v_new_prefab) continue;
