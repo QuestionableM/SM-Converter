@@ -1,5 +1,6 @@
 #include "BlueprintConvertSettings.h"
 
+#include "ObjectDatabase\Mods\CustomGameMod.hpp"
 #include "Converter\ConvertSettings.hpp"
 
 #include "Utils\String.hpp"
@@ -28,6 +29,12 @@ namespace SMConverter
 			0,
 			reinterpret_cast<LPARAM>(L"Enter a blueprint name")
 		);
+
+		m_cb_customGame->Items->Add(L"None");
+		for (const CustomGame* v_custom_game : SMMod::GetCustomGames())
+			m_cb_customGame->Items->Add(gcnew System::String(v_custom_game->GetName().c_str()));
+
+		m_cb_customGame->SelectedIndex = 0;
 	}
 
 	BlueprintConvertSettings::~BlueprintConvertSettings()

@@ -1,11 +1,12 @@
 #pragma once
 
+#include "ObjectDatabase\Mods\CustomGameMod.hpp"
+
 #include "Converter\Entity\Blueprint.hpp"
 #include "Converter\Entity\Body.hpp"
 
-#include "Converter\ConvertError.hpp"
-
 #include "UStd\UnmanagedUnorderedMap.hpp"
+#include "Converter\ConvertError.hpp"
 
 #pragma unmanaged
 
@@ -35,7 +36,7 @@ class BlueprintConv
 	static SMBlueprint::AddObjectFunction GetAddObjectFunction();
 
 public:
-	static void ConvertToModel(const std::wstring& bp_path, const std::wstring& bp_name, ConvertError& v_error);
+	static void ConvertToModel(const std::wstring& bp_path, const std::wstring& bp_name, ConvertError& v_error, CustomGame* v_custom_game);
 
 private:
 	//Is used to group all the objects

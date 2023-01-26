@@ -22,12 +22,15 @@ namespace SMConverter
 		System::Windows::Forms::CheckBox^ m_cb_exportUvs;
 		System::Windows::Forms::CheckBox^ m_cb_exportMaterials;
 
+		System::Windows::Forms::ComboBox^ m_cb_customGame;
 
 	protected:
 		~BlueprintConvertSettings();
 
 	private:
+		System::Windows::Forms::GroupBox^ m_gb_customGameSettings;
 		System::Windows::Forms::GroupBox^ m_gb_blueprintSettings;
+		System::Windows::Forms::Label^ m_lbl_customGameContent;
 		System::Windows::Forms::GroupBox^ m_gb_modelSettings;
 		System::Windows::Forms::GroupBox^ m_gb_fileName;
 		System::Windows::Forms::Button^ m_btn_convert;
@@ -48,9 +51,13 @@ namespace SMConverter
 			this->m_cb_exportUvs = (gcnew System::Windows::Forms::CheckBox());
 			this->m_cb_exportMaterials = (gcnew System::Windows::Forms::CheckBox());
 			this->m_btn_convert = (gcnew System::Windows::Forms::Button());
+			this->m_gb_customGameSettings = (gcnew System::Windows::Forms::GroupBox());
+			this->m_lbl_customGameContent = (gcnew System::Windows::Forms::Label());
+			this->m_cb_customGame = (gcnew System::Windows::Forms::ComboBox());
 			this->m_gb_fileName->SuspendLayout();
 			this->m_gb_blueprintSettings->SuspendLayout();
 			this->m_gb_modelSettings->SuspendLayout();
+			this->m_gb_customGameSettings->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// m_gb_fileName
@@ -172,7 +179,7 @@ namespace SMConverter
 				| System::Windows::Forms::AnchorStyles::Right));
 			this->m_btn_convert->Enabled = false;
 			this->m_btn_convert->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
-			this->m_btn_convert->Location = System::Drawing::Point(12, 239);
+			this->m_btn_convert->Location = System::Drawing::Point(12, 310);
 			this->m_btn_convert->Name = L"m_btn_convert";
 			this->m_btn_convert->Size = System::Drawing::Size(310, 35);
 			this->m_btn_convert->TabIndex = 3;
@@ -180,11 +187,47 @@ namespace SMConverter
 			this->m_btn_convert->UseVisualStyleBackColor = true;
 			this->m_btn_convert->Click += gcnew System::EventHandler(this, &BlueprintConvertSettings::ConvertButton_Click);
 			// 
+			// m_gb_customGameSettings
+			// 
+			this->m_gb_customGameSettings->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left)
+				| System::Windows::Forms::AnchorStyles::Right));
+			this->m_gb_customGameSettings->Controls->Add(this->m_cb_customGame);
+			this->m_gb_customGameSettings->Controls->Add(this->m_lbl_customGameContent);
+			this->m_gb_customGameSettings->Location = System::Drawing::Point(12, 239);
+			this->m_gb_customGameSettings->Name = L"m_gb_customGameSettings";
+			this->m_gb_customGameSettings->Size = System::Drawing::Size(310, 65);
+			this->m_gb_customGameSettings->TabIndex = 4;
+			this->m_gb_customGameSettings->TabStop = false;
+			this->m_gb_customGameSettings->Text = L"Custom Game Settings";
+			// 
+			// m_lbl_customGameContent
+			// 
+			this->m_lbl_customGameContent->AutoSize = true;
+			this->m_lbl_customGameContent->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
+			this->m_lbl_customGameContent->Location = System::Drawing::Point(3, 16);
+			this->m_lbl_customGameContent->Name = L"m_lbl_customGameContent";
+			this->m_lbl_customGameContent->Size = System::Drawing::Size(140, 16);
+			this->m_lbl_customGameContent->TabIndex = 0;
+			this->m_lbl_customGameContent->Text = L"Custom Game Content";
+			// 
+			// m_cb_customGame
+			// 
+			this->m_cb_customGame->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left)
+				| System::Windows::Forms::AnchorStyles::Right));
+			this->m_cb_customGame->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
+			this->m_cb_customGame->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
+			this->m_cb_customGame->FormattingEnabled = true;
+			this->m_cb_customGame->Location = System::Drawing::Point(6, 35);
+			this->m_cb_customGame->Name = L"m_cb_customGame";
+			this->m_cb_customGame->Size = System::Drawing::Size(298, 24);
+			this->m_cb_customGame->TabIndex = 1;
+			// 
 			// BlueprintConvertSettings
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(334, 286);
+			this->ClientSize = System::Drawing::Size(334, 357);
+			this->Controls->Add(this->m_gb_customGameSettings);
 			this->Controls->Add(this->m_btn_convert);
 			this->Controls->Add(this->m_gb_modelSettings);
 			this->Controls->Add(this->m_gb_blueprintSettings);
@@ -201,6 +244,8 @@ namespace SMConverter
 			this->m_gb_blueprintSettings->PerformLayout();
 			this->m_gb_modelSettings->ResumeLayout(false);
 			this->m_gb_modelSettings->PerformLayout();
+			this->m_gb_customGameSettings->ResumeLayout(false);
+			this->m_gb_customGameSettings->PerformLayout();
 			this->ResumeLayout(false);
 
 		}

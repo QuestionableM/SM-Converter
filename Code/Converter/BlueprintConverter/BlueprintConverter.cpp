@@ -156,7 +156,7 @@ SMBlueprint::AddObjectFunction BlueprintConv::GetAddObjectFunction()
 	return nullptr;
 }
 
-void BlueprintConv::ConvertToModel(const std::wstring& bp_path, const std::wstring& bp_name, ConvertError& v_error)
+void BlueprintConv::ConvertToModel(const std::wstring& bp_path, const std::wstring& bp_name, ConvertError& v_error, CustomGame* v_custom_game)
 {
 	if (!File::IsRegularFile(bp_path))
 	{
@@ -165,8 +165,39 @@ void BlueprintConv::ConvertToModel(const std::wstring& bp_path, const std::wstri
 	}
 
 	SMBlueprint::AddObjectFunction v_add_obj_func = BlueprintConv::GetAddObjectFunction();
+	SMBlueprint* v_blueprint = nullptr;
 
-	SMBlueprint* v_blueprint = SMBlueprint::FromFileWithStatus(bp_path, v_add_obj_func, v_error);
+	if (v_custom_game)
+	{
+		SMMod* v_custom_game_mod = v_custom_game;
+
+		//Copy the game data to restore it after the conversion
+		const auto v_part_list_copy = SMMod::PartStorage;
+		const auto v_block_list_copy = SMMod::BlockStorage;
+
+		if (v_custom_game->ShouldUseGameContent())
+		{
+			//Add to the existing storage if the custom game uses game content
+			SMMod::MergeMaps(SMMod::PartStorage, v_custom_game_mod->m_Parts);
+			SMMod::MergeMaps(SMMod::BlockStorage, v_custom_game_mod->m_Blocks);
+		}
+		else
+		{
+			//Overwrite the global list if the custom game doesn't use game content
+			SMMod::PartStorage = v_custom_game_mod->m_Parts;
+			SMMod::BlockStorage = v_custom_game_mod->m_Blocks;
+		}
+
+		v_blueprint = SMBlueprint::FromFileWithStatus(bp_path, v_add_obj_func, v_error);
+
+		SMMod::PartStorage = v_part_list_copy;
+		SMMod::BlockStorage = v_block_list_copy;
+	}
+	else
+	{
+		v_blueprint = SMBlueprint::FromFileWithStatus(bp_path, v_add_obj_func, v_error);
+	}
+
 	if (v_blueprint)
 	{
 		BlueprintConv::WriteToFileInternal(v_blueprint, bp_name, v_error);

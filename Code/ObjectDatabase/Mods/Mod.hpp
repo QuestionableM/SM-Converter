@@ -30,6 +30,7 @@ class SMMod
 	friend class ClutterListLoader;
 	friend class DecalsetListReader;
 	friend class DecalsetReader;
+	friend class BlueprintConv;
 	friend class TileConv;
 	friend CustomGame;
 
@@ -101,6 +102,23 @@ public:
 		}
 
 		return nullptr;
+	}
+
+	template<typename T>
+	inline static void MergeMaps(std::unordered_map<SMUuid, T*>& v_output, std::unordered_map<SMUuid, T*>& to_add)
+	{
+		for (const auto& v_item : to_add)
+		{
+			const auto v_iter = v_output.find(v_item.first);
+			if (v_iter == v_output.end())
+			{
+				v_output.insert(v_item);
+				continue;
+			}
+
+			//Override the elements
+			v_iter->second = v_item.second;
+		}
 	}
 
 	inline static std::vector<CustomGame*>& GetCustomGames()

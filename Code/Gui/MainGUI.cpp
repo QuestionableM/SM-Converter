@@ -582,7 +582,7 @@ namespace SMConverter
 		if (!v_conv_settings->m_ready_to_convert)
 			return;
 
-		System::Array^ v_thread_data = gcnew cli::array<System::Object^>(7);
+		System::Array^ v_thread_data = gcnew cli::array<System::Object^>(8);
 
 		//Data type
 		v_thread_data->SetValue(safe_cast<System::Object^>(static_cast<int>(Generator_BlueprintConverter)), static_cast<int>(0));
@@ -598,6 +598,8 @@ namespace SMConverter
 		v_thread_data->SetValue(v_conv_settings->m_cb_exportMaterials->Checked, static_cast<int>(4));
 		v_thread_data->SetValue(v_conv_settings->m_cb_exportNormals->Checked  , static_cast<int>(5));
 		v_thread_data->SetValue(v_conv_settings->m_cb_exportUvs->Checked      , static_cast<int>(6));
+
+		v_thread_data->SetValue(v_conv_settings->m_cb_customGame->SelectedIndex, static_cast<int>(7));
 
 		this->MainGui_ChangeGuiState(m_database_isLoaded, m_obj_isLoaded, false);
 		m_progressBarUpdater->Start();
@@ -784,11 +786,16 @@ namespace SMConverter
 		SharedConverterSettings::ExportNormals   = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(5)));
 		SharedConverterSettings::ExportUvs       = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(6)));
 
+		const int v_custom_game_idx = safe_cast<int>(v_conv_data->GetValue(static_cast<int>(7)));
+		CustomGame* v_custom_game = nullptr;
+		if (v_custom_game_idx > 0)
+			v_custom_game = SMMod::GetCustomGames()[v_custom_game_idx - 1];
+
 		//Error check some settings
 		SharedConverterSettings::ExportMaterials &= SharedConverterSettings::ExportUvs;
 
 		ConvertError v_conv_error;
-		BlueprintConv::ConvertToModel(v_bp_path, v_bp_name, v_conv_error);
+		BlueprintConv::ConvertToModel(v_bp_path, v_bp_name, v_conv_error, v_custom_game);
 
 		this->MainGui_HandleConvertError(v_conv_error, Generator_BlueprintConverter, e);
 	}
