@@ -28,8 +28,29 @@ void TileConv::WriteToFileInternal(Tile* pTile, const std::wstring& tile_name, C
 	pTile->WriteToFile(tile_dir_path + L"/", tile_name);
 }
 
+template<typename T>
+inline void MergeMaps(std::unordered_map<SMUuid, T*>& v_output, std::unordered_map<SMUuid, T*>& to_add)
+{
+	for (const auto& v_item : to_add)
+	{
+		const auto v_iter = v_output.find(v_item.first);
+		if (v_iter == v_output.end())
+		{
+			v_output.insert(v_item);
+			continue;
+		}
+
+		//Override the elements
+		DebugOutL("Overwritten an element: ", v_item.first.ToString());
+		v_iter->second = v_item.second;
+	}
+}
+
 void TileConv::ConvertToModel(const std::wstring& tile_path, const std::wstring& tile_name, ConvertError& cError, CustomGame* v_custom_game)
 {
+	const auto test = SMMod::PartStorage.find(SMUuid());
+
+
 	if (!File::IsRegularFile(tile_path))
 	{
 		cError = ConvertError(1, L"The specified path leads to a directory");
@@ -48,11 +69,22 @@ void TileConv::ConvertToModel(const std::wstring& tile_path, const std::wstring&
 		const auto v_block_list_copy = SMMod::BlockStorage;
 		const auto v_hvs_list_copy = SMMod::HarvestableStorage;
 		const auto v_asset_list_copy = SMMod::AssetStorage;
-
-		SMMod::PartStorage = v_custom_game_mod->m_Parts;
-		SMMod::BlockStorage = v_custom_game_mod->m_Blocks;
-		SMMod::HarvestableStorage = v_custom_game_mod->m_Harvestables;
-		SMMod::AssetStorage = v_custom_game_mod->m_Assets;
+		if (v_custom_game->ShouldUseGameContent())
+		{
+			//Add to the existing storage if the custom game uses game content
+			MergeMaps(SMMod::PartStorage, v_custom_game_mod->m_Parts);
+			MergeMaps(SMMod::BlockStorage, v_custom_game_mod->m_Blocks);
+			MergeMaps(SMMod::HarvestableStorage, v_custom_game_mod->m_Harvestables);
+			MergeMaps(SMMod::AssetStorage, v_custom_game_mod->m_Assets);
+		}
+		else
+		{
+			//Overwrite the global list if the custom game doesn't use game content
+			SMMod::PartStorage = v_custom_game_mod->m_Parts;
+			SMMod::BlockStorage = v_custom_game_mod->m_Blocks;
+			SMMod::HarvestableStorage = v_custom_game_mod->m_Harvestables;
+			SMMod::AssetStorage = v_custom_game_mod->m_Assets;
+		}
 
 		v_output_tile = TileReader::ReadTile<false>(tile_path, cError);
 

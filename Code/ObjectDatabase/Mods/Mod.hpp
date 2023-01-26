@@ -51,7 +51,7 @@ class SMMod
 	inline static UuidObjectMap<DecalData*> DecalStorage             = {};
 
 	inline static UuidObjectMap<ClutterData*> ClutterStorage = {};
-	inline static std::vector<ClutterData*> ClutterVector                 = {};
+	inline static std::vector<ClutterData*> ClutterVector = {};
 
 	UuidObjectMap<BlockData*> m_Blocks = {};
 	UuidObjectMap<PartData*> m_Parts   = {};

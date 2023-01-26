@@ -117,24 +117,25 @@ public:
 			has_0x7c   = 0;
 		}
 
+	#if defined(DEBUG) || defined(_DEBUG)
 		DebugOutL("Prefab Data:");
-		DebugOutL("Blueprint Count: ", blueprintCount);
-		DebugOutL("Has Blueprints: ", hasBlueprints);
-		DebugOutL("Prefab Count: ", prefabCount);
-		DebugOutL("Has Prefabs: ", hasPrefabs);
-		DebugOutL("Node Count: ", nodeCount);
-		DebugOutL("Has Nodes: ", hasNodes);
-		DebugOutL("Asset Count: ", assetCount);
-		DebugOutL("Has Assets: ", hasAssets);
-		DebugOutL("Decals Count: ", decalsCount);
-		DebugOutL("Has Decals: ", hasDecals);
-		DebugOutL("\nUnknown variables:");
-		DebugOutL("Count_0x54: ", count_0x54);
-		DebugOutL("Has_0x5c: ", has_0x5c);
-		DebugOutL("Count_0x64: ", count_0x64);
-		DebugOutL("Has_0x6c: ", has_0x6c);
-		DebugOutL("Count_0x74: ", count_0x74);
-		DebugOutL("Has_0x7c: ", has_0x7c);
+		if (hasBlueprints != 0)
+			DebugOutL("Blueprint Count: ", blueprintCount);
+		if (hasPrefabs != 0)
+			DebugOutL("Prefab Count: ", prefabCount);
+		if (hasNodes != 0)
+			DebugOutL("Node Count: ", nodeCount);
+		if (hasAssets != 0)
+			DebugOutL("Asset Count: ", assetCount);
+		if (hasDecals != 0)
+			DebugOutL("Decals Count: ", decalsCount);
+		if (has_0x5c != 0)
+			DebugOutL("Count_0x54: ", count_0x54);
+		if (has_0x6c != 0)
+			DebugOutL("Count_0x64: ", count_0x64);
+		if (has_0x7c != 0)
+			DebugOutL("Count_0x74: ", count_0x74);
+	#endif
 	}
 };
 

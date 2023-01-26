@@ -1,10 +1,21 @@
 #pragma once
 
 #include "UStd\UnmanagedVector.hpp"
+#if defined(DEBUG) || defined(_DEBUG)
+#include "UStd\UnmanagedFstream.hpp"
+#include "UStd\UnmanagedString.hpp"
+#include "Utils\File.hpp"
+#endif
 
 #include "Utils\ByteImpl.hpp"
 #include "Utils\Memory.hpp"
 #include "Utils\Uuid.hpp"
+
+#if defined(DEBUG) || defined(_DEBUG)
+#define BIT_STREAM_DUMP_INTO_FILE(stream, file_name, num_bytes) stream.DumpContentsIntoFile(file_name, num_bytes)
+#else
+#define BIT_STREAM_DUMP_INTO_FILE(...) ((void*)0)
+#endif
 
 #pragma unmanaged
 
@@ -21,6 +32,30 @@ public:
 
 		std::memcpy(data.data(), memory.Data() + memory.Index(), chunk_size);
 	}
+
+#if defined(DEBUG) || defined(_DEBUG)
+	inline void DumpContentsIntoFile(const std::wstring& file_name, const std::size_t& num_bytes)
+	{
+		if (File::Exists(file_name))
+			return;
+
+		std::ofstream v_output(file_name, std::ios::binary);
+		if (v_output.is_open())
+		{
+			const int v_index_copy = this->Index();
+
+			const std::size_t v_bytes_clamped = std::min(data.size(), static_cast<std::size_t>(v_index_copy) + num_bytes);
+			for (std::size_t a = 0; a < v_bytes_clamped; a++)
+			{
+				const unsigned char v_cur_byte = static_cast<unsigned char>(this->ReadByte());
+				v_output.write(reinterpret_cast<const char*>(&v_cur_byte), 1);
+			}
+
+			v_output.close();
+			this->SetIndex(v_index_copy);
+		}
+	}
+#endif
 
 	inline int Index() const
 	{

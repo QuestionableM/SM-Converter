@@ -20,25 +20,21 @@
 
 #pragma unmanaged
 
+template<typename T>
+inline void EraseModItemMap(std::unordered_map<SMUuid, T>& v_mod_map)
+{
+	for (const auto& v_item : v_mod_map)
+		delete v_item.second;
+}
+
 SMMod::~SMMod()
 {
-	for (const auto& pBlock : m_Blocks)
-		delete pBlock.second;
-
-	for (const auto& pPart : m_Parts)
-		delete pPart.second;
-
-	for (const auto& pAsset : m_Assets)
-		delete pAsset.second;
-
-	for (const auto& pHarvestable : m_Harvestables)
-		delete pHarvestable.second;
-
-	for (const auto& pClutter : m_Clutter)
-		delete pClutter.second;
-
-	for (const auto& pDecal : m_Decals)
-		delete pDecal.second;
+	EraseModItemMap(m_Blocks);
+	EraseModItemMap(m_Parts);
+	EraseModItemMap(m_Assets);
+	EraseModItemMap(m_Harvestables);
+	EraseModItemMap(m_Clutter);
+	EraseModItemMap(m_Decals);
 }
 
 void SMMod::ClearModStorage()
@@ -54,6 +50,7 @@ void SMMod::ClearModStorage()
 	for (std::size_t a = 0; a < SMMod::ModVector.size(); a++)
 		delete SMMod::ModVector[a];
 
+	SMMod::CustomGameVector.clear();
 	SMMod::ModStorage.clear();
 	SMMod::ModVector.clear();
 }

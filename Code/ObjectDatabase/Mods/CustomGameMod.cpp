@@ -23,15 +23,7 @@ void CustomGame::LoadObjectDatabase()
 {
 	KeywordReplacer::SetModData(m_Directory, m_Uuid);
 
-	if (this->CheckSurvivalContent())
-	{
-		SMMod* v_mod = this;
-
-		v_mod->m_Assets = SMMod::AssetStorage;
-		v_mod->m_Harvestables = SMMod::HarvestableStorage;
-		v_mod->m_Blocks = SMMod::BlockStorage;
-		v_mod->m_Parts = SMMod::PartStorage;
-	}
+	m_shouldUseGameContent = this->CheckSurvivalContent();
 
 	const std::wstring v_shapedb_path = m_Directory + L"/Objects/Database/shapesets.shapedb";
 	SMMod::LoadShapeSetList(v_shapedb_path, this, false);
