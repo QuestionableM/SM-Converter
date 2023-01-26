@@ -33,13 +33,10 @@ public:
 	int count_0x74;
 	int has_0x7c;
 	
-	int version;
+	PrefabHeader() = default;
+	~PrefabHeader() = default;
 	
-	inline PrefabHeader(const int& version)
-	{
-		this->version = version;
-	}
-	
+	template<int t_pref_version>
 	inline void Read(BitStream& stream)
 	{
 		stream.Move(4 * 8);
@@ -57,7 +54,7 @@ public:
 		stream.Move(4 * 8);
 		hasNodes = stream.ReadInt();
 
-		if (2 < version)
+		if constexpr (2 < t_pref_version)
 		{
 			stream.Move(4 * 8);
 			assetCount = stream.ReadInt();
@@ -70,7 +67,7 @@ public:
 			hasAssets  = 0;
 		}
 
-		if (3 < version)
+		if constexpr (3 < t_pref_version)
 		{
 			stream.Move(4 * 8);
 			decalsCount = stream.ReadInt();
@@ -83,7 +80,7 @@ public:
 			hasDecals = 0;
 		}
 
-		if (5 < version)
+		if constexpr (5 < t_pref_version)
 		{
 			stream.Move(4 * 8);
 			count_0x54 = stream.ReadInt();
@@ -96,7 +93,7 @@ public:
 			has_0x5c   = 0;
 		}
 
-		if (7 < version)
+		if constexpr (7 < t_pref_version)
 		{
 			stream.Move(4 * 8);
 			count_0x64 = stream.ReadInt();
