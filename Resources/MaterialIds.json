@@ -7,11 +7,17 @@
     6 - Water
     7 - LightCone
     8 - Liquid
+	9 - Chemicals
+	10 - Oil
+	11 - Clutter
 */
 
 {
 	"GroundVegetation": 3,
-	"GroundClutter": 1,
+	"GroundClutter": 11,
+
+	"Chemicals": 9,
+	"Oil": 10,
 
 	"BlockDifAsgNor": 1,
 	"BlockGlass": 2,
