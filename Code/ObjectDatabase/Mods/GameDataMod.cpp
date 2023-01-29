@@ -18,6 +18,8 @@ void GameDataMod::LoadObjectDatabase()
 {
 	namespace fs = std::filesystem;
 
+	this->LoadFile(L"./Resources/ResourceReplacements.json", true);
+
 	for (const auto& db_item : DatabaseConfig::AssetListFolders)
 	{
 		std::error_code v_error;
