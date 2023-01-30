@@ -2,6 +2,7 @@
 
 #include "Converter\TileConverter\CellHeader.hpp"
 #include "Converter\TileConverter\TilePart.hpp"
+#include "Converter\ConvertSettings.hpp"
 
 #include "ObjectDatabase\Mods\Mod.hpp"
 
@@ -74,8 +75,8 @@ public:
 				}
 
 				const SMUuid clutter_uuid = memory.Object<SMUuid>(offset);
-				const ClutterData* pData = SMMod::GetGlobalClutter(clutter_uuid);
-				if (pData)
+				const ClutterData* v_clutter_data = SMMod::GetGlobalClutter(clutter_uuid);
+				if (v_clutter_data)
 				{
 					DebugOutL(0b1101_fg, "Clutter: ", clutter_uuid.ToString(), " -> ", uVar7);
 				}
@@ -101,21 +102,20 @@ public:
 
 
 		const std::size_t offset = memory.Index();
-
 		for (std::size_t a = 0; a < 0x4000; a++)
 		{
-			const SignedByte cur_byte = memory.Object<SignedByte>(1 + a + offset);
-			part->m_Clutter[a] = cur_byte;
+			const SignedByte v_clutter_byte = memory.Object<SignedByte>(1 + a + offset);
+			part->m_Clutter[a] = v_clutter_byte;
 
-			if (cur_byte < 0) continue;
+			if (v_clutter_byte < 0) continue;
 
-			ClutterData* clData = SMMod::GetGlobalClutterById(cur_byte);
-			if (!clData) continue;
+			ClutterData* v_clutter_data = SMMod::GetGlobalClutterById(v_clutter_byte);
+			if (!v_clutter_data) continue;
 
-			Model* pModel = ModelStorage::LoadModel(clData->m_mesh);
-			if (!pModel) continue;
+			Model* v_clutter_model = ModelStorage::LoadModel(v_clutter_data->m_mesh);
+			if (!v_clutter_model) continue;
 
-			part->m_ClutterMap[a] = new SMTileClutter(clData, pModel);
+			part->m_ClutterMap[a] = new SMTileClutter(v_clutter_data, v_clutter_model);
 		}
 	}
 };
