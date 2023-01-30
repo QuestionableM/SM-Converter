@@ -16,3 +16,6 @@ If the program won't be able to find the path to Scrap Mechanic automatically, y
 In case you couldn't find the tile / blueprint in the list, you can always specify a folder that contains blueprints / tiles in the `Settings -> Options -> Paths`<br>
 
 If you want to select a tile / blueprint manually, press on the `...` button and select the `.tile` file for tiles, and `.json` or `.blueprint` file for blueprints
+
+## How to set the correct materials easily in Blender
+In case you don't want to spend hours configuring the materials on the exported model, there's a tool just for you! [SM-Converter-Plugin](https://github.com/QuestionableM/SM-Converter-Plugin) allows you to assign the correct materials in a single click!
