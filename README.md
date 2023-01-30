@@ -2,7 +2,7 @@
 A tool that can convert Scrap Mechanic blueprints and tiles into 3D models
 
 # How to install
-- [Select](https://github.com/QuestionableM/SM-Converter/releases/latest) the latest version of the program and download the `SM.Converter.zip` file
+- [Select](https://github.com/QuestionableM/SM-Converter/releases/latest) the latest version of the program and download the `SM.Converter.zip` archive
 - Extract the archive
 - Launch the `SM-Converter.exe`
 - Have fun converting models!
