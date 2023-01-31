@@ -75,6 +75,7 @@ namespace SMConverter
 
 		System::Windows::Forms::ToolStripSeparator^ m_ts_settings_separator;
 		System::Windows::Forms::ToolStripSeparator^ m_cms_toolStrip;
+		System::Windows::Forms::ToolTip^ m_toolTip;
 
 		System::ComponentModel::IContainer^ components;
 
@@ -120,6 +121,7 @@ namespace SMConverter
 			this->m_cms_tile_separator2 = (gcnew System::Windows::Forms::ToolStripSeparator());
 			this->m_btn_showTileInfo = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->m_btn_searchFilter = (gcnew System::Windows::Forms::Button());
+			this->m_toolTip = (gcnew System::Windows::Forms::ToolTip(this->components));
 			this->m_menuStrip->SuspendLayout();
 			this->m_cms_blueprint->SuspendLayout();
 			this->m_cms_tile->SuspendLayout();
@@ -134,6 +136,7 @@ namespace SMConverter
 			this->m_btn_folderDialog->Size = System::Drawing::Size(64, 22);
 			this->m_btn_folderDialog->TabIndex = 0;
 			this->m_btn_folderDialog->Text = L"...";
+			this->m_toolTip->SetToolTip(this->m_btn_folderDialog, L"Pick a file");
 			this->m_btn_folderDialog->UseVisualStyleBackColor = true;
 			this->m_btn_folderDialog->Click += gcnew System::EventHandler(this, &MainGui::FolderDialog_Click);
 			// 
@@ -147,6 +150,7 @@ namespace SMConverter
 			this->m_btn_convert->Size = System::Drawing::Size(90, 36);
 			this->m_btn_convert->TabIndex = 1;
 			this->m_btn_convert->Text = L"Convert";
+			this->m_toolTip->SetToolTip(this->m_btn_convert, L"Convert selected object");
 			this->m_btn_convert->UseVisualStyleBackColor = true;
 			this->m_btn_convert->Click += gcnew System::EventHandler(this, &MainGui::MainGui_Convert_Clicked);
 			// 
@@ -205,6 +209,7 @@ namespace SMConverter
 			this->m_cb_selectedGenerator->Name = L"m_cb_selectedGenerator";
 			this->m_cb_selectedGenerator->Size = System::Drawing::Size(460, 24);
 			this->m_cb_selectedGenerator->TabIndex = 5;
+			this->m_toolTip->SetToolTip(this->m_cb_selectedGenerator, L"Selected converter type");
 			this->m_cb_selectedGenerator->SelectedIndexChanged += gcnew System::EventHandler(this, &MainGui::SelectedGenerator_SelectedIndexChanged);
 			// 
 			// m_lbl_generatorType
@@ -448,6 +453,7 @@ namespace SMConverter
 			this->m_btn_searchFilter->Size = System::Drawing::Size(64, 22);
 			this->m_btn_searchFilter->TabIndex = 11;
 			this->m_btn_searchFilter->Text = L"Filter";
+			this->m_toolTip->SetToolTip(this->m_btn_searchFilter, L"Object Filter");
 			this->m_btn_searchFilter->UseVisualStyleBackColor = true;
 			this->m_btn_searchFilter->Click += gcnew System::EventHandler(this, &MainGui::MainGui_Filter_Click);
 			// 

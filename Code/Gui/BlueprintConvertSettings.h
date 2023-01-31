@@ -21,7 +21,6 @@ namespace SMConverter
 		System::Windows::Forms::CheckBox^ m_cb_exportNormals;
 		System::Windows::Forms::CheckBox^ m_cb_exportUvs;
 		System::Windows::Forms::CheckBox^ m_cb_exportMaterials;
-
 		System::Windows::Forms::ComboBox^ m_cb_customGame;
 
 	protected:
@@ -35,12 +34,14 @@ namespace SMConverter
 		System::Windows::Forms::GroupBox^ m_gb_fileName;
 		System::Windows::Forms::Button^ m_btn_convert;
 		System::Windows::Forms::Label^ m_lbl_sepType;
+		System::Windows::Forms::ToolTip^ m_toolTip;
 
-		System::ComponentModel::Container ^components;
+		System::ComponentModel::IContainer^ components;
 
 #pragma region Windows Form Designer generated code
 		void InitializeComponent(void)
 		{
+			this->components = (gcnew System::ComponentModel::Container());
 			this->m_gb_fileName = (gcnew System::Windows::Forms::GroupBox());
 			this->m_tb_filename = (gcnew System::Windows::Forms::TextBox());
 			this->m_gb_blueprintSettings = (gcnew System::Windows::Forms::GroupBox());
@@ -52,8 +53,9 @@ namespace SMConverter
 			this->m_cb_exportMaterials = (gcnew System::Windows::Forms::CheckBox());
 			this->m_btn_convert = (gcnew System::Windows::Forms::Button());
 			this->m_gb_customGameSettings = (gcnew System::Windows::Forms::GroupBox());
-			this->m_lbl_customGameContent = (gcnew System::Windows::Forms::Label());
 			this->m_cb_customGame = (gcnew System::Windows::Forms::ComboBox());
+			this->m_lbl_customGameContent = (gcnew System::Windows::Forms::Label());
+			this->m_toolTip = (gcnew System::Windows::Forms::ToolTip(this->components));
 			this->m_gb_fileName->SuspendLayout();
 			this->m_gb_blueprintSettings->SuspendLayout();
 			this->m_gb_modelSettings->SuspendLayout();
@@ -123,6 +125,7 @@ namespace SMConverter
 			this->m_cb_separationType->Name = L"m_cb_separationType";
 			this->m_cb_separationType->Size = System::Drawing::Size(298, 24);
 			this->m_cb_separationType->TabIndex = 0;
+			this->m_toolTip->SetToolTip(this->m_cb_separationType, L"Selected separation type");
 			// 
 			// m_gb_modelSettings
 			// 
@@ -147,6 +150,8 @@ namespace SMConverter
 			this->m_cb_exportNormals->Size = System::Drawing::Size(118, 20);
 			this->m_cb_exportNormals->TabIndex = 2;
 			this->m_cb_exportNormals->Text = L"Export Normals";
+			this->m_toolTip->SetToolTip(this->m_cb_exportNormals, L"When checked, the exported model will contain the information about the normals\r\n"
+				L"");
 			this->m_cb_exportNormals->UseVisualStyleBackColor = true;
 			// 
 			// m_cb_exportUvs
@@ -158,6 +163,7 @@ namespace SMConverter
 			this->m_cb_exportUvs->Size = System::Drawing::Size(162, 20);
 			this->m_cb_exportUvs->TabIndex = 1;
 			this->m_cb_exportUvs->Text = L"Export UV Coordinates";
+			this->m_toolTip->SetToolTip(this->m_cb_exportUvs, L"When checked, the exported model will contain UV coordinates\r\n");
 			this->m_cb_exportUvs->UseVisualStyleBackColor = true;
 			this->m_cb_exportUvs->CheckedChanged += gcnew System::EventHandler(this, &BlueprintConvertSettings::ExportUvCoords_CheckedChanged);
 			// 
@@ -171,6 +177,8 @@ namespace SMConverter
 			this->m_cb_exportMaterials->Size = System::Drawing::Size(122, 20);
 			this->m_cb_exportMaterials->TabIndex = 0;
 			this->m_cb_exportMaterials->Text = L"Export Materials";
+			this->m_toolTip->SetToolTip(this->m_cb_exportMaterials, L"When checked, the exported model will be linked to an .mtl file, which contains\r\n"
+				L"the information about object materials\r\n");
 			this->m_cb_exportMaterials->UseVisualStyleBackColor = true;
 			// 
 			// m_btn_convert
@@ -200,16 +208,6 @@ namespace SMConverter
 			this->m_gb_customGameSettings->TabStop = false;
 			this->m_gb_customGameSettings->Text = L"Custom Game Settings";
 			// 
-			// m_lbl_customGameContent
-			// 
-			this->m_lbl_customGameContent->AutoSize = true;
-			this->m_lbl_customGameContent->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
-			this->m_lbl_customGameContent->Location = System::Drawing::Point(3, 16);
-			this->m_lbl_customGameContent->Name = L"m_lbl_customGameContent";
-			this->m_lbl_customGameContent->Size = System::Drawing::Size(140, 16);
-			this->m_lbl_customGameContent->TabIndex = 0;
-			this->m_lbl_customGameContent->Text = L"Custom Game Content";
-			// 
 			// m_cb_customGame
 			// 
 			this->m_cb_customGame->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left)
@@ -221,6 +219,19 @@ namespace SMConverter
 			this->m_cb_customGame->Name = L"m_cb_customGame";
 			this->m_cb_customGame->Size = System::Drawing::Size(298, 24);
 			this->m_cb_customGame->TabIndex = 1;
+			this->m_toolTip->SetToolTip(this->m_cb_customGame, L"Selected custom game\r\n\r\nWhen None is selected, the converter will use the content"
+				L" from base game\r\nand workshop mods\r\n\r\nOtherwise the tool will load the content f"
+				L"rom a custom game");
+			// 
+			// m_lbl_customGameContent
+			// 
+			this->m_lbl_customGameContent->AutoSize = true;
+			this->m_lbl_customGameContent->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
+			this->m_lbl_customGameContent->Location = System::Drawing::Point(3, 16);
+			this->m_lbl_customGameContent->Name = L"m_lbl_customGameContent";
+			this->m_lbl_customGameContent->Size = System::Drawing::Size(140, 16);
+			this->m_lbl_customGameContent->TabIndex = 0;
+			this->m_lbl_customGameContent->Text = L"Custom Game Content";
 			// 
 			// BlueprintConvertSettings
 			// 

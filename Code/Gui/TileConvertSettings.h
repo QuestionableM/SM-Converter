@@ -53,12 +53,14 @@ namespace SMConverter
 		System::Windows::Forms::GroupBox^ m_gb_modelSettings;
 		System::Windows::Forms::GroupBox^ m_gb_customGameSettings;
 		System::Windows::Forms::Label^ m_lbl_customGameContent;
-
-		System::ComponentModel::Container ^components;
+		System::Windows::Forms::ToolTip^ m_toolTip;
+		
+		System::ComponentModel::IContainer^ components;
 
 #pragma region Windows Form Designer generated code
 		void InitializeComponent(void)
 		{
+			this->components = (gcnew System::ComponentModel::Container());
 			this->m_gb_fileName = (gcnew System::Windows::Forms::GroupBox());
 			this->m_tb_filename = (gcnew System::Windows::Forms::TextBox());
 			this->m_cb_exportDecals = (gcnew System::Windows::Forms::CheckBox());
@@ -78,6 +80,7 @@ namespace SMConverter
 			this->m_gb_customGameSettings = (gcnew System::Windows::Forms::GroupBox());
 			this->m_cb_customGame = (gcnew System::Windows::Forms::ComboBox());
 			this->m_lbl_customGameContent = (gcnew System::Windows::Forms::Label());
+			this->m_toolTip = (gcnew System::Windows::Forms::ToolTip(this->components));
 			this->m_gb_fileName->SuspendLayout();
 			this->m_gb_tileSettings->SuspendLayout();
 			this->m_gb_modelSettings->SuspendLayout();
@@ -118,6 +121,7 @@ namespace SMConverter
 			this->m_cb_exportDecals->Size = System::Drawing::Size(146, 20);
 			this->m_cb_exportDecals->TabIndex = 5;
 			this->m_cb_exportDecals->Text = L"Export Decals (WIP)";
+			this->m_toolTip->SetToolTip(this->m_cb_exportDecals, L"This function is still in development");
 			this->m_cb_exportDecals->UseVisualStyleBackColor = true;
 			// 
 			// m_cb_exportHarvestables
@@ -198,6 +202,7 @@ namespace SMConverter
 			this->m_cb_exportGndTextures->Size = System::Drawing::Size(166, 20);
 			this->m_cb_exportGndTextures->TabIndex = 6;
 			this->m_cb_exportGndTextures->Text = L"Export Ground Textures";
+			this->m_toolTip->SetToolTip(this->m_cb_exportGndTextures, L"When checked, the tool will export 3 ground textures in 4k resolution");
 			this->m_cb_exportGndTextures->UseVisualStyleBackColor = true;
 			this->m_cb_exportGndTextures->CheckedChanged += gcnew System::EventHandler(this, &TileConvertSettings::ExportGroundTextures_CheckedChanged);
 			// 
@@ -210,6 +215,7 @@ namespace SMConverter
 			this->m_cb_export8kGndTextures->Size = System::Drawing::Size(143, 20);
 			this->m_cb_export8kGndTextures->TabIndex = 7;
 			this->m_cb_export8kGndTextures->Text = L"8K Ground Textures";
+			this->m_toolTip->SetToolTip(this->m_cb_export8kGndTextures, L"Export ground textures in 8k resolution");
 			this->m_cb_export8kGndTextures->UseVisualStyleBackColor = true;
 			// 
 			// m_cb_exportMaterials
@@ -221,6 +227,8 @@ namespace SMConverter
 			this->m_cb_exportMaterials->Size = System::Drawing::Size(122, 20);
 			this->m_cb_exportMaterials->TabIndex = 0;
 			this->m_cb_exportMaterials->Text = L"Export Materials";
+			this->m_toolTip->SetToolTip(this->m_cb_exportMaterials, L"When checked, the exported model will be linked to an .mtl file, which contains\r\n"
+				L"the information about object materials");
 			this->m_cb_exportMaterials->UseVisualStyleBackColor = true;
 			// 
 			// m_cb_exportUvs
@@ -232,6 +240,7 @@ namespace SMConverter
 			this->m_cb_exportUvs->Size = System::Drawing::Size(162, 20);
 			this->m_cb_exportUvs->TabIndex = 1;
 			this->m_cb_exportUvs->Text = L"Export UV Coordinates";
+			this->m_toolTip->SetToolTip(this->m_cb_exportUvs, L"When checked, the exported model will contain UV coordinates");
 			this->m_cb_exportUvs->UseVisualStyleBackColor = true;
 			this->m_cb_exportUvs->CheckedChanged += gcnew System::EventHandler(this, &TileConvertSettings::ExportUvCoords_CheckedChanged);
 			// 
@@ -244,6 +253,7 @@ namespace SMConverter
 			this->m_cb_exportNormals->Size = System::Drawing::Size(118, 20);
 			this->m_cb_exportNormals->TabIndex = 2;
 			this->m_cb_exportNormals->Text = L"Export Normals";
+			this->m_toolTip->SetToolTip(this->m_cb_exportNormals, L"When checked, the exported model will contain the information about the normals");
 			this->m_cb_exportNormals->UseVisualStyleBackColor = true;
 			// 
 			// m_gb_tileSettings
@@ -300,6 +310,9 @@ namespace SMConverter
 			this->m_cb_customGame->Name = L"m_cb_customGame";
 			this->m_cb_customGame->Size = System::Drawing::Size(354, 24);
 			this->m_cb_customGame->TabIndex = 1;
+			this->m_toolTip->SetToolTip(this->m_cb_customGame, L"Selected custom game\r\n\r\nWhen None is selected, the converter will use the content"
+				L" from base game\r\nand workshop mods\r\n\r\nOtherwise the tool will load the content f"
+				L"rom a custom game");
 			// 
 			// m_lbl_customGameContent
 			// 

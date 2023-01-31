@@ -20,7 +20,6 @@ namespace SMConverter
 	public:
 		SettingsGui(void);
 
-	public:
 		bool m_reload_obj_db = false;
 		bool m_reload_user_obj = false;
 
@@ -48,6 +47,7 @@ namespace SMConverter
 
 		System::Windows::Forms::ContextMenuStrip^ m_cms_pathListMenu;
 		System::Windows::Forms::ToolStripMenuItem^ m_btn_openPathInExplorer;
+		System::Windows::Forms::ToolTip^ m_toolTip;
 
 		System::Windows::Forms::Label^ m_lbl_gamePath;
 		System::ComponentModel::IContainer^ components;
@@ -72,6 +72,7 @@ namespace SMConverter
 			this->m_btn_browsePath = (gcnew System::Windows::Forms::Button());
 			this->m_tb_filePath = (gcnew System::Windows::Forms::TextBox());
 			this->m_btn_saveChanges = (gcnew System::Windows::Forms::Button());
+			this->m_toolTip = (gcnew System::Windows::Forms::ToolTip(this->components));
 			this->m_tabControl->SuspendLayout();
 			this->m_tabPage_general->SuspendLayout();
 			this->m_tabPage_paths->SuspendLayout();
@@ -114,6 +115,7 @@ namespace SMConverter
 			this->m_btn_gamePathSelector->Size = System::Drawing::Size(40, 22);
 			this->m_btn_gamePathSelector->TabIndex = 3;
 			this->m_btn_gamePathSelector->Text = L"...";
+			this->m_toolTip->SetToolTip(this->m_btn_gamePathSelector, L"Pick a folder");
 			this->m_btn_gamePathSelector->UseVisualStyleBackColor = true;
 			this->m_btn_gamePathSelector->Click += gcnew System::EventHandler(this, &SettingsGui::Settings_PathSelector_Click);
 			// 
@@ -136,6 +138,7 @@ namespace SMConverter
 			this->m_cb_openLinksInSteam->Size = System::Drawing::Size(148, 20);
 			this->m_cb_openLinksInSteam->TabIndex = 1;
 			this->m_cb_openLinksInSteam->Text = L"Open Links in Steam";
+			this->m_toolTip->SetToolTip(this->m_cb_openLinksInSteam, L"When checked, Open in Steam Workshop button will open links Steam");
 			this->m_cb_openLinksInSteam->UseVisualStyleBackColor = true;
 			this->m_cb_openLinksInSteam->CheckedChanged += gcnew System::EventHandler(this, &SettingsGui::Settings_OpenLinksInSteam_CheckedChanged);
 			// 
@@ -215,6 +218,7 @@ namespace SMConverter
 			this->m_cb_fileOption->Name = L"m_cb_fileOption";
 			this->m_cb_fileOption->Size = System::Drawing::Size(440, 24);
 			this->m_cb_fileOption->TabIndex = 4;
+			this->m_toolTip->SetToolTip(this->m_cb_fileOption, L"Selected path list");
 			this->m_cb_fileOption->SelectedIndexChanged += gcnew System::EventHandler(this, &SettingsGui::Settings_FileOption_SelectedIndexChanged);
 			// 
 			// m_btn_removePath
@@ -227,6 +231,7 @@ namespace SMConverter
 			this->m_btn_removePath->Size = System::Drawing::Size(75, 22);
 			this->m_btn_removePath->TabIndex = 3;
 			this->m_btn_removePath->Text = L"Remove";
+			this->m_toolTip->SetToolTip(this->m_btn_removePath, L"Remove selected item");
 			this->m_btn_removePath->UseVisualStyleBackColor = true;
 			this->m_btn_removePath->Click += gcnew System::EventHandler(this, &SettingsGui::Settings_RemovePath_Click);
 			// 
@@ -240,6 +245,7 @@ namespace SMConverter
 			this->m_btn_addPath->Size = System::Drawing::Size(75, 22);
 			this->m_btn_addPath->TabIndex = 2;
 			this->m_btn_addPath->Text = L"Add";
+			this->m_toolTip->SetToolTip(this->m_btn_addPath, L"Add item to the list");
 			this->m_btn_addPath->UseVisualStyleBackColor = true;
 			this->m_btn_addPath->Click += gcnew System::EventHandler(this, &SettingsGui::Settings_AddPath_Click);
 			// 
@@ -252,6 +258,7 @@ namespace SMConverter
 			this->m_btn_browsePath->Size = System::Drawing::Size(75, 22);
 			this->m_btn_browsePath->TabIndex = 1;
 			this->m_btn_browsePath->Text = L"...";
+			this->m_toolTip->SetToolTip(this->m_btn_browsePath, L"Pick a folder");
 			this->m_btn_browsePath->UseVisualStyleBackColor = true;
 			this->m_btn_browsePath->Click += gcnew System::EventHandler(this, &SettingsGui::Settings_PathBrowser_Click);
 			// 

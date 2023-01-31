@@ -1101,6 +1101,7 @@ namespace SMConverter
 		if (!v_cur_bp) return;
 
 		ItemInfoGui^ v_bp_info_gui = gcnew ItemInfoGui(v_cur_bp);
+		this->MainGui_CenterChildForm(v_bp_info_gui);
 		v_bp_info_gui->ShowDialog();
 	}
 
@@ -1111,7 +1112,10 @@ namespace SMConverter
 
 		ItemInfoGui^ v_tile_info_gui = gcnew ItemInfoGui(v_cur_tile);
 		if (v_tile_info_gui->m_isSuccess)
+		{
+			this->MainGui_CenterChildForm(v_tile_info_gui);
 			v_tile_info_gui->ShowDialog();
+		}
 	}
 
 	void MainGui::MainGui_FormClosing(System::Object^ sender, System::Windows::Forms::FormClosingEventArgs^ e)
