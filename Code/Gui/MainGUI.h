@@ -545,5 +545,7 @@ namespace SMConverter
 		System::Void MainGui_ShowTileInfo_Click(System::Object^ sender, System::EventArgs^ e);
 
 		System::Void MainGui_FormClosing(System::Object^ sender, System::Windows::Forms::FormClosingEventArgs^ e);
+
+		System::Void MainGui_CenterChildForm(System::Windows::Forms::Form^ form);
 	};
 }

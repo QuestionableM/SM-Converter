@@ -93,6 +93,7 @@ namespace SMConverter
 			if (v_dr == WForms::DialogResult::Yes)
 			{
 				SettingsGui^ v_settings = gcnew SettingsGui();
+				this->MainGui_CenterChildForm(v_settings);
 				v_settings->ShowDialog();
 			}
 			else
@@ -218,6 +219,7 @@ namespace SMConverter
 	void MainGui::AboutButton_Click(System::Object^ sender, System::EventArgs^ e)
 	{
 		AboutGui^ v_about_gui = gcnew AboutGui();
+		this->MainGui_CenterChildForm(v_about_gui);
 		v_about_gui->ShowDialog();
 		
 	#if defined(SMC_TILE_TESTER)
@@ -577,6 +579,7 @@ namespace SMConverter
 		if (m_bw_objectConverter->IsBusy) return;
 
 		BlueprintConvertSettings^ v_conv_settings = gcnew BlueprintConvertSettings(filename.c_str());
+		this->MainGui_CenterChildForm(v_conv_settings);
 		v_conv_settings->ShowDialog();
 
 		if (!v_conv_settings->m_ready_to_convert)
@@ -612,6 +615,7 @@ namespace SMConverter
 		if (m_bw_objectConverter->IsBusy) return;
 
 		TileConvertSettings^ v_conv_settings = gcnew TileConvertSettings(filename.c_str());
+		this->MainGui_CenterChildForm(v_conv_settings);
 		v_conv_settings->ShowDialog();
 
 		if (!v_conv_settings->m_ready_to_convert)
@@ -921,6 +925,7 @@ namespace SMConverter
 	void MainGui::MainGui_Options_Click(System::Object^ sender, System::EventArgs^ e)
 	{
 		SettingsGui^ v_settings_gui = gcnew SettingsGui();
+		this->MainGui_CenterChildForm(v_settings_gui);
 		v_settings_gui->ShowDialog();
 
 		if (v_settings_gui->m_reload_obj_db)
@@ -1083,6 +1088,7 @@ namespace SMConverter
 	void MainGui::MainGui_Filter_Click(System::Object^ sender, System::EventArgs^ e)
 	{
 		FilterSettingsGui^ v_filter_settings = gcnew FilterSettingsGui();
+		this->MainGui_CenterChildForm(v_filter_settings);
 		v_filter_settings->ShowDialog();
 
 		if (v_filter_settings->m_shouldReload)
@@ -1123,5 +1129,14 @@ namespace SMConverter
 
 		if (v_dialog_result != WForms::DialogResult::Yes)
 			e->Cancel = true;
+	}
+
+	void MainGui::MainGui_CenterChildForm(System::Windows::Forms::Form^ form)
+	{
+		form->StartPosition = System::Windows::Forms::FormStartPosition::Manual;
+		form->Location = System::Drawing::Point(
+			(this->Location.X + this->Size.Width / 2) - (form->Size.Width / 2),
+			(this->Location.Y + this->Size.Height / 2) - (form->Size.Height / 2)
+		);
 	}
 }
