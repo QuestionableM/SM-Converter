@@ -14,9 +14,9 @@ This program requires you to have a copy of scrap mechanic installed on your com
 If the program won't be able to find the path to Scrap Mechanic automatically, you can always specify the path manually in `Settings -> Options -> General`
 
 ## How to convert blueprints / tiles
-- Select the appropriate generator type
-    - In order to convert tiles you have to set the generator type to `Tile Converter`
-    - In order to convert blueprints you have to set the generator type to `Blueprint Converter`
+- Select the appropriate converter type
+    - In order to convert tiles you have to set the converter type to `Tile Converter`
+    - In order to convert blueprints you have to set the converter type to `Blueprint Converter`
 - Select any item in the list, press the `Convert` button and configure the export settings as you wish
 - Converted models will be stored in `ConvertedBlueprints` or `ConvertedTiles` directory which is located in the same place as the executable
 
