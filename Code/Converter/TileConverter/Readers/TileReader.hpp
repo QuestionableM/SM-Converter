@@ -1,6 +1,7 @@
 #pragma once
 
 #include "HarvestableListReader.hpp"
+#include "KinematicsListReader.hpp"
 #include "BlueprintListReader.hpp"
 #include "AssetListReader.hpp"
 #include "DecalListReader.hpp"
@@ -90,6 +91,7 @@ public:
 		BlueprintListReader::Read<t_mod_counter, t_tile_version>  (v_header, v_reader, v_part, v_error);
 		HarvestableListReader::Read<t_mod_counter, t_tile_version>(v_header, v_reader, v_part, v_error);
 		DecalListReader::Read<t_mod_counter, t_tile_version>      (v_header, v_reader, v_part, v_error);
+		KinematicsListReader::Read<t_mod_counter, t_tile_version> (v_header, v_reader, v_part, v_error);
 	}
 
 	template<bool t_mod_counter>

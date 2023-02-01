@@ -455,5 +455,8 @@
     <ClInclude Include="Code\ObjectDatabase\Mods\CustomGameMod.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Code\Converter\TileConverter\Readers\KinematicsListReader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

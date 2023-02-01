@@ -5,6 +5,13 @@
 #include "UStd\UnmanagedString.hpp"
 #include "UStd\UnmanagedArray.hpp"
 
+#if defined(DEBUG) || defined(_DEBUG)
+#include "UStd\UnmanagedFstream.hpp"
+#define MEMORY_WRAPPER_DUMP_BYTES(wrapper, file_name, offset) wrapper.DumpBytes(file_name, offset)
+#else
+#define MEMORY_WRAPPER_DUMP_BYTES(...) ((void*)0)
+#endif
+
 #include "Utils\GlmUnmanaged.hpp"
 #include "Utils\ByteImpl.hpp"
 
@@ -57,6 +64,22 @@ public:
 	{
 		return this->bytes.data();
 	}
+
+#if defined(DEBUG) || defined(_DEBUG)
+	inline void DumpBytes(const std::string& file_name, const std::size_t& offset = 0)
+	{
+		std::ofstream v_output(file_name, std::ios::binary);
+		if (!v_output.is_open())
+			return;
+		
+		const std::size_t v_diff = std::min(this->bytes.size(), offset);
+		const std::size_t v_size = this->bytes.size() - v_diff;
+		for (std::size_t a = offset; a < v_size; a++)
+			v_output.write(reinterpret_cast<const char*>(&this->bytes[a]), 1);
+
+		v_output.close();
+	}
+#endif
 
 	template<typename T, bool is_big_endian = false>
 	inline T Object(const std::size_t& offset)

@@ -53,6 +53,11 @@ public:
 	/* 0x104 */std::array<int, 4> harvestableListCompressedSize;
 	/* 0x114 */std::array<int, 4> harvestableListSize;
 
+	/* 0x124 */std::array<int, 4> kinematicsListCount;
+	/* 0x134 */std::array<int, 4> kinematicsListIndex;
+	/* 0x144 */std::array<int, 4> kinematicsListCompressedSize;
+	/* 0x154 */std::array<int, 4> kinematicsListSize;
+
 	std::vector<Byte> mBytes = {};
 
 	inline void Read()
@@ -82,6 +87,16 @@ public:
 		this->nodeCompressedSize = mMemory.Object<int>(0xac);
 		this->nodeSize           = mMemory.Object<int>(0xb0);
 
+		this->scriptCount = mMemory.Object<int>(0xb4);
+		this->scriptIndex = mMemory.Object<int>(0xb8);
+		this->scriptCompressedSize = mMemory.Object<int>(0xbc);
+		this->scriptSize = mMemory.Object<int>(0xc0);
+
+		DebugOutL("Script count: ", this->scriptCount);
+		DebugOutL("Script index: ", this->scriptIndex);
+		DebugOutL("Script compressed size: ", this->scriptCompressedSize);
+		DebugOutL("Script size: ", this->scriptSize);
+
 		this->prefabCount          = mMemory.Object<int>(0xc4);
 		this->prefabIndex          = mMemory.Object<int>(0xc8);
 		this->prefabCompressedSize = mMemory.Object<int>(0xcc);
@@ -96,6 +111,11 @@ public:
 		mMemory.ObjectsRef<int>(this->harvestableListIndex.data()         , 0xf4 , 4);
 		mMemory.ObjectsRef<int>(this->harvestableListCompressedSize.data(), 0x104, 4);
 		mMemory.ObjectsRef<int>(this->harvestableListSize.data()          , 0x114, 4);
+
+		mMemory.ObjectsRef<int>(this->kinematicsListCount.data(), 0x124, 4);
+		mMemory.ObjectsRef<int>(this->kinematicsListIndex.data(), 0x134, 4);
+		mMemory.ObjectsRef<int>(this->kinematicsListCompressedSize.data(), 0x144, 4);
+		mMemory.ObjectsRef<int>(this->kinematicsListSize.data(), 0x154, 4);
 	}
 
 	inline CellHeader(const std::vector<Byte>& memory)

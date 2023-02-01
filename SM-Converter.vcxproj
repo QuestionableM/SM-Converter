@@ -651,6 +651,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\Converter\TileConverter\Readers\ClutterReader.hpp" />
     <ClInclude Include="Code\Converter\TileConverter\Readers\DecalListReader.hpp" />
     <ClInclude Include="Code\Converter\TileConverter\Readers\HarvestableListReader.hpp" />
+    <ClInclude Include="Code\Converter\TileConverter\Readers\KinematicsListReader.hpp" />
     <ClInclude Include="Code\Converter\TileConverter\Readers\MipReader.hpp" />
     <ClInclude Include="Code\Converter\TileConverter\Readers\PrefabFileReader.hpp" />
     <ClInclude Include="Code\Converter\TileConverter\Readers\PrefabHeader.hpp" />
