@@ -65,6 +65,11 @@ public:
 		return this->bytes.data();
 	}
 
+	inline std::vector<Byte>& GetVec()
+	{
+		return this->bytes;
+	}
+
 #if defined(DEBUG) || defined(_DEBUG)
 	inline void DumpBytes(const std::string& file_name, const std::size_t& offset = 0)
 	{
@@ -86,15 +91,22 @@ public:
 	{
 		constexpr const std::size_t type_sz = sizeof(T);
 
-		Byte obj_bytes[type_sz];
-		std::memcpy(obj_bytes, this->bytes.data() + offset, type_sz);
-
-		if constexpr (is_big_endian)
+		if constexpr (type_sz > 1) //minor optimization for 1 byte data
 		{
-			std::reverse(obj_bytes, obj_bytes + type_sz);
-		}
+			Byte obj_bytes[type_sz];
+			std::memcpy(obj_bytes, this->bytes.data() + offset, type_sz);
 
-		return *reinterpret_cast<T*>(obj_bytes);
+			if constexpr (is_big_endian)
+			{
+				std::reverse(obj_bytes, obj_bytes + type_sz);
+			}
+
+			return *reinterpret_cast<T*>(obj_bytes);
+		}
+		else
+		{
+			return *reinterpret_cast<T*>(&this->bytes[offset]);
+		}
 	}
 
 	template<typename T, bool is_big_endian = false>
