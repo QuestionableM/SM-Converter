@@ -25,7 +25,7 @@ public:
 		if (v_error) return;
 
 		if constexpr (!t_mod_counter) {
-			//TODO: IMPLEMENT LATER
+			if (!TileConverterSettings::ExportKinematics) return;
 		}
 
 		for (int a = 0; a < 4; a++)

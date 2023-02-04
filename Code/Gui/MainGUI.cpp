@@ -621,7 +621,7 @@ namespace SMConverter
 		if (!v_conv_settings->m_ready_to_convert)
 			return;
 
-		System::Array^ v_thread_data = gcnew cli::array<System::Object^>(15);
+		System::Array^ v_thread_data = gcnew cli::array<System::Object^>(16);
 
 		//Data type
 		v_thread_data->SetValue(static_cast<int>(Generator_TileConverter), static_cast<int>(0));
@@ -633,19 +633,20 @@ namespace SMConverter
 		//Tile settings
 		v_thread_data->SetValue(v_conv_settings->m_cb_exportHarvestables->Checked, static_cast<int>(3));
 		v_thread_data->SetValue(v_conv_settings->m_cb_exportBlueprints->Checked  , static_cast<int>(4));
-		v_thread_data->SetValue(v_conv_settings->m_cb_exportClutter->Checked     , static_cast<int>(5));
-		v_thread_data->SetValue(v_conv_settings->m_cb_exportPrefabs->Checked     , static_cast<int>(6));
-		v_thread_data->SetValue(v_conv_settings->m_cb_exportDecals->Checked      , static_cast<int>(7));
-		v_thread_data->SetValue(v_conv_settings->m_cb_exportAssets->Checked      , static_cast<int>(8));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportKinematics->Checked  , static_cast<int>(5));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportClutter->Checked     , static_cast<int>(6));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportPrefabs->Checked     , static_cast<int>(7));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportDecals->Checked      , static_cast<int>(8));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportAssets->Checked      , static_cast<int>(9));
 
 		//Model settings
-		v_thread_data->SetValue(v_conv_settings->m_cb_export8kGndTextures->Checked, static_cast<int>(9));
-		v_thread_data->SetValue(v_conv_settings->m_cb_exportGndTextures->Checked  , static_cast<int>(10));
-		v_thread_data->SetValue(v_conv_settings->m_cb_exportMaterials->Checked    , static_cast<int>(11));
-		v_thread_data->SetValue(v_conv_settings->m_cb_exportNormals->Checked      , static_cast<int>(12));
-		v_thread_data->SetValue(v_conv_settings->m_cb_exportUvs->Checked          , static_cast<int>(13));
+		v_thread_data->SetValue(v_conv_settings->m_cb_export8kGndTextures->Checked, static_cast<int>(10));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportGndTextures->Checked  , static_cast<int>(11));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportMaterials->Checked    , static_cast<int>(12));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportNormals->Checked      , static_cast<int>(13));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportUvs->Checked          , static_cast<int>(14));
 
-		v_thread_data->SetValue(v_conv_settings->m_cb_customGame->SelectedIndex, static_cast<int>(14));
+		v_thread_data->SetValue(v_conv_settings->m_cb_customGame->SelectedIndex, static_cast<int>(15));
 
 		this->MainGui_ChangeGuiState(m_database_isLoaded, m_obj_isLoaded, false);
 		m_progressBarUpdater->Start();
@@ -816,19 +817,20 @@ namespace SMConverter
 		//Load the tile settings
 		TileConverterSettings::ExportHarvestables = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(3)));
 		TileConverterSettings::ExportBlueprints   = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(4)));
-		TileConverterSettings::ExportClutter      = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(5)));
-		TileConverterSettings::ExportPrefabs      = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(6)));
-		TileConverterSettings::ExportDecals       = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(7)));
-		TileConverterSettings::ExportAssets       = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(8)));
+		TileConverterSettings::ExportKinematics   = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(5)));
+		TileConverterSettings::ExportClutter      = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(6)));
+		TileConverterSettings::ExportPrefabs      = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(7)));
+		TileConverterSettings::ExportDecals       = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(8)));
+		TileConverterSettings::ExportAssets       = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(9)));
 
 		//Load the model settings
-		TileConverterSettings::Export8kGroundTextures = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(9)));
-		TileConverterSettings::ExportGroundTextures   = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(10)));
-		SharedConverterSettings::ExportMaterials      = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(11)));
-		SharedConverterSettings::ExportNormals        = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(12)));
-		SharedConverterSettings::ExportUvs            = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(13)));
+		TileConverterSettings::Export8kGroundTextures = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(10)));
+		TileConverterSettings::ExportGroundTextures   = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(11)));
+		SharedConverterSettings::ExportMaterials      = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(12)));
+		SharedConverterSettings::ExportNormals        = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(13)));
+		SharedConverterSettings::ExportUvs            = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(14)));
 
-		const int v_custom_game_idx = safe_cast<int>(v_conv_data->GetValue(static_cast<int>(14)));
+		const int v_custom_game_idx = safe_cast<int>(v_conv_data->GetValue(static_cast<int>(15)));
 		CustomGame* v_custom_game = nullptr;
 		if (v_custom_game_idx > 0)
 			v_custom_game = SMMod::GetCustomGames()[v_custom_game_idx - 1];

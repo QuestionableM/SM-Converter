@@ -29,6 +29,7 @@ namespace SMConverter
 
 		System::Windows::Forms::CheckBox^ m_cb_exportHarvestables;
 		System::Windows::Forms::CheckBox^ m_cb_exportBlueprints;
+		System::Windows::Forms::CheckBox^ m_cb_exportKinematics;
 		System::Windows::Forms::CheckBox^ m_cb_exportClutter;
 		System::Windows::Forms::CheckBox^ m_cb_exportPrefabs;
 		System::Windows::Forms::CheckBox^ m_cb_exportDecals;
@@ -54,7 +55,7 @@ namespace SMConverter
 		System::Windows::Forms::GroupBox^ m_gb_customGameSettings;
 		System::Windows::Forms::Label^ m_lbl_customGameContent;
 		System::Windows::Forms::ToolTip^ m_toolTip;
-		
+
 		System::ComponentModel::IContainer^ components;
 
 #pragma region Windows Form Designer generated code
@@ -81,6 +82,7 @@ namespace SMConverter
 			this->m_cb_customGame = (gcnew System::Windows::Forms::ComboBox());
 			this->m_lbl_customGameContent = (gcnew System::Windows::Forms::Label());
 			this->m_toolTip = (gcnew System::Windows::Forms::ToolTip(this->components));
+			this->m_cb_exportKinematics = (gcnew System::Windows::Forms::CheckBox());
 			this->m_gb_fileName->SuspendLayout();
 			this->m_gb_tileSettings->SuspendLayout();
 			this->m_gb_modelSettings->SuspendLayout();
@@ -116,7 +118,7 @@ namespace SMConverter
 			// 
 			this->m_cb_exportDecals->AutoSize = true;
 			this->m_cb_exportDecals->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
-			this->m_cb_exportDecals->Location = System::Drawing::Point(6, 149);
+			this->m_cb_exportDecals->Location = System::Drawing::Point(6, 175);
 			this->m_cb_exportDecals->Name = L"m_cb_exportDecals";
 			this->m_cb_exportDecals->Size = System::Drawing::Size(146, 20);
 			this->m_cb_exportDecals->TabIndex = 5;
@@ -128,7 +130,7 @@ namespace SMConverter
 			// 
 			this->m_cb_exportHarvestables->AutoSize = true;
 			this->m_cb_exportHarvestables->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
-			this->m_cb_exportHarvestables->Location = System::Drawing::Point(6, 123);
+			this->m_cb_exportHarvestables->Location = System::Drawing::Point(6, 149);
 			this->m_cb_exportHarvestables->Name = L"m_cb_exportHarvestables";
 			this->m_cb_exportHarvestables->Size = System::Drawing::Size(148, 20);
 			this->m_cb_exportHarvestables->TabIndex = 4;
@@ -185,7 +187,7 @@ namespace SMConverter
 				| System::Windows::Forms::AnchorStyles::Right));
 			this->m_btn_convert->Enabled = false;
 			this->m_btn_convert->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
-			this->m_btn_convert->Location = System::Drawing::Point(12, 317);
+			this->m_btn_convert->Location = System::Drawing::Point(12, 343);
 			this->m_btn_convert->Name = L"m_btn_convert";
 			this->m_btn_convert->Size = System::Drawing::Size(366, 35);
 			this->m_btn_convert->TabIndex = 3;
@@ -258,6 +260,7 @@ namespace SMConverter
 			// 
 			// m_gb_tileSettings
 			// 
+			this->m_gb_tileSettings->Controls->Add(this->m_cb_exportKinematics);
 			this->m_gb_tileSettings->Controls->Add(this->m_cb_exportDecals);
 			this->m_gb_tileSettings->Controls->Add(this->m_cb_exportAssets);
 			this->m_gb_tileSettings->Controls->Add(this->m_cb_exportHarvestables);
@@ -266,7 +269,7 @@ namespace SMConverter
 			this->m_gb_tileSettings->Controls->Add(this->m_cb_exportClutter);
 			this->m_gb_tileSettings->Location = System::Drawing::Point(12, 65);
 			this->m_gb_tileSettings->Name = L"m_gb_tileSettings";
-			this->m_gb_tileSettings->Size = System::Drawing::Size(180, 175);
+			this->m_gb_tileSettings->Size = System::Drawing::Size(180, 201);
 			this->m_gb_tileSettings->TabIndex = 9;
 			this->m_gb_tileSettings->TabStop = false;
 			this->m_gb_tileSettings->Text = L"Tile Settings";
@@ -281,7 +284,7 @@ namespace SMConverter
 			this->m_gb_modelSettings->Controls->Add(this->m_cb_exportGndTextures);
 			this->m_gb_modelSettings->Location = System::Drawing::Point(198, 65);
 			this->m_gb_modelSettings->Name = L"m_gb_modelSettings";
-			this->m_gb_modelSettings->Size = System::Drawing::Size(180, 175);
+			this->m_gb_modelSettings->Size = System::Drawing::Size(180, 201);
 			this->m_gb_modelSettings->TabIndex = 10;
 			this->m_gb_modelSettings->TabStop = false;
 			this->m_gb_modelSettings->Text = L"Model Settings";
@@ -292,7 +295,7 @@ namespace SMConverter
 				| System::Windows::Forms::AnchorStyles::Right));
 			this->m_gb_customGameSettings->Controls->Add(this->m_cb_customGame);
 			this->m_gb_customGameSettings->Controls->Add(this->m_lbl_customGameContent);
-			this->m_gb_customGameSettings->Location = System::Drawing::Point(12, 246);
+			this->m_gb_customGameSettings->Location = System::Drawing::Point(12, 272);
 			this->m_gb_customGameSettings->Name = L"m_gb_customGameSettings";
 			this->m_gb_customGameSettings->Size = System::Drawing::Size(366, 65);
 			this->m_gb_customGameSettings->TabIndex = 11;
@@ -324,11 +327,22 @@ namespace SMConverter
 			this->m_lbl_customGameContent->TabIndex = 0;
 			this->m_lbl_customGameContent->Text = L"Custom Game Content:";
 			// 
+			// m_cb_exportKinematics
+			// 
+			this->m_cb_exportKinematics->AutoSize = true;
+			this->m_cb_exportKinematics->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
+			this->m_cb_exportKinematics->Location = System::Drawing::Point(6, 123);
+			this->m_cb_exportKinematics->Name = L"m_cb_exportKinematics";
+			this->m_cb_exportKinematics->Size = System::Drawing::Size(132, 20);
+			this->m_cb_exportKinematics->TabIndex = 6;
+			this->m_cb_exportKinematics->Text = L"Export Kinematics";
+			this->m_cb_exportKinematics->UseVisualStyleBackColor = true;
+			// 
 			// TileConvertSettings
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(390, 364);
+			this->ClientSize = System::Drawing::Size(390, 390);
 			this->Controls->Add(this->m_gb_customGameSettings);
 			this->Controls->Add(this->m_gb_modelSettings);
 			this->Controls->Add(this->m_gb_tileSettings);

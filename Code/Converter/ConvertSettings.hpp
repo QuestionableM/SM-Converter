@@ -8,6 +8,7 @@ struct TileConverterSettings
 	inline static bool ExportGroundTextures = true;
 	inline static bool ExportHarvestables = true;
 	inline static bool ExportBlueprints = true;
+	inline static bool ExportKinematics = true;
 	inline static bool ExportClutter = true;
 	inline static bool ExportPrefabs = true;
 	inline static bool ExportAssets = true;

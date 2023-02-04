@@ -19,6 +19,7 @@ namespace SMConverter
 
 		m_cb_exportHarvestables->Checked = TileConverterSettings::ExportHarvestables;
 		m_cb_exportBlueprints->Checked = TileConverterSettings::ExportBlueprints;
+		m_cb_exportKinematics->Checked = TileConverterSettings::ExportKinematics;
 		m_cb_exportClutter->Checked = TileConverterSettings::ExportClutter;
 		m_cb_exportPrefabs->Checked = TileConverterSettings::ExportPrefabs;
 		m_cb_exportDecals->Checked = TileConverterSettings::ExportDecals;
