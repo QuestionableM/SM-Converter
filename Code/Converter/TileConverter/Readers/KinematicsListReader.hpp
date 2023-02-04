@@ -2,7 +2,7 @@
 
 #include "Converter\TileConverter\CellHeader.hpp"
 #include "Converter\TileConverter\Tile.hpp"
-#include "Converter\Entity\Asset.hpp"
+#include "Converter\Entity\Kinematic.hpp"
 
 #include "ObjectDatabase\UserDataReaders\ItemModCounter.hpp"
 #include "ObjectDatabase\ObjectDatabase.hpp"
@@ -75,7 +75,7 @@ public:
 			const glm::vec3 v_size = v_memory.Object<glm::vec3>(index + 0x1c);
 
 			const SMUuid v_uuid = v_memory.Object<SMUuid>(index + 0x28);
-			const unsigned int v_color = v_memory.Object<unsigned int>(index + 0x38);
+			const SMColor v_color = v_memory.Object<unsigned int>(index + 0x38);
 
 			index += 0x3c;
 
@@ -94,13 +94,26 @@ public:
 			//DebugOutL("Json String: ", v_json_str);
 			index += 0x1; //NULL BYTE
 
+			KinematicData* v_km_data = SMMod::GetGlobalObject<KinematicData>(v_uuid);
+
 			if constexpr (t_mod_counter)
 			{
-
+				ItemModStats::IncrementModPart((v_km_data != nullptr) ? v_km_data->m_mod : nullptr);
 			}
 			else
 			{
-				//Add stuff in here
+				if (!v_km_data) continue;
+
+				Model* v_km_model = ModelStorage::LoadModel(v_km_data->m_mesh);
+				if (!v_km_model) continue;
+
+				SMKinematic* v_new_kinematic = new SMKinematic(v_km_data, v_km_model, v_color);
+
+				v_new_kinematic->SetPosition(v_pos);
+				v_new_kinematic->SetRotation(v_quat);
+				v_new_kinematic->SetSize(v_size);
+
+				part->AddObject(v_new_kinematic, kinematic_idx);
 			}
 		}
 

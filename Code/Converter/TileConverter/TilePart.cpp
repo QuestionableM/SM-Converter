@@ -32,7 +32,7 @@ void TilePart::AddObject(SMEntity* object, const int& index)
 {
 	assert(object != nullptr);
 	assert(0 <= index && index <= 3);
-	assert((static_cast<unsigned short>(object->Type()) & 0b100011011) != 0);
+	assert((static_cast<unsigned short>(object->Type()) & 0b10100011011) != 0);
 	assert((index > 0 && (static_cast<unsigned short>(object->Type()) & 0b00010001) != 0) || index == 0);
 
 	this->m_Objects[index].push_back(object);

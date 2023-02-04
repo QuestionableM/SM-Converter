@@ -183,6 +183,9 @@
     <ClCompile Include="Code\ObjectDatabase\Readers\KinematicListLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Code\Converter\Entity\Kinematic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\Gui\MainGui.h">
@@ -468,6 +471,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Code\ObjectDatabase\Mods\ModObjectStorage.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Converter\Entity\Kinematic.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

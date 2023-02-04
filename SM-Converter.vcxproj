@@ -341,6 +341,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='ReleaseDebugInfo|x64'">true</CompileAsManaged>
     </ClCompile>
+    <ClCompile Include="Code\Converter\Entity\Kinematic.cpp" />
     <ClCompile Include="Code\Converter\Entity\Part.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</CompileAsManaged>
@@ -641,6 +642,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\Converter\Entity\GroundTerrainData.hpp" />
     <ClInclude Include="Code\Converter\Entity\Harvestable.hpp" />
     <ClInclude Include="Code\Converter\Entity\Joint.hpp" />
+    <ClInclude Include="Code\Converter\Entity\Kinematic.hpp" />
     <ClInclude Include="Code\Converter\Entity\Part.hpp" />
     <ClInclude Include="Code\Converter\Entity\Prefab.hpp" />
     <ClInclude Include="Code\Converter\Entity\TileClutter.hpp" />

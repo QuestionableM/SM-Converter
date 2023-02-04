@@ -9,7 +9,6 @@
 #include "Utils\Color.hpp"
 #include "Utils\Uuid.hpp"
 
-
 #pragma unmanaged
 
 struct ObjectTexData
@@ -32,6 +31,7 @@ enum class EntityType : unsigned short
 	Part        = (1 << 7),
 	Decal       = (1 << 8),
 	Body        = (1 << 9),
+	Kinematic   = (1 << 10),
 
 	//Is not used anywhere except the GroundTerrainData class
 	GroundTerrain = 0
