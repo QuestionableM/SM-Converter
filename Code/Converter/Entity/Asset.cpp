@@ -20,7 +20,7 @@ SMColor SMAsset::GetColor(const std::string& color) const
 			return v_iter->second;
 	}
 
-	return SMColor(static_cast<unsigned int>(0x000000));
+	return SMColor(static_cast<unsigned int>(0xffffff));
 }
 
 char* SMAsset::GetMtlNameCStr(const std::string& v_mat_name, const std::size_t& v_idx, char* v_ptr) const
