@@ -88,7 +88,7 @@ public:
 			if constexpr (t_tile_version >= 12) { index += 0x5; }
 			else if constexpr (t_tile_version >= 11) { index += 0x4; }
 
-			HarvestableData* hvs_data = SMMod::GetGlobalHarvestbale(f_uuid);
+			HarvestableData* hvs_data = SMMod::GetGlobalObject<HarvestableData>(f_uuid);
 
 			if constexpr (t_mod_counter)
 			{

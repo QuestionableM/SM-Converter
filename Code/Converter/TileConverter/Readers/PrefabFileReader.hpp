@@ -348,20 +348,20 @@ public:
 			if constexpr (t_pref_version >= 10)
 				stream.ReadByte();
 
+			AssetData* v_asset_data = SMMod::GetGlobalObject<AssetData>(uuid);
+
 			if constexpr (t_mod_counter)
 			{
-				AssetData* v_asset_data = SMMod::GetGlobalAsset(uuid);
 				ItemModStats::IncrementModPart((v_asset_data != nullptr) ? v_asset_data->m_mod : nullptr);
 			}
 			else
 			{
-				AssetData* asset_data = SMMod::GetGlobalAsset(uuid);
-				if (!asset_data) continue;
+				if (!v_asset_data) continue;
 
-				Model* pModel = ModelStorage::LoadModel(asset_data->m_mesh);
+				Model* pModel = ModelStorage::LoadModel(v_asset_data->m_mesh);
 				if (!pModel) continue;
 
-				SMAsset* nAsset = new SMAsset(asset_data, pModel, color_map);
+				SMAsset* nAsset = new SMAsset(v_asset_data, pModel, color_map);
 				nAsset->SetPosition(f_pos);
 				nAsset->SetRotation(f_quat);
 				nAsset->SetSize(f_size);
@@ -397,17 +397,17 @@ public:
 			//Read a random 4 byte value
 			stream.ReadInt();
 
+			const DecalData* v_decal_data = SMMod::GetGlobalObject<DecalData>(v_uuid);
+
 			if constexpr (t_mod_counter)
 			{
-				const DecalData* v_decal_data = SMMod::GetGlobalDecal(v_uuid);
 				ItemModStats::IncrementModPart((v_decal_data != nullptr) ? v_decal_data->m_mod : nullptr);
 			}
 			else
 			{
-				const DecalData* v_decalData = SMMod::GetGlobalDecal(v_uuid);
-				if (!v_decalData) continue;
+				if (!v_decal_data) continue;
 
-				SMDecal* v_newDecal = new SMDecal(v_decalData, v_color);
+				SMDecal* v_newDecal = new SMDecal(v_decal_data, v_color);
 				v_newDecal->SetPosition(v_pos);
 				v_newDecal->SetRotation(v_quat);
 				v_newDecal->SetSize(v_size);

@@ -75,7 +75,7 @@ public:
 				}
 
 				const SMUuid clutter_uuid = memory.Object<SMUuid>(offset);
-				const ClutterData* v_clutter_data = SMMod::GetGlobalClutter(clutter_uuid);
+				const ClutterData* v_clutter_data = SMMod::GetGlobalObject<ClutterData>(clutter_uuid);
 				if (v_clutter_data)
 				{
 					DebugOutL(0b1101_fg, "Clutter: ", clutter_uuid.ToString(), " -> ", uVar7);

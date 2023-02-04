@@ -180,6 +180,9 @@
     <ClCompile Include="Code\ObjectDatabase\Mods\CustomGameMod.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Code\ObjectDatabase\Readers\KinematicListLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\Gui\MainGui.h">
@@ -456,6 +459,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Code\Converter\TileConverter\Readers\KinematicsListReader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\ObjectDatabase\Readers\KinematicListLoader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\ObjectDatabase\Mods\CustomGameSwitch.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\ObjectDatabase\Mods\ModObjectStorage.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

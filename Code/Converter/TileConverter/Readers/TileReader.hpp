@@ -117,18 +117,11 @@ public:
 			int x = a % header->m_data.width;
 			int y = a / header->m_data.width;
 
-			std::vector<Byte> bytes = header->GetHeader(x, y)->Data();
+			const std::vector<Byte>& bytes = header->GetHeader(x, y)->Data();
 			DebugOutL("\tBLOB(", x, ", ", y, "):");
 			DebugOutL("\t\t", String::BytesToHexString(bytes, header->m_data.cell_header_size, 32));
 		}
 	#endif
-
-		const int v_tileVersion = header->m_data.version;
-		if (v_tileVersion < 0 || v_tileVersion > 13)
-		{
-			v_error = ConvertError(1, L"Unsupported Tile Version: " + std::to_wstring(v_tileVersion));
-			return nullptr;
-		}
 
 		using u_tile_loader_function = void (*)(CellHeader*, MemoryWrapper&, TilePart*, ConvertError&);
 		const static u_tile_loader_function v_tile_loaders[] =
@@ -147,6 +140,15 @@ public:
 			TileReader::ReadTileData<t_mod_counter, 12>,
 			TileReader::ReadTileData<t_mod_counter, 13>
 		};
+
+		constexpr const int v_numSupportedVersions = sizeof(v_tile_loaders) / sizeof(u_tile_loader_function);
+
+		const int v_tileVersion = header->m_data.version;
+		if (v_tileVersion < 0 || v_tileVersion > v_numSupportedVersions)
+		{
+			v_error = ConvertError(1, L"Unsupported Tile Version: " + std::to_wstring(v_tileVersion));
+			return nullptr;
+		}
 
 		MemoryWrapper reader(header->TileData());
 

@@ -76,7 +76,7 @@ public:
 				index += 0x40;
 			}
 
-			const DecalData* v_decalData = SMMod::GetGlobalDecal(v_uuid);
+			const DecalData* v_decalData = SMMod::GetGlobalObject<DecalData>(v_uuid);
 
 			if constexpr (t_mod_counter)
 			{

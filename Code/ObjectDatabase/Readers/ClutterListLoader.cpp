@@ -55,7 +55,7 @@ void ClutterListLoader::Load(const simdjson::dom::element& fClutter, SMMod* mod,
 		if (!v_uuid.is_string()) continue;
 
 		const SMUuid v_clutter_uuid = v_uuid.get_c_str();
-		if (SMMod::ClutterStorage.find(v_clutter_uuid) != SMMod::ClutterStorage.end())
+		if (mod->m_Clutter.ObjectExists(v_clutter_uuid, false))
 		{
 			DebugErrorL("Clutter with the specified uuid already exists! (", v_clutter_uuid.ToString(), ")");
 			continue;
@@ -77,10 +77,7 @@ void ClutterListLoader::Load(const simdjson::dom::element& fClutter, SMMod* mod,
 
 		ClutterListLoader::LoadClutterData(v_clutter, v_new_clutter);
 
-		const auto v_new_pair = std::make_pair(v_new_clutter->m_uuid, v_new_clutter);
-
-		mod->m_Clutter.insert(v_new_pair);
-		SMMod::ClutterStorage.insert(v_new_pair);
+		mod->m_Clutter.AddObject(v_new_clutter, true);
 		SMMod::ClutterVector.push_back(v_new_clutter);
 
 		ProgCounter::ProgressValue++;

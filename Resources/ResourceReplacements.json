@@ -6,7 +6,7 @@
 			"renderable": {
 				"lodList": [
 					{
-						"mesh": "./Resources/DecalDefault.obj",
+						"mesh": "./Resources/Water.obj",
 						"subMeshList": [
 							{
 								"material": "Water",
@@ -28,7 +28,7 @@
 			"renderable": {
 				"lodList": [
 					{
-						"mesh": "./Resources/DecalDefault.obj",
+						"mesh": "./Resources/Water.obj",
 						"subMeshList": [
 							{
 								"material": "Chemicals",
@@ -50,7 +50,7 @@
 			"renderable": {
 				"lodList": [
 					{
-						"mesh": "./Resources/DecalDefault.obj",
+						"mesh": "./Resources/Water.obj",
 						"subMeshList": [
 							{
 								"material": "Oil",

@@ -50,6 +50,24 @@ public:
 	}
 };
 
+class KinematicData
+{
+public:
+	SMUuid m_uuid;
+	SMSubMeshBase* m_textures;
+	SMMod* m_mod;
+	std::wstring m_mesh;
+
+	KinematicData() = default;
+	KinematicData(const KinematicData&) = delete;
+	KinematicData(KinematicData&) = delete;
+
+	inline ~KinematicData()
+	{
+		delete m_textures;
+	}
+};
+
 class BlockData
 {
 public:

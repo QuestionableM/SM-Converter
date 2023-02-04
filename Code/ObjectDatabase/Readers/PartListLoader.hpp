@@ -19,8 +19,6 @@ class PartListLoader
 
 	static glm::vec3 LoadPartCollision(const simdjson::dom::element& collision);
 
-	static bool CheckPartExists(const SMUuid& v_uuid, SMMod* v_mod, const bool& add_to_global_db);
-
 public:
 	static void Load(const simdjson::dom::element& fParts, SMMod* mod, const bool& add_to_global_db);
 

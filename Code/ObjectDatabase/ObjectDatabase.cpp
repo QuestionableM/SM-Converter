@@ -21,10 +21,10 @@ void DatabaseLoader::LoadGameDatabase()
 	ProgCounter::SetState(ProgState::LoadingVanilla, 0);
 	DebugOutL(0b0010_fg, "Loading game data...");
 
-	SMMod* pGameData = new GameDataMod();
-	pGameData->LoadObjectDatabase();
+	SMMod* v_game_data = new GameDataMod();
+	v_game_data->LoadObjectDatabase();
 
-	SMMod::ModVector.push_back(pGameData);
+	SMMod::GameDataMod = v_game_data;
 }
 
 void DatabaseLoader::LoadModsFromPath(const std::wstring& path, const bool& is_local)
@@ -71,11 +71,7 @@ void DatabaseLoader::LoadDatabase()
 
 	KeywordReplacer::ClearContentKey();
 
-	DebugOutL(0b0101_fg,
-		"Finished! (Blocks: ", SMMod::BlockStorage.size(),
-		", Parts: ", SMMod::PartStorage.size(),
-		", Harvestables: ", SMMod::HarvestableStorage.size(),
-		", Assets: ", SMMod::AssetStorage.size(), ")");
+	DebugOutL(0b0101_fg, "Successfully loaded ", SMMod::GetAmountOfObjects(), " objects!");
 }
 
 void DatabaseLoader::InitializeDatabase()

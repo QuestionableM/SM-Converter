@@ -92,11 +92,6 @@ public:
 		this->scriptCompressedSize = mMemory.Object<int>(0xbc);
 		this->scriptSize = mMemory.Object<int>(0xc0);
 
-		DebugOutL("Script count: ", this->scriptCount);
-		DebugOutL("Script index: ", this->scriptIndex);
-		DebugOutL("Script compressed size: ", this->scriptCompressedSize);
-		DebugOutL("Script size: ", this->scriptSize);
-
 		this->prefabCount          = mMemory.Object<int>(0xc4);
 		this->prefabIndex          = mMemory.Object<int>(0xc8);
 		this->prefabCompressedSize = mMemory.Object<int>(0xcc);
@@ -123,7 +118,7 @@ public:
 		this->mBytes = memory;
 	}
 
-	inline std::vector<Byte> Data()
+	inline const std::vector<Byte>& Data() const
 	{
 		return this->mBytes;
 	}

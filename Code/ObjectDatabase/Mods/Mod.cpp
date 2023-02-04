@@ -1,6 +1,7 @@
 #include "Mod.hpp"
 
 #include "ObjectDatabase\Readers\HarvestableListLoader.hpp"
+#include "ObjectDatabase\Readers\KinematicListLoader.hpp"
 #include "ObjectDatabase\Readers\DecalsetListReader.hpp"
 #include "ObjectDatabase\Readers\ClutterListLoader.hpp"
 #include "ObjectDatabase\Readers\AssetListLoader.hpp"
@@ -20,39 +21,59 @@
 
 #pragma unmanaged
 
-template<typename T>
-inline void EraseModItemMap(std::unordered_map<SMUuid, T>& v_mod_map)
-{
-	for (const auto& v_item : v_mod_map)
-		delete v_item.second;
-}
-
-SMMod::~SMMod()
-{
-	EraseModItemMap(m_Blocks);
-	EraseModItemMap(m_Parts);
-	EraseModItemMap(m_Assets);
-	EraseModItemMap(m_Harvestables);
-	EraseModItemMap(m_Clutter);
-	EraseModItemMap(m_Decals);
-}
-
 void SMMod::ClearModStorage()
 {
-	SMMod::BlockStorage.clear();
-	SMMod::PartStorage.clear();
-	SMMod::AssetStorage.clear();
-	SMMod::HarvestableStorage.clear();
-	SMMod::ClutterStorage.clear();
+	SMModObjectStorage<BlockData>::Clear();
+	SMModObjectStorage<PartData>::Clear();
+	SMModObjectStorage<AssetData>::Clear();
+	SMModObjectStorage<HarvestableData>::Clear();
+	SMModObjectStorage<ClutterData>::Clear();
+	SMModObjectStorage<DecalData>::Clear();
+	SMModObjectStorage<KinematicData>::Clear();
+
 	SMMod::ClutterVector.clear();
-	SMMod::DecalStorage.clear();
 
-	for (std::size_t a = 0; a < SMMod::ModVector.size(); a++)
-		delete SMMod::ModVector[a];
+	{
+		//Remove all the mods from the memory
+		if (SMMod::GameDataMod)
+		{
+			delete SMMod::GameDataMod;
+			SMMod::GameDataMod = nullptr;
+		}
 
-	SMMod::CustomGameVector.clear();
-	SMMod::ModStorage.clear();
-	SMMod::ModVector.clear();
+		for (std::size_t a = 0; a < SMMod::ModVector.size(); a++)
+			delete SMMod::ModVector[a];
+
+		for (std::size_t a = 0; a < SMMod::CustomGameVector.size(); a++)
+			delete SMMod::CustomGameVector[a];
+
+		SMMod::CustomGameStorage.clear();
+		SMMod::CustomGameVector.clear();
+
+		SMMod::ModStorage.clear();
+		SMMod::ModVector.clear();
+	}
+}
+
+inline bool GetModTypeFromString(const char* v_str, ModType& v_type_ref)
+{
+	if (strcmp(v_str, "Blocks and Parts") == 0)
+	{
+		v_type_ref = ModType::BlocksAndParts;
+		return true;
+	}
+	else if (strcmp(v_str, "Terrain Assets") == 0)
+	{
+		v_type_ref = ModType::TerrainAssets;
+		return true;
+	}
+	else if (strcmp(v_str, "Custom Game") == 0)
+	{
+		v_type_ref = ModType::CustomGame;
+		return true;
+	}
+
+	return false;
 }
 
 SMMod* SMMod::LoadFromDescription(const std::wstring& mod_folder, const bool& is_local)
@@ -66,8 +87,12 @@ SMMod* SMMod::LoadFromDescription(const std::wstring& mod_folder, const bool& is
 
 	const auto v_root = v_doc.root();
 
-	const auto v_mod_type = v_root["type"];
-	if (!v_mod_type.is_string()) return nullptr;
+	const auto v_mod_type_obj = v_root["type"];
+	if (!v_mod_type_obj.is_string()) return nullptr;
+
+	ModType v_mod_type;
+	if (!GetModTypeFromString(v_mod_type_obj.get_c_str(), v_mod_type))
+		return nullptr;
 
 	const auto v_mod_uuid_obj = v_root["localId"];
 	const auto v_mod_name_obj = v_root["name"];
@@ -78,9 +103,11 @@ SMMod* SMMod::LoadFromDescription(const std::wstring& mod_folder, const bool& is
 	const SMUuid v_mod_uuid = v_mod_uuid_obj.get_c_str();
 	const std::wstring v_mod_name = String::ToWide(v_mod_name_obj.get_c_str());
 
-	const UuidObjMapIterator<SMMod*> v_iter = SMMod::ModStorage.find(v_mod_uuid);
-	if (v_iter != SMMod::ModStorage.end())
+	const std::unordered_map<SMUuid, SMMod*>& v_cur_map = (v_mod_type != ModType::CustomGame) ? SMMod::ModStorage : SMMod::CustomGameStorage;
+	const std::unordered_map<SMUuid, SMMod*>::const_iterator v_iter = v_cur_map.find(v_mod_uuid);
+	if (v_iter != v_cur_map.end())
 	{
+	#if defined(DEBUG) || defined(_DEBUG)
 		const SMMod* v_modPtr = v_iter->second;
 
 		if (v_iter->second->m_isLocal && !is_local)
@@ -94,96 +121,45 @@ SMMod* SMMod::LoadFromDescription(const std::wstring& mod_folder, const bool& is
 			DebugWarningL("Uuid conflict between: ", v_iter->second->m_Name, " and ", v_mod_name, " (uuid: ", v_mod_uuid.ToString(), ")");
 			return nullptr;
 		}
+	#else
+		return nullptr;
+	#endif
 	}
 
-	SMMod* v_newMod;
-	const char* v_mod_type_str = v_mod_type.get_c_str();
-	if (strcmp(v_mod_type_str, "Blocks and Parts") == 0)
-		v_newMod = new BlocksAndPartsMod();
-	else if (strcmp(v_mod_type_str, "Terrain Assets") == 0)
-		v_newMod = new TerrainAssetsMod();
-	else if (strcmp(v_mod_type_str, "Custom Game") == 0)
-		v_newMod = new CustomGame();
-	else
-		return nullptr;
+	SMMod* v_new_mod;
+	switch (v_mod_type)
+	{
+	case ModType::BlocksAndParts:
+		v_new_mod = new BlocksAndPartsMod();
+		break;
+	case ModType::TerrainAssets:
+		v_new_mod = new TerrainAssetsMod();
+		break;
+	case ModType::CustomGame:
+		{
+			CustomGame* v_cg_mod = new CustomGame();
 
-	v_newMod->m_Name = v_mod_name;
-	v_newMod->m_Directory = mod_folder;
-	v_newMod->m_Uuid = v_mod_uuid;
-	v_newMod->m_isLocal = is_local;
+			const auto v_allow_add_mods = v_root["allow_add_mods"];
+			v_cg_mod->m_shouldUseUserMods = (v_allow_add_mods.is_bool() ? v_allow_add_mods.get_bool() : true);
+
+			v_new_mod = v_cg_mod;
+			break;
+		}
+	default:
+		return nullptr;
+	}
+
+	v_new_mod->m_Name = v_mod_name;
+	v_new_mod->m_Directory = mod_folder;
+	v_new_mod->m_Uuid = v_mod_uuid;
+	v_new_mod->m_isLocal = is_local;
 
 	const auto v_mod_ws_id = v_root["fileId"];
-	v_newMod->m_WorkshopId = v_mod_ws_id.is_number() ? JsonReader::GetNumber<unsigned long long>(v_mod_ws_id) : 0ull;
+	v_new_mod->m_WorkshopId = v_mod_ws_id.is_number() ? JsonReader::GetNumber<unsigned long long>(v_mod_ws_id) : 0ull;
 
-	DebugOutL("Mod: ", 0b1101_fg, v_newMod->m_Name, 0b1110_fg, ", Uuid: ", 0b1101_fg, v_newMod->m_Uuid.ToString(), 0b1110_fg, ", Type: ", 0b1101_fg, v_mod_type_str);
+	DebugOutL("Mod: ", 0b1101_fg, v_new_mod->m_Name, 0b1110_fg, ", Uuid: ", 0b1101_fg, v_new_mod->m_Uuid.ToString(), 0b1110_fg, ", Type: ", 0b1101_fg, v_mod_type_obj.get_c_str().value_unsafe());
 
-	SMMod::ModStorage.insert(std::make_pair(v_newMod->m_Uuid, v_newMod));
-	SMMod::ModVector.push_back(v_newMod);
-
-	if (v_newMod->Type() == ModType::CustomGame)
-		SMMod::CustomGameVector.push_back(reinterpret_cast<CustomGame*>(v_newMod));
-
-	return v_newMod;
-}
-
-BlockData* SMMod::GetGlobalBlock(const SMUuid& uuid)
-{
-	const UuidObjMapIterator<BlockData*> v_iter = SMMod::BlockStorage.find(uuid);
-	if (v_iter != SMMod::BlockStorage.end())
-		return v_iter->second;
-
-	DebugErrorL("Couldn't find a block with the specified uuid: ", uuid.ToString());
-	return nullptr;
-}
-
-PartData* SMMod::GetGlobalPart(const SMUuid& uuid)
-{
-	const UuidObjMapIterator<PartData*> v_iter = SMMod::PartStorage.find(uuid);
-	if (v_iter != SMMod::PartStorage.end())
-		return v_iter->second;
-
-	DebugErrorL("Couldn't find a part with the specified uuid: ", uuid.ToString());
-	return nullptr;
-}
-
-AssetData* SMMod::GetGlobalAsset(const SMUuid& uuid)
-{
-	const UuidObjMapIterator<AssetData*> v_iter = SMMod::AssetStorage.find(uuid);
-	if (v_iter != SMMod::AssetStorage.end())
-		return v_iter->second;
-
-	DebugErrorL("Couldn't find an asset with the specified uuid: ", uuid.ToString());
-	return nullptr;
-}
-
-HarvestableData* SMMod::GetGlobalHarvestbale(const SMUuid& uuid)
-{
-	const UuidObjMapIterator<HarvestableData*> v_iter = SMMod::HarvestableStorage.find(uuid);
-	if (v_iter != SMMod::HarvestableStorage.end())
-		return v_iter->second;
-
-	DebugErrorL("Couldn't find a harvestable with the specified uuid: ", uuid.ToString());
-	return nullptr;
-}
-
-DecalData* SMMod::GetGlobalDecal(const SMUuid& uuid)
-{
-	const UuidObjMapIterator<DecalData*> v_iter = SMMod::DecalStorage.find(uuid);
-	if (v_iter != SMMod::DecalStorage.end())
-		return v_iter->second;
-
-	DebugErrorL("Couldn't find a decal with the specified uuid: ", uuid.ToString());
-	return nullptr;
-}
-
-ClutterData* SMMod::GetGlobalClutter(const SMUuid& uuid)
-{
-	const UuidObjMapIterator<ClutterData*> v_iter = SMMod::ClutterStorage.find(uuid);
-	if (v_iter != SMMod::ClutterStorage.end())
-		return v_iter->second;
-
-	DebugErrorL("Couldn't find clutter with the specified uuid: ", uuid.ToString());
-	return nullptr;
+	return v_new_mod;
 }
 
 ClutterData* SMMod::GetGlobalClutterById(const std::size_t& idx)
@@ -205,7 +181,8 @@ static const DataLoaderMap g_DataLoaders =
 	{ "partList",			 PartListLoader::Load		 },
 	{ "blockList",			 BlockListLoader::Load		 },
 	{ "clutterList",		 ClutterListLoader::Load     },
-	{ "decalSetList",        DecalsetListReader::Load    }
+	{ "decalSetList",        DecalsetListReader::Load    },
+	{ "kinematicList",       KinematicListLoader::Load   }
 };
 
 void SMMod::LoadFile(const std::wstring& path, const bool& add_to_global_db)
@@ -294,6 +271,29 @@ void SMMod::LoadHarvestableSetList(const std::wstring& path, SMMod* v_mod, const
 		KeywordReplacer::ReplaceKeyR(v_hvsset_path);
 
 		v_mod->LoadFile(v_hvsset_path, add_to_global_db);
+	}
+}
+
+void SMMod::LoadKinematicSetList(const std::wstring& path, SMMod* v_mod, const bool& add_to_global_db)
+{
+	simdjson::dom::document v_kinematicdb_doc;
+	if (!JsonReader::LoadParseSimdjsonCommentsC(path, v_kinematicdb_doc, simdjson::dom::element_type::OBJECT))
+		return;
+
+	const auto v_kinematicset_list = v_kinematicdb_doc.root()["kinematicSetList"];
+	if (!v_kinematicset_list.is_array()) return;
+
+	for (const auto v_kinematic_set : v_kinematicset_list.get_array())
+	{
+		if (!v_kinematic_set.is_object()) continue;
+
+		const auto v_kinematicset_path_obj = v_kinematic_set["name"];
+		if (!v_kinematicset_path_obj.is_string()) continue;
+
+		std::wstring v_kinematicset_path = String::ToWide(v_kinematicset_path_obj.get_string());
+		KeywordReplacer::ReplaceKeyR(v_kinematicset_path);
+
+		v_mod->LoadFile(v_kinematicset_path, add_to_global_db);
 	}
 }
 

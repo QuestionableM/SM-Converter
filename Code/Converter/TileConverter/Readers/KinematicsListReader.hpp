@@ -88,10 +88,10 @@ public:
 
 			const int v_json_str_sz = v_memory.Object<int, true>(index);
 			index += 0x4;
-			const std::string v_json_str = v_memory.String(index, v_json_str_sz);
+			//const std::string v_json_str = v_memory.String(index, v_json_str_sz);
 			index += v_json_str_sz;
 
-			DebugOutL("Json String: ", v_json_str);
+			//DebugOutL("Json String: ", v_json_str);
 			index += 0x1; //NULL BYTE
 
 			if constexpr (t_mod_counter)

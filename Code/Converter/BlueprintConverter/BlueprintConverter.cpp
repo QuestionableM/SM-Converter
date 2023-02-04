@@ -1,5 +1,6 @@
 #include "BlueprintConverter.hpp"
 
+#include "ObjectDatabase\Mods\CustomGameSwitch.hpp"
 #include "ObjectDatabase\DatabaseConfig.hpp"
 #include "ObjectDatabase\ProgCounter.hpp"
 
@@ -169,29 +170,10 @@ void BlueprintConv::ConvertToModel(const std::wstring& bp_path, const std::wstri
 
 	if (v_custom_game)
 	{
-		SMMod* v_custom_game_mod = v_custom_game;
-
-		//Copy the game data to restore it after the conversion
-		const auto v_part_list_copy = SMMod::PartStorage;
-		const auto v_block_list_copy = SMMod::BlockStorage;
-
-		if (v_custom_game->ShouldUseGameContent())
-		{
-			//Add to the existing storage if the custom game uses game content
-			SMMod::MergeMaps(SMMod::PartStorage, v_custom_game_mod->m_Parts);
-			SMMod::MergeMaps(SMMod::BlockStorage, v_custom_game_mod->m_Blocks);
-		}
-		else
-		{
-			//Overwrite the global list if the custom game doesn't use game content
-			SMMod::PartStorage = v_custom_game_mod->m_Parts;
-			SMMod::BlockStorage = v_custom_game_mod->m_Blocks;
-		}
+		SMModCustomGameSwitch<true> v_content_switch;
+		v_content_switch.MergeContent(v_custom_game);
 
 		v_blueprint = SMBlueprint::FromFileWithStatus(bp_path, v_add_obj_func, v_error);
-
-		SMMod::PartStorage = v_part_list_copy;
-		SMMod::BlockStorage = v_block_list_copy;
 	}
 	else
 	{
