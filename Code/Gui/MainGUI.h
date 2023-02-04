@@ -519,7 +519,7 @@ namespace SMConverter
 		System::Void ResetProgressBar();
 
 		System::Void MainGui_ConvertBlueprint(const std::wstring& filename, const std::wstring& path);
-		System::Void MainGui_ConvertTile(const std::wstring& filename, const std::wstring& path);
+		System::Void MainGui_ConvertTile(const std::wstring& filename, const std::wstring& path, SMUuid* v_cg_uuid);
 		System::Void MainGui_Convert_Clicked(System::Object^ sender, System::EventArgs^ e);
 
 		std::vector<BlueprintInstance*>& GetCurrentBlueprintList();

@@ -126,18 +126,21 @@ SMMod* SMMod::LoadFromDescription(const std::wstring& mod_folder, const bool& is
 	#endif
 	}
 
+	const auto v_mod_ws_id = v_root["fileId"];
+	const unsigned long long v_mod_workshop_id = v_mod_ws_id.is_number() ? JsonReader::GetNumber<unsigned long long>(v_mod_ws_id) : 0ull;
+
 	SMMod* v_new_mod;
 	switch (v_mod_type)
 	{
 	case ModType::BlocksAndParts:
-		v_new_mod = new BlocksAndPartsMod();
+		v_new_mod = new BlocksAndPartsMod(v_mod_name, mod_folder, v_mod_uuid, v_mod_workshop_id, is_local);
 		break;
 	case ModType::TerrainAssets:
-		v_new_mod = new TerrainAssetsMod();
+		v_new_mod = new TerrainAssetsMod(v_mod_name, mod_folder, v_mod_uuid, v_mod_workshop_id, is_local);
 		break;
 	case ModType::CustomGame:
 		{
-			CustomGame* v_cg_mod = new CustomGame();
+			CustomGame* v_cg_mod = new CustomGame(v_mod_name, mod_folder, v_mod_uuid, v_mod_workshop_id, is_local);
 
 			const auto v_allow_add_mods = v_root["allow_add_mods"];
 			v_cg_mod->m_shouldUseUserMods = (v_allow_add_mods.is_bool() ? v_allow_add_mods.get_bool() : true);
@@ -149,16 +152,7 @@ SMMod* SMMod::LoadFromDescription(const std::wstring& mod_folder, const bool& is
 		return nullptr;
 	}
 
-	v_new_mod->m_Name = v_mod_name;
-	v_new_mod->m_Directory = mod_folder;
-	v_new_mod->m_Uuid = v_mod_uuid;
-	v_new_mod->m_isLocal = is_local;
-
-	const auto v_mod_ws_id = v_root["fileId"];
-	v_new_mod->m_WorkshopId = v_mod_ws_id.is_number() ? JsonReader::GetNumber<unsigned long long>(v_mod_ws_id) : 0ull;
-
 	DebugOutL("Mod: ", 0b1101_fg, v_new_mod->m_Name, 0b1110_fg, ", Uuid: ", 0b1101_fg, v_new_mod->m_Uuid.ToString(), 0b1110_fg, ", Type: ", 0b1101_fg, v_mod_type_obj.get_c_str().value_unsafe());
-
 	return v_new_mod;
 }
 

@@ -4,6 +4,8 @@
 #include "UStd\UnmanagedVector.hpp"
 
 #include "ObjectDatabase\UserDataReaders\ItemModCounter.hpp"
+#include "ObjectDatabase\Mods\CustomGameSwitch.hpp"
+#include "ObjectDatabase\KeywordReplacer.hpp"
 #include "ObjectDatabase\DatabaseConfig.hpp"
 #include "ObjectDatabase\Mods\Mod.hpp"
 
@@ -38,6 +40,28 @@ namespace SMConverter
 		this->UpdateModList();
 	}
 
+	inline void ItemInfoGui_ReadTileData(TileInstance* v_tile, ConvertError& v_error)
+	{
+		if (!v_tile->m_cg_uuid.IsNil())
+		{
+			CustomGame* v_cur_cg = SMMod::GetCustomGame(v_tile->m_cg_uuid);
+			if (v_cur_cg)
+			{
+				v_cur_cg->SetContentKey();
+
+				SMModCustomGameSwitch<false> v_cg_switch;
+				v_cg_switch.MergeContent(v_cur_cg);
+
+				TileFolderReader::GetTileData(v_tile, v_error);
+
+				KeywordReplacer::ClearContentKey();
+				return;
+			}
+		}
+
+		TileFolderReader::GetTileData(v_tile, v_error);
+	}
+
 	ItemInfoGui::ItemInfoGui(TileInstance* v_tile)
 	{
 		ItemModStats::Reset();
@@ -59,7 +83,7 @@ namespace SMConverter
 			m_bp_blueprintPreview->ImageLocation = gcnew System::String(v_tile_preview.c_str());
 
 		ConvertError v_error;
-		TileFolderReader::GetTileData(v_tile, v_error);
+		ItemInfoGui_ReadTileData(v_tile, v_error);
 
 		if (v_error)
 		{

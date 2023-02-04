@@ -35,6 +35,11 @@ public:
 		}
 	}
 
+	inline bool IsNil() const
+	{
+		return (m_Data64[0] == 0 && m_Data64[1] == 0);
+	}
+
 	inline static SMUuid GenerateNamedStatic(const SMUuid& uuid, const std::string& some_string)
 	{
 		const std::string v_hash_string = uuid.ToString() + some_string;
