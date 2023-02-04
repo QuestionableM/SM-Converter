@@ -91,7 +91,10 @@ public:
 		BlueprintListReader::Read<t_mod_counter, t_tile_version>  (v_header, v_reader, v_part, v_error);
 		HarvestableListReader::Read<t_mod_counter, t_tile_version>(v_header, v_reader, v_part, v_error);
 		DecalListReader::Read<t_mod_counter, t_tile_version>      (v_header, v_reader, v_part, v_error);
-		KinematicsListReader::Read<t_mod_counter, t_tile_version> (v_header, v_reader, v_part, v_error);
+
+		if constexpr (t_tile_version >= 11) {
+			KinematicsListReader::Read<t_mod_counter, t_tile_version> (v_header, v_reader, v_part, v_error);
+		}
 	}
 
 	template<bool t_mod_counter>
