@@ -10,7 +10,7 @@
 
 namespace SMConverter
 {
-	TileConvertSettings::TileConvertSettings(const wchar_t* v_filename, SMUuid* v_cg_uuid)
+	TileConvertSettings::TileConvertSettings(const wchar_t* v_filename, const wchar_t* v_path)
 	{
 		this->InitializeComponent();
 
@@ -44,17 +44,14 @@ namespace SMConverter
 		for (const CustomGame* v_custom_game : SMMod::GetCustomGames())
 			m_cb_customGame->Items->Add(gcnew System::String(v_custom_game->GetName().c_str()));
 
-		m_cb_customGame->SelectedIndex = 0;
-		if (v_cg_uuid)
+		CustomGame* v_cg_mod = SMMod::GetCustomGameFromPath(v_path);
+		if (v_cg_mod)
 		{
-			if (v_cg_uuid->IsNil())
-				return;
-
-			CustomGame* v_current_cg = SMMod::GetCustomGame(*v_cg_uuid);
-			if (!v_current_cg)
-				return;
-
-			m_cb_customGame->SelectedIndex = static_cast<int>(v_current_cg->m_id + 1);
+			m_cb_customGame->SelectedIndex = static_cast<int>(v_cg_mod->m_id + 1);
+		}
+		else
+		{
+			m_cb_customGame->SelectedIndex = 0;
 		}
 	}
 

@@ -167,6 +167,17 @@ ClutterData* SMMod::GetGlobalClutterById(const std::size_t& idx)
 	return SMMod::ClutterVector[idx];
 }
 
+CustomGame* SMMod::GetCustomGameFromPath(const std::wstring& v_path)
+{
+	for (CustomGame* v_cur_cg : SMMod::CustomGameVector)
+	{
+		if (File::IsSubPath(v_cur_cg->GetDirectory(), v_path))
+			return v_cur_cg;
+	}
+
+	return nullptr;
+}
+
 using DataLoaderMap = std::unordered_map<std::string, void (*)(const simdjson::dom::element&, SMMod*, const bool&)>;
 static const DataLoaderMap g_DataLoaders =
 {

@@ -14,9 +14,6 @@ struct TileInstance
 {
 	std::wstring name;
 	std::wstring lower_name;
-
-	//Uuid of a parent custom game
-	SMUuid m_cg_uuid;
 	SMUuid uuid;
 
 	std::wstring path;
@@ -52,10 +49,10 @@ public:
 	static TileSizeFilter GetTileSize(const int& v_sz);
 	static void GetTileData(TileInstance* v_tile_instance, ConvertError& v_error);
 
-	static void LoadFromFile(const std::filesystem::path& path, const SMUuid* v_custom_game_uuid);
-	static void LoadFromDirectory(const std::wstring& path, const SMUuid* v_custom_game_uuid = nullptr);
+	static void LoadFromFile(const std::filesystem::path& path);
+	static void LoadFromDirectory(const std::wstring& path);
 
-	static void ReadTilesFromFolder(const std::wstring& path, const SMUuid* v_custom_game_uuid = nullptr);
+	static void ReadTilesFromFolder(const std::wstring& path);
 	static void ReadTilesFromConfig();
 
 	static void ClearStorage();

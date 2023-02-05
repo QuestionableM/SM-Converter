@@ -17,7 +17,7 @@ namespace SMConverter
 	public ref class TileConvertSettings : public System::Windows::Forms::Form
 	{
 	public:
-		TileConvertSettings(const wchar_t* v_filename, SMUuid* v_cg_uuid);
+		TileConvertSettings(const wchar_t* v_filename, const wchar_t* v_path);
 
 	protected:
 		~TileConvertSettings();

@@ -610,11 +610,11 @@ namespace SMConverter
 		m_bw_objectConverter->RunWorkerAsync(v_thread_data);
 	}
 
-	void MainGui::MainGui_ConvertTile(const std::wstring& filename, const std::wstring& path, SMUuid* v_cg_uuid)
+	void MainGui::MainGui_ConvertTile(const std::wstring& filename, const std::wstring& path)
 	{
 		if (m_bw_objectConverter->IsBusy) return;
 
-		TileConvertSettings^ v_conv_settings = gcnew TileConvertSettings(filename.c_str(), v_cg_uuid);
+		TileConvertSettings^ v_conv_settings = gcnew TileConvertSettings(filename.c_str(), path.c_str());
 		this->MainGui_CenterChildForm(v_conv_settings);
 		v_conv_settings->ShowDialog();
 
@@ -676,7 +676,7 @@ namespace SMConverter
 					const std::vector<TileInstance*>& v_tile_list = this->GetCurrentTileList();
 					TileInstance* v_cur_tile = v_tile_list[m_lb_objectSelector->SelectedIndex];
 
-					this->MainGui_ConvertTile(v_cur_tile->name, v_cur_tile->path, &v_cur_tile->m_cg_uuid);
+					this->MainGui_ConvertTile(v_cur_tile->name, v_cur_tile->path);
 					break;
 				}
 			case Generator_ScriptConverter:
@@ -715,7 +715,7 @@ namespace SMConverter
 				{
 					const std::wstring v_tile_name = (v_cur_path.has_stem() ? v_cur_path.stem().wstring() : L"UnknownTile");
 
-					this->MainGui_ConvertTile(v_tile_name, v_path_wstr, nullptr);
+					this->MainGui_ConvertTile(v_tile_name, v_path_wstr);
 					break;
 				}
 			case Generator_ScriptConverter:

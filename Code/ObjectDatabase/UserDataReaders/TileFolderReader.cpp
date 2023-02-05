@@ -54,7 +54,7 @@ void TileFolderReader::GetTileData(TileInstance* v_tile_instance, ConvertError& 
 	if (v_tile) delete v_tile;
 }
 
-void TileFolderReader::LoadFromFile(const std::filesystem::path& path, const SMUuid* v_custom_game_uuid)
+void TileFolderReader::LoadFromFile(const std::filesystem::path& path)
 {
 	if (!(path.has_stem() && path.has_filename() && path.has_parent_path()))
 		return;
@@ -67,10 +67,7 @@ void TileFolderReader::LoadFromFile(const std::filesystem::path& path, const SMU
 	TileInstance* v_new_tile = new TileInstance();
 	v_new_tile->name = path.stem().wstring();
 	v_new_tile->lower_name = String::ToLower(v_new_tile->name);
-
 	v_new_tile->uuid = v_tile_info.uuid;
-	if (v_custom_game_uuid)
-		v_new_tile->m_cg_uuid = *v_custom_game_uuid;
 
 	v_new_tile->path = path.wstring();
 	v_new_tile->directory = path.parent_path().wstring();
@@ -88,7 +85,7 @@ void TileFolderReader::LoadFromFile(const std::filesystem::path& path, const SMU
 	TileFolderReader::Storage.push_back(v_new_tile);
 }
 
-void TileFolderReader::LoadFromDirectory(const std::wstring& path, const SMUuid* v_custom_game_uuid)
+void TileFolderReader::LoadFromDirectory(const std::wstring& path)
 {
 	namespace fs = std::filesystem;
 
@@ -106,74 +103,57 @@ void TileFolderReader::LoadFromDirectory(const std::wstring& path, const SMUuid*
 	if (!v_type.is_string())
 		return;
 
-	const auto v_uuid = v_root["localId"];
-	if (!v_uuid.is_string())
+	if (strcmp(v_type.get_c_str(), "Tile") != 0)
 		return;
 
-	if (strcmp(v_type.get_c_str(), "Tile") == 0)
+	const auto v_name = v_root["name"];
+	const auto v_uuid = v_root["localId"];
+
+	if (!(v_name.is_string() && v_uuid.is_string()))
+		return;
+
+	const std::wstring v_tile_filename = String::ToWide(v_name.get_string());
+
+	std::wstring v_tile_path_str = path + L"/" + v_tile_filename;
+	if (!File::Exists(v_tile_path_str))
 	{
-		const auto v_name = v_root["name"];
-		if (!v_name.is_string())
-			return;
-
-		const std::wstring v_tile_filename = String::ToWide(v_name.get_string());
-
-		std::wstring v_tile_path_str = path + L"/" + v_tile_filename;
+		v_tile_path_str.append(L".tile");
 		if (!File::Exists(v_tile_path_str))
-		{
-			v_tile_path_str.append(L".tile");
-			if (!File::Exists(v_tile_path_str))
-				return;
-		}
-
-		fs::path v_tile_path = v_tile_path_str;
-		if (!v_tile_path.has_stem())
 			return;
-
-		TileHeaderBaseInfo v_tile_info;
-		ConvertError v_error;
-		if (!TileReader::ReadTileHeader(v_tile_path.wstring(), v_tile_info, v_error))
-			return;
-
-		TileInstance* v_new_tile = new TileInstance();
-		v_new_tile->name = v_tile_path.stem().wstring();
-		v_new_tile->lower_name = String::ToLower(v_new_tile->name);
-		v_new_tile->uuid = v_tile_info.uuid;
-
-		if (v_custom_game_uuid)
-			v_new_tile->m_cg_uuid = *v_custom_game_uuid;
-
-		v_new_tile->path = v_tile_path.wstring();
-		v_new_tile->directory = path;
-
-		const std::wstring v_preview_img = path + L"/" + v_tile_info.uuid.ToWstring() + L".png";
-		if (File::Exists(v_preview_img))
-			v_new_tile->preview_image = v_preview_img;
-
-		const auto v_workshop_id = v_root["fileId"];
-		v_new_tile->workshop_id = (v_workshop_id.is_number() ? JsonReader::GetNumber<unsigned long long>(v_workshop_id) : 0ull);
-		v_new_tile->creator_id = v_tile_info.creator_id;
-
-		v_new_tile->v_size_filter = TileFolderReader::GetTileSize(v_tile_info.width);
-		v_new_tile->v_filter = FilterSettingsData::GetUserDataFilter(v_new_tile->path);
-
-		TileFolderReader::Storage.push_back(v_new_tile);
 	}
-	else if (strcmp(v_type.get_c_str(), "Custom Game") == 0)
-	{
-		if (v_custom_game_uuid)
-			return;
 
-		const std::wstring v_tile_dir = path + L"/Terrain/Tiles";
-		if (!File::Exists(v_tile_dir))
-			return;
+	fs::path v_tile_path = v_tile_path_str;
+	if (!v_tile_path.has_stem())
+		return;
 
-		const SMUuid v_cg_uuid = v_uuid.get_c_str();
-		TileFolderReader::ReadTilesFromFolder(v_tile_dir, &v_cg_uuid);
-	}
+	TileHeaderBaseInfo v_tile_info;
+	ConvertError v_error;
+	if (!TileReader::ReadTileHeader(v_tile_path.wstring(), v_tile_info, v_error))
+		return;
+
+	TileInstance* v_new_tile = new TileInstance();
+	v_new_tile->name = v_tile_path.stem().wstring();
+	v_new_tile->lower_name = String::ToLower(v_new_tile->name);
+	v_new_tile->uuid = v_tile_info.uuid;
+
+	v_new_tile->path = v_tile_path.wstring();
+	v_new_tile->directory = path;
+
+	const std::wstring v_preview_img = path + L"/" + v_tile_info.uuid.ToWstring() + L".png";
+	if (File::Exists(v_preview_img))
+		v_new_tile->preview_image = v_preview_img;
+
+	const auto v_workshop_id = v_root["fileId"];
+	v_new_tile->workshop_id = (v_workshop_id.is_number() ? JsonReader::GetNumber<unsigned long long>(v_workshop_id) : 0ull);
+	v_new_tile->creator_id = v_tile_info.creator_id;
+
+	v_new_tile->v_size_filter = TileFolderReader::GetTileSize(v_tile_info.width);
+	v_new_tile->v_filter = FilterSettingsData::GetUserDataFilter(v_new_tile->path);
+
+	TileFolderReader::Storage.push_back(v_new_tile);
 }
 
-void TileFolderReader::ReadTilesFromFolder(const std::wstring& path, const SMUuid* v_custom_game_uuid)
+void TileFolderReader::ReadTilesFromFolder(const std::wstring& path)
 {
 	namespace fs = std::filesystem;
 
@@ -189,11 +169,11 @@ void TileFolderReader::ReadTilesFromFolder(const std::wstring& path, const SMUui
 			if (!(v_file_path.has_extension() && v_file_path.extension().string() == ".tile"))
 				continue;
 
-			TileFolderReader::LoadFromFile(v_file_path, v_custom_game_uuid);
+			TileFolderReader::LoadFromFile(v_file_path);
 		}
 		else if (v_cur_item.is_directory())
 		{
-			TileFolderReader::LoadFromDirectory(v_cur_item.path().wstring(), v_custom_game_uuid);
+			TileFolderReader::LoadFromDirectory(v_cur_item.path().wstring());
 		}
 	}
 }

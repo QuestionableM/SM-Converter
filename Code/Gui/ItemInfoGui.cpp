@@ -42,21 +42,18 @@ namespace SMConverter
 
 	inline void ItemInfoGui_ReadTileData(TileInstance* v_tile, ConvertError& v_error)
 	{
-		if (!v_tile->m_cg_uuid.IsNil())
+		CustomGame* v_cur_cg = SMMod::GetCustomGameFromPath(v_tile->path);
+		if (v_cur_cg)
 		{
-			CustomGame* v_cur_cg = SMMod::GetCustomGame(v_tile->m_cg_uuid);
-			if (v_cur_cg)
-			{
-				v_cur_cg->SetContentKey();
+			v_cur_cg->SetContentKey();
 
-				SMModCustomGameSwitch<false> v_cg_switch;
-				v_cg_switch.MergeContent(v_cur_cg);
+			SMModCustomGameSwitch<false> v_cg_switch;
+			v_cg_switch.MergeContent(v_cur_cg);
 
-				TileFolderReader::GetTileData(v_tile, v_error);
+			TileFolderReader::GetTileData(v_tile, v_error);
 
-				KeywordReplacer::ClearContentKey();
-				return;
-			}
+			KeywordReplacer::ClearContentKey();
+			return;
 		}
 
 		TileFolderReader::GetTileData(v_tile, v_error);

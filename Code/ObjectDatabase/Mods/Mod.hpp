@@ -41,6 +41,7 @@ public:
 	}
 
 	static ClutterData* GetGlobalClutterById(const std::size_t& idx);
+	static CustomGame* GetCustomGameFromPath(const std::wstring& v_path);
 
 	template<bool t_check_blocks = true>
 	inline static SMMod* GetModFromBlocksAndParts(const SMUuid& uuid)
@@ -77,14 +78,6 @@ public:
 		}
 	}
 
-	inline static CustomGame* GetCustomGame(const SMUuid& v_uuid)
-	{
-		const std::unordered_map<SMUuid, SMMod*>::const_iterator v_iter = SMMod::CustomGameStorage.find(v_uuid);
-		if (v_iter != SMMod::CustomGameStorage.end())
-			return reinterpret_cast<CustomGame*>(v_iter->second);
-
-		return nullptr;
-	}
 
 	inline static std::vector<CustomGame*>& GetCustomGames() { return SMMod::CustomGameVector; }
 	inline static const std::vector<SMMod*>& GetAllMods() { return SMMod::ModVector; }

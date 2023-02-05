@@ -2,6 +2,7 @@
 
 #include "ObjectDatabase\Mods\CustomGameMod.hpp"
 #include "UStd\UnmanagedUnorderedMap.hpp"
+#include "Utils\Console.hpp"
 
 #pragma unmanaged
 
@@ -23,6 +24,8 @@ public:
 
 	inline ~SMModCustomGameSwitch()
 	{
+		DebugOutL(0b1011_fg, "Setting the normal content back...");
+
 		if constexpr (!t_modify_blocks_only) {
 			SMModObjectStorage<AssetData>::StaticStorage = m_Assets;
 			SMModObjectStorage<HarvestableData>::StaticStorage = m_Harvestables;
@@ -35,6 +38,8 @@ public:
 
 	inline void MergeContent(CustomGame* v_cg_mod) const
 	{
+		DebugOutL(0b1011_fg, "Merging custom game content...");
+
 		SMModObjectStorage<BlockData>::Clear();
 		SMModObjectStorage<PartData>::Clear();
 
@@ -80,6 +85,8 @@ public:
 
 		if (v_cg_mod->m_shouldUseUserMods)
 		{
+			DebugOutL(0b1011_fg, "Merging mods into the custom game content...");
+
 			for (SMMod* v_cur_mod : SMMod::GetAllMods())
 			{
 				if constexpr (!t_modify_blocks_only) {
