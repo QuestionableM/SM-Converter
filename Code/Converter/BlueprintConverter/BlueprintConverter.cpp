@@ -139,8 +139,6 @@ void BlueprintConv::BlueprintAddObject_SeparateAll(SMBlueprint* self, SMEntity* 
 
 			delete v_block;
 		}
-
-		DebugOutL("Block: ", v_block->m_bounds.x, ", ", v_block->m_bounds.y, ", ", v_block->m_bounds.z);
 	}
 	else
 	{
