@@ -29,8 +29,8 @@ public:
 
 	inline void AddObject(SMEntity* object)
 	{
-		//Check if the object is valid (Valid objects: Harvestable, Blueprint, Prefab, Asset)
-		assert((static_cast<unsigned short>(object->Type()) & 0b100011011) != 0);
+		//Check if the object is valid (Valid objects: Harvestable, Blueprint, Prefab, Asset, Decal, Kinematic)
+		assert((static_cast<unsigned short>(object->Type()) & 0b10100011011) != 0);
 
 		this->Objects.push_back(object);
 	}

@@ -27,8 +27,8 @@ public:
 	int count_0x54;
 	int has_0x5c;
 
-	int count_0x64;
-	int has_0x6c;
+	int kinematicsCount;
+	int hasKinematics;
 
 	int count_0x74;
 	int has_0x7c;
@@ -96,9 +96,9 @@ public:
 		if constexpr (7 < t_pref_version)
 		{
 			stream.Move(4 * 8);
-			count_0x64 = stream.ReadInt();
+			kinematicsCount = stream.ReadInt();
 			stream.Move(4 * 8);
-			has_0x6c = stream.ReadInt();
+			hasKinematics = stream.ReadInt();
 
 			stream.Move(4 * 8);
 			count_0x74 = stream.ReadInt();
@@ -107,8 +107,8 @@ public:
 		}
 		else
 		{
-			count_0x64 = 0;
-			has_0x6c   = 0;
+			kinematicsCount = 0;
+			hasKinematics   = 0;
 
 			count_0x74 = 0;
 			has_0x7c   = 0;
@@ -128,8 +128,8 @@ public:
 			DebugOutL("Decals Count: ", decalsCount);
 		if (has_0x5c != 0)
 			DebugOutL("Count_0x54: ", count_0x54);
-		if (has_0x6c != 0)
-			DebugOutL("Count_0x64: ", count_0x64);
+		if (hasKinematics != 0)
+			DebugOutL("Kinematics Count: ", kinematicsCount);
 		if (has_0x7c != 0)
 			DebugOutL("Count_0x74: ", count_0x74);
 	#endif

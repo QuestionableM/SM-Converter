@@ -89,16 +89,17 @@ public:
 			THROW_PREFAB_ERROR(v_decal_bytes != v_header.hasDecals, v_error);
 		}
 
-		//UNKNOWN READERS
-
 		if (v_header.has_0x5c != 0)
-			PrefabFileReader::Read_248<t_pref_version>(v_stream, prefab, v_header.count_0x54);
+			PrefabFileReader::Read_248<t_pref_version>(v_stream, prefab, v_header);
 
-		if (v_header.has_0x6c != 0)
-			PrefabFileReader::Read_1<t_pref_version>(v_stream, prefab, v_header.count_0x64);
+		if (v_header.hasKinematics != 0)
+		{
+			const int v_kinematic_bytes = PrefabFileReader::ReadKinematics<t_mod_counter, t_pref_version>(v_stream, prefab, v_header);
+			THROW_PREFAB_ERROR(v_kinematic_bytes != v_header.hasKinematics, v_error);
+		}
 
 		if (v_header.has_0x7c != 0)
-			PrefabFileReader::Read_2<t_pref_version>(v_stream, prefab, v_header.count_0x74);
+			PrefabFileReader::Read_2<t_pref_version>(v_stream, prefab, v_header);
 	}
 
 	template<bool t_mod_counter>
@@ -420,24 +421,82 @@ public:
 	}
 
 	template<int t_pref_version>
-	static void Read_248(BitStream& stream, SMPrefab* prefab, const int& count)
+	static int Read_248(BitStream& stream, SMPrefab* prefab, PrefabHeader& v_header)
 	{
 		BIT_STREAM_DUMP_INTO_FILE(stream, L"./prefab_dump/prefab" + std::to_wstring(t_pref_version) + L"_248", 100);
 		DebugWarningL("UNIMPLEMENTED -> ", stream.Index());
+
+		stream.Move(v_header.has_0x5c);
+		return v_header.has_0x5c;
 	}
 
-	template<int t_pref_version>
-	static void Read_1(BitStream& stream, SMPrefab* prefab, const int& count)
+	template<bool t_mod_counter, int t_pref_version>
+	static int ReadKinematics(BitStream& stream, SMPrefab* prefab, PrefabHeader& v_header)
 	{
-		BIT_STREAM_DUMP_INTO_FILE(stream, L"./prefab_dump/prefab" + std::to_wstring(t_pref_version) + L"_1", 100);
-		DebugWarningL("UNIMPLEMENTED -> ", stream.Index());
+		if (!TileConverterSettings::ExportKinematics)
+		{
+			stream.Move(v_header.hasBlueprints);
+			return v_header.hasBlueprints;
+		}
+
+		BIT_STREAM_DUMP_INTO_FILE(stream, L"./prefab_dump/prefab" + std::to_wstring(t_pref_version) + L"_kinematics", 5000);
+		const int v_start_idx = stream.Index();
+
+		for (int a = 0; a < v_header.kinematicsCount; a++)
+		{
+			const glm::vec3 v_pos = stream.ReadVec3();
+			const glm::quat v_quat = stream.ReadQuat();
+			const glm::vec3 v_size = stream.ReadVec3();
+
+			const SMUuid v_uuid = stream.ReadUuid();
+			const SMColor v_color = stream.ReadInt();
+
+			while (1)
+			{
+				if (stream.ReadByte() == 0x9)
+					break;
+			}
+
+			//Blueprint size
+			const int v_bp_json_sz = stream.ReadInt();
+			//Skip the blueprint string
+			stream.Move(v_bp_json_sz * 8);
+			//Read the null byte
+			const Byte test = stream.ReadByte();
+
+			KinematicData* v_kinematic_data = SMMod::GetGlobalObject<KinematicData>(v_uuid);
+
+			if constexpr (t_mod_counter)
+			{
+				ItemModStats::IncrementModPart((v_kinematic_data != nullptr) ? v_kinematic_data->m_mod : nullptr);
+			}
+			else
+			{
+				if (!v_kinematic_data) continue;
+
+				Model* v_km_model = ModelStorage::LoadModel(v_kinematic_data->m_mesh);
+				if (!v_km_model) continue;
+
+				SMKinematic* v_new_kinematic = new SMKinematic(v_kinematic_data, v_km_model, v_color);
+				v_new_kinematic->SetPosition(v_pos);
+				v_new_kinematic->SetRotation(v_quat);
+				v_new_kinematic->SetSize(v_size);
+
+				prefab->AddObject(v_new_kinematic);
+			}
+		}
+
+		return stream.Index() - v_start_idx;
 	}
 
 	template<int t_pref_version>
-	static void Read_2(BitStream& stream, SMPrefab* prefab, const int& count)
+	static int Read_2(BitStream& stream, SMPrefab* prefab, PrefabHeader& v_header)
 	{
 		BIT_STREAM_DUMP_INTO_FILE(stream, L"./prefab_dump/prefab" + std::to_wstring(t_pref_version) + L"_2", 100);
 		DebugWarningL("UNIMPLEMENTED -> ", stream.Index());
+
+		stream.Move(v_header.has_0x7c);
+		return v_header.has_0x7c;
 	}
 };
 
