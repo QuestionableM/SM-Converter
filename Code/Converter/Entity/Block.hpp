@@ -6,6 +6,8 @@
 
 class SMBlock : public SMEntity
 {
+	friend class BlueprintConv;
+
 public:
 	inline SMBlock(BlockData* pParent,
 		const glm::vec3& bounds,

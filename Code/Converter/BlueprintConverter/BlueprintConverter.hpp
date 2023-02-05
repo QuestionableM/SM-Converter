@@ -14,10 +14,11 @@ enum : int
 {
 	BPObjectSep_None         = 0,
 	BPObjectSep_All          = 1,
-	BPObjectSep_Joints       = 2,
-	BPObjectSep_Uuid         = 3,
-	BPObjectSep_Color        = 4,
-	BPObjectSep_UuidAndColor = 5
+	BPObjectSep_Shapes       = 3,
+	BPObjectSep_Joints       = 4,
+	BPObjectSep_Uuid         = 5,
+	BPObjectSep_Color        = 6,
+	BPObjectSep_UuidAndColor = 7
 };
 
 
@@ -28,6 +29,7 @@ class BlueprintConv
 	static void CreateAndAddObjToCollection(SMBlueprint* self, const std::string& v_name, SMEntity* v_entity);
 
 	static void BlueprintAddObject_SeparateAll(SMBlueprint* self, SMEntity* v_entity);
+	static void BlueprintAddObject_SeparateShapes(SMBlueprint* self, SMEntity* v_entity);
 	static void BlueprintAddObject_SeparateJoints(SMBlueprint* self, SMEntity* v_entity);
 	static void BlueprintAddObject_SeparateUuid(SMBlueprint* self, SMEntity* v_entity);
 	static void BlueprintAddObject_SeparateColor(SMBlueprint* self, SMEntity* v_entity);

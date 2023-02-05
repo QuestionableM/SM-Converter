@@ -99,6 +99,57 @@ void BlueprintConv::CreateAndAddObjToCollection(SMBlueprint* self, const std::st
 
 void BlueprintConv::BlueprintAddObject_SeparateAll(SMBlueprint* self, SMEntity* v_entity)
 {
+	if (v_entity->Type() == EntityType::Block)
+	{
+		SMBlock* v_block = reinterpret_cast<SMBlock*>(v_entity);
+
+		const std::size_t v_bounds_x = static_cast<std::size_t>(v_block->m_bounds.x);
+		const std::size_t v_bounds_y = static_cast<std::size_t>(v_block->m_bounds.y);
+		const std::size_t v_bounds_z = static_cast<std::size_t>(v_block->m_bounds.z);
+
+		if (v_bounds_x == 1 && v_bounds_y == 1 && v_bounds_z == 1)
+		{
+			BlueprintConv::CreateAndAddObjToCollection(self, "Object_" + std::to_string(self->m_object_index + 1), v_entity);
+		}
+		else
+		{
+			const std::string v_main_blk_name = "Object_" + std::to_string(self->m_object_index + 1);
+
+			for (std::size_t x = 0; x < v_bounds_x; x++)
+			{
+				const std::string v_blk_x_name = v_main_blk_name + '_' + std::to_string(x + 1);
+
+				for (std::size_t y = 0; y < v_bounds_y; y++)
+				{
+					const std::string v_blk_y_name = v_blk_x_name + '_' + std::to_string(y + 1);
+
+					for (std::size_t z = 0; z < v_bounds_z; z++)
+					{
+						const std::string v_blk_z_name = v_blk_y_name + '_' + std::to_string(z + 1);
+
+						SMBlock* v_new_blk = new SMBlock(v_block->m_parent, glm::vec3(1.0f), v_block->m_color, v_block->m_xAxis, v_block->m_zAxis, 0);
+						v_new_blk->SetPosition(v_block->m_position + glm::vec3(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)));
+						v_new_blk->SetRotation(v_block->m_rotation);
+						v_new_blk->SetSize(glm::vec3(1.0f));
+
+						BlueprintConv::CreateAndAddObjToCollection(self, v_blk_z_name, v_new_blk);
+					}
+				}
+			}
+
+			delete v_block;
+		}
+
+		DebugOutL("Block: ", v_block->m_bounds.x, ", ", v_block->m_bounds.y, ", ", v_block->m_bounds.z);
+	}
+	else
+	{
+		BlueprintConv::CreateAndAddObjToCollection(self, "Object_" + std::to_string(self->m_object_index + 1), v_entity);
+	}
+}
+
+void BlueprintConv::BlueprintAddObject_SeparateShapes(SMBlueprint* self, SMEntity* v_entity)
+{
 	BlueprintConv::CreateAndAddObjToCollection(self, "Object_" + std::to_string(self->m_object_index + 1), v_entity);
 }
 
@@ -148,6 +199,7 @@ SMBlueprint::AddObjectFunction BlueprintConv::GetAddObjectFunction()
 	switch (BlueprintConverterSettings::SeparationType)
 	{
 	case BPObjectSep_All:          return BlueprintConv::BlueprintAddObject_SeparateAll;
+	case BPObjectSep_Shapes:	   return BlueprintConv::BlueprintAddObject_SeparateShapes;
 	case BPObjectSep_Joints:       return BlueprintConv::BlueprintAddObject_SeparateJoints;
 	case BPObjectSep_Uuid:         return BlueprintConv::BlueprintAddObject_SeparateUuid;
 	case BPObjectSep_Color:        return BlueprintConv::BlueprintAddObject_SeparateColor;

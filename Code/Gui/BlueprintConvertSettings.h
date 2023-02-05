@@ -117,9 +117,9 @@ namespace SMConverter
 			this->m_cb_separationType->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			this->m_cb_separationType->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
 			this->m_cb_separationType->FormattingEnabled = true;
-			this->m_cb_separationType->Items->AddRange(gcnew cli::array< System::Object^  >(6) {
-				L"None", L"Separate All Objects", L"Separate By Joints",
-					L"Group Objects By UUID", L"Group Objects By Color", L"Group Objects By UUID & Color"
+			this->m_cb_separationType->Items->AddRange(gcnew cli::array< System::Object^  >(7) {
+				L"None", L"Separate All", L"Separate By Shapes",
+					L"Separate By Joints", L"Group Objects By UUID", L"Group Objects By Color", L"Group Objects By UUID & Color"
 			});
 			this->m_cb_separationType->Location = System::Drawing::Point(6, 35);
 			this->m_cb_separationType->Name = L"m_cb_separationType";
