@@ -12,7 +12,7 @@ namespace SMConverter
 	public ref class BlueprintConvertSettings : public System::Windows::Forms::Form
 	{
 	public:
-		BlueprintConvertSettings(const wchar_t* v_filename);
+		BlueprintConvertSettings(const wchar_t* v_filename, const wchar_t* v_path);
 
 		System::Windows::Forms::TextBox^ m_tb_filename;
 		bool m_ready_to_convert = false;

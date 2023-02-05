@@ -32,6 +32,7 @@
 //#define SMC_TILE_TESTER
 #if defined(SMC_TILE_TESTER)
 #include "Converter\TileConverter\Readers\TileReader.hpp"
+#include "ObjectDatabase\Mods\CustomGameSwitch.hpp"
 #endif
 
 #define WF_SHOW_WARNING(title, message) \
@@ -227,7 +228,25 @@ namespace SMConverter
 		for (const TileInstance* v_tile_instance : TileFolderReader::Storage)
 		{
 			ConvertError v_error;
-			Tile* v_cur_tile = TileReader::ReadTile<true>(v_tile_instance->path, v_error);
+
+			Tile* v_cur_tile = nullptr;
+			CustomGame* v_current_cg = SMMod::GetCustomGameFromPath(v_tile_instance->directory);
+			if (v_current_cg)
+			{
+				v_current_cg->SetContentKey();
+
+				SMModCustomGameSwitch<false> v_cg_switch;
+				v_cg_switch.MergeContent(v_current_cg);
+
+				v_cur_tile = TileReader::ReadTile<true>(v_tile_instance->path, v_error);
+
+				KeywordReplacer::ClearContentKey();
+			}
+			else
+			{
+				v_cur_tile = TileReader::ReadTile<true>(v_tile_instance->path, v_error);
+			}
+
 			if (v_cur_tile)
 				delete v_cur_tile;
 
@@ -578,7 +597,7 @@ namespace SMConverter
 	{
 		if (m_bw_objectConverter->IsBusy) return;
 
-		BlueprintConvertSettings^ v_conv_settings = gcnew BlueprintConvertSettings(filename.c_str());
+		BlueprintConvertSettings^ v_conv_settings = gcnew BlueprintConvertSettings(filename.c_str(), path.c_str());
 		this->MainGui_CenterChildForm(v_conv_settings);
 		v_conv_settings->ShowDialog();
 

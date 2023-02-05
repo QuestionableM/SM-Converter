@@ -10,7 +10,7 @@
 
 namespace SMConverter
 {
-	BlueprintConvertSettings::BlueprintConvertSettings(const wchar_t* v_filename)
+	BlueprintConvertSettings::BlueprintConvertSettings(const wchar_t* v_filename, const wchar_t* v_path)
 	{
 		this->InitializeComponent();
 
@@ -34,7 +34,8 @@ namespace SMConverter
 		for (const CustomGame* v_custom_game : SMMod::GetCustomGames())
 			m_cb_customGame->Items->Add(gcnew System::String(v_custom_game->GetName().c_str()));
 
-		m_cb_customGame->SelectedIndex = 0;
+		CustomGame* v_current_cg = SMMod::GetCustomGameFromPath(v_path);
+		m_cb_customGame->SelectedIndex = (v_current_cg != nullptr) ? static_cast<int>(v_current_cg->m_id + 1) : 0;
 	}
 
 	BlueprintConvertSettings::~BlueprintConvertSettings()

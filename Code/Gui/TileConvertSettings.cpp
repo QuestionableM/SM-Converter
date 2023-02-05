@@ -45,14 +45,7 @@ namespace SMConverter
 			m_cb_customGame->Items->Add(gcnew System::String(v_custom_game->GetName().c_str()));
 
 		CustomGame* v_cg_mod = SMMod::GetCustomGameFromPath(v_path);
-		if (v_cg_mod)
-		{
-			m_cb_customGame->SelectedIndex = static_cast<int>(v_cg_mod->m_id + 1);
-		}
-		else
-		{
-			m_cb_customGame->SelectedIndex = 0;
-		}
+		m_cb_customGame->SelectedIndex = (v_cg_mod != nullptr) ? static_cast<int>(v_cg_mod->m_id + 1) : 0;
 	}
 
 	TileConvertSettings::~TileConvertSettings()
