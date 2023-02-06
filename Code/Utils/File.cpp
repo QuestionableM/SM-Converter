@@ -60,7 +60,7 @@ bool File::ReadToStringNormal(const std::wstring& path, std::string& r_output)
 
 bool File::ReadToStringED(const std::wstring& path, std::string& r_output)
 {
-	std::ifstream v_input_file(path);
+	std::ifstream v_input_file(path, std::ios::binary);
 	if (!v_input_file.is_open()) return false;
 
 	//Check the first 3 bytes of the file
