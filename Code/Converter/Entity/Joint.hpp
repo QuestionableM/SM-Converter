@@ -9,7 +9,7 @@
 class SMJoint : public SMEntity
 {
 public:
-	inline SMJoint(PartData* pParent, Model* pModel, const SMColor& color, const int& xAxis, const int& zAxis, const std::size_t& index)
+	inline SMJoint(const PartData* pParent, Model* pModel, const SMColor& color, const int& xAxis, const int& zAxis, const std::size_t& index)
 	{
 		this->m_parent = pParent;
 		this->m_uuid = pParent->m_uuid;
@@ -34,7 +34,7 @@ public:
 
 private:
 	SMColor m_color;
-	PartData* m_parent;
+	const PartData* m_parent;
 	int m_xAxis;
 	int m_zAxis;
 	std::size_t m_index;

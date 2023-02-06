@@ -129,7 +129,7 @@ public:
 				index++;
 			}
 
-			AssetData* asset_data = SMMod::GetGlobalObject<AssetData>(f_uuid);
+			const AssetData* asset_data = SMMod::GetGlobalObject<AssetData>(f_uuid);
 
 			if constexpr (t_mod_counter)
 			{

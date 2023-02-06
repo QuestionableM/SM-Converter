@@ -349,7 +349,7 @@ public:
 			if constexpr (t_pref_version >= 10)
 				stream.ReadByte();
 
-			AssetData* v_asset_data = SMMod::GetGlobalObject<AssetData>(uuid);
+			const AssetData* v_asset_data = SMMod::GetGlobalObject<AssetData>(uuid);
 
 			if constexpr (t_mod_counter)
 			{
@@ -464,7 +464,7 @@ public:
 			//Read the null byte
 			const Byte test = stream.ReadByte();
 
-			KinematicData* v_kinematic_data = SMMod::GetGlobalObject<KinematicData>(v_uuid);
+			const KinematicData* v_kinematic_data = SMMod::GetGlobalObject<KinematicData>(v_uuid);
 
 			if constexpr (t_mod_counter)
 			{

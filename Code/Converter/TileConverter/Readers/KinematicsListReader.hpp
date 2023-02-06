@@ -94,7 +94,7 @@ public:
 			//DebugOutL("Json String: ", v_json_str);
 			index += 0x1; //NULL BYTE
 
-			KinematicData* v_km_data = SMMod::GetGlobalObject<KinematicData>(v_uuid);
+			const KinematicData* v_km_data = SMMod::GetGlobalObject<KinematicData>(v_uuid);
 
 			if constexpr (t_mod_counter)
 			{

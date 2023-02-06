@@ -255,7 +255,7 @@ void SMBlueprint::LoadChild(const simdjson::dom::element& v_child)
 		if (!(v_blk_bounds.x > 0.0f && v_blk_bounds.y > 0.0f && v_blk_bounds.z > 0.0f))
 			return;
 
-		BlockData* v_blk_data = SMMod::GetGlobalObject<BlockData>(v_obj_uuid);
+		const BlockData* v_blk_data = SMMod::GetGlobalObject<BlockData>(v_obj_uuid);
 		if (!v_blk_data) return;
 
 		SMBlock* v_new_blk = new SMBlock(v_blk_data, v_blk_bounds, v_obj_color, v_xAxisInt, v_zAxisInt, m_object_index);
@@ -266,7 +266,7 @@ void SMBlueprint::LoadChild(const simdjson::dom::element& v_child)
 	}
 	else
 	{
-		PartData* v_prt_data = SMMod::GetGlobalObject<PartData>(v_obj_uuid);
+		const PartData* v_prt_data = SMMod::GetGlobalObject<PartData>(v_obj_uuid);
 		if (!v_prt_data) return;
 
 		Model* v_prt_model = ModelStorage::LoadModel(v_prt_data->m_mesh);
@@ -300,7 +300,7 @@ void SMBlueprint::LoadJoint(const simdjson::dom::element& v_jnt)
 	const SMColor v_jnt_color = v_color.get_c_str();
 	const std::size_t v_child_idx = JsonReader::GetNumber<std::size_t>(v_child);
 
-	PartData* v_jnt_data = SMMod::GetGlobalObject<PartData>(v_jnt_uuid);
+	const PartData* v_jnt_data = SMMod::GetGlobalObject<PartData>(v_jnt_uuid);
 	if (!v_jnt_data) return;
 
 	Model* v_jnt_model = ModelStorage::LoadModel(v_jnt_data->m_mesh);

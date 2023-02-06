@@ -9,7 +9,7 @@
 class SMHarvestable : public SMEntity
 {
 public:
-	inline SMHarvestable(HarvestableData* pParent, Model* pModel, const SMColor& color)
+	inline SMHarvestable(const HarvestableData* pParent, Model* pModel, const SMColor& color)
 	{
 		this->m_parent = pParent;
 		this->m_uuid = pParent->m_uuid;
@@ -29,7 +29,7 @@ public:
 
 private:
 	SMColor m_color;
-	class HarvestableData* m_parent;
+	const HarvestableData* m_parent;
 };
 
 #pragma managed

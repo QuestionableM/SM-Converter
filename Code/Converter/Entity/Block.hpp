@@ -9,7 +9,7 @@ class SMBlock : public SMEntity
 	friend class BlueprintConv;
 
 public:
-	inline SMBlock(BlockData* pParent,
+	inline SMBlock(const BlockData* pParent,
 		const glm::vec3& bounds,
 		const SMColor& color,
 		const int& xAxis,
@@ -40,7 +40,7 @@ public:
 
 private:
 	SMColor m_color;
-	BlockData* m_parent;
+	const BlockData* m_parent;
 	glm::vec3 m_bounds;
 	int m_xAxis;
 	int m_zAxis;

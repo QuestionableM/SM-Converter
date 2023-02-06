@@ -9,7 +9,7 @@
 class SMKinematic : public SMEntity
 {
 public:
-	inline SMKinematic(KinematicData* v_km_data, Model* v_model, const SMColor& v_color)
+	inline SMKinematic(const KinematicData* v_km_data, Model* v_model, const SMColor& v_color)
 	{
 		this->m_parent = v_km_data;
 		this->m_uuid = m_parent->m_uuid;
@@ -29,7 +29,7 @@ public:
 
 private:
 	SMColor m_color;
-	class KinematicData* m_parent;
+	const KinematicData* m_parent;
 };
 
 #pragma managed

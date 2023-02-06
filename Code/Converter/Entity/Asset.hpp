@@ -11,13 +11,10 @@
 
 class SMAsset : public SMEntity
 {
-	class AssetData* m_parent;
-
 	using ColorMap = std::unordered_map<std::string, SMColor>;
-	ColorMap m_colors;
 
 public:
-	inline SMAsset(AssetData* pParent, Model* pModel, const ColorMap& color_map)
+	inline SMAsset(const AssetData* pParent, Model* pModel, const ColorMap& color_map)
 	{
 		this->m_parent = pParent;
 		this->m_uuid = pParent->m_uuid;
@@ -36,6 +33,10 @@ public:
 	char* GetMtlNameCStr(const std::string& v_mat_name, const std::size_t& v_idx, char* v_ptr) const override;
 	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const override;
 	bool GetCanWrite(const std::string& name, const std::size_t& v_idx) const override;
+
+private:
+	const AssetData* m_parent;
+	ColorMap m_colors;
 };
 
 #pragma managed
