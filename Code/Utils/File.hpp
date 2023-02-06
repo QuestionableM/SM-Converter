@@ -18,6 +18,8 @@ namespace File
 	bool ReadToString(const std::wstring& path, std::string& r_output);
 	//Reads normal string
 	bool ReadToStringNormal(const std::wstring& path, std::string& r_output);
+	//File reader specifically designed to handle weird encodings
+	bool ReadToStringED(const std::wstring& path, std::string& r_output);
 
 	bool Exists(const std::wstring& path);
 	bool CreateDirectorySafe(const std::wstring& path);

@@ -14,11 +14,11 @@ enum : int
 {
 	BPObjectSep_None         = 0,
 	BPObjectSep_All          = 1,
-	BPObjectSep_Shapes       = 3,
-	BPObjectSep_Joints       = 4,
-	BPObjectSep_Uuid         = 5,
-	BPObjectSep_Color        = 6,
-	BPObjectSep_UuidAndColor = 7
+	BPObjectSep_Shapes       = 2,
+	BPObjectSep_Joints       = 3,
+	BPObjectSep_Uuid         = 4,
+	BPObjectSep_Color        = 5,
+	BPObjectSep_UuidAndColor = 6
 };
 
 

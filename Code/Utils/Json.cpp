@@ -210,7 +210,7 @@ bool JsonReader::LoadParseSimdjsonC(const std::wstring& path, simdjson::dom::doc
 	try
 	{
 		std::string v_json_str;
-		if (!File::ReadToString(path, v_json_str))
+		if (!File::ReadToStringED(path, v_json_str))
 			return false;
 
 		simdjson::dom::parser v_parser;

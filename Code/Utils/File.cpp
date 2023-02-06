@@ -58,6 +58,28 @@ bool File::ReadToStringNormal(const std::wstring& path, std::string& r_output)
 	return true;
 }
 
+bool File::ReadToStringED(const std::wstring& path, std::string& r_output)
+{
+	std::ifstream v_input_file(path);
+	if (!v_input_file.is_open()) return false;
+
+	//Check the first 3 bytes of the file
+	char v_encoding_buffer;
+	v_input_file.read(&v_encoding_buffer, 1);
+
+	const bool v_guess_has_encoding = (v_encoding_buffer < 0);
+	const std::size_t v_file_offset = v_guess_has_encoding ? 3 : 0;
+
+	v_input_file.seekg(0, std::ios::end);
+	r_output.resize(static_cast<std::size_t>(v_input_file.tellg()) - v_file_offset);
+	v_input_file.seekg(v_file_offset, std::ios::beg);
+
+	v_input_file.read(r_output.data(), r_output.size());
+	v_input_file.close();
+
+	return true;
+}
+
 bool File::Exists(const std::wstring& path)
 {
 	std::error_code ec;
