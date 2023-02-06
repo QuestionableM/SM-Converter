@@ -7,6 +7,7 @@
 #include "Converter\ConvertError.hpp"
 #include "FilterSettingsData.hpp"
 #include "Utils\Uuid.hpp"
+#include "Utils\Json.hpp"
 
 #pragma unmanaged
 
@@ -50,10 +51,7 @@ public:
 	static void GetTileData(TileInstance* v_tile_instance, ConvertError& v_error);
 
 	static void LoadFromFile(const std::filesystem::path& path);
-	static void LoadFromDirectory(const std::wstring& path);
-
-	static void ReadTilesFromFolder(const std::wstring& path);
-	static void ReadTilesFromConfig();
+	static void LoadFromFolder(const std::wstring& path, const simdjson::dom::element& v_cur_elem);
 
 	static void ClearStorage();
 

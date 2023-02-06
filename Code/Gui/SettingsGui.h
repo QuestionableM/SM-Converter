@@ -210,10 +210,7 @@ namespace SMConverter
 			this->m_cb_fileOption->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			this->m_cb_fileOption->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
 			this->m_cb_fileOption->FormattingEnabled = true;
-			this->m_cb_fileOption->Items->AddRange(gcnew cli::array< System::Object^  >(4) {
-				L"Local Mod Folders", L"Mod Folders", L"Blueprint Folders",
-					L"Tile Folders"
-			});
+			this->m_cb_fileOption->Items->AddRange(gcnew cli::array< System::Object^  >(3) { L"Local Mod Folders", L"Mod Folders", L"User Item Folders" });
 			this->m_cb_fileOption->Location = System::Drawing::Point(6, 240);
 			this->m_cb_fileOption->Name = L"m_cb_fileOption";
 			this->m_cb_fileOption->Size = System::Drawing::Size(440, 24);

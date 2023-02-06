@@ -37,6 +37,12 @@ bool DatabaseConfig::AddToStrVec(std::vector<std::wstring>& v_vec, PathChecker& 
 	if (!File::GetFullFilePathLower(v_new_str, v_full_path))
 		return false;
 
+	if (v_full_path == DatabaseConfig::WorkshopFolder)
+	{
+		DebugWarningL("Cannot add a current workshop folder into the path list!");
+		return false;
+	}
+
 	const auto v_iter = v_path_checker.find(v_full_path);
 	if (v_iter != v_path_checker.end())
 	{
@@ -55,6 +61,12 @@ bool DatabaseConfig::AddToStrMap(PathChecker& v_map, const std::wstring& v_new_s
 	std::wstring v_full_path;
 	if (!File::GetFullFilePathLower(v_new_str, v_full_path))
 		return false;
+
+	if (v_full_path == DatabaseConfig::WorkshopFolder)
+	{
+		DebugWarningL("Cannot add a current workshop folder into the path list!");
+		return false;
+	}
 
 	const auto v_iter = v_map.find(v_full_path);
 	if (v_iter != v_map.end())
@@ -127,7 +139,6 @@ void DatabaseConfig::ReadProgramSettings(const nlohmann::json& config_json)
 	KeywordReplacer::LoadResourceUpgradesFromConfig();
 
 	DatabaseConfig::JsonStrArrayToStrMap(program_settings, "ScrapAssetDatabase", DatabaseConfig::AssetListFolders, true);
-	DatabaseConfig::JsonStrArrayToStrMap(program_settings, "TileFolders", DatabaseConfig::GameTileFolders, true);
 }
 
 bool DatabaseConfig::GetSteamPaths(std::wstring& r_game_path, std::wstring& r_workshop_path)
@@ -266,14 +277,14 @@ void DatabaseConfig::FindLocalUsers()
 		if (File::Exists(v_local_blueprints_dir))
 		{
 			DebugOutL("Found a new path to local blueprints: ", 0b01101_fg, v_local_blueprints_dir);
-			DatabaseConfig::AddToStrMap(DatabaseConfig::BlueprintFolders, v_local_blueprints_dir);
+			DatabaseConfig::AddToStrMap(DatabaseConfig::UserItemFolders, v_local_blueprints_dir);
 		}
 
 		const std::wstring v_local_tiles_dir = v_cur_dir_path + L"\\Tiles";
 		if (File::Exists(v_local_tiles_dir))
 		{
 			DebugOutL("Found a new path to local tiles: ", 0b01101_fg, v_local_tiles_dir);
-			DatabaseConfig::AddToStrMap(DatabaseConfig::TileFolders, v_local_tiles_dir);
+			DatabaseConfig::AddToStrMap(DatabaseConfig::UserItemFolders, v_local_tiles_dir);
 		}
 	}
 }
@@ -303,7 +314,13 @@ inline void ReadJsonDirectory(const nlohmann::json& config_json, const std::stri
 	if (!v_dir_json.is_string())
 		return;
 
-	const std::wstring v_dir = String::ToWide(v_dir_json.get_ref<const std::string&>());
+	std::wstring v_dir = String::ToWide(v_dir_json.get_ref<const std::string&>());
+	if (!File::GetFullFilePathLower(v_dir, v_dir))
+	{
+		DebugErrorL("Couldn't get the full path for: ", v_dir);
+		return;
+	}
+
 	if (File::IsDirectory(v_dir))
 	{
 		v_output = v_dir;
@@ -314,7 +331,7 @@ inline void ReadJsonDirectory(const nlohmann::json& config_json, const std::stri
 	}
 }
 
-void DatabaseConfig::ReadUserSettings(const nlohmann::json& config_json, bool& should_write)
+bool DatabaseConfig::ReadUserSettings(const nlohmann::json& config_json, bool& should_write)
 {
 	const auto& user_settings = JsonReader::Get(config_json, "UserSettings");
 	if (user_settings.is_object())
@@ -328,11 +345,12 @@ void DatabaseConfig::ReadUserSettings(const nlohmann::json& config_json, bool& s
 		DatabaseConfig::JsonStrArrayToStrVec(user_settings, "LocalModFolders", DatabaseConfig::LocalModFolders, DatabaseConfig::ModPathChecker, false);
 		DatabaseConfig::JsonStrArrayToStrVec(user_settings, "ModFolders", DatabaseConfig::ModFolders, DatabaseConfig::ModPathChecker, false);
 
-		DatabaseConfig::JsonStrArrayToStrMap(user_settings, "BlueprintFolders", DatabaseConfig::BlueprintFolders, false);
-		DatabaseConfig::JsonStrArrayToStrMap(user_settings, "TileFolders", DatabaseConfig::TileFolders, false);
+		DatabaseConfig::JsonStrArrayToStrMap(user_settings, "UserItemFolders", DatabaseConfig::UserItemFolders, false);
 	}
 
 	DatabaseConfig::FindGamePath(config_json, should_write);
+
+	return !user_settings.contains("UserItemFolders");
 }
 
 nlohmann::json DatabaseConfig::GetConfigJson(bool* should_write, const bool& read_from_file)
@@ -371,31 +389,6 @@ nlohmann::json DatabaseConfig::GetConfigJson(bool* should_write, const bool& rea
 		v_programSettings["ResourceUpgradeFiles"] =
 		{
 			"$GAME_DATA/upgrade_resources.json"
-		};
-
-		if (should_write)
-			(*should_write) = true;
-	}
-
-	if (!v_programSettings.contains("TileFolders"))
-	{
-		v_programSettings["TileFolders"] =
-		{
-			"$SURVIVAL_DATA/Terrain/Tiles/autumn_forest",
-			"$SURVIVAL_DATA/Terrain/Tiles/burnt_forest",
-			"$SURVIVAL_DATA/Terrain/Tiles/desert",
-			"$SURVIVAL_DATA/Terrain/Tiles/field",
-			"$SURVIVAL_DATA/Terrain/Tiles/forest",
-			"$SURVIVAL_DATA/Terrain/Tiles/lake",
-			"$SURVIVAL_DATA/Terrain/Tiles/meadow",
-			"$SURVIVAL_DATA/Terrain/Tiles/poi",
-			"$SURVIVAL_DATA/Terrain/Tiles/roads_and_cliffs",
-			"$SURVIVAL_DATA/Terrain/Tiles/start_area",
-
-			"$GAME_DATA/Terrain/Tiles/ClassicCreativeTiles",
-			"$GAME_DATA/Terrain/Tiles/CreativeTiles",
-
-			"$SURVIVAL_DATA/DungeonTiles"
 		};
 
 		if (should_write)
@@ -444,6 +437,44 @@ void DatabaseConfig::UpdateGamePathReplacement()
 	DatabaseConfig::AddKeywordReplacement(L"$GAME_FOLDER", DatabaseConfig::GamePath);
 }
 
+bool DatabaseConfig::ReplaceKeyAndAddToMap(const std::wstring& path, PathChecker& v_map)
+{
+	const std::wstring v_replaced_path = KeywordReplacer::ReplaceKey(path);
+	if (!File::Exists(v_replaced_path)) return false;
+
+	return DatabaseConfig::AddToStrMap(v_map, v_replaced_path);
+}
+
+void DatabaseConfig::FillUserItems(const bool& should_fill, bool& should_write)
+{
+	if (!should_fill) return;
+
+	DebugOutL("Filling user items with default paths...");
+
+	const static wchar_t* v_tile_paths[] =
+	{
+		L"$SURVIVAL_DATA/Terrain/Tiles/autumn_forest",
+		L"$SURVIVAL_DATA/Terrain/Tiles/burnt_forest",
+		L"$SURVIVAL_DATA/Terrain/Tiles/desert",
+		L"$SURVIVAL_DATA/Terrain/Tiles/field",
+		L"$SURVIVAL_DATA/Terrain/Tiles/forest",
+		L"$SURVIVAL_DATA/Terrain/Tiles/lake",
+		L"$SURVIVAL_DATA/Terrain/Tiles/meadow",
+		L"$SURVIVAL_DATA/Terrain/Tiles/poi",
+		L"$SURVIVAL_DATA/Terrain/Tiles/roads_and_cliffs",
+		L"$SURVIVAL_DATA/Terrain/Tiles/start_area",
+
+		L"$GAME_DATA/Terrain/Tiles/ClassicCreativeTiles",
+		L"$GAME_DATA/Terrain/Tiles/CreativeTiles",
+
+		L"$SURVIVAL_DATA/DungeonTiles"
+	};
+
+	constexpr const std::size_t v_tile_paths_sz = sizeof(v_tile_paths) / sizeof(wchar_t*);
+	for (std::size_t a = 0; a < v_tile_paths_sz; a++)
+		should_write |= DatabaseConfig::ReplaceKeyAndAddToMap(v_tile_paths[a], DatabaseConfig::UserItemFolders);
+}
+
 void DatabaseConfig::SaveConfig()
 {
 	nlohmann::json cfgData = DatabaseConfig::GetConfigJson(nullptr, false);
@@ -458,8 +489,7 @@ void DatabaseConfig::SaveConfig()
 
 		DatabaseConfig::WstrVecToJson(user_settings, "ModFolders", DatabaseConfig::ModFolders);
 		DatabaseConfig::WstrVecToJson(user_settings, "LocalModFolders", DatabaseConfig::LocalModFolders);
-		DatabaseConfig::WstrMapToJson(user_settings, "BlueprintFolders", DatabaseConfig::BlueprintFolders);
-		DatabaseConfig::WstrMapToJson(user_settings, "TileFolders", DatabaseConfig::TileFolders);
+		DatabaseConfig::WstrMapToJson(user_settings, "UserItemFolders", DatabaseConfig::UserItemFolders);
 
 		cfgData["UserSettings"] = user_settings;
 	}
@@ -478,15 +508,17 @@ void DatabaseConfig::ReadConfig()
 	DatabaseConfig::ClearConfig();
 
 	bool should_write = false;
-	nlohmann::json cfgData = DatabaseConfig::GetConfigJson(&should_write, true);
+	nlohmann::json v_cfg_data = DatabaseConfig::GetConfigJson(&should_write, true);
 
-	DatabaseConfig::ReadUserSettings(cfgData, should_write);
+	const bool v_fill_user_items = DatabaseConfig::ReadUserSettings(v_cfg_data, should_write);
 	
 	//Stop reading the config if the path to the game is invalid
 	if (DatabaseConfig::GamePath.empty()) return;
 
 	DatabaseConfig::UpdateGamePathReplacement();
-	DatabaseConfig::ReadProgramSettings(cfgData);
+	DatabaseConfig::ReadProgramSettings(v_cfg_data);
+
+	DatabaseConfig::FillUserItems(v_fill_user_items, should_write);
 
 	if (should_write)
 	{
@@ -500,8 +532,7 @@ void DatabaseConfig::ClearConfig()
 	DatabaseConfig::OpenLinksInSteam = false;
 
 	DatabaseConfig::AssetListFolders.clear();
-	DatabaseConfig::BlueprintFolders.clear();
-	DatabaseConfig::TileFolders.clear();
+	DatabaseConfig::UserItemFolders.clear();
 	DatabaseConfig::ResourceUpgradeFiles.clear();
 
 	DatabaseConfig::ModPathChecker.clear();

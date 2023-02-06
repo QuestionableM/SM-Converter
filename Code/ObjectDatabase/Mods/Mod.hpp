@@ -28,7 +28,7 @@ public:
 	static SMMod* LoadFromDescription(const std::wstring& mod_folder, const bool& is_local);
 
 	template<typename T>
-	inline static T* GetGlobalObject(const SMUuid& uuid)
+	inline static const T* GetGlobalObject(const SMUuid& uuid)
 	{
 		static_assert(!std::is_pointer_v<T>, "GetObject -> Template argument should not be a pointer!");
 
@@ -40,7 +40,17 @@ public:
 		return nullptr;
 	}
 
-	static ClutterData* GetGlobalClutterById(const std::size_t& idx);
+	inline static ClutterData* GetGlobalClutterById(const std::size_t& idx)
+	{
+		if (SMMod::ClutterVector.size() <= idx)
+		{
+			DebugErrorL("The clutter index is out of bounds! (Size: ", SMMod::ClutterVector.size(), ", Index: ", idx, ")");
+			return nullptr;
+		}
+
+		return SMMod::ClutterVector[idx];
+	}
+
 	static CustomGame* GetCustomGameFromPath(const std::wstring& v_path);
 
 	template<bool t_check_blocks = true>
@@ -82,6 +92,7 @@ public:
 	inline static std::vector<CustomGame*>& GetCustomGames() { return SMMod::CustomGameVector; }
 	inline static const std::vector<SMMod*>& GetAllMods() { return SMMod::ModVector; }
 
+	inline static std::size_t GetAmountOfMods() { return SMMod::ModVector.size(); }
 	inline static std::size_t GetAmountOfObjects()
 	{
 		return SMModObjectStorage<BlockData>::StaticStorage.size()
@@ -92,8 +103,6 @@ public:
 			+ SMModObjectStorage<DecalData>::StaticStorage.size()
 			+ SMModObjectStorage<KinematicData>::StaticStorage.size();
 	}
-
-	inline static std::size_t GetAmountOfMods() { return SMMod::ModVector.size(); }
 
 	void LoadFile(const std::wstring& path, const bool& add_to_global_db);
 	static void LoadShapeSetList(const std::wstring& path, SMMod* v_mod, const bool& add_to_global_db);

@@ -156,17 +156,6 @@ SMMod* SMMod::LoadFromDescription(const std::wstring& mod_folder, const bool& is
 	return v_new_mod;
 }
 
-ClutterData* SMMod::GetGlobalClutterById(const std::size_t& idx)
-{
-	if (SMMod::ClutterVector.size() <= idx)
-	{
-		DebugErrorL("The clutter index is out of bounds! (Size: ", SMMod::ClutterVector.size(), ", Index: ", idx, ")");
-		return nullptr;
-	}
-
-	return SMMod::ClutterVector[idx];
-}
-
 CustomGame* SMMod::GetCustomGameFromPath(const std::wstring& v_path)
 {
 	for (CustomGame* v_cur_cg : SMMod::CustomGameVector)

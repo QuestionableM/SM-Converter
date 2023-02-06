@@ -10,10 +10,9 @@ enum : unsigned char
 {
 	SettingsChangeDetector_LocalModList     = (1 << 0),
 	SettingsChangeDetector_WorkshopModList  = (1 << 1),
-	SettingsChangeDetector_BlueprintFolders = (1 << 2),
-	SettingsChangeDetector_TileFolders      = (1 << 3),
-	SettingsChangeDetector_OpenLinksInSteam = (1 << 4),
-	SettingsChangeDetector_GamePath         = (1 << 5)
+	SettingsChangeDetector_UserItemFolder   = (1 << 2),
+	SettingsChangeDetector_OpenLinksInSteam = (1 << 3),
+	SettingsChangeDetector_GamePath         = (1 << 4)
 };
 
 class SettingsChangeDetector
@@ -32,8 +31,7 @@ public:
 	std::unordered_map<std::wstring, unsigned char> m_modListMap = {};
 	std::vector<std::wstring> m_localModList    = {};
 	std::vector<std::wstring> m_workshopModList = {};
-	std::unordered_map<std::wstring, unsigned char> m_blueprintFolders = {};
-	std::unordered_map<std::wstring, unsigned char> m_tileFolders = {};
+	std::unordered_map<std::wstring, unsigned char> m_userItemFolders = {};
 
 	bool m_openLinksInSteam = false;
 
@@ -63,10 +61,8 @@ public:
 			this->SetChangeBit(t_option_id, m_localModList != DatabaseConfig::LocalModFolders);
 		else if constexpr (t_option_id == SettingsChangeDetector_WorkshopModList)
 			this->SetChangeBit(t_option_id, m_workshopModList != DatabaseConfig::ModFolders);
-		else if constexpr (t_option_id == SettingsChangeDetector_BlueprintFolders)
-			this->SetChangeBit(t_option_id, m_blueprintFolders != DatabaseConfig::BlueprintFolders);
-		else if constexpr (t_option_id == SettingsChangeDetector_TileFolders)
-			this->SetChangeBit(t_option_id, m_tileFolders != DatabaseConfig::TileFolders);
+		else if constexpr (t_option_id == SettingsChangeDetector_UserItemFolder)
+			this->SetChangeBit(t_option_id, m_userItemFolders != DatabaseConfig::UserItemFolders);
 		else if constexpr (t_option_id == SettingsChangeDetector_OpenLinksInSteam)
 			this->SetChangeBit(t_option_id, m_openLinksInSteam != DatabaseConfig::OpenLinksInSteam);
 		else if constexpr (t_option_id == SettingsChangeDetector_GamePath)

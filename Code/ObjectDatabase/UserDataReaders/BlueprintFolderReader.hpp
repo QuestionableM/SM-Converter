@@ -7,6 +7,7 @@
 #include "ObjectDatabase/Mods/Mod.hpp"
 #include "FilterSettingsData.hpp"
 #include "Utils\Uuid.hpp"
+#include "Utils\Json.hpp"
 
 #pragma unmanaged
 
@@ -43,10 +44,9 @@ public:
 	static std::vector<BlueprintInstance*>& GetCurrentStorage();
 	static void FilterStorage();
 
-	static void ReadBlueprintFromFile(const std::filesystem::path& path);
-	static void ReadBlueprintFromFolder(const std::wstring& folder);
-	static void ReadBlueprintsFromFolder(const std::wstring& path);
-	static void ReadBlueprintsFromConfig();
+	static void LoadFromFile(const std::filesystem::path& path);
+	static void LoadFromFolder(const std::wstring& folder, const simdjson::dom::element& v_cur_elem);
+	
 	static void ClearStorage();
 
 private:

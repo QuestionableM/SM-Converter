@@ -25,9 +25,7 @@ public:
 	inline static bool OpenLinksInSteam = false;
 
 	inline static PathChecker AssetListFolders     = {};
-	inline static PathChecker BlueprintFolders     = {};
-	inline static PathChecker TileFolders          = {};
-	inline static PathChecker GameTileFolders      = {};
+	inline static PathChecker UserItemFolders      = {};
 	inline static PathChecker ResourceUpgradeFiles = {};
 
 	inline static PathChecker ModPathChecker = {};
@@ -53,11 +51,14 @@ private:
 	static bool GetSteamPaths(std::wstring& r_game_path, std::wstring& r_workshop_path);
 	static void FindLocalUsers();
 	static void FindGamePath(const nlohmann::json& config_json, bool& should_write);
-	static void ReadUserSettings(const nlohmann::json& config_json, bool& should_write);
+	static bool ReadUserSettings(const nlohmann::json& config_json, bool& should_write);
 
 	static nlohmann::json GetConfigJson(bool* should_write, const bool& read_from_file);
 	static void AddKeywordReplacement(const std::wstring& key, const std::wstring& path);
 	static void UpdateGamePathReplacement();
+
+	static bool ReplaceKeyAndAddToMap(const std::wstring& path, PathChecker& v_map);
+	static void FillUserItems(const bool& should_fill, bool& should_write);
 
 public:
 	static void SaveConfig();

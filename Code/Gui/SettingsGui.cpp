@@ -18,8 +18,7 @@ enum : unsigned int
 {
 	SMFileOption_LocalModFolders    = 0,
 	SMFileOption_WorkshopModFolders = 1,
-	SMFileOption_BlueprintFolders   = 2,
-	SMFileOption_TileFolders        = 3
+	SMFileOption_UserItemFolders    = 2
 };
 
 namespace SMConverter
@@ -116,11 +115,8 @@ namespace SMConverter
 		case SMFileOption_WorkshopModFolders:
 			this->UpdatePathListFromVec(m_changeDetector->m_workshopModList);
 			break;
-		case SMFileOption_BlueprintFolders:
-			this->UpdatePathListFromMap(m_changeDetector->m_blueprintFolders);
-			break;
-		case SMFileOption_TileFolders:
-			this->UpdatePathListFromMap(m_changeDetector->m_tileFolders);
+		case SMFileOption_UserItemFolders:
+			this->UpdatePathListFromMap(m_changeDetector->m_userItemFolders);
 			break;
 		}
 	}
@@ -191,16 +187,10 @@ namespace SMConverter
 				m_changeDetector->UpdateChange<SettingsChangeDetector_WorkshopModList>();
 				break;
 			}
-		case SMFileOption_BlueprintFolders:
+		case SMFileOption_UserItemFolders:
 			{
-				SettingsChangeDetector::RemoveFromMap(m_changeDetector->m_blueprintFolders, this->GetSelectedPathListString());
-				m_changeDetector->UpdateChange<SettingsChangeDetector_BlueprintFolders>();
-				break;
-			}
-		case SMFileOption_TileFolders:
-			{
-				SettingsChangeDetector::RemoveFromMap(m_changeDetector->m_tileFolders, this->GetSelectedPathListString());
-				m_changeDetector->UpdateChange<SettingsChangeDetector_TileFolders>();
+				SettingsChangeDetector::RemoveFromMap(m_changeDetector->m_userItemFolders, this->GetSelectedPathListString());
+				m_changeDetector->UpdateChange<SettingsChangeDetector_UserItemFolder>();
 				break;
 			}
 		}
@@ -244,16 +234,10 @@ namespace SMConverter
 				m_changeDetector->UpdateChange<SettingsChangeDetector_WorkshopModList>();
 				break;
 			}
-		case SMFileOption_BlueprintFolders:
+		case SMFileOption_UserItemFolders:
 			{
-				is_success = DatabaseConfig::AddToStrMap(m_changeDetector->m_blueprintFolders, v_new_path);
-				m_changeDetector->UpdateChange<SettingsChangeDetector_BlueprintFolders>();
-				break;
-			}
-		case SMFileOption_TileFolders:
-			{
-				is_success = DatabaseConfig::AddToStrMap(m_changeDetector->m_tileFolders, v_new_path);
-				m_changeDetector->UpdateChange<SettingsChangeDetector_TileFolders>();
+				is_success = DatabaseConfig::AddToStrMap(m_changeDetector->m_userItemFolders, v_new_path);
+				m_changeDetector->UpdateChange<SettingsChangeDetector_UserItemFolder>();
 				break;
 			}
 		}
@@ -317,7 +301,7 @@ namespace SMConverter
 		m_reload_obj_db |= m_changeDetector->IsAnyBitSet(SettingsChangeDetector_GamePath);
 		m_reload_user_obj |= m_changeDetector->IsAnyBitSet(
 			SettingsChangeDetector_LocalModList | SettingsChangeDetector_WorkshopModList |
-			SettingsChangeDetector_BlueprintFolders | SettingsChangeDetector_TileFolders
+			SettingsChangeDetector_UserItemFolder
 		);
 
 		m_changeDetector->ApplyChanges();

@@ -85,29 +85,12 @@ void TileFolderReader::LoadFromFile(const std::filesystem::path& path)
 	TileFolderReader::Storage.push_back(v_new_tile);
 }
 
-void TileFolderReader::LoadFromDirectory(const std::wstring& path)
+void TileFolderReader::LoadFromFolder(const std::wstring& path, const simdjson::dom::element& v_cur_elem)
 {
 	namespace fs = std::filesystem;
 
-	const std::wstring v_desc_path = path + L"/description.json";
-	if (!File::Exists(v_desc_path))
-		return;
-
-	simdjson::dom::document v_desc_doc;
-	if (!JsonReader::LoadParseSimdjsonCommentsC(v_desc_path, v_desc_doc, simdjson::dom::element_type::OBJECT))
-		return;
-
-	const auto v_root = v_desc_doc.root();
-
-	const auto v_type = v_root["type"];
-	if (!v_type.is_string())
-		return;
-
-	if (strcmp(v_type.get_c_str(), "Tile") != 0)
-		return;
-
-	const auto v_name = v_root["name"];
-	const auto v_uuid = v_root["localId"];
+	const auto v_name = v_cur_elem["name"];
+	const auto v_uuid = v_cur_elem["localId"];
 
 	if (!(v_name.is_string() && v_uuid.is_string()))
 		return;
@@ -143,7 +126,7 @@ void TileFolderReader::LoadFromDirectory(const std::wstring& path)
 	if (File::Exists(v_preview_img))
 		v_new_tile->preview_image = v_preview_img;
 
-	const auto v_workshop_id = v_root["fileId"];
+	const auto v_workshop_id = v_cur_elem["fileId"];
 	v_new_tile->workshop_id = (v_workshop_id.is_number() ? JsonReader::GetNumber<unsigned long long>(v_workshop_id) : 0ull);
 	v_new_tile->creator_id = v_tile_info.creator_id;
 
@@ -151,46 +134,6 @@ void TileFolderReader::LoadFromDirectory(const std::wstring& path)
 	v_new_tile->v_filter = FilterSettingsData::GetUserDataFilter(v_new_tile->path);
 
 	TileFolderReader::Storage.push_back(v_new_tile);
-}
-
-void TileFolderReader::ReadTilesFromFolder(const std::wstring& path)
-{
-	namespace fs = std::filesystem;
-
-	std::error_code v_error_code;
-	fs::directory_iterator v_dir_iter(path, fs::directory_options::skip_permission_denied, v_error_code);
-	for (const auto& v_cur_item : v_dir_iter)
-	{
-		if (v_error_code) continue;
-
-		if (v_cur_item.is_regular_file())
-		{
-			const fs::path& v_file_path = v_cur_item.path();
-			if (!(v_file_path.has_extension() && v_file_path.extension().string() == ".tile"))
-				continue;
-
-			TileFolderReader::LoadFromFile(v_file_path);
-		}
-		else if (v_cur_item.is_directory())
-		{
-			TileFolderReader::LoadFromDirectory(v_cur_item.path().wstring());
-		}
-	}
-}
-
-void TileFolderReader::ReadTilesFromConfig()
-{
-	TileFolderReader::ClearStorage();
-
-	for (const auto& v_tile_folder : DatabaseConfig::GameTileFolders)
-		TileFolderReader::ReadTilesFromFolder(v_tile_folder.first);
-
-	for (const auto& v_tile_folder : DatabaseConfig::TileFolders)
-		TileFolderReader::ReadTilesFromFolder(v_tile_folder.first);
-
-	TileFolderReader::ReadTilesFromFolder(DatabaseConfig::WorkshopFolder);
-
-	DebugOutL("[TileFolderReader] Successfully loaded ", TileFolderReader::Storage.size(), " tiles from ", DatabaseConfig::TileFolders.size(), " folders");
 }
 
 void TileFolderReader::ClearStorage()

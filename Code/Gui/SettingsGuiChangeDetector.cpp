@@ -9,8 +9,7 @@ SettingsChangeDetector::SettingsChangeDetector()
 	m_modListMap = DatabaseConfig::ModPathChecker;
 	m_localModList = DatabaseConfig::LocalModFolders;
 	m_workshopModList = DatabaseConfig::ModFolders;
-	m_blueprintFolders = DatabaseConfig::BlueprintFolders;
-	m_tileFolders = DatabaseConfig::TileFolders;
+	m_userItemFolders = DatabaseConfig::UserItemFolders;
 
 	m_openLinksInSteam = DatabaseConfig::OpenLinksInSteam;
 
@@ -49,11 +48,8 @@ void SettingsChangeDetector::ApplyChanges()
 			DatabaseConfig::ModFolders = m_workshopModList;
 	}
 
-	if (m_changeData & SettingsChangeDetector_BlueprintFolders)
-		DatabaseConfig::BlueprintFolders = m_blueprintFolders;
-
-	if (m_changeData & SettingsChangeDetector_TileFolders)
-		DatabaseConfig::TileFolders = m_tileFolders;
+	if (m_changeData & SettingsChangeDetector_UserItemFolder)
+		DatabaseConfig::UserItemFolders = m_userItemFolders;
 
 	if (m_changeData & SettingsChangeDetector_GamePath)
 		DatabaseConfig::GamePath = m_gamePath;

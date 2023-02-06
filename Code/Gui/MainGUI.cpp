@@ -7,6 +7,7 @@
 #include "SettingsGui.h"
 #include "AboutGui.h"
 
+#include "ObjectDatabase\UserDataReaders\UserObjectFolderReader.hpp"
 #include "ObjectDatabase\GroundTextureDatabase.hpp"
 #include "ObjectDatabase\KeywordReplacer.hpp"
 #include "ObjectDatabase\ObjectDatabase.hpp"
@@ -457,8 +458,7 @@ namespace SMConverter
 	void MainGui::MainGui_ObjectLoader_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e)
 	{
 		//TODO: Make a script loader (not important for now)
-		BlueprintFolderReader::ReadBlueprintsFromConfig();
-		TileFolderReader::ReadTilesFromConfig();
+		UserObjectFolderReader::ReadFromConfig();
 	}
 
 	void MainGui::MainGui_ObjectLoader_RunWorkerCompleted(System::Object^ sender, System::ComponentModel::RunWorkerCompletedEventArgs^ e)
