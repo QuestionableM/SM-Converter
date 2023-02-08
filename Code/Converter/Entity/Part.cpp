@@ -51,7 +51,7 @@ void SMPart::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_
 
 glm::mat4 SMPart::GetTransformMatrix() const
 {
-	const glm::mat4 axis_rotation = Rotations::GetRotationMatrix(m_xAxis, m_zAxis);
+	const glm::mat4 axis_rotation = Rotations::GetRotationMatrix(m_xzRotation);
 
 	glm::mat4 model_matrix(1.0f);
 	model_matrix *= glm::translate(m_position);

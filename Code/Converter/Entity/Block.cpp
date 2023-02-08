@@ -100,12 +100,12 @@ void FillCustomCube(Model& model, const glm::vec3& bounds)
 
 inline void AlignUvs(Model& model, const glm::vec3& bounds, const glm::vec3& pos, const int& tiling)
 {
-	float f_tiling = (float)tiling;
+	const float f_tiling = (float)tiling;
 
 	for (std::size_t a = 0; a < model.uvs.size(); a++)
 		model.uvs[a] /= f_tiling;
 
-	glm::vec3 _MulVec = bounds * 2.0f;
+	const glm::vec3 _MulVec = bounds * 2.0f;
 
 	glm::vec2 _PosOff(pos.x / f_tiling + _MulVec.x, pos.y / f_tiling + _MulVec.y);
 	(model.uvs[21] *= glm::vec2(0.0f, _MulVec.y)) += _PosOff;
@@ -113,30 +113,30 @@ inline void AlignUvs(Model& model, const glm::vec3& bounds, const glm::vec3& pos
 	(model.uvs[9] *= glm::vec2(_MulVec.x, _MulVec.y)) += _PosOff;
 	(model.uvs[10] += _PosOff);
 
-	float tile_offset2 = (pos.x + _MulVec.x) / f_tiling * (f_tiling - 1.0f);
+	const float tile_offset2 = (pos.x + _MulVec.x) / f_tiling * (f_tiling - 1.0f);
 
-	glm::vec2 _Off1(tile_offset2, pos.z / f_tiling + _MulVec.z);
+	const glm::vec2 _Off1(tile_offset2, pos.z / f_tiling + _MulVec.z);
 	//2.0f, 0.0f
 	(model.uvs[15] *= glm::vec2(_MulVec.x, 0.0f)) += _Off1;
 	(model.uvs[16] *= glm::vec2(0.0f, _MulVec.z)) += _Off1;
 	(model.uvs[23] *= glm::vec2(_MulVec.x, _MulVec.z)) += _Off1;
 	model.uvs[17] += _Off1;
 
-	glm::vec2 _Off2(pos.x / f_tiling + _MulVec.x, pos.z / f_tiling + _MulVec.z);
+	const glm::vec2 _Off2(pos.x / f_tiling + _MulVec.x, pos.z / f_tiling + _MulVec.z);
 	//0.0f, 2.0f
 	(model.uvs[12] *= glm::vec2(_MulVec.x, 0.0f)) += _Off2;
 	(model.uvs[13] *= glm::vec2(0.0f, _MulVec.z)) += _Off2;
 	(model.uvs[22] *= glm::vec2(_MulVec.x, _MulVec.z)) += _Off2;
 	model.uvs[14] += _Off2;
 
-	glm::vec2 _Off3(tile_offset2, pos.y / f_tiling + _MulVec.y);
+	const glm::vec2 _Off3(tile_offset2, pos.y / f_tiling + _MulVec.y);
 	//2.0f, 2.0f
 	(model.uvs[5] *= glm::vec2(_MulVec.x, 0.0f)) += _Off3;
 	(model.uvs[19] *= glm::vec2(0.0f, _MulVec.y)) += _Off3;
 	(model.uvs[3] *= glm::vec2(_MulVec.x, _MulVec.y)) += _Off3;
 	model.uvs[4] += _Off3;
 
-	glm::vec2 _Off4(
+	const glm::vec2 _Off4(
 		(pos.y + _MulVec.y) / f_tiling * (f_tiling - 1.0f),
 		pos.z / f_tiling + _MulVec.z
 	);
@@ -168,7 +168,7 @@ void SMBlock::WriteObjectToFile(std::ofstream& file, WriterOffsetData& mOffset, 
 
 glm::mat4 SMBlock::GetTransformMatrix() const
 {
-	const glm::mat4 block_matrix = Rotations::GetRotationMatrix(m_xAxis, m_zAxis);
+	const glm::mat4 block_matrix = Rotations::GetRotationMatrix(m_xzRotation);
 
 	glm::mat4 transform_matrix(1.0f);
 	transform_matrix *= glm::translate(m_position);

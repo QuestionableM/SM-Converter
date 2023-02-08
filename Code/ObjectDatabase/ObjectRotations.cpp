@@ -18,168 +18,87 @@ namespace Rotations
 		glm::vec3 pos_vector;
 	};
 
-	struct OffsetVector3
-	{
-		float x, y, z;
-	};
+	static std::unordered_map<unsigned char, RotationEntry> RotationTable = {};
+}
 
-	struct RotationSettings
+void Rotations::InitializeRotations()
+{
+	const nlohmann::json v_settings = JsonReader::LoadParseJson(DatabaseConfig::RotationsPath.data());
+	if (!v_settings.is_object())
 	{
-		OffsetVector3 oRotation;
-		OffsetVector3 oPosition;
-	};
+		DebugErrorL("Couldn't read rotation configuration file!");
+		return;
+	}
 
-	static std::unordered_map<int, std::unordered_map<int, RotationEntry>> RotationTable = {};
-	static std::unordered_map<int, std::unordered_map<int, RotationSettings>> RotationsForEditor = {};
+	DebugOutL("Loading rotations from file...");
 
-	void LoadRotationsFromFile()
+	const auto& v_rotations = JsonReader::Get(v_settings, "Rotations");
+	if (!v_rotations.is_object()) return;
+
+	for (const auto& v_first_rot : v_rotations.items())
 	{
-		nlohmann::json rSettings = JsonReader::LoadParseJson(DatabaseConfig::RotationsPath.data());
-		if (!rSettings.is_object())
+		if (!v_first_rot.value().is_object()) continue;
+
+		const int v_x_axis_rot = std::stoi(v_first_rot.key());
+
+		for (const auto& v_second_rot : v_first_rot.value().items())
 		{
-			DebugErrorL("Couldn't read rotation configuration file!");
-			return;
-		}
+			if (!v_second_rot.value().is_object()) continue;
 
-		DebugOutL("Loading rotations from file...");
+			const int v_z_axis_rot = std::stoi(v_second_rot.key());
+			const char v_rot_compressed = Rotations::CompressRotation(v_x_axis_rot, v_z_axis_rot);
 
-		const auto& rRotations = JsonReader::Get(rSettings, "Rotations");
-		if (!rRotations.is_object()) return;
+			RotationEntry v_entry;
+			v_entry.pos_vector = glm::vec3(0.0f);
+			v_entry.rot_matrix = glm::mat4(1.0f);
 
-		for (auto& xRotationGroup : RotationsForEditor)
-		{
-			const auto& xRotationSet = JsonReader::Get(rRotations, std::to_string(xRotationGroup.first));
-			if (!xRotationSet.is_object()) continue;
-
-			for (auto& zRotationGroup : xRotationGroup.second)
+			const auto v_offset = JsonReader::Get(v_second_rot.value(), "Offset");
+			if (v_offset.is_object())
 			{
-				const auto& zRotationSet = JsonReader::Get(xRotationSet, std::to_string(zRotationGroup.first));
-				if (!zRotationSet.is_object()) continue;
+				const auto& v_x_pos = JsonReader::Get(v_offset, "x");
+				const auto& v_y_pos = JsonReader::Get(v_offset, "y");
+				const auto& v_z_pos = JsonReader::Get(v_offset, "z");
 
-				const auto& zRotRotations = JsonReader::Get(zRotationSet, "Rotation");
-				if (zRotRotations.is_object())
+				if (v_x_pos.is_number() && v_y_pos.is_number() && v_z_pos.is_number())
+					v_entry.pos_vector = glm::vec3(v_x_pos.get<float>(), v_y_pos.get<float>(), v_z_pos.get<float>());
+			}
+
+			const auto v_rot_mat = JsonReader::Get(v_second_rot.value(), "Rotation");
+			if (v_rot_mat.is_object())
+			{
+				const auto& v_x_rot = JsonReader::Get(v_rot_mat, "x");
+				const auto& v_y_rot = JsonReader::Get(v_rot_mat, "y");
+				const auto& v_z_rot = JsonReader::Get(v_rot_mat, "z");
+
+				if (v_x_rot.is_number() && v_y_rot.is_number() && v_z_rot.is_number())
 				{
-					zRotationGroup.second.oRotation.x = JsonReader::Get(zRotRotations, "x").get<float>();
-					zRotationGroup.second.oRotation.y = JsonReader::Get(zRotRotations, "y").get<float>();
-					zRotationGroup.second.oRotation.z = JsonReader::Get(zRotRotations, "z").get<float>();
-				}
-
-				const auto& zRotOffsets = JsonReader::Get(zRotationSet, "Offset");
-				if (zRotOffsets.is_object())
-				{
-					zRotationGroup.second.oPosition.x = JsonReader::Get(zRotOffsets, "x").get<float>();
-					zRotationGroup.second.oPosition.y = JsonReader::Get(zRotOffsets, "y").get<float>();
-					zRotationGroup.second.oPosition.z = JsonReader::Get(zRotOffsets, "z").get<float>();
+					v_entry.rot_matrix = glm::rotate(v_entry.rot_matrix, glm::radians(v_x_rot.get<float>()), glm::vec3(1.0f, 0.0f, 0.0f));
+					v_entry.rot_matrix = glm::rotate(v_entry.rot_matrix, glm::radians(v_y_rot.get<float>()), glm::vec3(0.0f, 1.0f, 0.0f));
+					v_entry.rot_matrix = glm::rotate(v_entry.rot_matrix, glm::radians(v_z_rot.get<float>()), glm::vec3(0.0f, 0.0f, 1.0f));
 				}
 			}
+
+			Rotations::RotationTable.insert(std::make_pair(v_rot_compressed, v_entry));
 		}
 	}
 
-	void InitializeRotationEditor()
-	{
-		std::unordered_map<int, RotationSettings> xAxis1Settings = {
-			{ 2,  { 0.0f, 0.0f, 0.0f, {0.0f, 0.0f, 0.0f} } },
-			{ 3,  { 0.0f, 0.0f, 0.0f, {0.0f, 0.0f, 0.0f} } },
-			{ -2, { 0.0f, 0.0f, 0.0f, {0.0f, 0.0f, 0.0f} } },
-			{ -3, { 0.0f, 0.0f, 0.0f, {0.0f, 0.0f, 0.0f} } }
-		};
+	DebugOutL(0b0101_fg, "Rotations have been initialized!");
+}
 
-		std::unordered_map<int, RotationSettings> xAxis2Settings = {
-			{ 1,  { 0.0f, 0.0f, 0.0f, {0.0f, 0.0f, 0.0f} } },
-			{ 3,  { 0.0f, 0.0f, 0.0f, {0.0f, 0.0f, 0.0f} } },
-			{ -1, { 0.0f, 0.0f, 0.0f, {0.0f, 0.0f, 0.0f} } },
-			{ -3, { 0.0f, 0.0f, 0.0f, {0.0f, 0.0f, 0.0f} } }
-		};
+glm::mat4 Rotations::GetRotationMatrix(const unsigned char& v_rotation)
+{
+	const std::unordered_map<unsigned char, RotationEntry>::const_iterator v_iter = Rotations::RotationTable.find(v_rotation);
+	if (v_iter == Rotations::RotationTable.end())
+		return glm::mat4(1.0f);
 
-		std::unordered_map<int, RotationSettings> xAxis3Settings = {
-			{ 1,  { 0.0f, 0.0f, 0.0f, {0.0f, 0.0f, 0.0f} } },
-			{ 2,  { 0.0f, 0.0f, 0.0f, {0.0f, 0.0f, 0.0f} } },
-			{ -1, { 0.0f, 0.0f, 0.0f, {0.0f, 0.0f, 0.0f} } },
-			{ -2, { 0.0f, 0.0f, 0.0f, {0.0f, 0.0f, 0.0f} } }
-		};
+	return v_iter->second.rot_matrix;
+}
 
-		std::unordered_map<int, RotationSettings> xAxisNeg1Settings = {
-			{ 2,  { 0.0f, 0.0f, 0.0f, {0.0f, 0.0f, 0.0f} } },
-			{ 3,  { 0.0f, 0.0f, 0.0f, {0.0f, 0.0f, 0.0f} } },
-			{ -2, { 0.0f, 0.0f, 0.0f, {0.0f, 0.0f, 0.0f} } },
-			{ -3, { 0.0f, 0.0f, 0.0f, {0.0f, 0.0f, 0.0f} } }
-		};
+glm::vec3 Rotations::GetOffsetPosition(const unsigned char& v_rotation)
+{
+	const std::unordered_map<unsigned char, RotationEntry>::const_iterator v_iter = Rotations::RotationTable.find(v_rotation);
+	if (v_iter == Rotations::RotationTable.end())
+		return glm::vec3(0.0f);
 
-		std::unordered_map<int, RotationSettings> xAxisNeg2Settings = {
-			{ 1,  { 0.0f, 0.0f, 0.0f, {0.0f, 0.0f, 0.0f} } },
-			{ 3,  { 0.0f, 0.0f, 0.0f, {0.0f, 0.0f, 0.0f} } },
-			{ -1, { 0.0f, 0.0f, 0.0f, {0.0f, 0.0f, 0.0f} } },
-			{ -3, { 0.0f, 0.0f, 0.0f, {0.0f, 0.0f, 0.0f} } }
-		};
-
-		std::unordered_map<int, RotationSettings> xAxisNeg3Settings = {
-			{ 1,  { 0.0f, 0.0f, 0.0f, {0.0f, 0.0f, 0.0f} } },
-			{ 2,  { 0.0f, 0.0f, 0.0f, {0.0f, 0.0f, 0.0f} } },
-			{ -1, { 0.0f, 0.0f, 0.0f, {0.0f, 0.0f, 0.0f} } },
-			{ -2, { 0.0f, 0.0f, 0.0f, {0.0f, 0.0f, 0.0f} } }
-		};
-
-		RotationsForEditor.insert(std::make_pair(1, xAxis1Settings));
-		RotationsForEditor.insert(std::make_pair(2, xAxis2Settings));
-		RotationsForEditor.insert(std::make_pair(3, xAxis3Settings));
-		RotationsForEditor.insert(std::make_pair(-1, xAxisNeg1Settings));
-		RotationsForEditor.insert(std::make_pair(-2, xAxisNeg2Settings));
-		RotationsForEditor.insert(std::make_pair(-3, xAxisNeg3Settings));
-	}
-
-	void InitializeRotations()
-	{
-		InitializeRotationEditor();
-		LoadRotationsFromFile();
-
-		RotationTable.reserve(RotationsForEditor.size());
-		for (const auto& xAxisRotGroup : RotationsForEditor)
-		{
-			std::unordered_map<int, RotationEntry> rotation_group = {};
-
-			rotation_group.reserve(xAxisRotGroup.second.size());
-			for (const auto& zAxisRotGroup : xAxisRotGroup.second)
-			{
-				const RotationSettings& rSetRef = zAxisRotGroup.second;
-
-				glm::mat4 rotation_matrix(1.0f);
-				rotation_matrix = glm::rotate(rotation_matrix, glm::radians(rSetRef.oRotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-				rotation_matrix = glm::rotate(rotation_matrix, glm::radians(rSetRef.oRotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-				rotation_matrix = glm::rotate(rotation_matrix, glm::radians(rSetRef.oRotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
-
-				RotationEntry new_entry = { rotation_matrix, { rSetRef.oPosition.x, rSetRef.oPosition.y, rSetRef.oPosition.z } };
-
-				rotation_group.insert(std::make_pair(zAxisRotGroup.first, new_entry));
-			}
-
-			RotationTable.insert(std::make_pair(xAxisRotGroup.first, rotation_group));
-		}
-
-		DebugOutL(0b0101_fg, "Rotations have been initialized!");
-	}
-
-	bool RotationExists(const int& xAxis, const int& zAxis)
-	{
-		if (RotationTable.find(xAxis) != RotationTable.end())
-		{
-			const std::unordered_map<int, RotationEntry>& zAxisRot = RotationTable.at(xAxis);
-			if (zAxisRot.find(zAxis) != zAxisRot.end())
-			{
-				return true;
-			}
-		}
-
-		DebugErrorL("Couldn't find the specified rotation: (", xAxis, ", ", zAxis, ")");
-		return false;
-	}
-
-	glm::mat4 GetRotationMatrix(const int& xAxis, const int& zAxis)
-	{
-		return RotationTable[xAxis][zAxis].rot_matrix;
-	}
-
-	glm::vec3 GetOffsetPosition(const int& xAxis, const int& zAxis)
-	{
-		return RotationTable[xAxis][zAxis].pos_vector;
-	}
+	return v_iter->second.pos_vector;
 }

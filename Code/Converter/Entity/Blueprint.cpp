@@ -243,6 +243,7 @@ void SMBlueprint::LoadChild(const simdjson::dom::element& v_child)
 
 	const int v_xAxisInt = (v_x_axis.is_number() ? JsonReader::GetNumber<int>(v_x_axis) : 1);
 	const int v_zAxisInt = (v_z_axis.is_number() ? JsonReader::GetNumber<int>(v_z_axis) : 3);
+	const unsigned char v_xzRotation = Rotations::CompressRotation(v_xAxisInt, v_zAxisInt);
 
 	const glm::vec3 v_obj_pos = SMBlueprint::JsonToVector(v_position);
 	const SMUuid v_obj_uuid = v_uuid.get_c_str();
@@ -258,7 +259,7 @@ void SMBlueprint::LoadChild(const simdjson::dom::element& v_child)
 		const BlockData* v_blk_data = SMMod::GetGlobalObject<BlockData>(v_obj_uuid);
 		if (!v_blk_data) return;
 
-		SMBlock* v_new_blk = new SMBlock(v_blk_data, v_blk_bounds, v_obj_color, v_xAxisInt, v_zAxisInt, m_object_index);
+		SMBlock* v_new_blk = new SMBlock(v_blk_data, v_blk_bounds, v_obj_color, v_xzRotation, m_object_index);
 		v_new_blk->SetPosition(v_obj_pos);
 		v_new_blk->SetSize(v_blk_bounds);
 
@@ -272,7 +273,7 @@ void SMBlueprint::LoadChild(const simdjson::dom::element& v_child)
 		Model* v_prt_model = ModelStorage::LoadModel(v_prt_data->m_mesh);
 		if (!v_prt_model) return;
 
-		SMPart* v_new_prt = new SMPart(v_prt_data, v_prt_model, v_obj_color, v_xAxisInt, v_zAxisInt, m_object_index);
+		SMPart* v_new_prt = new SMPart(v_prt_data, v_prt_model, v_obj_color, v_xzRotation, m_object_index);
 		v_new_prt->SetPosition(v_obj_pos);
 
 		this->m_addObjectFunction(this, v_new_prt);
@@ -293,6 +294,7 @@ void SMBlueprint::LoadJoint(const simdjson::dom::element& v_jnt)
 
 	const int v_xAxisInt = (v_x_axis.is_number() ? JsonReader::GetNumber<int>(v_x_axis) : 1);
 	const int v_zAxisInt = (v_z_axis.is_number() ? JsonReader::GetNumber<int>(v_z_axis) : 3);
+	const unsigned char v_xzRotation = Rotations::CompressRotation(v_xAxisInt, v_zAxisInt);
 
 	const glm::vec3 v_pos_vec = SMBlueprint::JsonToVector(v_position);
 
@@ -306,7 +308,7 @@ void SMBlueprint::LoadJoint(const simdjson::dom::element& v_jnt)
 	Model* v_jnt_model = ModelStorage::LoadModel(v_jnt_data->m_mesh);
 	if (!v_jnt_model) return;
 
-	SMJoint* v_new_jnt = new SMJoint(v_jnt_data, v_jnt_model, v_jnt_color, v_xAxisInt, v_zAxisInt, v_child_idx);
+	SMJoint* v_new_jnt = new SMJoint(v_jnt_data, v_jnt_model, v_jnt_color, v_xzRotation, v_child_idx);
 	v_new_jnt->SetPosition(v_pos_vec);
 
 	this->m_addObjectFunction(this, v_new_jnt);

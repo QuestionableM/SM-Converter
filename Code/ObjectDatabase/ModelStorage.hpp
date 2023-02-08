@@ -65,6 +65,7 @@ struct Model
 	std::vector<SubMeshData*> subMeshData;
 
 	std::wstring meshPath;
+	bool has_cached_uvs = false;
 
 	void WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, std::ofstream& file, const class SMEntity* pEntity);
 

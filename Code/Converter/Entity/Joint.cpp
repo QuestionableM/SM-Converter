@@ -52,8 +52,8 @@ void SMJoint::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex
 
 glm::mat4 SMJoint::GetTransformMatrix() const
 {
-	const glm::mat4 joint_rotation = Rotations::GetRotationMatrix(m_xAxis, m_zAxis);
-	const glm::vec3 pos_offset = Rotations::GetOffsetPosition(m_xAxis, m_zAxis);
+	const glm::mat4 joint_rotation = Rotations::GetRotationMatrix(m_xzRotation);
+	const glm::vec3 pos_offset = Rotations::GetOffsetPosition(m_xzRotation);
 
 	glm::mat4 model_matrix(1.0f);
 	model_matrix *= glm::translate(m_position + pos_offset);

@@ -9,14 +9,18 @@
 class SMPart : public SMEntity
 {
 public:
-	inline SMPart(const PartData* pParent, Model* pModel, const SMColor& color, const int& xAxis, const int& zAxis, const std::size_t& index)
+	inline SMPart(const PartData* pParent,
+		Model* pModel,
+		const SMColor& color,
+		const unsigned char& v_rotation,
+		const std::size_t& index)
 	{
 		this->m_parent = pParent;
 		this->m_uuid = pParent->m_uuid;
 		this->m_model = pModel;
 		this->m_color = color;
-		this->m_xAxis = xAxis;
-		this->m_zAxis = zAxis;
+
+		this->m_xzRotation = v_rotation;
 		this->m_index = index;
 	}
 
@@ -35,8 +39,7 @@ public:
 private:
 	SMColor m_color;
 	const PartData* m_parent;
-	int m_xAxis;
-	int m_zAxis;
+	unsigned char m_xzRotation;
 	std::size_t m_index;
 };
 

@@ -26,7 +26,11 @@ class BlueprintConv
 {
 	static void WriteToFileInternal(SMBlueprint* blueprint, const std::wstring& bp_name, ConvertError& v_error);
 
+	static SMBody* CreateCollection(SMBlueprint* self, const std::string& v_name);
+
 	static void CreateAndAddObjToCollection(SMBlueprint* self, const std::string& v_name, SMEntity* v_entity);
+	//A version that doesn't fill body index map, as it is only used in joint separation mode
+	static void CreateAndAddObjToCollectionNI(SMBlueprint* self, const std::string& v_name, SMEntity* v_entity);
 
 	static void BlueprintAddObject_SeparateAll(SMBlueprint* self, SMEntity* v_entity);
 	static void BlueprintAddObject_SeparateShapes(SMBlueprint* self, SMEntity* v_entity);
