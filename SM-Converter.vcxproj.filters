@@ -156,9 +156,6 @@
     <ClCompile Include="Code\Converter\MtlFileWriter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Code\Converter\Entity\Body.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Code\Gui\SettingsGui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
