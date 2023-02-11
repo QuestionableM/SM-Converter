@@ -1,8 +1,9 @@
 #include "TileFolderReader.hpp"
 
-#include "ObjectDatabase\DatabaseConfig.hpp"
-#include "Converter\TileConverter\TileHeader.hpp"
 #include "Converter\TileConverter\Readers\TileReader.hpp"
+#include "Converter\TileConverter\TileHeader.hpp"
+
+#include "ObjectDatabase\DatabaseConfig.hpp"
 
 #include "Utils\Console.hpp"
 #include "Utils\String.hpp"

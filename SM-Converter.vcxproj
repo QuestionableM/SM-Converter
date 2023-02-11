@@ -398,6 +398,8 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='ReleaseDebugInfo|x64'">true</CompileAsManaged>
     </ClCompile>
+    <ClCompile Include="Code\Converter\WorldConverter\World.cpp" />
+    <ClCompile Include="Code\Converter\WorldConverter\WorldConverter.cpp" />
     <ClCompile Include="Code\Gui\AboutGui.cpp" />
     <ClCompile Include="Code\Gui\BlueprintConvertSettings.cpp" />
     <ClCompile Include="Code\Gui\FilterSettingsGui.cpp" />
@@ -573,6 +575,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='ReleaseDebugInfo|x64'">true</CompileAsManaged>
     </ClCompile>
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\UserObjectFolderReader.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\UserDataReaders\WorldFolderReader.cpp" />
     <ClCompile Include="Code\Utils\Console.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</CompileAsManaged>
@@ -657,6 +660,8 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\Converter\TileConverter\TileConverter.hpp" />
     <ClInclude Include="Code\Converter\TileConverter\TileHeader.hpp" />
     <ClInclude Include="Code\Converter\TileConverter\TilePart.hpp" />
+    <ClInclude Include="Code\Converter\WorldConverter\World.hpp" />
+    <ClInclude Include="Code\Converter\WorldConverter\WorldConverter.hpp" />
     <ClInclude Include="Code\Gui\AboutGui.h">
       <FileType>CppForm</FileType>
     </ClInclude>
@@ -710,6 +715,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\ObjectDatabase\Readers\PartListLoader.hpp" />
     <ClInclude Include="Code\ObjectDatabase\SubMeshData.hpp" />
     <ClInclude Include="Code\ObjectDatabase\UserDataReaders\UserObjectFolderReader.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\UserDataReaders\WorldFolderReader.hpp" />
     <ClInclude Include="Code\Utils\BitStream.hpp" />
     <ClInclude Include="Code\Utils\ByteImpl.hpp" />
     <ClInclude Include="Code\Utils\Color.hpp" />

@@ -286,6 +286,13 @@ void DatabaseConfig::FindLocalUsers()
 			DebugOutL("Found a new path to local tiles: ", 0b01101_fg, v_local_tiles_dir);
 			DatabaseConfig::AddToStrMap(DatabaseConfig::UserItemFolders, v_local_tiles_dir);
 		}
+
+		const std::wstring v_local_worlds_dir = v_cur_dir_path + L"\\Worlds";
+		if (File::Exists(v_local_worlds_dir))
+		{
+			DebugOutL("Found a new path to local worlds: ", 0b01101_fg, v_local_worlds_dir);
+			DatabaseConfig::AddToStrMap(DatabaseConfig::UserItemFolders, v_local_worlds_dir);
+		}
 	}
 }
 

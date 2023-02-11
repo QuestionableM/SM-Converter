@@ -186,6 +186,15 @@
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\UserObjectFolderReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Code\ObjectDatabase\UserDataReaders\WorldFolderReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Converter\WorldConverter\WorldConverter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Converter\WorldConverter\World.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\Gui\MainGui.h">
@@ -477,6 +486,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Code\ObjectDatabase\UserDataReaders\UserObjectFolderReader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\ObjectDatabase\UserDataReaders\WorldFolderReader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Converter\WorldConverter\WorldConverter.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Converter\WorldConverter\World.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

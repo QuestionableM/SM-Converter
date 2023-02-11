@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ObjectDatabase\UserDataReaders\BlueprintFolderReader.hpp"
+#include "ObjectDatabase\UserDataReaders\WorldFolderReader.hpp"
 #include "ObjectDatabase\UserDataReaders\TileFolderReader.hpp"
 
 #include "Converter\ConvertError.hpp"
@@ -520,6 +521,7 @@ namespace SMConverter
 
 		System::Void MainGui_ConvertBlueprint(const std::wstring& filename, const std::wstring& path);
 		System::Void MainGui_ConvertTile(const std::wstring& filename, const std::wstring& path);
+		System::Void MainGui_ConvertWorld(const std::wstring& filename, const std::wstring& path);
 		System::Void MainGui_Convert_Clicked(System::Object^ sender, System::EventArgs^ e);
 
 		std::vector<BlueprintInstance*>& GetCurrentBlueprintList();
@@ -528,10 +530,13 @@ namespace SMConverter
 		std::vector<TileInstance*>& GetCurrentTileList();
 		TileInstance* GetCurrentTile();
 
+		std::vector<WorldInstance*>& GetCurrentWorldList();
+		WorldInstance* GetCurrentWorld();
+
 		System::Void MainGui_HandleConvertError(ConvertError& v_error, const int& v_type, System::ComponentModel::DoWorkEventArgs^ e);
 		System::Void ObjectConverter_ConvertBlueprint(System::Array^ conv_data, System::ComponentModel::DoWorkEventArgs^ e);
 		System::Void ObjectConverter_ConvertTile(System::Array^ conv_data, System::ComponentModel::DoWorkEventArgs^ e);
-		System::Void ObjectConverter_ConvertScript(System::Array^ conv_data, System::ComponentModel::DoWorkEventArgs^ e);
+		System::Void ObjectConverter_ConvertWorld(System::Array^ conv_data, System::ComponentModel::DoWorkEventArgs^ e);
 
 		System::Void MainGui_ObjectConverter_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e);
 		System::Void MainGui_ObjectConverter_RunWorkerCompleted(System::Object^ sender, System::ComponentModel::RunWorkerCompletedEventArgs^ e);

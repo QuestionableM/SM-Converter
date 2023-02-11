@@ -43,6 +43,14 @@ public:
 		return m_Tiles[x + y * m_Width];
 	}
 
+	inline TilePart* GetPartSafe(const int& x, const int& y) const
+	{
+		if (x >= m_Width || y >= m_Height)
+			return nullptr;
+
+		return m_Tiles[x + y * m_Width];
+	}
+
 	void Resize(const int& width, const int& height);
 
 	std::vector<float> GetVertexHeight() const;

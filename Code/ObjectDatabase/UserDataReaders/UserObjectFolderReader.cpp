@@ -1,6 +1,7 @@
 #include "UserObjectFolderReader.hpp"
 
 #include "BlueprintFolderReader.hpp"
+#include "WorldFolderReader.hpp"
 #include "TileFolderReader.hpp"
 
 #include "ObjectDatabase\DatabaseConfig.hpp"
@@ -21,6 +22,8 @@ void UserObjectFolderReader::ReadItemFromDirectory(const std::wstring& path)
 		TileFolderReader::LoadFromFolder(path, v_doc_root);
 	else if (strcmp(v_desc_type.get_c_str(), "Blueprint") == 0)
 		BlueprintFolderReader::LoadFromFolder(path, v_doc_root);
+	else if (strcmp(v_desc_type.get_c_str(), "World") == 0)
+		WorldFolderReader::LoadFromFolder(path, v_doc_root);
 }
 
 void UserObjectFolderReader::LoadObjectsFromFolder(const std::wstring& folder)
@@ -49,6 +52,8 @@ void UserObjectFolderReader::LoadObjectsFromFolder(const std::wstring& folder)
 				TileFolderReader::LoadFromFile(v_item_path);
 			else if (v_item_extension == ".blueprint")
 				BlueprintFolderReader::LoadFromFile(v_item_path);
+			else if (v_item_extension == ".world")
+				WorldFolderReader::LoadFromFile(v_item_path);
 		}
 	}
 }
@@ -56,6 +61,7 @@ void UserObjectFolderReader::LoadObjectsFromFolder(const std::wstring& folder)
 void UserObjectFolderReader::ReadFromConfig()
 {
 	BlueprintFolderReader::ClearStorage();
+	WorldFolderReader::ClearStorage();
 	TileFolderReader::ClearStorage();
 
 	for (const auto& v_item_folder : DatabaseConfig::UserItemFolders)

@@ -16,6 +16,7 @@
 #include "ObjectDatabase\Mods\Mod.hpp"
 
 #include "Converter\BlueprintConverter\BlueprintConverter.hpp"
+#include "Converter\WorldConverter\WorldConverter.hpp"
 #include "Converter\TileConverter\TileConverter.hpp"
 #include "Converter\ConvertSettings.hpp"
 
@@ -54,7 +55,7 @@ enum : unsigned short
 {
 	Generator_BlueprintConverter = 0,
 	Generator_TileConverter      = 1,
-	Generator_ScriptConverter    = 2
+	Generator_WorldConverter     = 2
 };
 
 namespace SMConverter
@@ -117,7 +118,7 @@ namespace SMConverter
 			{
 				L"Path to Blueprint",
 				L"Path to Tile",
-				L"Path to Script"
+				L"Path to World"
 			};
 
 			SendMessage(
@@ -132,8 +133,8 @@ namespace SMConverter
 			const static wchar_t* g_selectedObjectMessages[] =
 			{
 				L"Selected a Blueprint in the list",
-				L"Selected a tile in the list",
-				L"Selected a script in the list"
+				L"Selected a Tile in the list",
+				L"Selected a World in the list"
 			};
 
 			SendMessage(
@@ -155,7 +156,7 @@ namespace SMConverter
 		case Generator_TileConverter:
 			m_lb_objectSelector->ContextMenuStrip = m_cms_tile;
 			break;
-		case Generator_ScriptConverter:
+		case Generator_WorldConverter: //TODO: Add Context Menu Strip for World List
 			m_lb_objectSelector->ContextMenuStrip = nullptr;
 			break;
 		}
@@ -168,7 +169,7 @@ namespace SMConverter
 		{
 			L"Search Blueprints",
 			L"Search Tiles",
-			L"Search Scripts"
+			L"Search Worlds"
 		};
 
 		SendMessage(
@@ -202,7 +203,7 @@ namespace SMConverter
 		{
 			L"Select a Blueprint",
 			L"Select a Tile",
-			L"Select a Script"
+			L"Select a World"
 		};
 
 		const std::wstring v_selected_path = File::OpenFileDialog(
@@ -396,7 +397,7 @@ namespace SMConverter
 		{
 			L"Loading Blueprints...",
 			L"Loading Tiles...",
-			L"Loading Scripts..."
+			L"Loading Worlds..."
 		};
 
 		const wchar_t* v_cur_message = g_objectListStatusMessages[m_cb_selectedGenerator->SelectedIndex];
@@ -436,9 +437,18 @@ namespace SMConverter
 				m_lb_objectSelector->EndUpdate();
 				return;
 			}
-		case Generator_ScriptConverter:
-			//TODO: IMPLEMENT LATER
-			break;
+		case Generator_WorldConverter:
+			{
+				const std::vector<WorldInstance*>& v_cur_world_list = this->GetCurrentWorldList();
+				if (v_cur_world_list.empty())
+					break;
+
+				for (const WorldInstance* v_world_instance : v_cur_world_list)
+					m_lb_objectSelector->Items->Add(gcnew System::String(v_world_instance->name.c_str()));
+
+				m_lb_objectSelector->EndUpdate();
+				return;
+			}
 		}
 
 		m_lb_objectSelector->EndUpdate();
@@ -447,7 +457,7 @@ namespace SMConverter
 		{
 			L"No Blueprints",
 			L"No Tiles",
-			L"No Scripts"
+			L"No Worlds"
 		};
 
 		const wchar_t* v_cur_message = g_noObjectMessages[m_cb_selectedGenerator->SelectedIndex];
@@ -457,7 +467,6 @@ namespace SMConverter
 
 	void MainGui::MainGui_ObjectLoader_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e)
 	{
-		//TODO: Make a script loader (not important for now)
 		UserObjectFolderReader::ReadFromConfig();
 	}
 
@@ -542,7 +551,8 @@ namespace SMConverter
 		case Generator_TileConverter:
 			UpdateUserStorage<TileFolderReader>();
 			break;
-		case Generator_ScriptConverter:
+		case Generator_WorldConverter:
+			UpdateUserStorage<WorldFolderReader>();
 			break;
 		}
 	}
@@ -564,7 +574,8 @@ namespace SMConverter
 			case Generator_TileConverter:
 				SearchFunction<TileFolderReader>(v_search_str, last_search_length, m_tb_searchBox->TextLength);
 				break;
-			case Generator_ScriptConverter:
+			case Generator_WorldConverter:
+				SearchFunction<WorldFolderReader>(v_search_str, last_search_length, m_tb_searchBox->TextLength);
 				break;
 			}
 		}
@@ -673,6 +684,50 @@ namespace SMConverter
 		m_bw_objectConverter->RunWorkerAsync(v_thread_data);
 	}
 
+	void MainGui::MainGui_ConvertWorld(const std::wstring& filename, const std::wstring& path)
+	{
+		if (m_bw_objectConverter->IsBusy) return;
+
+		TileConvertSettings^ v_conv_settings = gcnew TileConvertSettings(filename.c_str(), path.c_str());
+		this->MainGui_CenterChildForm(v_conv_settings);
+		v_conv_settings->ShowDialog();
+
+		if (!v_conv_settings->m_ready_to_convert)
+			return;
+
+		System::Array^ v_thread_data = gcnew cli::array<System::Object^>(16);
+
+		//Data type
+		v_thread_data->SetValue(static_cast<int>(Generator_WorldConverter), static_cast<int>(0));
+
+		//Tile path and name data
+		v_thread_data->SetValue(gcnew System::String(path.c_str()), static_cast<int>(1));
+		v_thread_data->SetValue(v_conv_settings->m_tb_filename->Text, static_cast<int>(2));
+
+		//Tile settings
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportHarvestables->Checked, static_cast<int>(3));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportBlueprints->Checked, static_cast<int>(4));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportKinematics->Checked, static_cast<int>(5));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportClutter->Checked, static_cast<int>(6));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportPrefabs->Checked, static_cast<int>(7));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportDecals->Checked, static_cast<int>(8));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportAssets->Checked, static_cast<int>(9));
+
+		//Model settings
+		v_thread_data->SetValue(v_conv_settings->m_cb_export8kGndTextures->Checked, static_cast<int>(10));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportGndTextures->Checked, static_cast<int>(11));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportMaterials->Checked, static_cast<int>(12));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportNormals->Checked, static_cast<int>(13));
+		v_thread_data->SetValue(v_conv_settings->m_cb_exportUvs->Checked, static_cast<int>(14));
+
+		v_thread_data->SetValue(v_conv_settings->m_cb_customGame->SelectedIndex, static_cast<int>(15));
+
+		this->MainGui_ChangeGuiState(m_database_isLoaded, m_obj_isLoaded, false);
+		m_progressBarUpdater->Start();
+
+		m_bw_objectConverter->RunWorkerAsync(v_thread_data);
+	}
+
 	void MainGui::MainGui_Convert_Clicked(System::Object^ sender, System::EventArgs^ e)
 	{
 		if (m_tb_path->TextLength == 0 && m_lb_objectSelector->SelectedIndex == -1)
@@ -698,8 +753,14 @@ namespace SMConverter
 					this->MainGui_ConvertTile(v_cur_tile->name, v_cur_tile->path);
 					break;
 				}
-			case Generator_ScriptConverter:
-				break;
+			case Generator_WorldConverter:
+				{
+					const std::vector<WorldInstance*>& v_world_list = this->GetCurrentWorldList();
+					WorldInstance* v_cur_world = v_world_list[m_lb_objectSelector->SelectedIndex];
+
+					this->MainGui_ConvertWorld(v_cur_world->name, v_cur_world->path);
+					break;
+				}
 			}
 		}
 		else
@@ -727,7 +788,7 @@ namespace SMConverter
 				{
 					const std::wstring v_bp_name = (v_cur_path.has_stem() ? v_cur_path.stem().wstring() : L"UnknownBlueprint");
 
-					this->MainGui_ConvertBlueprint(v_bp_name, v_cur_path);
+					this->MainGui_ConvertBlueprint(v_bp_name, v_path_wstr);
 					break;
 				}
 			case Generator_TileConverter:
@@ -737,8 +798,13 @@ namespace SMConverter
 					this->MainGui_ConvertTile(v_tile_name, v_path_wstr);
 					break;
 				}
-			case Generator_ScriptConverter:
-				break;
+			case Generator_WorldConverter:
+				{
+					const std::wstring v_world_name = (v_cur_path.has_stem() ? v_cur_path.stem().wstring() : L"UnknownWorld");
+
+					this->MainGui_ConvertWorld(v_world_name, v_path_wstr);
+					break;
+				}
 			}
 		}
 	}
@@ -767,6 +833,19 @@ namespace SMConverter
 			return nullptr;
 
 		return this->GetCurrentTileList()[m_lb_objectSelector->SelectedIndex];
+	}
+
+	std::vector<WorldInstance*>& MainGui::GetCurrentWorldList()
+	{
+		return (m_tb_searchBox->TextLength > 0) ? WorldFolderReader::SearchResults : WorldFolderReader::GetCurrentStorage();
+	}
+
+	WorldInstance* MainGui::GetCurrentWorld()
+	{
+		if (m_lb_objectSelector->SelectedIndex == -1)
+			return nullptr;
+
+		return this->GetCurrentWorldList()[m_lb_objectSelector->SelectedIndex];
 	}
 
 	void MainGui::MainGui_HandleConvertError(ConvertError& v_error, const int& v_type, System::ComponentModel::DoWorkEventArgs^ e)
@@ -864,16 +943,44 @@ namespace SMConverter
 		this->MainGui_HandleConvertError(v_conv_error, Generator_TileConverter, e);
 	}
 
-	void MainGui::ObjectConverter_ConvertScript(System::Array^ conv_data, System::ComponentModel::DoWorkEventArgs^ e)
+	void MainGui::ObjectConverter_ConvertWorld(System::Array^ conv_data, System::ComponentModel::DoWorkEventArgs^ e)
 	{
 		DebugOutL(__FUNCTION__);
 
-		System::Array^ v_op_result = gcnew cli::array<System::Object^>(2);
+		System::Array^ v_conv_data = safe_cast<System::Array^>(e->Argument);
 
-		v_op_result->SetValue(static_cast<int>(Generator_ScriptConverter), static_cast<int>(0));
-		v_op_result->SetValue(false, static_cast<int>(1));
+		const std::wstring v_world_path = msclr::interop::marshal_as<std::wstring>(safe_cast<System::String^>(v_conv_data->GetValue(static_cast<int>(1))));
+		const std::wstring v_world_name = msclr::interop::marshal_as<std::wstring>(safe_cast<System::String^>(v_conv_data->GetValue(static_cast<int>(2))));
 
-		e->Result = v_op_result;
+		//Load the tile settings
+		TileConverterSettings::ExportHarvestables = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(3)));
+		TileConverterSettings::ExportBlueprints = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(4)));
+		TileConverterSettings::ExportKinematics = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(5)));
+		TileConverterSettings::ExportClutter = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(6)));
+		TileConverterSettings::ExportPrefabs = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(7)));
+		TileConverterSettings::ExportDecals = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(8)));
+		TileConverterSettings::ExportAssets = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(9)));
+
+		//Load the model settings
+		TileConverterSettings::Export8kGroundTextures = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(10)));
+		TileConverterSettings::ExportGroundTextures = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(11)));
+		SharedConverterSettings::ExportMaterials = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(12)));
+		SharedConverterSettings::ExportNormals = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(13)));
+		SharedConverterSettings::ExportUvs = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(14)));
+
+		const int v_custom_game_idx = safe_cast<int>(v_conv_data->GetValue(static_cast<int>(15)));
+		CustomGame* v_custom_game = nullptr;
+		if (v_custom_game_idx > 0)
+			v_custom_game = SMMod::GetCustomGames()[v_custom_game_idx - 1];
+
+		//Error check some settings
+		TileConverterSettings::Export8kGroundTextures &= TileConverterSettings::ExportGroundTextures;
+		SharedConverterSettings::ExportMaterials &= SharedConverterSettings::ExportUvs;
+
+		ConvertError v_conv_error;
+		WorldConverter::ConvertToModel(v_world_path, v_world_name, v_conv_error, v_custom_game);
+
+		this->MainGui_HandleConvertError(v_conv_error, Generator_TileConverter, e);
 	}
 
 	void MainGui::MainGui_ObjectConverter_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e)
@@ -889,8 +996,8 @@ namespace SMConverter
 		case Generator_TileConverter:
 			this->ObjectConverter_ConvertTile(v_thread_data, e);
 			break;
-		case Generator_ScriptConverter:
-			this->ObjectConverter_ConvertScript(v_thread_data, e);
+		case Generator_WorldConverter:
+			this->ObjectConverter_ConvertWorld(v_thread_data, e);
 			break;
 		}
 	}
@@ -925,7 +1032,7 @@ namespace SMConverter
 			{
 				"Blueprint has been successfully converted!",
 				"Tile has been successfully converted!",
-				"Script has been successfully converted!"
+				"World has been successfully converted!"
 			};
 
 			System::Windows::Forms::MessageBox::Show(
@@ -1005,7 +1112,8 @@ namespace SMConverter
 		case Generator_TileConverter:
 			v_path_to_open = this->GetCurrentTile()->path;
 			break;
-		case Generator_ScriptConverter:
+		case Generator_WorldConverter:
+			v_path_to_open = this->GetCurrentWorld()->path;
 			break;
 		}
 
@@ -1061,7 +1169,8 @@ namespace SMConverter
 
 				break;
 			}
-		case Generator_ScriptConverter:
+		case Generator_WorldConverter:
+			//TODO: Implement that
 			break;
 		}
 	}
