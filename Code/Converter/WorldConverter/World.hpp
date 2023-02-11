@@ -43,6 +43,7 @@ public:
 		return m_cellMap[x + y * m_width];
 	}
 
+	void LoadCell(const simdjson::dom::element& v_cell);
 	static SMWorld* LoadFromFile(const std::wstring& path, ConvertError& v_error);
 
 	void GetVertexHeight(std::vector<float>& v_vert_array) const;
@@ -54,6 +55,9 @@ public:
 
 	std::size_t	GetAmountOfObjects() const;
 	void WriteAssets(std::ofstream& model, WriterOffsetData& v_offset) const;
+
+	void WriteMtlFile(const std::wstring& path) const;
+	bool WriteObjFile(const std::wstring& dir_path, const std::wstring& file_name, const std::wstring& mtl_name) const;
 
 	void WriteToFile(const std::wstring& dir_path, const std::wstring& file_name) const;
 

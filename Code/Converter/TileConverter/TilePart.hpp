@@ -42,6 +42,8 @@ public:
 	inline Tile* GetParent() { return this->Parent; }
 
 	void WriteToFile(std::ofstream& model, WriterOffsetData& mOffsetData, const int& xPos, const int& zPos);
+	void WriteToFileWorld(std::ofstream& v_model, WriterOffsetData& v_offset, const std::size_t& x_pos, const std::size_t& y_pos, const std::size_t& v_world_sz, const char& v_rotation);
+
 	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tData) const;
 	std::size_t GetAmountOfObjects() const;
 };

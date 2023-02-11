@@ -2,6 +2,7 @@
 
 #include "Converter\TileConverter\Readers\TileReader.hpp"
 #include "Converter\Entity\GroundTerrainData.hpp"
+#include "Converter\MtlFileWriter.hpp"
 
 #include "Utils\File.hpp"
 #include "Utils\Json.hpp"
@@ -50,6 +51,43 @@ Tile* SMWorld::ReadTile(const std::wstring& path)
 	return v_new_tile;
 }
 
+void SMWorld::LoadCell(const simdjson::dom::element& v_cell)
+{
+	if (!v_cell.is_object()) return;
+
+	const auto v_offset_x = v_cell["offsetX"];
+	const auto v_offset_y = v_cell["offsetY"];
+	const auto v_path = v_cell["path"];
+	const auto v_rotation = v_cell["rotation"];
+	const auto v_pos_x = v_cell["x"];
+	const auto v_pos_y = v_cell["y"];
+
+	if (!(v_path.is_string() && v_rotation.is_number()))
+		return;
+
+	if (!(v_offset_x.is_number() && v_offset_y.is_number()))
+		return;
+
+	if (!(v_pos_x.is_number() && v_pos_y.is_number()))
+		return;
+
+	std::wstring v_tile_path = String::ToWide(v_path.get_string());
+	KeywordReplacer::ReplaceKeyR(v_tile_path);
+
+	Tile* v_tile = this->ReadTile(v_tile_path);
+	if (!v_tile) return;
+
+	const int v_cell_x = JsonReader::GetNumber<int>(v_offset_x);
+	const int v_cell_y = JsonReader::GetNumber<int>(v_offset_y);
+	TilePart* v_cur_cell = v_tile->GetPartSafe(v_cell_x, v_cell_y);
+
+	const int v_half_width = static_cast<int>(m_width) / 2;
+	const int v_world_pos_x = JsonReader::GetNumber<int>(v_pos_x) + v_half_width;
+	const int v_world_pos_y = JsonReader::GetNumber<int>(v_pos_y) + v_half_width;
+	const char v_rotation_idx = JsonReader::GetNumber<char>(v_rotation);
+	this->SetCell(v_world_pos_x, v_world_pos_y, v_cur_cell, v_rotation_idx);
+}
+
 SMWorld* SMWorld::LoadFromFile(const std::wstring& path, ConvertError& v_error)
 {
 	simdjson::dom::document v_doc;
@@ -84,41 +122,12 @@ SMWorld* SMWorld::LoadFromFile(const std::wstring& path, ConvertError& v_error)
 
 	SMWorld* v_world = new SMWorld(v_cell_count, v_world_width);
 	DebugOutL("Amount of cells: ", v_world->m_cellMap.size());
+	ProgCounter::SetState(ProgState::ReadingCells, v_world->m_cellMap.size());
 
 	for (const auto v_cell : v_cell_data_array)
 	{
-		if (!v_cell.is_object()) continue;
-
-		const auto v_offset_x = v_cell["offsetX"];
-		const auto v_offset_y = v_cell["offsetY"];
-		const auto v_path = v_cell["path"];
-		const auto v_rotation = v_cell["rotation"];
-		const auto v_pos_x = v_cell["x"];
-		const auto v_pos_y = v_cell["y"];
-
-		if (!(v_path.is_string() && v_rotation.is_number()))
-			continue;
-
-		if (!(v_offset_x.is_number() && v_offset_y.is_number()))
-			continue;
-
-		if (!(v_pos_x.is_number() && v_pos_y.is_number()))
-			continue;
-
-		std::wstring v_tile_path = String::ToWide(v_path.get_string());
-		KeywordReplacer::ReplaceKeyR(v_tile_path);
-
-		Tile* v_tile = v_world->ReadTile(v_tile_path);
-		if (!v_tile) continue;
-
-		const int v_cell_x = JsonReader::GetNumber<int>(v_offset_x);
-		const int v_cell_y = JsonReader::GetNumber<int>(v_offset_y);
-		TilePart* v_cur_cell = v_tile->GetPartSafe(v_cell_x, v_cell_y);
-
-		const int v_world_pos_x = JsonReader::GetNumber<int>(v_pos_x) + v_half_width;
-		const int v_world_pos_y = JsonReader::GetNumber<int>(v_pos_y) + v_half_width;
-		const char v_rotation_idx = JsonReader::GetNumber<char>(v_rotation);
-		v_world->SetCell(v_world_pos_x, v_world_pos_y, v_cur_cell, v_rotation_idx);
+		v_world->LoadCell(v_cell);
+		ProgCounter::ProgressValue++;
 	}
 
 	return v_world;
@@ -386,7 +395,9 @@ void SMWorld::WriteTerrain(std::ofstream& model, WriterOffsetData& v_offset, con
 	SMGroundTerrainData* v_tmp_terrain_data = new SMGroundTerrainData();
 
 	Model* v_terrain = this->GenerateTerrainMesh(height_map);
-	v_terrain->WriteToFile(glm::mat4(1.0f), v_offset, model, v_tmp_terrain_data);
+
+	const glm::mat4 v_rotation = glm::rotate(glm::mat4(1.0f), glm::pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f));
+	v_terrain->WriteToFile(v_rotation, v_offset, model, v_tmp_terrain_data);
 
 	delete v_terrain;
 	delete v_tmp_terrain_data;
@@ -440,7 +451,7 @@ void SMWorld::WriteClutter(std::ofstream& model, WriterOffsetData& v_offset, con
 	const float v_world_sz_f = static_cast<float>(v_world_sz);
 
 	const int v_grid_sz = static_cast<int>(m_width) * 32;
-	const int v_grid_sz_f = static_cast<float>(v_grid_sz);
+	const float v_grid_sz_f = static_cast<float>(v_grid_sz);
 
 	//initialize perlin noise
 	const siv::PerlinNoise rotation_noise(1337u);
@@ -507,12 +518,47 @@ void SMWorld::WriteAssets(std::ofstream& model, WriterOffsetData& v_offset) cons
 			const WorldCellData& v_celldata = this->GetCell(x, y);
 			if (!v_celldata.part) continue;
 
-			v_celldata.part->WriteToFile(model, v_offset, static_cast<int>(x) - v_half_width, static_cast<int>(y) - v_half_width, v_celldata.rotation);
+			v_celldata.part->WriteToFileWorld(model, v_offset, x, y, m_width, v_celldata.rotation);
 		}
 	}
 }
 
-void SMWorld::WriteToFile(const std::wstring& dir_path, const std::wstring& file_name) const
+void SMWorld::WriteMtlFile(const std::wstring& path) const
+{
+	if (!SharedConverterSettings::ExportMaterials) return;
+	DebugOutL("Writing an mtl file...");
+
+	ProgCounter::SetState(ProgState::WritingMtlFile, 0);
+
+	std::unordered_map<std::string, ObjectTexData> v_tex_data = {};
+
+	for (const WorldCellData& v_cell : m_cellMap)
+	{
+		const TilePart* v_part = v_cell.part;
+		if (!v_part) continue;
+
+		v_part->FillTextureMap(v_tex_data);
+		ProgCounter::ProgressMax = v_tex_data.size();
+	}
+
+	{
+		ObjectTexData v_tileGroundTextureData;
+		v_tileGroundTextureData.m_tex_color = 0xffffff;
+
+		if (TileConverterSettings::ExportGroundTextures)
+		{
+			v_tileGroundTextureData.m_textures.dif = L"./GroundTexture_Dif.jpg";
+			v_tileGroundTextureData.m_textures.asg = L"./GroundTexture_Asg.jpg";
+			v_tileGroundTextureData.m_textures.nor = L"./GroundTexture_Nor.jpg";
+		}
+
+		v_tex_data["TileGroundTerrain"] = v_tileGroundTextureData;
+	}
+
+	MtlFileWriter::Write(path, v_tex_data);
+}
+
+bool SMWorld::WriteObjFile(const std::wstring& dir_path, const std::wstring& file_name, const std::wstring& mtl_name) const
 {
 	const std::wstring v_output_path = dir_path + file_name + L".obj";
 
@@ -520,15 +566,12 @@ void SMWorld::WriteToFile(const std::wstring& dir_path, const std::wstring& file
 	if (!v_output_model.is_open())
 	{
 		DebugOutL("Fail!");
-		return;
+		return false;
 	}
-
-	const std::wstring v_mtl_name = file_name + L".mtl";
-	const std::wstring v_mtl_path = dir_path + v_mtl_name;
 
 	if (SharedConverterSettings::ExportMaterials)
 	{
-		const std::string v_mtl_header = "mtllib " + String::ToUtf8(v_mtl_name) + "\n";
+		const std::string v_mtl_header = "mtllib " + String::ToUtf8(mtl_name) + "\n";
 		v_output_model.write(v_mtl_header.c_str(), v_mtl_header.size());
 	}
 
@@ -540,12 +583,27 @@ void SMWorld::WriteToFile(const std::wstring& dir_path, const std::wstring& file
 
 		this->WriteTerrain(v_output_model, v_offset_data, v_height_array);
 		this->WriteClutter(v_output_model, v_offset_data, v_height_array);
+
+		ProgCounter::SetState(ProgState::MemoryCleanup, 0);
 	}
 
 	this->WriteAssets(v_output_model, v_offset_data);
-
 	v_output_model.close();
-	DebugOutL("Finished!");
+
+	ProgCounter::SetState(ProgState::MemoryCleanup, 0);
+
+	return true;
+}
+
+void SMWorld::WriteToFile(const std::wstring& dir_path, const std::wstring& file_name) const
+{
+	const std::wstring v_mtl_name = file_name + L".mtl";
+	const std::wstring v_mtl_path = dir_path + v_mtl_name;
+
+	if (!this->WriteObjFile(dir_path, file_name, v_mtl_name))
+		return;
+
+	this->WriteMtlFile(v_mtl_path);
 	/*
 	const std::wstring output_path = dir_path + file_name + L".obj";
 

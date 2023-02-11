@@ -100,8 +100,6 @@ public:
 	template<bool t_mod_counter>
 	static Tile* ReadTile(const std::vector<Byte>& tile_data, ConvertError& v_error)
 	{
-		ProgCounter::SetState(ProgState::ReadingTile, 0);
-
 		TileHeader* header = TileHeader::ReadTile(tile_data, v_error);
 		if (!header) return nullptr;
 

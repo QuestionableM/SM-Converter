@@ -35,7 +35,10 @@ enum class ProgState : std::size_t
 
 	ParsingBlueprint = 21,
 	ReadingBlueprintParts = 22,
-	ReadingBlueprintJoints = 23
+	ReadingBlueprintJoints = 23,
+
+	ReadingCells = 24,
+	MemoryCleanup = 25
 };
 
 class ProgCounter

@@ -55,7 +55,10 @@ static const StateData StateDataArray[] =
 
 	{ L"Parsing Blueprint...", false },
 	{ L"Reading Parts...",     true  },
-	{ L"Reading Joints...",    true  }
+	{ L"Reading Joints...",    true  },
+
+	{ L"Reading Cells...", true },
+	{ L"Memory cleanup...", false }
 };
 
 std::wstring ProgCounter::GetStateString()
