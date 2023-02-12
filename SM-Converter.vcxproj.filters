@@ -497,5 +497,8 @@
     <ClInclude Include="Code\Converter\WorldConverter\World.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Code\Utils\Math.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

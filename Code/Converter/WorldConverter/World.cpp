@@ -6,6 +6,7 @@
 
 #include "Utils\File.hpp"
 #include "Utils\Json.hpp"
+#include "Utils\Math.hpp"
 
 #pragma unmanaged
 #include <PerlinNoise\PerlinNoise.hpp>
@@ -403,40 +404,6 @@ void SMWorld::WriteTerrain(std::ofstream& model, WriterOffsetData& v_offset, con
 	delete v_tmp_terrain_data;
 }
 
-inline float lerp(const float& s, const float& e, const float& t)
-{
-	return s + (e - s) * t;
-}
-
-inline float blerp(const float& c00, const float& c10, const float& c01, const float& c11, const float& tx, const float& ty)
-{
-	return lerp(lerp(c00, c10, tx), lerp(c01, c11, tx), ty);
-}
-
-inline float GetHeightPoint(
-	const std::vector<float>& vec,
-	const int& vec_width,
-	const int& vec_height,
-	const int& gridSzX,
-	const int& gridSzY,
-	const float& x,
-	const float& y
-)
-{
-	const float gx = x / float(vec_height) * gridSzX;
-	const float gy = y / float(vec_width) * gridSzY;
-
-	const int gxi = int(gx);
-	const int gyi = int(gy);
-
-	const float& c00 = vec[(gxi)+(gyi) * (gridSzX + 1)];
-	const float& c10 = vec[(gxi + 1) + (gyi) * (gridSzX + 1)];
-	const float& c01 = vec[(gxi)+(gyi + 1) * (gridSzX + 1)];
-	const float& c11 = vec[(gxi + 1) + (gyi + 1) * (gridSzX + 1)];
-
-	return blerp(c00, c10, c01, c11, gx - gxi, gy - gyi);
-}
-
 void SMWorld::WriteClutter(std::ofstream& model, WriterOffsetData& v_offset, const std::vector<float>& height_map) const
 {
 	if (!TileConverterSettings::ExportClutter) return;
@@ -446,11 +413,10 @@ void SMWorld::WriteClutter(std::ofstream& model, WriterOffsetData& v_offset, con
 	std::vector<SMTileClutter*> tile_clutter;
 	this->GetClutterData(tile_clutter);
 
-	const int v_world_sz = static_cast<int>(m_width) * 128;
-
+	const std::size_t v_world_sz = m_width * 128;
 	const float v_world_sz_f = static_cast<float>(v_world_sz);
 
-	const int v_grid_sz = static_cast<int>(m_width) * 32;
+	const std::size_t v_grid_sz = m_width * 32;
 	const float v_grid_sz_f = static_cast<float>(v_grid_sz);
 
 	//initialize perlin noise
@@ -459,34 +425,37 @@ void SMWorld::WriteClutter(std::ofstream& model, WriterOffsetData& v_offset, con
 	const siv::PerlinNoise x_noise(6842u);
 	const siv::PerlinNoise y_noise(1813u);
 
-	ProgCounter::SetState(ProgState::WritingClutter, static_cast<std::size_t>(v_world_sz * v_world_sz));
-	for (int y = 0; y < v_world_sz; y++)
+	ProgCounter::SetState(ProgState::WritingClutter, v_world_sz * v_world_sz);
+	for (std::size_t y = 0; y < v_world_sz; y++)
 	{
-		for (int x = 0; x < v_world_sz; x++)
+		for (std::size_t x = 0; x < v_world_sz; x++)
 		{
-			SMTileClutter* tClutter = tile_clutter[x + y * v_world_sz];
-			if (!tClutter) continue;
+			SMTileClutter* v_cur_clutter = tile_clutter[x + y * v_world_sz];
+			if (!v_cur_clutter)
+			{
+				ProgCounter::ProgressValue++;
+				continue;
+			}
 
 			const float x_offset = (float)x_noise.octave2D_11((double)x * 91.42f, (double)y * 83.24f, 4) * 0.5f;
 			const float y_offset = (float)y_noise.octave2D_11((double)x * 73.91f, (double)y * 98.46f, 4) * 0.5f;
 
-			const float xPosClamp = std::clamp<float>((float)x + x_offset, 0.0f, v_world_sz_f);
-			const float yPosClamp = std::clamp<float>((float)y + y_offset, 0.0f, v_world_sz_f);
+			const float v_x_clamp = std::clamp<float>((float)x + x_offset, 0.0f, v_world_sz_f);
+			const float v_y_clamp = std::clamp<float>((float)y + y_offset, 0.0f, v_world_sz_f);
 
-			glm::vec3 tClutterPos;
-			tClutterPos.x = -((float)x * 0.5f) + v_grid_sz_f + x_offset;
-			tClutterPos.y = -((float)y * 0.5f) + v_grid_sz_f + y_offset;
-			tClutterPos.z = GetHeightPoint(height_map, v_world_sz, v_world_sz, v_grid_sz, v_grid_sz, xPosClamp, yPosClamp);
+			glm::vec3 v_clutter_pos;
+			v_clutter_pos.x = -((float)(v_world_sz - x - 1) * 0.5f) + v_grid_sz_f + x_offset;
+			v_clutter_pos.y = -((float)(v_world_sz - y - 1) * 0.5f) + v_grid_sz_f + y_offset;
+			v_clutter_pos.z = Math::GetHeightPointBox(height_map, v_world_sz, v_grid_sz, v_x_clamp, v_y_clamp);
 
 			const float rot_angle = (float)rotation_noise.octave2D_11((double)x * 15.0, (double)y * 17.14, 4) * glm::two_pi<float>();
-			const float rand_scale = (float)scale_noise.octave2D_11((double)x * 54.4f, (double)y * 24.54, 8) * tClutter->ScaleVariance();
+			const float rand_scale = (float)scale_noise.octave2D_11((double)x * 54.4f, (double)y * 24.54, 8) * v_cur_clutter->ScaleVariance();
 
-			tClutter->SetPosition(tClutterPos);
-			tClutter->SetRotation(glm::rotate(glm::quat(), rot_angle, glm::vec3(0.0f, 0.0f, 1.0f)));
-			tClutter->SetSize(glm::vec3(0.25f - (rand_scale * 0.25f)));
+			v_cur_clutter->SetPosition(v_clutter_pos);
+			v_cur_clutter->SetRotation(glm::rotate(glm::quat(), rot_angle, glm::vec3(0.0f, 0.0f, 1.0f)));
+			v_cur_clutter->SetSize(glm::vec3(0.25f - (rand_scale * 0.25f)));
 
-			tClutter->WriteObjectToFile(model, v_offset, glm::mat4(1.0f));
-
+			v_cur_clutter->WriteObjectToFile(model, v_offset, glm::mat4(1.0f));
 			ProgCounter::ProgressValue++;
 		}
 	}
