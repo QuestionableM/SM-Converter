@@ -148,6 +148,10 @@ namespace SMConverter
 
 	void MainGui::MainGui_UpdatePathListContextMenuStrip()
 	{
+		m_cms_blueprint->Close();
+		m_cms_tile->Close();
+		m_cms_world->Close();
+
 		switch (m_cb_selectedGenerator->SelectedIndex)
 		{
 		case Generator_BlueprintConverter:
@@ -156,8 +160,8 @@ namespace SMConverter
 		case Generator_TileConverter:
 			m_lb_objectSelector->ContextMenuStrip = m_cms_tile;
 			break;
-		case Generator_WorldConverter: //TODO: Add Context Menu Strip for World List
-			m_lb_objectSelector->ContextMenuStrip = nullptr;
+		case Generator_WorldConverter:
+			m_lb_objectSelector->ContextMenuStrip = m_cms_world;
 			break;
 		}
 	}
@@ -185,6 +189,7 @@ namespace SMConverter
 			this->UpdateObjectListStatus();
 
 		this->UpdateConvertButton();
+		this->UpdateContextMenuStrip();
 		this->MainGui_UpdatePathTextBox();
 		this->MainGui_UpdatePathListContextMenuStrip();
 	}
@@ -1081,6 +1086,9 @@ namespace SMConverter
 		case Generator_TileConverter:
 			v_workshop_id = this->GetCurrentTile()->workshop_id;
 			break;
+		case Generator_WorldConverter:
+			v_workshop_id = this->GetCurrentWorld()->workshop_id;
+			break;
 		}
 
 		if (v_workshop_id == 0)
@@ -1141,11 +1149,12 @@ namespace SMConverter
 				if (v_cur_bp)
 				{
 					v_has_workshop_id = v_cur_bp->workshop_id != 0;
-					v_has_directory = File::Exists(v_cur_bp->directory);
+					v_has_directory = File::Exists(v_cur_bp->path);
 				}
 
 				m_btn_openBlueprintFolder->Enabled = v_has_directory;
 				m_btn_openBlueprintInSteamWorkshop->Enabled = v_has_workshop_id;
+				m_btn_showBlueprintInfo->Enabled = (m_lb_objectSelector->SelectedIndex != -1);
 
 				break;
 			}
@@ -1160,18 +1169,34 @@ namespace SMConverter
 				{
 					v_has_workshop_id = v_cur_tile->workshop_id != 0;
 					v_has_creator_id = v_cur_tile->creator_id != 0;
-					v_has_directory = File::Exists(v_cur_tile->directory);
+					v_has_directory = File::Exists(v_cur_tile->path);
 				}
 
 				m_btn_openTileFolder->Enabled = v_has_directory;
 				m_btn_openTileInSteamWorkshop->Enabled = v_has_workshop_id;
 				m_btn_findTileCreatorInSteam->Enabled = v_has_creator_id;
+				m_btn_showTileInfo->Enabled = (m_lb_objectSelector->SelectedIndex != -1);
 
 				break;
 			}
 		case Generator_WorldConverter:
-			//TODO: Implement that
-			break;
+			{
+				bool v_has_workshop_id = false;
+				bool v_has_directory = false;
+
+				WorldInstance* v_cur_world = this->GetCurrentWorld();
+				if (v_cur_world)
+				{
+					v_has_workshop_id = v_cur_world->workshop_id != 0;
+					v_has_directory = File::Exists(v_cur_world->path);
+				}
+
+				m_btn_openWorldFolder->Enabled = v_has_directory;
+				m_btn_openWorldInSteamWorkshop->Enabled = v_has_workshop_id;
+				m_btn_showWorldInfo->Enabled = (m_lb_objectSelector->SelectedIndex != -1);
+
+				break;
+			}
 		}
 	}
 
@@ -1204,6 +1229,15 @@ namespace SMConverter
 			System::Diagnostics::Process::Start("explorer.exe", gcnew System::String(v_bp_out_dir.c_str()));
 		else
 			WF_SHOW_ERROR("Error", "Failed to create the blueprint output directory");
+	}
+
+	void MainGui::MainGui_OpenWorldOutputDirectory_Click(System::Object^ sender, System::EventArgs^ e)
+	{
+		const std::wstring v_world_out_dir = std::wstring(DatabaseConfig::WorldOutputFolder.data());
+		if (File::CreateDirectorySafe(v_world_out_dir))
+			System::Diagnostics::Process::Start("explorer.exe", gcnew System::String(v_world_out_dir.c_str()));
+		else
+			WF_SHOW_ERROR("Error", "Failed to create the world output directory");
 	}
 
 	void MainGui::MainGui_OpenTileOutputFolder_Click(System::Object^ sender, System::EventArgs^ e)

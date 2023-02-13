@@ -46,7 +46,8 @@ namespace SMConverter
 		System::Windows::Forms::ContextMenuStrip^ m_cms_blueprint;
 		System::Windows::Forms::ToolStripMenuItem^ m_btn_openBlueprintFolder;
 		System::Windows::Forms::ToolStripMenuItem^ m_btn_openBlueprintInSteamWorkshop;
-		System::Windows::Forms::ToolStripMenuItem^ m_btn_blueprintInfo;
+	private: System::Windows::Forms::ToolStripMenuItem^ m_btn_showBlueprintInfo;
+
 
 		System::Windows::Forms::Label^ m_lbl_generatorType;
 		System::Windows::Forms::Label^ m_lbl_progressStatus;
@@ -70,6 +71,7 @@ namespace SMConverter
 
 		System::Windows::Forms::ToolStripMenuItem^ m_menuItem_open;
 		System::Windows::Forms::ToolStripMenuItem^ m_btn_openBlueprintOutputDirectory;
+		System::Windows::Forms::ToolStripMenuItem^ m_btn_openWorldOutputDirectory;
 		System::Windows::Forms::ToolStripMenuItem^ m_btn_openTileOutputDirectory;
 		System::Windows::Forms::ToolStripSeparator^ m_ts_open_separator;
 		System::Windows::Forms::ToolStripMenuItem^ m_btn_aboutProgram;
@@ -77,6 +79,13 @@ namespace SMConverter
 		System::Windows::Forms::ToolStripSeparator^ m_ts_settings_separator;
 		System::Windows::Forms::ToolStripSeparator^ m_cms_toolStrip;
 		System::Windows::Forms::ToolTip^ m_toolTip;
+
+		System::Windows::Forms::ContextMenuStrip^ m_cms_world;
+		System::Windows::Forms::ToolStripMenuItem^ m_btn_openWorldInSteamWorkshop;
+	private: System::Windows::Forms::ToolStripMenuItem^ m_btn_openWorldFolder;
+
+		System::Windows::Forms::ToolStripSeparator^ toolStripSeparator1;
+		System::Windows::Forms::ToolStripMenuItem^ m_btn_showWorldInfo;
 
 		System::ComponentModel::IContainer^ components;
 
@@ -96,6 +105,7 @@ namespace SMConverter
 			this->m_menuStrip = (gcnew System::Windows::Forms::MenuStrip());
 			this->m_menuItem_open = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->m_btn_openBlueprintOutputDirectory = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->m_btn_openWorldOutputDirectory = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->m_btn_openTileOutputDirectory = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->m_ts_open_separator = (gcnew System::Windows::Forms::ToolStripSeparator());
 			this->m_btn_aboutProgram = (gcnew System::Windows::Forms::ToolStripMenuItem());
@@ -113,7 +123,7 @@ namespace SMConverter
 			this->m_btn_openBlueprintInSteamWorkshop = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->m_btn_openBlueprintFolder = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->m_cms_toolStrip = (gcnew System::Windows::Forms::ToolStripSeparator());
-			this->m_btn_blueprintInfo = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->m_btn_showBlueprintInfo = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->m_cms_tile = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
 			this->m_btn_openTileInSteamWorkshop = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->m_btn_openTileFolder = (gcnew System::Windows::Forms::ToolStripMenuItem());
@@ -123,9 +133,15 @@ namespace SMConverter
 			this->m_btn_showTileInfo = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->m_btn_searchFilter = (gcnew System::Windows::Forms::Button());
 			this->m_toolTip = (gcnew System::Windows::Forms::ToolTip(this->components));
+			this->m_cms_world = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
+			this->m_btn_openWorldInSteamWorkshop = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->m_btn_openWorldFolder = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->toolStripSeparator1 = (gcnew System::Windows::Forms::ToolStripSeparator());
+			this->m_btn_showWorldInfo = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->m_menuStrip->SuspendLayout();
 			this->m_cms_blueprint->SuspendLayout();
 			this->m_cms_tile->SuspendLayout();
+			this->m_cms_world->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// m_btn_folderDialog
@@ -259,9 +275,9 @@ namespace SMConverter
 			// 
 			// m_menuItem_open
 			// 
-			this->m_menuItem_open->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(4) {
+			this->m_menuItem_open->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(5) {
 				this->m_btn_openBlueprintOutputDirectory,
-					this->m_btn_openTileOutputDirectory, this->m_ts_open_separator, this->m_btn_aboutProgram
+					this->m_btn_openWorldOutputDirectory, this->m_btn_openTileOutputDirectory, this->m_ts_open_separator, this->m_btn_aboutProgram
 			});
 			this->m_menuItem_open->Name = L"m_menuItem_open";
 			this->m_menuItem_open->Size = System::Drawing::Size(48, 20);
@@ -273,6 +289,13 @@ namespace SMConverter
 			this->m_btn_openBlueprintOutputDirectory->Size = System::Drawing::Size(214, 22);
 			this->m_btn_openBlueprintOutputDirectory->Text = L"Blueprint Output Directory";
 			this->m_btn_openBlueprintOutputDirectory->Click += gcnew System::EventHandler(this, &MainGui::MainGui_OpenBlueprintOutputFolder_Click);
+			// 
+			// m_btn_openWorldOutputDirectory
+			// 
+			this->m_btn_openWorldOutputDirectory->Name = L"m_btn_openWorldOutputDirectory";
+			this->m_btn_openWorldOutputDirectory->Size = System::Drawing::Size(214, 22);
+			this->m_btn_openWorldOutputDirectory->Text = L"World Output Directory";
+			this->m_btn_openWorldOutputDirectory->Click += gcnew System::EventHandler(this, &MainGui::MainGui_OpenWorldOutputDirectory_Click);
 			// 
 			// m_btn_openTileOutputDirectory
 			// 
@@ -365,11 +388,11 @@ namespace SMConverter
 			this->m_cms_blueprint->ImeMode = System::Windows::Forms::ImeMode::NoControl;
 			this->m_cms_blueprint->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(4) {
 				this->m_btn_openBlueprintInSteamWorkshop,
-					this->m_btn_openBlueprintFolder, this->m_cms_toolStrip, this->m_btn_blueprintInfo
+					this->m_btn_openBlueprintFolder, this->m_cms_toolStrip, this->m_btn_showBlueprintInfo
 			});
 			this->m_cms_blueprint->Name = L"m_cms_blueprint";
 			this->m_cms_blueprint->RenderMode = System::Windows::Forms::ToolStripRenderMode::System;
-			this->m_cms_blueprint->Size = System::Drawing::Size(210, 76);
+			this->m_cms_blueprint->Size = System::Drawing::Size(210, 98);
 			// 
 			// m_btn_openBlueprintInSteamWorkshop
 			// 
@@ -390,12 +413,12 @@ namespace SMConverter
 			this->m_cms_toolStrip->Name = L"m_cms_toolStrip";
 			this->m_cms_toolStrip->Size = System::Drawing::Size(206, 6);
 			// 
-			// m_btn_blueprintInfo
+			// m_btn_showBlueprintInfo
 			// 
-			this->m_btn_blueprintInfo->Name = L"m_btn_blueprintInfo";
-			this->m_btn_blueprintInfo->Size = System::Drawing::Size(209, 22);
-			this->m_btn_blueprintInfo->Text = L"Show Blueprint Info";
-			this->m_btn_blueprintInfo->Click += gcnew System::EventHandler(this, &MainGui::MainGui_ShowBlueprintInfo_Click);
+			this->m_btn_showBlueprintInfo->Name = L"m_btn_showBlueprintInfo";
+			this->m_btn_showBlueprintInfo->Size = System::Drawing::Size(209, 22);
+			this->m_btn_showBlueprintInfo->Text = L"Show Blueprint Info";
+			this->m_btn_showBlueprintInfo->Click += gcnew System::EventHandler(this, &MainGui::MainGui_ShowBlueprintInfo_Click);
 			// 
 			// m_cms_tile
 			// 
@@ -458,6 +481,41 @@ namespace SMConverter
 			this->m_btn_searchFilter->UseVisualStyleBackColor = true;
 			this->m_btn_searchFilter->Click += gcnew System::EventHandler(this, &MainGui::MainGui_Filter_Click);
 			// 
+			// m_cms_world
+			// 
+			this->m_cms_world->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(4) {
+				this->m_btn_openWorldInSteamWorkshop,
+					this->m_btn_openWorldFolder, this->toolStripSeparator1, this->m_btn_showWorldInfo
+			});
+			this->m_cms_world->Name = L"m_cms_world";
+			this->m_cms_world->RenderMode = System::Windows::Forms::ToolStripRenderMode::System;
+			this->m_cms_world->Size = System::Drawing::Size(210, 76);
+			// 
+			// m_btn_openWorldInSteamWorkshop
+			// 
+			this->m_btn_openWorldInSteamWorkshop->Name = L"m_btn_openWorldInSteamWorkshop";
+			this->m_btn_openWorldInSteamWorkshop->Size = System::Drawing::Size(209, 22);
+			this->m_btn_openWorldInSteamWorkshop->Text = L"Open in Steam Workshop";
+			this->m_btn_openWorldInSteamWorkshop->Click += gcnew System::EventHandler(this, &MainGui::MainGui_OpenItemInWorkshop);
+			// 
+			// m_btn_openWorldFolder
+			// 
+			this->m_btn_openWorldFolder->Name = L"m_btn_openWorldFolder";
+			this->m_btn_openWorldFolder->Size = System::Drawing::Size(209, 22);
+			this->m_btn_openWorldFolder->Text = L"Open in Explorer";
+			this->m_btn_openWorldFolder->Click += gcnew System::EventHandler(this, &MainGui::MainGui_OpenItemDirectory);
+			// 
+			// toolStripSeparator1
+			// 
+			this->toolStripSeparator1->Name = L"toolStripSeparator1";
+			this->toolStripSeparator1->Size = System::Drawing::Size(206, 6);
+			// 
+			// m_btn_showWorldInfo
+			// 
+			this->m_btn_showWorldInfo->Name = L"m_btn_showWorldInfo";
+			this->m_btn_showWorldInfo->Size = System::Drawing::Size(209, 22);
+			this->m_btn_showWorldInfo->Text = L"Show World Info";
+			// 
 			// MainGui
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -487,6 +545,7 @@ namespace SMConverter
 			this->m_menuStrip->PerformLayout();
 			this->m_cms_blueprint->ResumeLayout(false);
 			this->m_cms_tile->ResumeLayout(false);
+			this->m_cms_world->ResumeLayout(false);
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -549,6 +608,7 @@ namespace SMConverter
 		System::Void MainGui_FindTileCreator_Click(System::Object^ sender, System::EventArgs^ e);
 
 		System::Void MainGui_OpenBlueprintOutputFolder_Click(System::Object^ sender, System::EventArgs^ e);
+		System::Void MainGui_OpenWorldOutputDirectory_Click(System::Object^ sender, System::EventArgs^ e);
 		System::Void MainGui_OpenTileOutputFolder_Click(System::Object^ sender, System::EventArgs^ e);
 		System::Void MainGui_Filter_Click(System::Object^ sender, System::EventArgs^ e);
 

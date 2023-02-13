@@ -573,43 +573,4 @@ void SMWorld::WriteToFile(const std::wstring& dir_path, const std::wstring& file
 		return;
 
 	this->WriteMtlFile(v_mtl_path);
-	/*
-	const std::wstring output_path = dir_path + file_name + L".obj";
-
-	std::ofstream output_model(output_path);
-	if (output_model.is_open())
-	{
-		const std::wstring mtl_name = file_name + L".mtl";
-		const std::wstring mtl_path = dir_path + mtl_name;
-
-		if (SharedConverterSettings::ExportMaterials)
-		{
-			const std::string mtl_header = "mtllib " + String::ToUtf8(mtl_name) + "\n";
-			output_model.write(mtl_header.c_str(), mtl_header.size());
-		}
-
-		{
-			WriterOffsetData offset_data;
-
-			{
-				const std::vector<float> pHeightArray = this->GetVertexHeight();
-
-				this->WriteTerrain(output_model, offset_data, pHeightArray);
-				this->WriteClutter(output_model, offset_data, pHeightArray);
-			}
-
-			this->WriteAssets(output_model, offset_data);
-
-			output_model.close();
-		}
-
-		this->WriteMtlFile(mtl_path);
-
-		this->WriteMaterials(dir_path);
-		this->WriteColorMap (dir_path);
-		this->WriteGroundTextures(dir_path);
-	}
-
-	DebugOutL("Finished!");
-	*/
 }
