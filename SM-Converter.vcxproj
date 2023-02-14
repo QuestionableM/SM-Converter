@@ -716,6 +716,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\ObjectDatabase\SubMeshData.hpp" />
     <ClInclude Include="Code\ObjectDatabase\UserDataReaders\UserObjectFolderReader.hpp" />
     <ClInclude Include="Code\ObjectDatabase\UserDataReaders\WorldFolderReader.hpp" />
+    <ClInclude Include="Code\UStd\UnmanagedMutex.hpp" />
     <ClInclude Include="Code\Utils\BitStream.hpp" />
     <ClInclude Include="Code\Utils\ByteImpl.hpp" />
     <ClInclude Include="Code\Utils\Color.hpp" />

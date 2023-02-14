@@ -500,5 +500,8 @@
     <ClInclude Include="Code\Utils\Math.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Code\UStd\UnmanagedMutex.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
