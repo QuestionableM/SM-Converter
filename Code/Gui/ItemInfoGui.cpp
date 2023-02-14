@@ -40,6 +40,29 @@ namespace SMConverter
 		this->UpdateModList();
 	}
 
+	ItemInfoGui::ItemInfoGui(WorldInstance* v_world)
+	{
+		ItemModStats::Reset();
+
+		this->InitializeComponent();
+		this->Text = "World Info";
+
+		m_lbl_line1->Text += gcnew System::String(v_world->name.c_str());
+		m_lbl_line2->Text += gcnew System::String(v_world->uuid.ToString().c_str());
+
+		const std::wstring v_filter_name = FilterSettingsData::GetFilterName(v_world->v_filter);
+		m_lbl_line3->Text = gcnew System::String((L"Content Type: " + v_filter_name).c_str());
+
+		const std::wstring& v_world_preview = v_world->preview_image;
+		if (!v_world_preview.empty() && File::Exists(v_world_preview))
+			m_bp_blueprintPreview->ImageLocation = gcnew System::String(v_world_preview.c_str());
+
+		m_lbl_line4->Text = gcnew System::String(("Part Count: " + std::to_string(ItemModStats::GetTotalPartCount())).c_str());
+		m_lbl_line5->Text = gcnew System::String(("Mod Count: " + std::to_string(ItemModStats::ModStorage.size())).c_str());
+
+		this->UpdateModList();
+	}
+
 	inline void ItemInfoGui_ReadTileData(TileInstance* v_tile, ConvertError& v_error)
 	{
 		CustomGame* v_cur_cg = SMMod::GetCustomGameFromPath(v_tile->path);

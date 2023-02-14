@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ObjectDatabase\UserDataReaders\BlueprintFolderReader.hpp"
+#include "ObjectDatabase\UserDataReaders\WorldFolderReader.hpp"
 #include "ObjectDatabase\UserDataReaders\TileFolderReader.hpp"
 
 namespace SMConverter 
@@ -16,6 +17,7 @@ namespace SMConverter
 	{
 	public:
 		ItemInfoGui(BlueprintInstance* v_blueprint);
+		ItemInfoGui(WorldInstance* v_world);
 		ItemInfoGui(TileInstance* v_tile);
 
 		bool m_isSuccess = true;

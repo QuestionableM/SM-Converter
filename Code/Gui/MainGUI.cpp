@@ -1282,6 +1282,19 @@ namespace SMConverter
 		}
 	}
 
+	void MainGui::MainGui_ShowWorldInfo_Click(System::Object^ sender, System::EventArgs^ e)
+	{
+		WorldInstance* v_cur_world = this->GetCurrentWorld();
+		if (!v_cur_world) return;
+
+		ItemInfoGui^ v_world_info_gui = gcnew ItemInfoGui(v_cur_world);
+		if (v_world_info_gui->m_isSuccess)
+		{
+			this->MainGui_CenterChildForm(v_world_info_gui);
+			v_world_info_gui->ShowDialog();
+		}
+	}
+
 	void MainGui::MainGui_FormClosing(System::Object^ sender, System::Windows::Forms::FormClosingEventArgs^ e)
 	{
 		namespace WForms = System::Windows::Forms;

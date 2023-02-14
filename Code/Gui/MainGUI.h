@@ -46,8 +46,7 @@ namespace SMConverter
 		System::Windows::Forms::ContextMenuStrip^ m_cms_blueprint;
 		System::Windows::Forms::ToolStripMenuItem^ m_btn_openBlueprintFolder;
 		System::Windows::Forms::ToolStripMenuItem^ m_btn_openBlueprintInSteamWorkshop;
-	private: System::Windows::Forms::ToolStripMenuItem^ m_btn_showBlueprintInfo;
-
+		System::Windows::Forms::ToolStripMenuItem^ m_btn_showBlueprintInfo;
 
 		System::Windows::Forms::Label^ m_lbl_generatorType;
 		System::Windows::Forms::Label^ m_lbl_progressStatus;
@@ -82,8 +81,7 @@ namespace SMConverter
 
 		System::Windows::Forms::ContextMenuStrip^ m_cms_world;
 		System::Windows::Forms::ToolStripMenuItem^ m_btn_openWorldInSteamWorkshop;
-	private: System::Windows::Forms::ToolStripMenuItem^ m_btn_openWorldFolder;
-
+		System::Windows::Forms::ToolStripMenuItem^ m_btn_openWorldFolder;
 		System::Windows::Forms::ToolStripSeparator^ toolStripSeparator1;
 		System::Windows::Forms::ToolStripMenuItem^ m_btn_showWorldInfo;
 
@@ -392,7 +390,7 @@ namespace SMConverter
 			});
 			this->m_cms_blueprint->Name = L"m_cms_blueprint";
 			this->m_cms_blueprint->RenderMode = System::Windows::Forms::ToolStripRenderMode::System;
-			this->m_cms_blueprint->Size = System::Drawing::Size(210, 98);
+			this->m_cms_blueprint->Size = System::Drawing::Size(210, 76);
 			// 
 			// m_btn_openBlueprintInSteamWorkshop
 			// 
@@ -489,7 +487,7 @@ namespace SMConverter
 			});
 			this->m_cms_world->Name = L"m_cms_world";
 			this->m_cms_world->RenderMode = System::Windows::Forms::ToolStripRenderMode::System;
-			this->m_cms_world->Size = System::Drawing::Size(210, 76);
+			this->m_cms_world->Size = System::Drawing::Size(210, 98);
 			// 
 			// m_btn_openWorldInSteamWorkshop
 			// 
@@ -515,6 +513,7 @@ namespace SMConverter
 			this->m_btn_showWorldInfo->Name = L"m_btn_showWorldInfo";
 			this->m_btn_showWorldInfo->Size = System::Drawing::Size(209, 22);
 			this->m_btn_showWorldInfo->Text = L"Show World Info";
+			this->m_btn_showWorldInfo->Click += gcnew System::EventHandler(this, &MainGui::MainGui_ShowWorldInfo_Click);
 			// 
 			// MainGui
 			// 
@@ -614,6 +613,7 @@ namespace SMConverter
 
 		System::Void MainGui_ShowBlueprintInfo_Click(System::Object^ sender, System::EventArgs^ e);
 		System::Void MainGui_ShowTileInfo_Click(System::Object^ sender, System::EventArgs^ e);
+		System::Void MainGui_ShowWorldInfo_Click(System::Object^ sender, System::EventArgs^ e);
 
 		System::Void MainGui_FormClosing(System::Object^ sender, System::Windows::Forms::FormClosingEventArgs^ e);
 
