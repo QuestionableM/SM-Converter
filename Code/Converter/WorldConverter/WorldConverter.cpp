@@ -48,13 +48,13 @@ void WorldConverter::ConvertToModel(const std::wstring& path, const std::wstring
 		SMModCustomGameSwitch<false> v_content_switch;
 		v_content_switch.MergeContent(v_custom_game);
 		
-		v_output_world = SMWorld::LoadFromFile(path, v_error);
+		v_output_world = SMWorld::LoadFromFile<false>(path, v_error);
 
 		KeywordReplacer::ClearContentKey();
 	}
 	else
 	{
-		v_output_world = SMWorld::LoadFromFile(path, v_error);
+		v_output_world = SMWorld::LoadFromFile<false>(path, v_error);
 	}
 
 	if (v_output_world)

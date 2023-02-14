@@ -9,6 +9,7 @@
 #include "ObjectDatabase\DatabaseConfig.hpp"
 #include "ObjectDatabase\Mods\Mod.hpp"
 
+#include "Converter\WorldConverter\World.hpp"
 #include "Converter\Entity\Blueprint.hpp"
 #include "Utils\Console.hpp"
 #include "Utils\File.hpp"
@@ -40,6 +41,25 @@ namespace SMConverter
 		this->UpdateModList();
 	}
 
+	inline SMWorld* ItemInfoGui_ReadWorldData(WorldInstance* v_world, ConvertError& v_error)
+	{
+		CustomGame* v_cur_cg = SMMod::GetCustomGameFromPath(v_world->path);
+		if (v_cur_cg)
+		{
+			v_cur_cg->SetContentKey();
+
+			SMModCustomGameSwitch<false> v_cg_switch;
+			v_cg_switch.MergeContent(v_cur_cg);
+
+			SMWorld* v_out_world = SMWorld::LoadFromFile<true>(v_world->path, v_error);
+
+			KeywordReplacer::ClearContentKey();
+			return v_out_world;
+		}
+
+		return SMWorld::LoadFromFile<true>(v_world->path, v_error);
+	}
+
 	ItemInfoGui::ItemInfoGui(WorldInstance* v_world)
 	{
 		ItemModStats::Reset();
@@ -50,15 +70,37 @@ namespace SMConverter
 		m_lbl_line1->Text += gcnew System::String(v_world->name.c_str());
 		m_lbl_line2->Text += gcnew System::String(v_world->uuid.ToString().c_str());
 
+		ConvertError v_error;
+		SMWorld* v_cur_world = ItemInfoGui_ReadWorldData(v_world, v_error);
+
+		const std::string v_world_sz_str = std::to_string(v_cur_world->GetWidth());
+		m_lbl_line3->Text = gcnew System::String(("World Size: " + v_world_sz_str + "x" + v_world_sz_str).c_str());
+
 		const std::wstring v_filter_name = FilterSettingsData::GetFilterName(v_world->v_filter);
-		m_lbl_line3->Text = gcnew System::String((L"Content Type: " + v_filter_name).c_str());
+		m_lbl_line4->Text = gcnew System::String((L"Content Type: " + v_filter_name).c_str());
+
+		if (v_cur_world) delete v_cur_world;
+
+		if (v_error)
+		{
+			System::Windows::Forms::MessageBox::Show(
+				gcnew System::String((L"Error: " + v_error.GetErrorMsg()).c_str()),
+				"World Read Error",
+				System::Windows::Forms::MessageBoxButtons::OK,
+				System::Windows::Forms::MessageBoxIcon::Error
+			);
+
+			m_isSuccess = false;
+			return;
+		}
 
 		const std::wstring& v_world_preview = v_world->preview_image;
 		if (!v_world_preview.empty() && File::Exists(v_world_preview))
 			m_bp_blueprintPreview->ImageLocation = gcnew System::String(v_world_preview.c_str());
 
-		m_lbl_line4->Text = gcnew System::String(("Part Count: " + std::to_string(ItemModStats::GetTotalPartCount())).c_str());
-		m_lbl_line5->Text = gcnew System::String(("Mod Count: " + std::to_string(ItemModStats::ModStorage.size())).c_str());
+		m_lbl_line5->Text = gcnew System::String(("Part Count: " + std::to_string(ItemModStats::GetTotalPartCount())).c_str());
+		m_lbl_line6->Text = gcnew System::String(("Mod Count: " + std::to_string(ItemModStats::ModStorage.size())).c_str());
+		m_lbl_line6->Visible = true;
 
 		this->UpdateModList();
 	}
@@ -98,18 +140,11 @@ namespace SMConverter
 		const std::wstring v_filter_name = FilterSettingsData::GetFilterName(v_tile->v_filter);
 		m_lbl_line4->Text = gcnew System::String((L"Content Type: " + v_filter_name).c_str());
 
-		const std::wstring& v_tile_preview = v_tile->preview_image;
-		if (!v_tile_preview.empty() && File::Exists(v_tile_preview))
-			m_bp_blueprintPreview->ImageLocation = gcnew System::String(v_tile_preview.c_str());
-
 		ConvertError v_error;
 		ItemInfoGui_ReadTileData(v_tile, v_error);
 
 		if (v_error)
 		{
-			m_lbl_line5->Text = "Part Count: Tile Read Error";
-			m_lbl_line6->Text = "Mod Count: Tile Read Error";
-
 			System::Windows::Forms::MessageBox::Show(
 				gcnew System::String((L"Error: " + v_error.GetErrorMsg()).c_str()),
 				"Tile Read Error",
@@ -118,13 +153,15 @@ namespace SMConverter
 			);
 
 			m_isSuccess = false;
-		}
-		else
-		{
-			m_lbl_line5->Text = gcnew System::String(("Part Count: " + std::to_string(ItemModStats::GetTotalPartCount())).c_str());
-			m_lbl_line6->Text = gcnew System::String(("Mod Count: " + std::to_string(ItemModStats::ModStorage.size())).c_str());
+			return;
 		}
 
+		const std::wstring& v_tile_preview = v_tile->preview_image;
+		if (!v_tile_preview.empty() && File::Exists(v_tile_preview))
+			m_bp_blueprintPreview->ImageLocation = gcnew System::String(v_tile_preview.c_str());
+
+		m_lbl_line5->Text = gcnew System::String(("Part Count: " + std::to_string(ItemModStats::GetTotalPartCount())).c_str());
+		m_lbl_line6->Text = gcnew System::String(("Mod Count: " + std::to_string(ItemModStats::ModStorage.size())).c_str());
 		m_lbl_line6->Visible = true;
 
 		this->UpdateModList();
