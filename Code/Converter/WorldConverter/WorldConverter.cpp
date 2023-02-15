@@ -1,5 +1,6 @@
 #include "WorldConverter.hpp"
 
+#include "ObjectDatabase\UserDataReaders\TileFolderReader.hpp"
 #include "ObjectDatabase\Mods\CustomGameSwitch.hpp"
 #include "ObjectDatabase\DatabaseConfig.hpp"
 
@@ -36,6 +37,8 @@ void WorldConverter::ConvertToModel(const std::wstring& path, const std::wstring
 		v_error = ConvertError(1, L"The specified path leads to a directory");
 		return;
 	}
+
+	TileFolderReader::InitializeTileKeys();
 
 	SMWorld* v_output_world = nullptr;
 	if (v_custom_game)
