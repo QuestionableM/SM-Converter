@@ -16,29 +16,19 @@ void KeywordReplacer::CreateKey(std::wstring& key, std::wstring& replacement)
 	String::ReplaceAllR(replacement, L'\\', L'/');
 }
 
-void KeywordReplacer::SetReplacement(StringMap& v_map, const std::wstring& key, const std::wstring& replacement)
+void KeywordReplacer::SetReplacement(const std::wstring& key, const std::wstring& replacement)
 {
 	std::wstring v_lowerKey = key;
 	std::wstring v_lowerVal = replacement;
 
 	KeywordReplacer::CreateKey(v_lowerKey, v_lowerVal);
 
-	const StringMap::iterator v_iter = v_map.find(v_lowerKey);
-	if (v_iter != v_map.end())
-	{
-		v_iter->second = v_lowerVal;
-		return;
-	}
+	m_KeyReplacements[v_lowerKey] = v_lowerVal;
+}
 
-	v_map.insert(std::make_pair(v_lowerKey, v_lowerVal));
-	/*const StringMap::iterator v_iter = m_KeyReplacements.find(v_lowerKey);
-	if (v_iter != m_KeyReplacements.end())
-	{
-		v_iter->second = v_lowerVal;
-		return;
-	}
-
-	m_KeyReplacements.insert(std::make_pair(v_lowerKey, v_lowerVal));*/
+void KeywordReplacer::CreateContentKey(const SMUuid& v_uuid, const std::wstring& v_replacement)
+{
+	KeywordReplacer::SetReplacement(L"$content_" + v_uuid.ToWstring(), v_replacement);
 }
 
 void KeywordReplacer::SetModData(const std::wstring& path, const SMUuid& uuid)
@@ -50,34 +40,10 @@ void KeywordReplacer::SetModData(const std::wstring& path, const SMUuid& uuid)
 	KeywordReplacer::SetReplacement(L"$content_data", path);
 }
 
-void KeywordReplacer::ClearContentKey()
+void KeywordReplacer::ClearModKeys()
 {
-	const StringMap::iterator v_iter = m_KeyReplacements.find(L"$content_data");
-	if (v_iter != m_KeyReplacements.end())
-		m_KeyReplacements.erase(v_iter);
-
-	const StringMap::iterator v_tile_iter = m_TileKeyReplacements.find(L"$content_data");
-	if (v_tile_iter != m_TileKeyReplacements.end())
-		m_TileKeyReplacements.erase(v_tile_iter);
-}
-
-void KeywordReplacer::UpgradeResource(const std::wstring& mPath, std::wstring& mOutput)
-{
-	std::wstring v_lowerPath = String::ToLower(mPath);
-	String::ReplaceAllR(v_lowerPath, L'\\', L'/');
-
-	const StringMap::const_iterator v_iter = m_ResourceUpgrades.find(v_lowerPath);
-	mOutput = (v_iter != m_ResourceUpgrades.end()) ? v_iter->second : v_lowerPath;
-}
-
-void KeywordReplacer::LoadResourceUpgradesFromConfig()
-{
-	for (const auto& v_upgrade_path : DatabaseConfig::ResourceUpgradeFiles)
-		KeywordReplacer::LoadResourceUpgrades(v_upgrade_path.first);
-
-	//Nonor normal textures look weird in blender, so i'm just gonna skip em by replacing the string with nothing
-	m_ResourceUpgrades[L"$game_data/textures/nonor_nor.png"] = L"";
-	m_ResourceUpgrades[L"$game_data/textures/nonor_nor.tga"] = L"";
+	m_KeyReplacements.erase(L"$content_data");
+	m_KeyReplacements.erase(L"$mod_data");
 }
 
 void KeywordReplacer::LoadResourceUpgrades(const std::wstring& path)
@@ -116,6 +82,25 @@ void KeywordReplacer::LoadResourceUpgrades(const std::wstring& path)
 				m_ResourceUpgrades.insert(std::make_pair(v_key_wstr, v_val_wstr));
 		}
 	}
+}
+
+void KeywordReplacer::LoadResourceUpgradesFromConfig()
+{
+	for (const auto& v_upgrade_path : DatabaseConfig::ResourceUpgradeFiles)
+		KeywordReplacer::LoadResourceUpgrades(v_upgrade_path.first);
+
+	//Nonor normal textures look weird in blender, so i'm just gonna skip em by replacing the string with nothing
+	m_ResourceUpgrades[L"$game_data/textures/nonor_nor.png"] = L"";
+	m_ResourceUpgrades[L"$game_data/textures/nonor_nor.tga"] = L"";
+}
+
+void KeywordReplacer::UpgradeResource(const std::wstring& mPath, std::wstring& mOutput)
+{
+	std::wstring v_lowerPath = String::ToLower(mPath);
+	String::ReplaceAllR(v_lowerPath, L'\\', L'/');
+
+	const StringMap::const_iterator v_iter = m_ResourceUpgrades.find(v_lowerPath);
+	mOutput = (v_iter != m_ResourceUpgrades.end()) ? v_iter->second : v_lowerPath;
 }
 
 std::wstring KeywordReplacer::ReplaceKey(const std::wstring& path)
@@ -163,28 +148,6 @@ void KeywordReplacer::ReplaceKeyR(std::wstring& path)
 	path = (v_iter->second + path.substr(v_key_idx));
 }
 
-void KeywordReplacer::ReplaceKeyTileR(std::wstring& path)
-{
-	if (path.empty())
-		return;
-
-	KeywordReplacer::UpgradeResource(path, path);
-
-	if (path[0] != L'$')
-		return;
-
-	const std::size_t v_key_idx = path.find_first_of(L'/');
-	if (v_key_idx == std::wstring::npos)
-		return;
-
-	const std::wstring v_key_chunk = path.substr(0, v_key_idx);
-	const StringMap::const_iterator v_iter = m_TileKeyReplacements.find(v_key_chunk);
-	if (v_iter == m_TileKeyReplacements.end())
-		return;
-
-	path = (v_iter->second + path.substr(v_key_idx));
-}
-
 bool KeywordReplacer::ReplaceKeyRLua(std::wstring& path)
 {
 	if (path.empty())
@@ -203,7 +166,8 @@ bool KeywordReplacer::ReplaceKeyRLua(std::wstring& path)
 	if (v_key_chunk == L"$content_data")
 	{
 		//Throw key error if $CONTENT_DATA doesn't exist
-		if (m_KeyReplacements.find(L"$content_data") == m_KeyReplacements.end())
+		if (m_KeyReplacements.find(L"$content_data") == m_KeyReplacements.end() &&
+			m_KeyReplacements.find(L"$mod_data") == m_KeyReplacements.end())
 			return false;
 	}
 

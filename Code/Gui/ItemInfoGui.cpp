@@ -5,7 +5,6 @@
 
 #include "ObjectDatabase\UserDataReaders\ItemModCounter.hpp"
 #include "ObjectDatabase\Mods\CustomGameSwitch.hpp"
-#include "ObjectDatabase\KeywordReplacer.hpp"
 #include "ObjectDatabase\DatabaseConfig.hpp"
 #include "ObjectDatabase\Mods\Mod.hpp"
 
@@ -43,17 +42,15 @@ namespace SMConverter
 
 	inline SMWorld* ItemInfoGui_ReadWorldData(WorldInstance* v_world, ConvertError& v_error)
 	{
+		TileFolderReader::InitializeTileKeys();
+
 		CustomGame* v_cur_cg = SMMod::GetCustomGameFromPath(v_world->path);
 		if (v_cur_cg)
 		{
-			v_cur_cg->SetContentKey();
-
-			SMModCustomGameSwitch<false> v_cg_switch;
+			SMModCustomGameSwitch<false, true> v_cg_switch;
 			v_cg_switch.MergeContent(v_cur_cg);
 
 			SMWorld* v_out_world = SMWorld::LoadFromFile<true>(v_world->path, v_error);
-
-			KeywordReplacer::ClearContentKey();
 			return v_out_world;
 		}
 
@@ -110,14 +107,10 @@ namespace SMConverter
 		CustomGame* v_cur_cg = SMMod::GetCustomGameFromPath(v_tile->path);
 		if (v_cur_cg)
 		{
-			v_cur_cg->SetContentKey();
-
-			SMModCustomGameSwitch<false> v_cg_switch;
+			SMModCustomGameSwitch<false, true> v_cg_switch;
 			v_cg_switch.MergeContent(v_cur_cg);
 
 			TileFolderReader::GetTileData(v_tile, v_error);
-
-			KeywordReplacer::ClearContentKey();
 			return;
 		}
 

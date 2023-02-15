@@ -227,7 +227,7 @@ void BlueprintConv::ConvertToModel(const std::wstring& bp_path, const std::wstri
 
 	if (v_custom_game)
 	{
-		SMModCustomGameSwitch<true> v_content_switch;
+		SMModCustomGameSwitch<true, false> v_content_switch;
 		v_content_switch.MergeContent(v_custom_game);
 
 		v_blueprint = SMBlueprint::FromFileWithStatus(bp_path, v_add_obj_func, v_error);

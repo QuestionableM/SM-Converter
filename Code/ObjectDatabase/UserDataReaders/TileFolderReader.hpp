@@ -49,6 +49,8 @@ public:
 
 	static TileSizeFilter GetTileSize(const int& v_sz);
 	static void GetTileData(TileInstance* v_tile_instance, ConvertError& v_error);
+	//Creates `$CONTENT_<uuid>` keys for all non-vanilla tiles
+	static void InitializeTileKeys();
 
 	static void LoadFromFile(const std::filesystem::path& path);
 	static void LoadFromFolder(const std::wstring& path, const simdjson::dom::element& v_cur_elem);
@@ -56,6 +58,8 @@ public:
 	static void ClearStorage();
 
 private:
+	inline static std::unordered_map<SMUuid, TileInstance*> TileMap = {};
+
 	TileFolderReader() = default;
 	TileFolderReader(const TileFolderReader&) = delete;
 	TileFolderReader(TileFolderReader&) = delete;

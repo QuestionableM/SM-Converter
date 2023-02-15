@@ -33,6 +33,12 @@ public:
 		if (path.empty())
 			return nullptr;
 
+		if (!File::Exists(path))
+		{
+			DebugErrorL("Tile doesn't exist: ", path);
+			return nullptr;
+		}
+
 		std::wstring v_full_path;
 		if (!File::GetFullFilePath(path, v_full_path))
 		{

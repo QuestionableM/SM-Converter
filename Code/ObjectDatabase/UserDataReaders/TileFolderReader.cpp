@@ -55,6 +55,13 @@ void TileFolderReader::GetTileData(TileInstance* v_tile_instance, ConvertError& 
 	if (v_tile) delete v_tile;
 }
 
+void TileFolderReader::InitializeTileKeys()
+{
+	for (TileInstance* v_tile_instance : TileFolderReader::Storage)
+		if ((v_tile_instance->v_filter & UserDataFilter_GameItems) == 0)
+			KeywordReplacer::CreateContentKey(v_tile_instance->uuid, v_tile_instance->directory);
+}
+
 void TileFolderReader::LoadFromFile(const std::filesystem::path& path)
 {
 	if (!(path.has_stem() && path.has_filename() && path.has_parent_path()))
@@ -64,6 +71,12 @@ void TileFolderReader::LoadFromFile(const std::filesystem::path& path)
 	ConvertError v_error;
 	if (!TileReader::ReadTileHeader(path.wstring(), v_tile_info, v_error))
 		return;
+
+	if (TileFolderReader::TileMap.find(v_tile_info.uuid) != TileFolderReader::TileMap.end())
+	{
+		DebugWarningL("The tile with the specified key already exists! (Uuid: ", v_tile_info.uuid.ToString(), ")");
+		return;
+	}
 
 	TileInstance* v_new_tile = new TileInstance();
 	v_new_tile->name = path.stem().wstring();
@@ -84,6 +97,7 @@ void TileFolderReader::LoadFromFile(const std::filesystem::path& path)
 		v_new_tile->preview_image = v_preview_img;
 
 	TileFolderReader::Storage.push_back(v_new_tile);
+	TileFolderReader::TileMap.insert(std::make_pair(v_new_tile->uuid, v_new_tile));
 }
 
 void TileFolderReader::LoadFromFolder(const std::wstring& path, const simdjson::dom::element& v_cur_elem)
@@ -97,6 +111,7 @@ void TileFolderReader::LoadFromFolder(const std::wstring& path, const simdjson::
 		return;
 
 	const std::wstring v_tile_filename = String::ToWide(v_name.get_string());
+	const SMUuid v_content_uuid = v_uuid.get_c_str();
 
 	std::wstring v_tile_path_str = path + L"/" + v_tile_filename;
 	if (!File::Exists(v_tile_path_str))
@@ -115,10 +130,16 @@ void TileFolderReader::LoadFromFolder(const std::wstring& path, const simdjson::
 	if (!TileReader::ReadTileHeader(v_tile_path.wstring(), v_tile_info, v_error))
 		return;
 
+	if (TileFolderReader::TileMap.find(v_content_uuid) != TileFolderReader::TileMap.end())
+	{
+		DebugWarningL("The tile with the specified key already exists! (Uuid: ", v_content_uuid.ToString(), ")");
+		return;
+	}
+
 	TileInstance* v_new_tile = new TileInstance();
 	v_new_tile->name = v_tile_path.stem().wstring();
 	v_new_tile->lower_name = String::ToLower(v_new_tile->name);
-	v_new_tile->uuid = v_tile_info.uuid;
+	v_new_tile->uuid = v_content_uuid;
 
 	v_new_tile->path = v_tile_path.wstring();
 	v_new_tile->directory = path;
@@ -135,6 +156,7 @@ void TileFolderReader::LoadFromFolder(const std::wstring& path, const simdjson::
 	v_new_tile->v_filter = FilterSettingsData::GetUserDataFilter(v_new_tile->path);
 
 	TileFolderReader::Storage.push_back(v_new_tile);
+	TileFolderReader::TileMap.insert(std::make_pair(v_new_tile->uuid, v_new_tile));
 }
 
 void TileFolderReader::ClearStorage()
@@ -142,6 +164,7 @@ void TileFolderReader::ClearStorage()
 	for (std::size_t a = 0; a < TileFolderReader::Storage.size(); a++)
 		delete TileFolderReader::Storage[a];
 
-	TileFolderReader::Storage.clear();
 	TileFolderReader::SearchResults.clear();
+	TileFolderReader::Storage.clear();
+	TileFolderReader::TileMap.clear();
 }

@@ -69,7 +69,7 @@ void DatabaseLoader::LoadDatabase()
 	DatabaseLoader::LoadGameDatabase();
 	DatabaseLoader::LoadModDatabase();
 
-	KeywordReplacer::ClearContentKey();
+	KeywordReplacer::ClearModKeys();
 
 	DebugOutL(0b0101_fg, "Successfully loaded ", SMMod::GetAmountOfObjects(), " objects!");
 }

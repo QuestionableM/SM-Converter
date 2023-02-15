@@ -1,7 +1,6 @@
 #include "WorldConverter.hpp"
 
 #include "ObjectDatabase\Mods\CustomGameSwitch.hpp"
-#include "ObjectDatabase\KeywordReplacer.hpp"
 #include "ObjectDatabase\DatabaseConfig.hpp"
 
 #include "Converter\WorldConverter\World.hpp"
@@ -41,16 +40,11 @@ void WorldConverter::ConvertToModel(const std::wstring& path, const std::wstring
 	SMWorld* v_output_world = nullptr;
 	if (v_custom_game)
 	{
-		//Sets the path replacement for $CONTENT_DATA
-		v_custom_game->SetContentKey();
-
 		//The original content will be set back automatically by the SMModCustomGameSwitch destructor
-		SMModCustomGameSwitch<false> v_content_switch;
+		SMModCustomGameSwitch<false, true> v_content_switch;
 		v_content_switch.MergeContent(v_custom_game);
 		
 		v_output_world = SMWorld::LoadFromFile<false>(path, v_error);
-
-		KeywordReplacer::ClearContentKey();
 	}
 	else
 	{

@@ -1,12 +1,13 @@
 #pragma once
 
 #include "ObjectDatabase\Mods\CustomGameMod.hpp"
+#include "ObjectDatabase\KeywordReplacer.hpp"
 #include "UStd\UnmanagedUnorderedMap.hpp"
 #include "Utils\Console.hpp"
 
 #pragma unmanaged
 
-template<bool t_modify_blocks_only>
+template<bool t_modify_blocks_only, bool t_sets_content_key>
 class SMModCustomGameSwitch
 {
 public:
@@ -34,6 +35,10 @@ public:
 
 		SMModObjectStorage<BlockData>::StaticStorage = m_Blocks;
 		SMModObjectStorage<PartData>::StaticStorage = m_Parts;
+
+		if constexpr (t_sets_content_key) {
+			KeywordReplacer::ClearModKeys();
+		}
 	}
 
 	inline void MergeContent(CustomGame* v_cg_mod) const
@@ -98,6 +103,10 @@ public:
 				SMMod::MergeMaps<BlockData, false>(SMModObjectStorage<BlockData>::StaticStorage, v_cur_mod->m_Blocks.DynamicStorage);
 				SMMod::MergeMaps<PartData, false>(SMModObjectStorage<PartData>::StaticStorage, v_cur_mod->m_Parts.DynamicStorage);
 			}
+		}
+
+		if constexpr (t_sets_content_key) {
+			v_cg_mod->SetContentKey();
 		}
 	}
 

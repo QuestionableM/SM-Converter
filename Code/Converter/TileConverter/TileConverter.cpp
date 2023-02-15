@@ -40,16 +40,11 @@ void TileConv::ConvertToModel(const std::wstring& tile_path, const std::wstring&
 	Tile* v_output_tile = nullptr;
 	if (v_custom_game)
 	{
-		//Sets the path replacement for $CONTENT_DATA
-		v_custom_game->SetContentKey();
-
 		//The original content will be set back automatically by the SMModCustomGameSwitch destructor
-		SMModCustomGameSwitch<false> v_content_switch;
+		SMModCustomGameSwitch<false, true> v_content_switch;
 		v_content_switch.MergeContent(v_custom_game);
 
 		v_output_tile = TileReader::ReadTile<false>(tile_path, cError);
-
-		KeywordReplacer::ClearContentKey();
 	}
 	else
 	{
