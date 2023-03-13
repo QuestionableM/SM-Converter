@@ -57,7 +57,7 @@ void AssetListLoader::Load(const simdjson::dom::element& fAssets, SMMod* mod, co
 
 		AssetData* v_new_asset = new AssetData();
 		v_new_asset->m_uuid = v_asset_uuid;
-		v_new_asset->m_mesh = v_tMesh;
+		v_new_asset->m_mesh = std::move(v_tMesh);
 		AssetListLoader::LoadDefaultColors(v_cur_asset, v_new_asset->m_defaultColors);
 		v_new_asset->m_textures = v_tData;
 		v_new_asset->m_mod = mod;

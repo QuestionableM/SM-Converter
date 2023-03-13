@@ -92,6 +92,19 @@ public:
 	inline static std::vector<CustomGame*>& GetCustomGames() { return SMMod::CustomGameVector; }
 	inline static const std::vector<SMMod*>& GetAllMods() { return SMMod::ModVector; }
 
+	inline static GarmentData* GetGarment(const std::string& v_category, const SMUuid& v_uuid)
+	{
+		const auto v_category_iter = SMMod::GarmentStorage.find(v_category);
+		if (v_category_iter == SMMod::GarmentStorage.end())
+			return nullptr;
+
+		const auto v_cur_item = v_category_iter->second.find(v_uuid);
+		if (v_cur_item == v_category_iter->second.end())
+			return nullptr;
+
+		return v_cur_item->second;
+	}
+
 	inline static std::size_t GetAmountOfMods() { return SMMod::ModVector.size(); }
 	inline static std::size_t GetAmountOfObjects()
 	{
@@ -125,9 +138,7 @@ public:
 
 	SMMod(const SMMod&) = delete;
 	SMMod(SMMod&&) = delete;
-	SMMod(SMMod&) = delete;
 	virtual ~SMMod() = default;
-
 
 	SMModObjectStorage<BlockData> m_Blocks;
 	SMModObjectStorage<PartData> m_Parts;

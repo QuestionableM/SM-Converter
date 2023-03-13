@@ -33,7 +33,7 @@ void HarvestableListLoader::Load(const simdjson::dom::element& fHarvestables, SM
 
 		HarvestableData* v_new_hvs = new HarvestableData();
 		v_new_hvs->m_uuid = v_hvs_uuid;
-		v_new_hvs->m_mesh = v_tMesh;
+		v_new_hvs->m_mesh = std::move(v_tMesh);
 		v_new_hvs->m_textures = v_tData;
 		v_new_hvs->m_mod = mod;
 

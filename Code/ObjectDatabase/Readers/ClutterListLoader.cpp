@@ -71,7 +71,7 @@ void ClutterListLoader::Load(const simdjson::dom::element& fClutter, SMMod* mod,
 
 		ClutterData* v_new_clutter = new ClutterData();
 		v_new_clutter->m_uuid = v_clutter_uuid;
-		v_new_clutter->m_mesh = v_tMesh;
+		v_new_clutter->m_mesh = std::move(v_tMesh);
 		v_new_clutter->m_textures = v_tList;
 		v_new_clutter->m_mod = mod;
 

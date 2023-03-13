@@ -109,7 +109,7 @@ void PartListLoader::Load(const simdjson::dom::element& fParts, SMMod* mod, cons
 			continue;
 
 		PartData* v_new_part = new PartData();
-		v_new_part->m_mesh = v_mesh_path;
+		v_new_part->m_mesh = std::move(v_mesh_path);
 		v_new_part->m_textures = v_tex_data;
 		v_new_part->m_uuid = v_prt_uuid;
 		v_new_part->m_mod = mod;
