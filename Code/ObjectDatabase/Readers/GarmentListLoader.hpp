@@ -1,0 +1,27 @@
+#pragma once
+
+#include "UStd\UnmanagedUnorderedMap.hpp"
+
+#include "Utils\Color.hpp"
+#include "Utils\Json.hpp"
+#include "Utils\Uuid.hpp"
+
+#pragma unmanaged
+
+class SMMod;
+
+class GarmentListLoader
+{
+public:
+	static void Load(const simdjson::dom::element& v_garments, SMMod* mod, const bool& add_to_global_db);
+
+private:
+	static void LoadGarmentCategory(const simdjson::dom::element& v_category);
+
+	GarmentListLoader() = default;
+	GarmentListLoader(const GarmentListLoader&) = delete;
+	GarmentListLoader(GarmentListLoader&&) = delete;
+	~GarmentListLoader() = default;
+};
+
+#pragma managed

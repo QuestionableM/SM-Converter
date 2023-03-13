@@ -141,6 +141,15 @@ bool DefaultLoader::LoadRenderableData(const simdjson::dom::element& jRenderable
 	return true;
 }
 
+bool DefaultLoader::LoadRenderableFromPath(const simdjson::dom::element& v_path, SMSubMeshBase** tData, std::wstring& mesh)
+{
+	std::wstring v_renderablePath = String::ToWide(v_path.get_string());
+	KeywordReplacer::ReplaceKeyR(v_renderablePath);
+
+	simdjson::dom::document v_rend_doc;
+	if (!JsonReader::LoadParseSimdjsonCommentsC())
+}
+
 bool DefaultLoader::LoadRenderable(const simdjson::dom::element& jAsset, SMSubMeshBase** tData, std::wstring& mesh)
 {
 	const auto v_rend_data = jAsset["renderable"];

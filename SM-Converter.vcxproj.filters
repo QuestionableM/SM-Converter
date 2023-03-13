@@ -198,6 +198,9 @@
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\UserCharacterReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Code\ObjectDatabase\Readers\GarmentListLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\Gui\MainGui.h">
@@ -507,6 +510,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Code\ObjectDatabase\UserDataReaders\UserCharacterReader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\ObjectDatabase\Readers\GarmentListLoader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

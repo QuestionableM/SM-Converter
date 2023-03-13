@@ -406,6 +406,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClCompile Include="Code\Gui\ItemInfoGui.cpp" />
     <ClCompile Include="Code\Gui\MainGui.cpp" />
     <ClCompile Include="Code\ObjectDatabase\Mods\CustomGameMod.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\Readers\GarmentListLoader.cpp" />
     <ClCompile Include="Code\ObjectDatabase\Readers\KinematicListLoader.cpp" />
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\BlueprintFolderReader.cpp" />
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\FilterSettingsData.cpp" />
@@ -681,6 +682,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\ObjectDatabase\Mods\CustomGameMod.hpp" />
     <ClInclude Include="Code\ObjectDatabase\Mods\CustomGameSwitch.hpp" />
     <ClInclude Include="Code\ObjectDatabase\Mods\ModObjectStorage.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\Readers\GarmentListLoader.hpp" />
     <ClInclude Include="Code\ObjectDatabase\Readers\KinematicListLoader.hpp" />
     <ClInclude Include="Code\ObjectDatabase\UserDataReaders\BlueprintFolderReader.hpp" />
     <ClInclude Include="Code\ObjectDatabase\UserDataReaders\FilterSettingsData.hpp" />

@@ -42,7 +42,7 @@ public:
 
 	HarvestableData() = default;
 	HarvestableData(const HarvestableData&) = delete;
-	HarvestableData(HarvestableData&) = delete;
+	HarvestableData(HarvestableData&&) = delete;
 
 	inline ~HarvestableData()
 	{
@@ -60,7 +60,7 @@ public:
 
 	KinematicData() = default;
 	KinematicData(const KinematicData&) = delete;
-	KinematicData(KinematicData&) = delete;
+	KinematicData(KinematicData&&) = delete;
 
 	inline ~KinematicData()
 	{
@@ -79,7 +79,7 @@ public:
 
 	BlockData() = default;
 	BlockData(const BlockData&) = delete;
-	BlockData(BlockData&) = delete;
+	BlockData(BlockData&&) = delete;
 	~BlockData() = default;
 };
 
@@ -95,7 +95,7 @@ public:
 
 	PartData() = default;
 	PartData(const PartData&) = delete;
-	PartData(PartData&) = delete;
+	PartData(PartData&&) = delete;
 
 	inline ~PartData()
 	{
@@ -116,7 +116,7 @@ public:
 
 	ClutterData() = default;
 	ClutterData(const ClutterData&) = delete;
-	ClutterData(ClutterData&) = delete;
+	ClutterData(ClutterData&&) = delete;
 	~ClutterData() = default;
 };
 
@@ -131,8 +131,30 @@ public:
 
 	DecalData() = default;
 	DecalData(const DecalData&) = delete;
-	DecalData(DecalData&) = delete;
+	DecalData(DecalData&&) = delete;
 	~DecalData() = default;
+};
+
+class GarmentData
+{
+public:
+	SMUuid m_uuid;
+	
+	SMSubMeshBase* m_male_data;
+	SMSubMeshBase* m_female_data;
+
+	std::wstring m_male_mesh;
+	std::wstring m_female_mesh;
+
+	GarmentData() = default;
+	GarmentData(const GarmentData&) = delete;
+	GarmentData(GarmentData&&) = delete;
+
+	inline ~GarmentData()
+	{
+		delete m_male_data;
+		delete m_female_data;
+	}
 };
 
 #pragma managed

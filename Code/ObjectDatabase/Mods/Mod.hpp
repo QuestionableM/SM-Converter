@@ -128,6 +128,7 @@ public:
 	SMMod(SMMod&) = delete;
 	virtual ~SMMod() = default;
 
+
 	SMModObjectStorage<BlockData> m_Blocks;
 	SMModObjectStorage<PartData> m_Parts;
 	SMModObjectStorage<AssetData> m_Assets;
@@ -136,6 +137,7 @@ public:
 	SMModObjectStorage<KinematicData> m_Kinematics;
 	SMModObjectStorage<ClutterData> m_Clutter;
 	inline static std::vector<ClutterData*> ClutterVector = {};
+	inline static std::unordered_map<std::string, std::unordered_map<SMUuid, GarmentData*>> GarmentStorage = {};
 
 	inline static SMMod* GameDataMod = nullptr;
 

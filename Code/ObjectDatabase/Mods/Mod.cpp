@@ -4,6 +4,7 @@
 #include "ObjectDatabase\Readers\KinematicListLoader.hpp"
 #include "ObjectDatabase\Readers\DecalsetListReader.hpp"
 #include "ObjectDatabase\Readers\ClutterListLoader.hpp"
+#include "ObjectDatabase\Readers\GarmentListLoader.hpp"
 #include "ObjectDatabase\Readers\AssetListLoader.hpp"
 #include "ObjectDatabase\Readers\BlockListLoader.hpp"
 #include "ObjectDatabase\Readers\PartListLoader.hpp"
@@ -32,6 +33,15 @@ void SMMod::ClearModStorage()
 	SMModObjectStorage<KinematicData>::Clear();
 
 	SMMod::ClutterVector.clear();
+
+	{
+		//Clear all the garments
+		for (const auto v_category : SMMod::GarmentStorage)
+			for (const auto v_item : v_category.second)
+				delete v_item.second;
+
+		SMMod::GarmentStorage.clear();
+	}
 
 	{
 		//Remove all the mods from the memory
@@ -171,12 +181,13 @@ using DataLoaderMap = std::unordered_map<std::string, void (*)(const simdjson::d
 static const DataLoaderMap g_DataLoaders =
 {
 	{ "assetListRenderable", AssetListLoader::Load       },
-	{ "harvestableList",     HarvestableListLoader::Load },
-	{ "partList",			 PartListLoader::Load		 },
-	{ "blockList",			 BlockListLoader::Load		 },
-	{ "clutterList",		 ClutterListLoader::Load     },
-	{ "decalSetList",        DecalsetListReader::Load    },
-	{ "kinematicList",       KinematicListLoader::Load   }
+	{ "harvestableList"    , HarvestableListLoader::Load },
+	{ "partList"           , PartListLoader::Load		 },
+	{ "blockList"          , BlockListLoader::Load		 },
+	{ "clutterList"        , ClutterListLoader::Load     },
+	{ "decalSetList"       , DecalsetListReader::Load    },
+	{ "kinematicList"      , KinematicListLoader::Load   },
+	{ "categoryList"       , GarmentListLoader::Load     }
 };
 
 void SMMod::LoadFile(const std::wstring& path, const bool& add_to_global_db)
