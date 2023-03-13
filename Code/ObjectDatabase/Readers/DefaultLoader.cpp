@@ -147,7 +147,10 @@ bool DefaultLoader::LoadRenderableFromPath(const simdjson::dom::element& v_path,
 	KeywordReplacer::ReplaceKeyR(v_renderablePath);
 
 	simdjson::dom::document v_rend_doc;
-	if (!JsonReader::LoadParseSimdjsonCommentsC())
+	if (!JsonReader::LoadParseSimdjsonCommentsC(v_renderablePath, v_rend_doc, simdjson::dom::element_type::OBJECT))
+		return false;
+
+	return DefaultLoader::LoadRenderableData(v_rend_doc.root(), tData, mesh);
 }
 
 bool DefaultLoader::LoadRenderable(const simdjson::dom::element& jAsset, SMSubMeshBase** tData, std::wstring& mesh)
@@ -159,16 +162,7 @@ bool DefaultLoader::LoadRenderable(const simdjson::dom::element& jAsset, SMSubMe
 	switch (v_rend_data.type())
 	{
 	case simdjson::dom::element_type::STRING:
-		{
-			std::wstring v_renderablePath = String::ToWide(v_rend_data.get_string());
-			KeywordReplacer::ReplaceKeyR(v_renderablePath);
-
-			simdjson::dom::document v_rend_doc;
-			if (!JsonReader::LoadParseSimdjsonCommentsC(v_renderablePath, v_rend_doc, simdjson::dom::element_type::OBJECT))
-				return false;
-
-			return DefaultLoader::LoadRenderableData(v_rend_doc.root(), tData, mesh);
-		}
+		return DefaultLoader::LoadRenderableFromPath(v_rend_data.value_unsafe(), tData, mesh);
 	case simdjson::dom::element_type::OBJECT:
 		return DefaultLoader::LoadRenderableData(v_rend_data.value_unsafe(), tData, mesh);
 	default:

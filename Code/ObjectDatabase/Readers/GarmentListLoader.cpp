@@ -49,12 +49,12 @@ void GarmentListLoader::LoadGarmentCategory(const simdjson::dom::element& v_cate
 
 		std::wstring v_male_obj;
 		SMSubMeshBase* v_male_rend;
-		if (!DefaultLoader::LoadRenderable(v_male_rend_path.value_unsafe(), &v_male_rend, v_male_obj))
+		if (!DefaultLoader::LoadRenderableFromPath(v_male_rend_path.value_unsafe(), &v_male_rend, v_male_obj))
 			continue;
 
 		std::wstring v_female_obj;
 		SMSubMeshBase* v_female_rend;
-		if (!DefaultLoader::LoadRenderable(v_female_rend_path.value_unsafe(), &v_female_rend, v_male_obj))
+		if (!DefaultLoader::LoadRenderableFromPath(v_female_rend_path.value_unsafe(), &v_female_rend, v_female_obj))
 		{
 			delete v_male_rend;
 			continue;
