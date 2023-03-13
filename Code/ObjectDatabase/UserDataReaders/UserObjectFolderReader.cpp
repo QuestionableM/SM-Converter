@@ -1,6 +1,7 @@
 #include "UserObjectFolderReader.hpp"
 
 #include "BlueprintFolderReader.hpp"
+#include "UserCharacterReader.hpp"
 #include "WorldFolderReader.hpp"
 #include "TileFolderReader.hpp"
 
@@ -63,11 +64,13 @@ void UserObjectFolderReader::ReadFromConfig()
 	BlueprintFolderReader::ClearStorage();
 	WorldFolderReader::ClearStorage();
 	TileFolderReader::ClearStorage();
+	UserCharacterReader::ClearStorage();
 
 	for (const auto& v_item_folder : DatabaseConfig::UserItemFolders)
 		UserObjectFolderReader::LoadObjectsFromFolder(v_item_folder.first);
 
 	UserObjectFolderReader::LoadObjectsFromFolder(DatabaseConfig::WorkshopFolder);
+	UserCharacterReader::LoadCharacters();
 
 	DebugOutL("[UserObjectFolderReader] Successfully loaded ", BlueprintFolderReader::Storage.size(), " blueprints and ", TileFolderReader::Storage.size(), " tiles from ", DatabaseConfig::UserItemFolders.size(), " folders");
 }

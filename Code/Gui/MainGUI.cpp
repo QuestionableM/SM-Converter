@@ -8,6 +8,7 @@
 #include "AboutGui.h"
 
 #include "ObjectDatabase\UserDataReaders\UserObjectFolderReader.hpp"
+#include "ObjectDatabase\UserDataReaders\UserCharacterReader.hpp"
 #include "ObjectDatabase\GroundTextureDatabase.hpp"
 #include "ObjectDatabase\KeywordReplacer.hpp"
 #include "ObjectDatabase\ObjectDatabase.hpp"
@@ -55,7 +56,8 @@ enum : unsigned short
 {
 	Generator_BlueprintConverter = 0,
 	Generator_TileConverter      = 1,
-	Generator_WorldConverter     = 2
+	Generator_WorldConverter     = 2,
+	Generator_CharacterConverter = 3
 };
 
 namespace SMConverter
@@ -118,7 +120,8 @@ namespace SMConverter
 			{
 				L"Path to Blueprint",
 				L"Path to Tile",
-				L"Path to World"
+				L"Path to World",
+				L"Path to Character"
 			};
 
 			SendMessage(
@@ -134,7 +137,8 @@ namespace SMConverter
 			{
 				L"Selected a Blueprint in the list",
 				L"Selected a Tile in the list",
-				L"Selected a World in the list"
+				L"Selected a World in the list",
+				L"Selected a Character in the list"
 			};
 
 			SendMessage(
@@ -163,6 +167,9 @@ namespace SMConverter
 		case Generator_WorldConverter:
 			m_lb_objectSelector->ContextMenuStrip = m_cms_world;
 			break;
+		case Generator_CharacterConverter:
+			m_lb_objectSelector->ContextMenuStrip = nullptr;
+			break;
 		}
 	}
 
@@ -173,7 +180,8 @@ namespace SMConverter
 		{
 			L"Search Blueprints",
 			L"Search Tiles",
-			L"Search Worlds"
+			L"Search Worlds",
+			L"Search Characters"
 		};
 
 		SendMessage(
@@ -208,7 +216,8 @@ namespace SMConverter
 		{
 			L"Select a Blueprint",
 			L"Select a Tile",
-			L"Select a World"
+			L"Select a World",
+			L"Select a Character"
 		};
 
 		const std::wstring v_selected_path = File::OpenFileDialog(
@@ -402,7 +411,8 @@ namespace SMConverter
 		{
 			L"Loading Blueprints...",
 			L"Loading Tiles...",
-			L"Loading Worlds..."
+			L"Loading Worlds...",
+			L"Loading Characters..."
 		};
 
 		const wchar_t* v_cur_message = g_objectListStatusMessages[m_cb_selectedGenerator->SelectedIndex];
@@ -454,6 +464,11 @@ namespace SMConverter
 				m_lb_objectSelector->EndUpdate();
 				return;
 			}
+		case Generator_CharacterConverter:
+			{
+			//TODO: Implement that
+				break;
+			}
 		}
 
 		m_lb_objectSelector->EndUpdate();
@@ -462,7 +477,8 @@ namespace SMConverter
 		{
 			L"No Blueprints",
 			L"No Tiles",
-			L"No Worlds"
+			L"No Worlds",
+			L"No Characters"
 		};
 
 		const wchar_t* v_cur_message = g_noObjectMessages[m_cb_selectedGenerator->SelectedIndex];
@@ -559,6 +575,9 @@ namespace SMConverter
 		case Generator_WorldConverter:
 			UpdateUserStorage<WorldFolderReader>();
 			break;
+		case Generator_CharacterConverter:
+			UpdateUserStorage<UserCharacterReader>();
+			break;
 		}
 	}
 
@@ -581,6 +600,9 @@ namespace SMConverter
 				break;
 			case Generator_WorldConverter:
 				SearchFunction<WorldFolderReader>(v_search_str, last_search_length, m_tb_searchBox->TextLength);
+				break;
+			case Generator_CharacterConverter:
+				SearchFunction<UserCharacterReader>(v_search_str, last_search_length, m_tb_searchBox->TextLength);
 				break;
 			}
 		}
@@ -766,6 +788,9 @@ namespace SMConverter
 					this->MainGui_ConvertWorld(v_cur_world->name, v_cur_world->path);
 					break;
 				}
+			case Generator_CharacterConverter:
+				//TODO: Implement that
+				break;
 			}
 		}
 		else
@@ -810,6 +835,9 @@ namespace SMConverter
 					this->MainGui_ConvertWorld(v_world_name, v_path_wstr);
 					break;
 				}
+			case Generator_CharacterConverter:
+				//TODO: Implement that
+				break;
 			}
 		}
 	}
@@ -1004,6 +1032,9 @@ namespace SMConverter
 		case Generator_WorldConverter:
 			this->ObjectConverter_ConvertWorld(v_thread_data, e);
 			break;
+		case Generator_CharacterConverter:
+			//TODO: Implement that
+			break;
 		}
 	}
 
@@ -1037,7 +1068,8 @@ namespace SMConverter
 			{
 				"Blueprint has been successfully converted!",
 				"Tile has been successfully converted!",
-				"World has been successfully converted!"
+				"World has been successfully converted!",
+				"Character has been successfully converted!"
 			};
 
 			System::Windows::Forms::MessageBox::Show(
@@ -1123,6 +1155,9 @@ namespace SMConverter
 		case Generator_WorldConverter:
 			v_path_to_open = this->GetCurrentWorld()->path;
 			break;
+		case Generator_CharacterConverter:
+			//TODO: Implement that
+			break;
 		}
 
 		::String::ReplaceAllR(v_path_to_open, L'/', L'\\');
@@ -1197,6 +1232,9 @@ namespace SMConverter
 
 				break;
 			}
+		case Generator_CharacterConverter:
+			//TODO: Implement that
+			break;
 		}
 	}
 
