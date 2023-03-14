@@ -30,12 +30,24 @@ void UserCharacterReader::FilterStorage()
 
 void UserCharacterReader::LoadFromFile(const std::filesystem::path& path)
 {
-	const std::wstring v_char_file = path.wstring() + L"\\character";
+	if (!path.has_filename())
+		return;
 
-	if (!File::Exists(v_char_file)) return;
-	if (!File::IsRegularFile(v_char_file)) return;
+	std::wstring v_char_file = path.wstring() + L"\\character";
 
-	DebugOutL("Character file: ", v_char_file);
+	UserCharacterData v_char_data{};
+	if (!v_char_data.from_file(v_char_file))
+		return;
+
+	UserCharacterInstance* v_new_instance = new UserCharacterInstance{};
+	v_new_instance->character_data = v_char_data;
+	v_new_instance->path = std::move(v_char_file);
+	v_new_instance->name = path.filename().wstring();
+	v_new_instance->lower_name = String::ToLower(v_new_instance->name);
+	v_new_instance->directory = path.wstring();
+	v_new_instance->v_filter = FilterSettingsData::GetUserDataFilter(v_new_instance->path);
+
+	UserCharacterReader::Storage.push_back(v_new_instance);
 }
 
 void UserCharacterReader::LoadCharacters()

@@ -466,8 +466,15 @@ namespace SMConverter
 			}
 		case Generator_CharacterConverter:
 			{
-			//TODO: Implement that
-				break;
+				const std::vector<UserCharacterInstance*>& v_cur_char_list = this->GetCurrentCharacterList();
+				if (v_cur_char_list.empty())
+					break;
+
+				for (const UserCharacterInstance* v_user_char_instance : v_cur_char_list)
+					m_lb_objectSelector->Items->Add(gcnew System::String(v_user_char_instance->name.c_str()));
+
+				m_lb_objectSelector->EndUpdate();
+				return;
 			}
 		}
 
@@ -879,6 +886,19 @@ namespace SMConverter
 			return nullptr;
 
 		return this->GetCurrentWorldList()[m_lb_objectSelector->SelectedIndex];
+	}
+
+	std::vector<UserCharacterInstance*>& MainGui::GetCurrentCharacterList()
+	{
+		return (m_tb_searchBox->TextLength > 0) ? UserCharacterReader::SearchResults : UserCharacterReader::GetCurrentStorage();
+	}
+
+	UserCharacterInstance* MainGui::GetCurrentCharacter()
+	{
+		if (m_lb_objectSelector->SelectedIndex == -1)
+			return nullptr;
+
+		return this->GetCurrentCharacterList()[m_lb_objectSelector->SelectedIndex];
 	}
 
 	void MainGui::MainGui_HandleConvertError(ConvertError& v_error, const int& v_type, System::ComponentModel::DoWorkEventArgs^ e)

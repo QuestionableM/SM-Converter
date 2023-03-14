@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ObjectDatabase\UserDataReaders\BlueprintFolderReader.hpp"
+#include "ObjectDatabase\UserDataReaders\UserCharacterReader.hpp"
 #include "ObjectDatabase\UserDataReaders\WorldFolderReader.hpp"
 #include "ObjectDatabase\UserDataReaders\TileFolderReader.hpp"
 
@@ -590,6 +591,9 @@ namespace SMConverter
 
 		std::vector<WorldInstance*>& GetCurrentWorldList();
 		WorldInstance* GetCurrentWorld();
+
+		std::vector<UserCharacterInstance*>& GetCurrentCharacterList();
+		UserCharacterInstance* GetCurrentCharacter();
 
 		System::Void MainGui_HandleConvertError(ConvertError& v_error, const int& v_type, System::ComponentModel::DoWorkEventArgs^ e);
 		System::Void ObjectConverter_ConvertBlueprint(System::Array^ conv_data, System::ComponentModel::DoWorkEventArgs^ e);

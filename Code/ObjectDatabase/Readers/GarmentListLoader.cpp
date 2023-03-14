@@ -77,5 +77,5 @@ void GarmentListLoader::LoadGarmentCategory(const simdjson::dom::element& v_cate
 		v_category_data.emplace(v_new_garment->m_uuid, v_new_garment);
 	}
 
-	SMMod::GarmentStorage.emplace(v_category_name, v_category_data);
+	SMMod::GarmentStorage.emplace(v_category_name, std::move(v_category_data));
 }

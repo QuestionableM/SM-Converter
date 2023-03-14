@@ -575,6 +575,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='ReleaseDebugInfo|x64'">true</CompileAsManaged>
     </ClCompile>
+    <ClCompile Include="Code\ObjectDatabase\UserDataReaders\UserCharacterData.cpp" />
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\UserCharacterReader.cpp" />
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\UserObjectFolderReader.cpp" />
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\WorldFolderReader.cpp" />
@@ -717,6 +718,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\ObjectDatabase\Readers\HarvestableListLoader.hpp" />
     <ClInclude Include="Code\ObjectDatabase\Readers\PartListLoader.hpp" />
     <ClInclude Include="Code\ObjectDatabase\SubMeshData.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\UserDataReaders\UserCharacterData.hpp" />
     <ClInclude Include="Code\ObjectDatabase\UserDataReaders\UserCharacterReader.hpp" />
     <ClInclude Include="Code\ObjectDatabase\UserDataReaders\UserObjectFolderReader.hpp" />
     <ClInclude Include="Code\ObjectDatabase\UserDataReaders\WorldFolderReader.hpp" />

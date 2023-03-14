@@ -20,13 +20,13 @@ void MaterialManager::Initialize()
 	{
 		if (!v_object.value.is_number()) continue;
 
-		const std::string v_key(v_object.key.data(), v_object.key.size());
+		std::string v_key(v_object.key.data(), v_object.key.size());
 		const std::size_t v_value = JsonReader::GetNumber<std::size_t>(v_object.value);
 
 		if (m_materialStorage.find(v_key) != m_materialStorage.end())
 			continue;
 
-		m_materialStorage.insert(std::make_pair(v_key, v_value));
+		m_materialStorage.emplace(std::move(v_key), v_value);
 	}
 }
 

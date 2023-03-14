@@ -3,6 +3,10 @@
 #include "UStd\UnmanagedFilesystem.hpp"
 #include "UStd\UnmanagedVector.hpp"
 
+#include "UserCharacterData.hpp"
+
+#include "Utils\Uuid.hpp"
+
 #pragma unmanaged
 
 struct UserCharacterInstance
@@ -14,6 +18,7 @@ struct UserCharacterInstance
 	std::wstring directory;
 
 	unsigned char v_filter;
+	UserCharacterData character_data;
 
 	UserCharacterInstance() = default;
 	UserCharacterInstance(const UserCharacterInstance&) = delete;
