@@ -17,6 +17,7 @@
 #include "ObjectDatabase\Mods\Mod.hpp"
 
 #include "Converter\BlueprintConverter\BlueprintConverter.hpp"
+#include "Converter\CharacterConverter\CharacterConverter.hpp"
 #include "Converter\WorldConverter\WorldConverter.hpp"
 #include "Converter\TileConverter\TileConverter.hpp"
 #include "Converter\ConvertSettings.hpp"
@@ -761,6 +762,23 @@ namespace SMConverter
 
 		m_bw_objectConverter->RunWorkerAsync(v_thread_data);
 	}
+	
+	void MainGui::MainGui_ConvertCharacter(const std::wstring& filename, const UserCharacterData& v_data)
+	{
+		System::Array^ v_thread_data = gcnew cli::array<System::Object^>(2 + sizeof(UserCharacterData));
+
+		v_thread_data->SetValue(static_cast<int>(Generator_CharacterConverter), static_cast<int>(0));
+		v_thread_data->SetValue(gcnew System::String(filename.c_str()), static_cast<int>(1));
+
+		//Convert character data to bytes and assemble it back on the worker thread
+		for (std::size_t a = 0; a < sizeof(UserCharacterData); a++)
+			v_thread_data->SetValue(reinterpret_cast<const unsigned char*>(&v_data)[a], static_cast<int>(2 + a));
+
+		this->MainGui_ChangeGuiState(m_database_isLoaded, m_obj_isLoaded, false);
+		m_progressBarUpdater->Start();
+
+		m_bw_objectConverter->RunWorkerAsync(v_thread_data);
+	}
 
 	void MainGui::MainGui_Convert_Clicked(System::Object^ sender, System::EventArgs^ e)
 	{
@@ -773,31 +791,28 @@ namespace SMConverter
 			{
 			case Generator_BlueprintConverter:
 				{
-					const std::vector<BlueprintInstance*>& v_bp_list = this->GetCurrentBlueprintList();
-					BlueprintInstance* v_cur_bp = v_bp_list[m_lb_objectSelector->SelectedIndex];
-
+					BlueprintInstance* v_cur_bp = this->GetCurrentBlueprint();
 					this->MainGui_ConvertBlueprint(v_cur_bp->name, v_cur_bp->path);
 					break;
 				}
 			case Generator_TileConverter:
 				{
-					const std::vector<TileInstance*>& v_tile_list = this->GetCurrentTileList();
-					TileInstance* v_cur_tile = v_tile_list[m_lb_objectSelector->SelectedIndex];
-
+					TileInstance* v_cur_tile = this->GetCurrentTile();
 					this->MainGui_ConvertTile(v_cur_tile->name, v_cur_tile->path);
 					break;
 				}
 			case Generator_WorldConverter:
 				{
-					const std::vector<WorldInstance*>& v_world_list = this->GetCurrentWorldList();
-					WorldInstance* v_cur_world = v_world_list[m_lb_objectSelector->SelectedIndex];
-
+					WorldInstance* v_cur_world = this->GetCurrentWorld();
 					this->MainGui_ConvertWorld(v_cur_world->name, v_cur_world->path);
 					break;
 				}
 			case Generator_CharacterConverter:
-				//TODO: Implement that
-				break;
+				{
+					UserCharacterInstance* v_cur_char = this->GetCurrentCharacter();
+					this->MainGui_ConvertCharacter(v_cur_char->name, v_cur_char->character_data);
+					break;
+				}
 			}
 		}
 		else
@@ -942,7 +957,7 @@ namespace SMConverter
 		SharedConverterSettings::ExportNormals   = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(5)));
 		SharedConverterSettings::ExportUvs       = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(6)));
 
-		const int v_custom_game_idx = safe_cast<int>(v_conv_data->GetValue(static_cast<int>(7)));
+		const std::size_t v_custom_game_idx = static_cast<std::size_t>(safe_cast<int>(v_conv_data->GetValue(static_cast<int>(7))));
 		CustomGame* v_custom_game = nullptr;
 		if (v_custom_game_idx > 0)
 			v_custom_game = SMMod::GetCustomGames()[v_custom_game_idx - 1];
@@ -981,7 +996,7 @@ namespace SMConverter
 		SharedConverterSettings::ExportNormals        = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(13)));
 		SharedConverterSettings::ExportUvs            = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(14)));
 
-		const int v_custom_game_idx = safe_cast<int>(v_conv_data->GetValue(static_cast<int>(15)));
+		const std::size_t v_custom_game_idx = static_cast<std::size_t>(safe_cast<int>(v_conv_data->GetValue(static_cast<int>(15))));
 		CustomGame* v_custom_game = nullptr;
 		if (v_custom_game_idx > 0)
 			v_custom_game = SMMod::GetCustomGames()[v_custom_game_idx - 1];
@@ -1021,7 +1036,7 @@ namespace SMConverter
 		SharedConverterSettings::ExportNormals = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(13)));
 		SharedConverterSettings::ExportUvs = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(14)));
 
-		const int v_custom_game_idx = safe_cast<int>(v_conv_data->GetValue(static_cast<int>(15)));
+		const std::size_t v_custom_game_idx = static_cast<std::size_t>(safe_cast<int>(v_conv_data->GetValue(static_cast<int>(15))));
 		CustomGame* v_custom_game = nullptr;
 		if (v_custom_game_idx > 0)
 			v_custom_game = SMMod::GetCustomGames()[v_custom_game_idx - 1];
@@ -1034,6 +1049,35 @@ namespace SMConverter
 		WorldConverter::ConvertToModel(v_world_path, v_world_name, v_conv_error, v_custom_game);
 
 		this->MainGui_HandleConvertError(v_conv_error, Generator_TileConverter, e);
+	}
+
+	void MainGui::ObjectConverter_ConvertCharacter(System::Array^ conv_data, System::ComponentModel::DoWorkEventArgs^ e)
+	{
+		DebugOutL(__FUNCTION__);
+
+		System::Array^ v_conv_data = safe_cast<System::Array^>(e->Argument);
+		if (v_conv_data->LongLength != (sizeof(UserCharacterData) + 2))
+		{
+			System::Array^ v_op_result = gcnew cli::array<System::Object^>(3);
+			v_op_result->SetValue(static_cast<int>(Generator_CharacterConverter), static_cast<int>(0));
+			v_op_result->SetValue(true, static_cast<int>(1));
+			v_op_result->SetValue("Worker thread received incorrect data!", static_cast<int>(2));
+
+			e->Result = v_op_result;
+			return;
+		}
+
+		const std::wstring v_filename = msclr::interop::marshal_as<std::wstring>(safe_cast<System::String^>(v_conv_data->GetValue(1ll)));
+
+		//Assemble the character data back
+		UserCharacterData v_char_data{};
+		for (std::size_t a = 0; a < sizeof(UserCharacterData); a++)
+			 reinterpret_cast<unsigned char*>(&v_char_data)[a] = safe_cast<unsigned char>(v_conv_data->GetValue(static_cast<long long>(a + 2)));
+
+		ConvertError v_conv_error;
+		CharacterConverter::ConvertToModel(v_char_data, v_filename, v_conv_error);
+
+		this->MainGui_HandleConvertError(v_conv_error, Generator_CharacterConverter, e);
 	}
 
 	void MainGui::MainGui_ObjectConverter_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e)
@@ -1053,7 +1097,7 @@ namespace SMConverter
 			this->ObjectConverter_ConvertWorld(v_thread_data, e);
 			break;
 		case Generator_CharacterConverter:
-			//TODO: Implement that
+			this->ObjectConverter_ConvertCharacter(v_thread_data, e);
 			break;
 		}
 	}
@@ -1253,8 +1297,19 @@ namespace SMConverter
 				break;
 			}
 		case Generator_CharacterConverter:
-			//TODO: Implement that
-			break;
+			{
+				bool v_has_directory = false;
+
+				UserCharacterInstance* v_cur_character = this->GetCurrentCharacter();
+				if (v_cur_character)
+				{
+					v_has_directory = File::Exists(v_cur_character->path);
+				}
+
+				//TODO: Implement context menu strip
+
+				break;
+			}
 		}
 	}
 

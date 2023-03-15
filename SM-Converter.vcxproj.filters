@@ -204,6 +204,9 @@
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\UserCharacterData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Code\Converter\CharacterConverter\CharacterConverter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\Gui\MainGui.h">
@@ -519,6 +522,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Code\ObjectDatabase\UserDataReaders\UserCharacterData.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Converter\CharacterConverter\CharacterConverter.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

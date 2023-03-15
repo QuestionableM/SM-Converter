@@ -581,6 +581,7 @@ namespace SMConverter
 		System::Void MainGui_ConvertBlueprint(const std::wstring& filename, const std::wstring& path);
 		System::Void MainGui_ConvertTile(const std::wstring& filename, const std::wstring& path);
 		System::Void MainGui_ConvertWorld(const std::wstring& filename, const std::wstring& path);
+		System::Void MainGui_ConvertCharacter(const std::wstring& filename, const UserCharacterData& v_data);
 		System::Void MainGui_Convert_Clicked(System::Object^ sender, System::EventArgs^ e);
 
 		std::vector<BlueprintInstance*>& GetCurrentBlueprintList();
@@ -599,6 +600,7 @@ namespace SMConverter
 		System::Void ObjectConverter_ConvertBlueprint(System::Array^ conv_data, System::ComponentModel::DoWorkEventArgs^ e);
 		System::Void ObjectConverter_ConvertTile(System::Array^ conv_data, System::ComponentModel::DoWorkEventArgs^ e);
 		System::Void ObjectConverter_ConvertWorld(System::Array^ conv_data, System::ComponentModel::DoWorkEventArgs^ e);
+		System::Void ObjectConverter_ConvertCharacter(System::Array^ conv_data, System::ComponentModel::DoWorkEventArgs^ e);
 
 		System::Void MainGui_ObjectConverter_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e);
 		System::Void MainGui_ObjectConverter_RunWorkerCompleted(System::Object^ sender, System::ComponentModel::RunWorkerCompletedEventArgs^ e);

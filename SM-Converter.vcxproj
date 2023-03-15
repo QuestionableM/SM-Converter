@@ -285,6 +285,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='ReleaseDebugInfo|x64'">true</CompileAsManaged>
     </ClCompile>
+    <ClCompile Include="Code\Converter\CharacterConverter\CharacterConverter.cpp" />
     <ClCompile Include="Code\Converter\Entity\Asset.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</CompileAsManaged>
@@ -631,6 +632,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
   <ItemGroup>
     <ClInclude Include="Code\BuildInfo.hpp" />
     <ClInclude Include="Code\Converter\BlueprintConverter\BlueprintConverter.hpp" />
+    <ClInclude Include="Code\Converter\CharacterConverter\CharacterConverter.hpp" />
     <ClInclude Include="Code\Converter\ConvertError.hpp" />
     <ClInclude Include="Code\Converter\ConvertSettings.hpp" />
     <ClInclude Include="Code\Converter\Entity\Asset.hpp" />
