@@ -11,6 +11,8 @@ public:
 	static void ConvertToModel(const UserCharacterData& v_data, const std::wstring& filename, ConvertError& v_error);
 
 private:
+	static void ReadFromPath(const std::wstring& v_path);
+
 	CharacterConverter() = default;
 	CharacterConverter(const CharacterConverter&) = delete;
 	CharacterConverter(CharacterConverter&&) = delete;

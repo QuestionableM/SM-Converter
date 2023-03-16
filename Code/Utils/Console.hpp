@@ -95,29 +95,57 @@ public:
 private:
 	static HANDLE Handle;
 
-	inline static void Output(const char* c_str)
+	inline static void Output(const char* v_cstr)
 	{
-		WriteConsoleA(DebugConsole::Handle, c_str, static_cast<DWORD>(strlen(c_str)), NULL, NULL);
+		WriteConsoleA(DebugConsole::Handle, v_cstr, static_cast<DWORD>(strlen(v_cstr)), NULL, NULL);
 	}
 
-	inline static void Output(const wchar_t* wc_str)
+	inline static void Output(const wchar_t* v_cstr)
 	{
-		WriteConsoleW(DebugConsole::Handle, wc_str, static_cast<DWORD>(wcslen(wc_str)), NULL, NULL);
+		WriteConsoleW(DebugConsole::Handle, v_cstr, static_cast<DWORD>(wcslen(v_cstr)), NULL, NULL);
 	}
 
-	inline static void Output(const std::string& str)
+	inline static void Output(const std::string& v_str)
 	{
-		WriteConsoleA(DebugConsole::Handle, str.data(), static_cast<DWORD>(str.size()), NULL, NULL);
+		WriteConsoleA(DebugConsole::Handle, v_str.data(), static_cast<DWORD>(v_str.size()), NULL, NULL);
 	}
 
-	inline static void Output(const std::wstring& wstr)
+	inline static void Output(const std::wstring& v_str)
 	{
-		WriteConsoleW(DebugConsole::Handle, wstr.data(), static_cast<DWORD>(wstr.size()), NULL, NULL);
+		WriteConsoleW(DebugConsole::Handle, v_str.data(), static_cast<DWORD>(v_str.size()), NULL, NULL);
 	}
 
-	inline static void Output(const std::string_view& str_view)
+	inline static void Output(const std::string_view& v_str)
 	{
-		WriteConsoleA(DebugConsole::Handle, str_view.data(), static_cast<DWORD>(str_view.size()), NULL, NULL);
+		WriteConsoleA(DebugConsole::Handle, v_str.data(), static_cast<DWORD>(v_str.size()), NULL, NULL);
+	}
+
+	inline static void Output(const ConColor& con_color)
+	{
+		SetConsoleTextAttribute(DebugConsole::Handle, static_cast<WORD>(con_color));
+	}
+
+	inline static void Output(void* v_ptr)
+	{
+		char v_buffer[32];
+		sprintf_s(v_buffer, "0x%p", v_ptr);
+		DebugConsole::Output(v_buffer);
+	}
+
+	template<typename ArrayObject>
+	static inline void Output(const std::vector<ArrayObject>& obj)
+	{
+		DebugConsole::Output("{ ");
+		if (!obj.empty())
+		{
+			DebugConsole::Output(obj[0]);
+			for (std::size_t a = 1; a < obj.size(); a++)
+			{
+				DebugConsole::Output(", ");
+				DebugConsole::Output(obj[a]);
+			}
+		}
+		DebugConsole::Output(" }");
 	}
 
 	template<typename T>
@@ -151,27 +179,6 @@ private:
 
 	DECLARE_INTEGER_OUTPUT(float&);
 	DECLARE_INTEGER_OUTPUT(double&);
-
-	inline static void Output(const ConColor& con_color)
-	{
-		SetConsoleTextAttribute(DebugConsole::Handle, static_cast<WORD>(con_color));
-	}
-
-	template<typename ArrayObject>
-	static inline void Output(const std::vector<ArrayObject>& obj)
-	{
-		DebugConsole::Output("{ ");
-		if (!obj.empty())
-		{
-			DebugConsole::Output(obj[0]);
-			for (std::size_t a = 1; a < obj.size(); a++)
-			{
-				DebugConsole::Output(", ");
-				DebugConsole::Output(obj[a]);
-			}
-		}
-		DebugConsole::Output(" }");
-	}
 };
 
 class __ConsoleOutputHandler
