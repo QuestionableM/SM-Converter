@@ -31,6 +31,37 @@ public:
 	inline static std::unordered_map<SMUuid, T*> StaticStorage = {};
 	std::unordered_map<SMUuid, T*> DynamicStorage = {};
 
+	inline std::unordered_map<SMUuid, T*>& GetStorage(const bool& add_to_global_db)
+	{
+		return add_to_global_db ? StaticStorage : this->DynamicStorage;
+	}
+
+	inline bool ObjectExists(const std::unordered_map<SMUuid, T*>& v_storage, const SMUuid& v_uuid)
+	{
+		if (v_storage.find(v_uuid) == v_storage.end())
+			return false;
+
+		DebugWarningL("Object with the same uuid already exists! (", v_uuid.ToString(), ")");
+		return true;
+	}
+
+	using t_adder_function = void (SMModObjectStorage::*)(T*);
+	inline t_adder_function GetAdderFunction(const bool& add_to_global_db)
+	{
+		return add_to_global_db ? &SMModObjectStorage::AddObjectGlobal : &SMModObjectStorage::AddObjectDynamic;
+	}
+
+	inline void AddObjectDynamic(T* v_object)
+	{
+		DynamicStorage.emplace(v_object->m_uuid, v_object);
+	}
+
+	inline void AddObjectGlobal(T* v_object)
+	{
+		DynamicStorage.emplace(v_object->m_uuid, v_object);
+		StaticStorage.emplace(v_object->m_uuid, v_object);
+	}
+
 	inline bool ObjectExists(const SMUuid& v_uuid, const bool& add_to_global_db)
 	{
 		const std::unordered_map<SMUuid, T*>& v_cur_map = add_to_global_db ? StaticStorage : this->DynamicStorage;

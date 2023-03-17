@@ -118,7 +118,7 @@ std::string JsonReader::WriteJsonString(const nlohmann::json& v_json)
 
 //Simdjson functions
 
-std::string JsonReader::RemoveComments(const std::string& json_string)
+void JsonReader::RemoveComments(std::string& json_string)
 {
 	std::string v_output;
 	v_output.reserve(json_string.size());
@@ -131,7 +131,53 @@ std::string JsonReader::RemoveComments(const std::string& json_string)
 	std::size_t v_data_ptr = 0;
 	while (v_data != v_data_end)
 	{
-		if (*v_data == '\"')
+		switch (*v_data)
+		{
+		case '\"':
+			{
+				v_data = strchr(v_data + 1, '\"');
+				if (!v_data) goto smc_escape_loop;
+
+				break;
+			}
+		case '/':
+			{
+				const char* v_last_char = v_data++;
+				if (v_data == v_data_end)
+					goto smc_escape_loop;
+
+				switch (*v_data)
+				{
+				case '/':
+					{
+						v_output.append(json_string.begin() + v_data_ptr, json_string.begin() + (v_last_char - v_data_beg));
+
+						v_data = strchr(v_data, '\n');
+						if (!v_data) goto smc_escape_loop;
+
+						v_data_ptr = v_data - v_data_beg;
+						continue;
+					}
+				case '*':
+					{
+						v_output.append(json_string.begin() + v_data_ptr, json_string.begin() + (v_last_char - v_data_beg));
+
+						v_data = strstr(v_data, "*/");
+						if (!v_data) goto smc_escape_loop;
+
+						v_data_ptr = (v_data += 2) - v_data_beg;
+						continue;
+					}
+				default:
+					break;
+				}
+
+				break;
+			}
+		default:
+			break;
+		}
+		/*if (*v_data == '\"')
 		{
 			v_data = strchr(v_data + 1, '\"');
 			if (!v_data) break;
@@ -157,27 +203,33 @@ std::string JsonReader::RemoveComments(const std::string& json_string)
 			{
 				v_output.append(json_string.begin() + v_data_ptr, json_string.begin() + (v_last_char - v_data_beg));
 
-				v_data = strstr(v_data, "*/");
+				v_data = strstr(v_data, "* /");
 				if (!v_data) break;
 
 				v_data_ptr = (v_data += 2) - v_data_beg;
 				continue;
 			}
-		}
+		}*/
 
 		v_data++;
 	}
 
+smc_escape_loop:
+
 	if (v_data)
 	{
-		v_output.append(json_string.begin() + v_data_ptr, json_string.begin() + (v_data - v_data_beg));
+		const std::size_t v_ptr_diff = v_data - v_data_beg;
+		const std::size_t v_diff_test = v_ptr_diff - v_data_ptr;
+		if (v_diff_test != json_string.size())
+		{
+			v_output.append(json_string.begin() + v_data_ptr, json_string.begin() + v_ptr_diff);
+			json_string = std::move(v_output);
+		}
 	}
-	else
-	{
-		v_output.append(json_string.substr(v_data_ptr));
-	}
-
-	return v_output;
+	//else
+	//{
+	//	v_output.append(json_string.substr(v_data_ptr));
+	//}
 }
 
 bool JsonReader::LoadParseSimdjson(const std::wstring& path, simdjson::dom::document& v_doc)
@@ -245,7 +297,7 @@ bool JsonReader::LoadParseSimdjsonComments(const std::wstring& path, simdjson::d
 		if (!File::ReadToString(path, v_json_str))
 			return false;
 
-		v_json_str = JsonReader::RemoveComments(v_json_str);
+		JsonReader::RemoveComments(v_json_str);
 
 		simdjson::dom::parser v_parser;
 		v_parser.parse_into_document(v_doc, v_json_str);
@@ -272,7 +324,7 @@ bool JsonReader::LoadParseSimdjsonCommentsC(const std::wstring& path, simdjson::
 		if (!File::ReadToString(path, v_json_str))
 			return false;
 
-		v_json_str = JsonReader::RemoveComments(v_json_str);
+		JsonReader::RemoveComments(v_json_str);
 
 		simdjson::dom::parser v_parser;
 		v_parser.parse_into_document(v_doc, v_json_str);
@@ -328,7 +380,7 @@ bool JsonReader::LoadParseSimdjsonLua(const std::wstring& path, simdjson::dom::d
 		return false;
 	}
 
-	v_json_str = JsonReader::RemoveComments(v_json_str);
+	JsonReader::RemoveComments(v_json_str);
 
 	try
 	{

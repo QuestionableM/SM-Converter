@@ -105,16 +105,13 @@ void KeywordReplacer::UpgradeResource(const std::wstring& mPath, std::wstring& m
 
 std::wstring KeywordReplacer::ReplaceKey(const std::wstring& path)
 {
-	if (path.empty())
+	if (path.empty() || path[0] != L'$')
 		return path;
 
 	std::wstring v_output;
 	KeywordReplacer::UpgradeResource(path, v_output);
 
-	if (v_output[0] != L'$')
-		return v_output;
-
-	const std::size_t v_key_idx = v_output.find_first_of(L'/');
+	const std::size_t v_key_idx = v_output.find(L'/');
 	if (v_key_idx == std::wstring::npos)
 		return v_output;
 
@@ -128,15 +125,12 @@ std::wstring KeywordReplacer::ReplaceKey(const std::wstring& path)
 
 void KeywordReplacer::ReplaceKeyR(std::wstring& path)
 {
-	if (path.empty())
+	if (path.empty() || path[0] != L'$')
 		return;
 
 	KeywordReplacer::UpgradeResource(path, path);
 
-	if (path[0] != L'$')
-		return;
-
-	const std::size_t v_key_idx = path.find_first_of(L'/');
+	const std::size_t v_key_idx = path.find(L'/');
 	if (v_key_idx == std::wstring::npos)
 		return;
 
@@ -150,15 +144,12 @@ void KeywordReplacer::ReplaceKeyR(std::wstring& path)
 
 bool KeywordReplacer::ReplaceKeyRLua(std::wstring& path)
 {
-	if (path.empty())
+	if (path.empty() || path[0] != L'$')
 		return true;
 
 	KeywordReplacer::UpgradeResource(path, path);
 
-	if (path[0] != L'$')
-		return true;
-
-	const std::size_t v_key_idx = path.find_first_of(L'/');
+	const std::size_t v_key_idx = path.find(L'/');
 	if (v_key_idx == std::wstring::npos)
 		return true;
 

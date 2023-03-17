@@ -43,7 +43,7 @@ public:
 	//Simdjson functions
 
 	//Only used by Simdjson as it doesn't support json with comments
-	static std::string RemoveComments(const std::string& json_string);
+	static void RemoveComments(std::string& json_string);
 
 	//Parse simdjson unchecked
 	static bool LoadParseSimdjson(const std::wstring& path, simdjson::dom::document& v_doc);
