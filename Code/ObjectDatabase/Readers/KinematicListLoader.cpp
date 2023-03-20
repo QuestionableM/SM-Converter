@@ -13,6 +13,9 @@ void KinematicListLoader::Load(const simdjson::dom::element& v_kinematics, SMMod
 	const auto v_kinematics_array = v_kinematics.get_array();
 	ProgCounter::ProgressMax += v_kinematics_array.size();
 
+	auto& v_cur_db = mod->m_Kinematics.GetStorage(add_to_global_db);
+	auto v_adder_func = mod->m_Kinematics.GetAdderFunction(add_to_global_db);
+
 	for (const auto v_kinematic : v_kinematics.get_array())
 	{
 		if (!v_kinematic.is_object()) continue;
@@ -21,7 +24,7 @@ void KinematicListLoader::Load(const simdjson::dom::element& v_kinematics, SMMod
 		if (!v_uuid.is_string()) continue;
 
 		const SMUuid v_km_uuid = v_uuid.get_c_str();
-		if (mod->m_Kinematics.ObjectExists(v_km_uuid, add_to_global_db))
+		if (mod->m_Kinematics.ObjectExists(v_cur_db, v_km_uuid))
 			continue;
 
 		std::wstring v_km_mesh;
@@ -35,7 +38,7 @@ void KinematicListLoader::Load(const simdjson::dom::element& v_kinematics, SMMod
 		v_new_kinematic->m_textures = v_km_subMeshes;
 		v_new_kinematic->m_mod = mod;
 
-		mod->m_Kinematics.AddObject(v_new_kinematic, add_to_global_db);
+		(mod->m_Kinematics.*v_adder_func)(v_new_kinematic);
 		ProgCounter::ProgressValue++;
 	}
 }

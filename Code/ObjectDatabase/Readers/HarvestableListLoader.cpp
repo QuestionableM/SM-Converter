@@ -15,6 +15,9 @@ void HarvestableListLoader::Load(const simdjson::dom::element& fHarvestables, SM
 	const auto v_hvs_array = fHarvestables.get_array();
 	ProgCounter::ProgressMax += v_hvs_array.size();
 
+	auto& v_cur_db = mod->m_Harvestables.GetStorage(add_to_global_db);
+	auto v_adder_func = mod->m_Harvestables.GetAdderFunction(add_to_global_db);
+
 	for (const auto v_hvs : v_hvs_array)
 	{
 		if (!v_hvs.is_object()) continue;
@@ -23,7 +26,7 @@ void HarvestableListLoader::Load(const simdjson::dom::element& fHarvestables, SM
 		if (!v_uuid_obj.is_string()) continue;
 
 		const SMUuid v_hvs_uuid = v_uuid_obj.get_c_str();
-		if (mod->m_Harvestables.ObjectExists(v_hvs_uuid, add_to_global_db))
+		if (mod->m_Harvestables.ObjectExists(v_cur_db, v_hvs_uuid))
 			continue;
 
 		std::wstring v_tMesh;
@@ -37,7 +40,7 @@ void HarvestableListLoader::Load(const simdjson::dom::element& fHarvestables, SM
 		v_new_hvs->m_textures = v_tData;
 		v_new_hvs->m_mod = mod;
 
-		mod->m_Harvestables.AddObject(v_new_hvs, add_to_global_db);
+		(mod->m_Harvestables.*v_adder_func)(v_new_hvs);
 		ProgCounter::ProgressValue++;
 	}
 }

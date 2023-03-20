@@ -54,6 +54,9 @@ void BlockListLoader::Load(const simdjson::dom::element& fBlocks, SMMod* mod, co
 	const auto v_blk_array = fBlocks.get_array();
 	ProgCounter::ProgressMax += v_blk_array.size();
 
+	auto& v_cur_db = mod->m_Blocks.GetStorage(add_to_global_db);
+	auto v_adder_func = mod->m_Blocks.GetAdderFunction(add_to_global_db);
+
 	for (const auto v_blk : v_blk_array)
 	{
 		if (!v_blk.is_object()) continue;
@@ -65,7 +68,7 @@ void BlockListLoader::Load(const simdjson::dom::element& fBlocks, SMMod* mod, co
 		if (!v_uuid.is_string()) continue;
 
 		const SMUuid v_blk_uuid = v_uuid.get_c_str();
-		if (mod->m_Blocks.ObjectExists(v_blk_uuid, add_to_global_db))
+		if (mod->m_Blocks.ObjectExists(v_cur_db, v_blk_uuid))
 			continue;
 
 		SMTextureList v_tList;
@@ -82,7 +85,7 @@ void BlockListLoader::Load(const simdjson::dom::element& fBlocks, SMMod* mod, co
 		v_new_blk->m_defaultColor = (v_color.is_string() ? v_color.get_c_str() : "375000");
 		v_new_blk->m_mod = mod;
 
-		mod->m_Blocks.AddObject(v_new_blk, add_to_global_db);
+		(mod->m_Blocks.*v_adder_func)(v_new_blk);
 		ProgCounter::ProgressValue++;
 	}
 }

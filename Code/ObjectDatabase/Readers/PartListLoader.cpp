@@ -105,8 +105,6 @@ void PartListLoader::Load(const simdjson::dom::element& fParts, SMMod* mod, cons
 		const SMUuid v_prt_uuid = v_uuid.get_c_str();
 		if (mod->m_Parts.ObjectExists(v_cur_db, v_prt_uuid))
 			continue;
-		//if (mod->m_Parts.ObjectExists(v_prt_uuid, add_to_global_db))
-		//	continue;
 
 		std::wstring v_mesh_path;
 		SMSubMeshBase* v_tex_data;
@@ -121,7 +119,6 @@ void PartListLoader::Load(const simdjson::dom::element& fParts, SMMod* mod, cons
 		v_new_part->m_defaultColor = (v_color.is_string() ? v_color.get_c_str() : "375000");
 		v_new_part->m_bounds = PartListLoader::LoadPartCollision(v_prt);
 
-		//mod->m_Parts.AddObject(v_new_part, add_to_global_db);
 		(mod->m_Parts.*v_adder_func)(v_new_part);
 		ProgCounter::ProgressValue++;
 	}

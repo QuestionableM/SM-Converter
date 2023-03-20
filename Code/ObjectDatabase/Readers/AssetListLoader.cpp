@@ -39,6 +39,9 @@ void AssetListLoader::Load(const simdjson::dom::element& fAssets, SMMod* mod, co
 	const auto v_assets_array = fAssets.get_array();
 	ProgCounter::ProgressMax += v_assets_array.size();
 
+	auto& v_cur_db = mod->m_Assets.GetStorage(add_to_global_db);
+	auto v_adder_func = mod->m_Assets.GetAdderFunction(add_to_global_db);
+
 	for (const auto v_cur_asset : v_assets_array)
 	{
 		if (!v_cur_asset.is_object()) continue;
@@ -47,7 +50,7 @@ void AssetListLoader::Load(const simdjson::dom::element& fAssets, SMMod* mod, co
 		if (!v_uuid.is_string()) continue;
 
 		const SMUuid v_asset_uuid = v_uuid.get_c_str();
-		if (mod->m_Assets.ObjectExists(v_asset_uuid, add_to_global_db))
+		if (mod->m_Assets.ObjectExists(v_cur_db, v_asset_uuid))
 			continue;
 
 		std::wstring v_tMesh;
@@ -62,7 +65,7 @@ void AssetListLoader::Load(const simdjson::dom::element& fAssets, SMMod* mod, co
 		v_new_asset->m_textures = v_tData;
 		v_new_asset->m_mod = mod;
 
-		mod->m_Assets.AddObject(v_new_asset, add_to_global_db);
+		(mod->m_Assets.*v_adder_func)(v_new_asset);
 		ProgCounter::ProgressValue++;
 	}
 }
