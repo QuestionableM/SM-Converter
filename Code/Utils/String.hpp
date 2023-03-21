@@ -19,13 +19,8 @@ namespace String
 		char* v_end_ptr;
 		const long v_output = strtol(v_ptr, &v_end_ptr, 16);
 
-		if (v_ptr == v_end_ptr)
-		{
-			*v_ptr = 0;
-			return 0;
-		}
-
 		*v_ptr = 0;
+		if (v_ptr == v_end_ptr) return 0;
 
 		return static_cast<unsigned char>(v_output);
 	}

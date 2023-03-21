@@ -130,11 +130,19 @@ void KeywordReplacer::ReplaceKeyR(std::wstring& path)
 
 	KeywordReplacer::UpgradeResource(path, path);
 
-	const std::size_t v_key_idx = path.find(L'/');
-	if (v_key_idx == std::wstring::npos)
+	const wchar_t* v_key_beg = path.data();
+	const wchar_t* v_key_ptr = std::wcschr(v_key_beg, L'/');
+	if (v_key_ptr == nullptr)
 		return;
 
+	const std::size_t v_key_idx = v_key_ptr - v_key_beg;
+
 	const std::wstring v_key_chunk = path.substr(0, v_key_idx);
+	//const std::size_t v_key_idx = path.find(L'/');
+	//if (v_key_idx == std::wstring::npos)
+	//	return;
+
+	//const std::wstring v_key_chunk = path.substr(0, v_key_idx);
 	const StringMap::const_iterator v_iter = m_KeyReplacements.find(v_key_chunk);
 	if (v_iter == m_KeyReplacements.end())
 		return;
