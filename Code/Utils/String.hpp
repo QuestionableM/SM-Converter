@@ -111,9 +111,15 @@ namespace String
 	{
 		static_assert(std::is_same_v<T, std::string> || std::is_same_v<T, std::wstring>, "ReplaceAllR can only be used with the following types: std::string, std::wstring");
 
-		std::size_t v_idx = 0;
-		while ((v_idx = str.find(to_replace)) != T::npos)
-			str[v_idx] = replacer;
+		T::value_type* v_iter = str.data();
+
+		if constexpr (std::is_same_v<T, std::string>) {
+			while ((v_iter = strchr(v_iter, to_replace)) != nullptr)
+				*v_iter = replacer;
+		} else if constexpr (std::is_same_v<T, std::wstring>) {
+			while ((v_iter = wcschr(v_iter, to_replace)) != nullptr)
+				*v_iter = replacer;
+		}
 	}
 
 	template<typename T>
@@ -122,9 +128,15 @@ namespace String
 		static_assert(std::is_same_v<T, std::string> || std::is_same_v<T, std::wstring>, "ReplaceAll can only be used with the following types: std::string, std::wstring");
 
 		T str_cpy = str;
-		std::size_t v_idx = 0;
-		while ((v_idx = str_cpy.find(to_replace)) != T::npos)
-			str_cpy[v_idx] = replacer;
+		T::value_type* v_iter = str_cpy.data();
+
+		if constexpr (std::is_same_v<T, std::string>) {
+			while ((v_iter = strchr(v_iter, to_replace)) != nullptr)
+				*v_iter = replacer;
+		} else if constexpr (std::is_same_v<T, std::wstring>) {
+			while ((v_iter = wcschr(v_iter, to_replace)) != nullptr)
+				*v_iter = replacer;
+		}
 
 		return str_cpy;
 	}

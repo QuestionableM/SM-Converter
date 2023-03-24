@@ -18,7 +18,7 @@ void DatabaseConfig::WstrVecToJson(nlohmann::json& j_obj, const std::string& key
 	for (const std::wstring& v_curWstr : r_wstr_vec)
 		v_strArray.push_back(String::ToUtf8(v_curWstr));
 
-	j_obj[key] = v_strArray;
+	j_obj[key] = std::move(v_strArray);
 }
 
 void DatabaseConfig::WstrMapToJson(nlohmann::json& j_obj, const std::string& key, const PathChecker& v_map)
@@ -28,7 +28,7 @@ void DatabaseConfig::WstrMapToJson(nlohmann::json& j_obj, const std::string& key
 	for (const auto& v_item : v_map)
 		v_strArray.push_back(String::ToUtf8(v_item.first));
 
-	j_obj[key] = v_strArray;
+	j_obj[key] = std::move(v_strArray);
 }
 
 bool DatabaseConfig::AddToStrVec(std::vector<std::wstring>& v_vec, PathChecker& v_path_checker, const std::wstring& v_new_str)
@@ -51,7 +51,7 @@ bool DatabaseConfig::AddToStrVec(std::vector<std::wstring>& v_vec, PathChecker& 
 	}
 
 	v_path_checker.insert(std::make_pair(v_full_path, 1));
-	v_vec.push_back(v_full_path);
+	v_vec.push_back(std::move(v_full_path));
 
 	return true;
 }
@@ -75,7 +75,7 @@ bool DatabaseConfig::AddToStrMap(PathChecker& v_map, const std::wstring& v_new_s
 		return false;
 	}
 
-	v_map.insert(std::make_pair(v_full_path, 1));
+	v_map.insert(std::make_pair(std::move(v_full_path), 1));
 	return true;
 }
 
@@ -305,8 +305,8 @@ void DatabaseConfig::FindGamePath(const nlohmann::json& config_json, bool& shoul
 		std::wstring game_path, ws_path;
 		if (DatabaseConfig::GetSteamPaths(game_path, ws_path))
 		{
-			DatabaseConfig::GamePath = game_path;
-			DatabaseConfig::WorkshopFolder = ws_path;
+			DatabaseConfig::GamePath = std::move(game_path);
+			DatabaseConfig::WorkshopFolder = std::move(ws_path);
 
 			should_write = true;
 		}

@@ -23,7 +23,7 @@ void KeywordReplacer::SetReplacement(const std::wstring& key, const std::wstring
 
 	KeywordReplacer::CreateKey(v_lowerKey, v_lowerVal);
 
-	m_KeyReplacements[v_lowerKey] = v_lowerVal;
+	m_KeyReplacements[std::move(v_lowerKey)] = std::move(v_lowerVal);
 }
 
 void KeywordReplacer::CreateContentKey(const SMUuid& v_uuid, const std::wstring& v_replacement)
@@ -78,8 +78,8 @@ void KeywordReplacer::LoadResourceUpgrades(const std::wstring& path)
 
 			KeywordReplacer::CreateKey(v_key_wstr, v_val_wstr);
 
-			if (m_ResourceUpgrades.find(v_key_wstr) != m_ResourceUpgrades.end())
-				m_ResourceUpgrades.insert(std::make_pair(v_key_wstr, v_val_wstr));
+			if (m_ResourceUpgrades.find(v_key_wstr) == m_ResourceUpgrades.end())
+				m_ResourceUpgrades.emplace(std::move(v_key_wstr), std::move(v_val_wstr));
 		}
 	}
 }
@@ -100,7 +100,14 @@ void KeywordReplacer::UpgradeResource(const std::wstring& mPath, std::wstring& m
 	String::ReplaceAllR(v_lowerPath, L'\\', L'/');
 
 	const StringMap::const_iterator v_iter = m_ResourceUpgrades.find(v_lowerPath);
-	mOutput = (v_iter != m_ResourceUpgrades.end()) ? v_iter->second : v_lowerPath;
+	if (v_iter != m_ResourceUpgrades.end())
+	{
+		mOutput = v_iter->second;
+	}
+	else
+	{
+		mOutput = std::move(v_lowerPath);
+	}
 }
 
 std::wstring KeywordReplacer::ReplaceKey(const std::wstring& path)
@@ -111,9 +118,12 @@ std::wstring KeywordReplacer::ReplaceKey(const std::wstring& path)
 	std::wstring v_output;
 	KeywordReplacer::UpgradeResource(path, v_output);
 
-	const std::size_t v_key_idx = v_output.find(L'/');
-	if (v_key_idx == std::wstring::npos)
+	const wchar_t* v_key_beg = path.data();
+	const wchar_t* v_key_ptr = std::wcschr(v_key_beg, L'/');
+	if (v_key_ptr == nullptr)
 		return v_output;
+
+	const std::size_t v_key_idx = v_key_ptr - v_key_beg;
 
 	const std::wstring v_key_chunk = v_output.substr(0, v_key_idx);
 	const StringMap::const_iterator v_iter = m_KeyReplacements.find(v_key_chunk);
@@ -138,11 +148,6 @@ void KeywordReplacer::ReplaceKeyR(std::wstring& path)
 	const std::size_t v_key_idx = v_key_ptr - v_key_beg;
 
 	const std::wstring v_key_chunk = path.substr(0, v_key_idx);
-	//const std::size_t v_key_idx = path.find(L'/');
-	//if (v_key_idx == std::wstring::npos)
-	//	return;
-
-	//const std::wstring v_key_chunk = path.substr(0, v_key_idx);
 	const StringMap::const_iterator v_iter = m_KeyReplacements.find(v_key_chunk);
 	if (v_iter == m_KeyReplacements.end())
 		return;
