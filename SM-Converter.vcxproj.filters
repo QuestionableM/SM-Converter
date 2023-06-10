@@ -123,9 +123,6 @@
     <ClCompile Include="Code\Converter\Entity\Entity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Dependencies\simdjson\simdjson\simdjson.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Code\Converter\TileConverter\Tile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -348,9 +345,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Code\Converter\Entity\Entity.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Dependencies\simdjson\simdjson\simdjson.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Code\Converter\TileConverter\CellHeader.hpp">

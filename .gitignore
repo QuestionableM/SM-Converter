@@ -1,3 +1,4 @@
 /.vs
 /Build
 /hash_cache.json
+*.vcxproj.user

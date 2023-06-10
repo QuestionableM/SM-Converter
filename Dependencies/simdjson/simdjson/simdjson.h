@@ -1,7 +1,5 @@
 /* auto-generated on 2022-11-23 10:31:42 -0500. Do not edit! */
 /* begin file include/simdjson.h */
-#pragma unmanaged
-
 #ifndef SIMDJSON_H
 #define SIMDJSON_H
 

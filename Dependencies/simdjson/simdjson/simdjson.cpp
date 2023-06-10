@@ -1,13 +1,6 @@
 /* auto-generated on 2022-11-23 10:31:42 -0500. Do not edit! */
 /* begin file src/simdjson.cpp */
-
-#if defined(_MT)
-    #undef _MT
-    #include "simdjson.h"
-    #define _MT
-#else
-    #include "simdjson.h"
-#endif
+#include "simdjson.h"
 
 SIMDJSON_PUSH_DISABLE_WARNINGS
 SIMDJSON_DISABLE_UNDESIRED_WARNINGS
