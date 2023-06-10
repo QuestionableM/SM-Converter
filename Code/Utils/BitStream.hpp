@@ -57,37 +57,37 @@ public:
 	}
 #endif
 
-	inline int Index() const
+	inline int Index() const noexcept
 	{
 		return this->index;
 	}
 
-	inline void SetIndex(const int& value)
+	inline void SetIndex(int value) noexcept
 	{
 		this->index = value;
 	}
 
-	inline int Size() const
+	inline int Size() const noexcept
 	{
 		return static_cast<int>(this->data.size());
 	}
 
-	inline void Align()
+	inline void Align() noexcept
 	{
 		index += (7 - ((index - 1) & 7));
 	}
 
-	inline void Move(const int& step)
+	inline void Move(int step) noexcept
 	{
 		index += step;
 	}
 
-	inline const Byte* Data() const
+	inline const Byte* Data() const noexcept
 	{
 		return this->data.data();
 	}
 
-	inline long long ReadNBytes(const int& count)
+	inline long long ReadNBytes(int count)
 	{
 		if (Size() < (index >> 3) + count) return 0;
 
@@ -180,10 +180,9 @@ public:
 		return SMUuid(second, first, true);
 	}
 
-	inline std::vector<Byte> ReadBytes(const int& length)
+	inline std::vector<Byte> ReadBytes(int length)
 	{
-		std::vector<Byte> bytes;
-		bytes.resize(length);
+		std::vector<Byte> bytes(static_cast<std::size_t>(length));
 
 		std::memcpy(bytes.data(), data.data() + (index >> 3), length);
 		index += length * 8;
@@ -191,9 +190,9 @@ public:
 		return bytes;
 	}
 
-	inline std::string ReadString(const int& length)
+	inline std::string ReadString(int length)
 	{
-		std::vector<Byte> bytes = ReadBytes(length);
+		const std::vector<Byte> bytes = ReadBytes(length);
 
 		return std::string(bytes.begin(), bytes.end());
 	}

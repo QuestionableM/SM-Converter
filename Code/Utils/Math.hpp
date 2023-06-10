@@ -6,12 +6,12 @@
 
 namespace Math
 {
-	inline float lerp(const float& s, const float& e, const float& t)
+	inline float lerp(float s, float e, float t)
 	{
 		return s + (e - s) * t;
 	}
 
-	inline float blerp(const float& c00, const float& c10, const float& c01, const float& c11, const float& tx, const float& ty)
+	inline float blerp(float c00, float c10, float c01, float c11, float tx, float ty)
 	{
 		return lerp(lerp(c00, c10, tx), lerp(c01, c11, tx), ty);
 	}
@@ -19,10 +19,10 @@ namespace Math
 	//Requires only 1 size component
 	inline float GetHeightPointBox(
 		const std::vector<float>& v_height_map,
-		const std::size_t& v_vec_sz,
-		const std::size_t& v_grid_sz,
-		const float& x,
-		const float& y)
+		std::size_t v_vec_sz,
+		std::size_t v_grid_sz,
+		float x,
+		float y)
 	{
 		const float v_norm_x = x / float(v_vec_sz) * float(v_grid_sz);
 		const float v_norm_y = y / float(v_vec_sz) * float(v_grid_sz);
@@ -43,12 +43,12 @@ namespace Math
 
 	inline float GetHeightPoint(
 		const std::vector<float>& vec,
-		const int& vec_width,
-		const int& vec_height,
-		const int& gridSzX,
-		const int& gridSzY,
-		const float& x,
-		const float& y)
+		int vec_width,
+		int vec_height,
+		int gridSzX,
+		int gridSzY,
+		float x,
+		float y)
 	{
 		const float gx = x / float(vec_height) * float(gridSzX);
 		const float gy = y / float(vec_width) * float(gridSzY);

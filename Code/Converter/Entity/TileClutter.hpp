@@ -18,13 +18,13 @@ public:
 	SMTileClutter(const SMTileClutter&) = delete;
 	~SMTileClutter() = default;
 
-	inline const float& ScaleVariance() const { return m_parent->m_scaleVariance; }
+	inline float ScaleVariance() const noexcept { return m_parent->m_scaleVariance; }
 
-	inline void SetColor(const SMColor& color) { this->m_color = color; }
+	inline void SetColor(SMColor color) { this->m_color = color; }
 
-	inline EntityType Type() const override { return EntityType::Clutter; }
-	char* GetMtlNameCStr(const std::string& v_mat_name, const std::size_t& v_idx, char* v_ptr) const override;
-	std::string GetMtlName(const std::size_t& mIdx) const override;
+	inline EntityType Type() const noexcept override { return EntityType::Clutter; }
+	char* GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, char* v_ptr) const override;
+	std::string GetMtlName(std::size_t mIdx) const override;
 	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const override;
 
 private:

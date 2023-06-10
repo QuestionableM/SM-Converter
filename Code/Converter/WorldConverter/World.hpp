@@ -15,7 +15,7 @@ struct WorldCellData
 class SMWorld
 {
 public:
-	inline SMWorld(const std::size_t& v_cell_count, const std::size_t& v_width)
+	inline SMWorld(std::size_t v_cell_count, std::size_t v_width)
 	{
 		m_cellMap.resize(v_cell_count);
 		m_width = v_width;
@@ -71,7 +71,7 @@ public:
 		return v_new_tile;
 	}
 
-	inline void SetCell(const std::size_t& x, const std::size_t& y, TilePart* v_cell, const char& v_rotation)
+	inline void SetCell(std::size_t x, std::size_t y, TilePart* v_cell, char v_rotation)
 	{
 		if (x >= m_width || y >= m_width)
 		{
@@ -82,7 +82,7 @@ public:
 		m_cellMap[x + y * m_width] = { v_cell, v_rotation };
 	}
 
-	inline const WorldCellData& GetCell(const std::size_t& x, const std::size_t& y) const
+	inline const WorldCellData& GetCell(std::size_t x, std::size_t y) const
 	{
 		return m_cellMap[x + y * m_width];
 	}
@@ -194,7 +194,7 @@ public:
 
 	void WriteToFile(const std::wstring& dir_path, const std::wstring& file_name) const;
 
-	inline const std::size_t& GetWidth() const { return m_width; }
+	inline std::size_t GetWidth() const noexcept { return m_width; }
 
 private:
 	std::size_t m_width;

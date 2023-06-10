@@ -16,7 +16,7 @@ class ClutterListLoader
 	static void LoadClutterData(const simdjson::dom::element& fClutter, ClutterData* pClutter);
 
 public:
-	static void Load(const simdjson::dom::element& fClutter, SMMod* mod, const bool& add_to_global_db);
+	static void Load(const simdjson::dom::element& fClutter, SMMod* mod, bool add_to_global_db);
 };
 
 #pragma managed

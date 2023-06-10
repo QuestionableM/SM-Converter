@@ -34,7 +34,7 @@ void TileFolderReader::FilterStorage()
 			TileFolderReader::FilteredStorage.push_back(v_tile_instance);
 }
 
-TileSizeFilter TileFolderReader::GetTileSize(const int& v_sz)
+TileSizeFilter TileFolderReader::GetTileSize(int v_sz)
 {
 	switch (v_sz)
 	{

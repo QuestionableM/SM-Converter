@@ -27,7 +27,7 @@ struct BlueprintInstance
 
 	BlueprintInstance() = default;
 	BlueprintInstance(const BlueprintInstance&) = delete;
-	BlueprintInstance(BlueprintInstance&) = delete;
+	BlueprintInstance(BlueprintInstance&&) = delete;
 	~BlueprintInstance() = default;
 };
 
@@ -52,7 +52,7 @@ public:
 private:
 	BlueprintFolderReader() = default;
 	BlueprintFolderReader(const BlueprintFolderReader&) = delete;
-	BlueprintFolderReader(BlueprintFolderReader&) = delete;
+	BlueprintFolderReader(BlueprintFolderReader&&) = delete;
 	~BlueprintFolderReader() = default;
 };
 

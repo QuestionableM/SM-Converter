@@ -50,7 +50,6 @@ private:
 	inline static std::unordered_map<std::size_t, SMBody*> BodyIndexMap = {};
 
 	BlueprintConv() = default;
-	BlueprintConv(const BlueprintConv&&) = delete;
 	BlueprintConv(const BlueprintConv&) = delete;
 	BlueprintConv(BlueprintConv&) = delete;
 	~BlueprintConv() = default;

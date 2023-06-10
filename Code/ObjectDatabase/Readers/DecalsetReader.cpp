@@ -18,7 +18,7 @@ inline void GetWstringFromDecalset(const simdjson::dom::element& obj, const std:
 	}
 }
 
-void DecalsetReader::LoadFromFile(const std::wstring& path, SMMod* mod, const bool& add_to_global_db)
+void DecalsetReader::LoadFromFile(const std::wstring& path, SMMod* mod, bool add_to_global_db)
 {
 	simdjson::dom::document v_json_doc;
 	if (!JsonReader::LoadParseSimdjsonCommentsC(path, v_json_doc, simdjson::dom::element_type::OBJECT))

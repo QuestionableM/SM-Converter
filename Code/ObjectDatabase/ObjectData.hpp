@@ -23,6 +23,7 @@ public:
 	std::wstring m_mesh;
 
 	AssetData() = default;
+
 	AssetData(const AssetData&) = delete;
 	AssetData(AssetData&&) = delete;
 	
@@ -41,6 +42,7 @@ public:
 	std::wstring m_mesh;
 
 	HarvestableData() = default;
+
 	HarvestableData(const HarvestableData&) = delete;
 	HarvestableData(HarvestableData&&) = delete;
 
@@ -94,6 +96,7 @@ public:
 	SMMod* m_mod;
 
 	PartData() = default;
+
 	PartData(const PartData&) = delete;
 	PartData(PartData&&) = delete;
 
@@ -147,6 +150,7 @@ public:
 	std::wstring m_female_mesh;
 
 	GarmentData() = default;
+
 	GarmentData(const GarmentData&) = delete;
 	GarmentData(GarmentData&&) = delete;
 

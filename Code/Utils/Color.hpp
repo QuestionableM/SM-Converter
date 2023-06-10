@@ -16,7 +16,7 @@ public:
 	inline SMColor(const std::wstring& color) { this->FromString<std::wstring>(color); }
 	inline SMColor(const char* color) { this->FromCString(color); }
 
-	inline SMColor(const Byte& r, const Byte& g, const Byte& b)
+	inline SMColor(Byte r, Byte g, Byte b)
 	{
 		m_bytes[0] = r;
 		m_bytes[1] = g;
@@ -24,7 +24,7 @@ public:
 		m_bytes[3] = 255;
 	}
 
-	inline SMColor(const Byte& r, const Byte& g, const Byte& b, const Byte& a)
+	inline SMColor(Byte r, Byte g, Byte b, Byte a)
 	{
 		this->r = r;
 		this->g = g;
@@ -32,7 +32,7 @@ public:
 		this->a = a;
 	}
 
-	inline SMColor(const unsigned int& color)
+	inline SMColor(unsigned int color)
 	{
 		this->SetIntLittleEndian(color);
 	}
@@ -42,7 +42,7 @@ public:
 	inline void operator=(const std::wstring& color) { this->FromString<std::wstring>(color); }
 	inline void operator=(const char* color) { this->FromCString(color); }
 
-	inline void SetIntLittleEndian(const unsigned int& color)
+	inline void SetIntLittleEndian(unsigned int color)
 	{
 		this->r = static_cast<Byte>(color);
 		this->g = static_cast<Byte>(color >> 8);
@@ -50,7 +50,7 @@ public:
 		this->a = static_cast<Byte>(color >> 24);
 	}
 
-	inline void SetIntBigEndian(const unsigned int& color)
+	inline void SetIntBigEndian(unsigned int color)
 	{
 		this->r = static_cast<Byte>(color >> 24);
 		this->g = static_cast<Byte>(color >> 16);
@@ -59,7 +59,7 @@ public:
 	}
 
 	template<class T>
-	constexpr inline void SetRGBFloat(const T& r, const T& g, const T& b)
+	constexpr inline void SetRGBFloat(T r, T g, T b)
 	{
 		static_assert(std::is_floating_point_v<T>, "SetRGBFloat can only be used with floating point types");
 
@@ -69,7 +69,7 @@ public:
 	}
 
 	template<class T>
-	constexpr inline void SetRGBAFloat(const T& r, const T& g, const T& b, const T& a)
+	constexpr inline void SetRGBAFloat(T r, T g, T b, T a)
 	{
 		static_assert(std::is_floating_point_v<T>, "SetRGBAFloat can only be used with floating point types");
 
@@ -138,7 +138,7 @@ public:
 	}
 
 	template<typename T>
-	inline T GetFloat(const std::size_t& idx) const
+	inline T GetFloat(std::size_t idx) const
 	{
 		static_assert(std::is_floating_point_v<T>, "GetFloat can only be used with floating point types");
 
@@ -146,7 +146,7 @@ public:
 	}
 
 	template<typename T>
-	constexpr inline void SetFloat(const std::size_t& idx, const T& fp_val)
+	constexpr inline void SetFloat(std::size_t idx, T fp_val)
 	{
 		static_assert(std::is_floating_point_v<T>, "SetFloat can only be used with floating point types");
 

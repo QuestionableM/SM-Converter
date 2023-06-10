@@ -30,7 +30,7 @@ struct TileInstance
 
 	TileInstance() = default;
 	TileInstance(const TileInstance&) = delete;
-	TileInstance(TileInstance&) = delete;
+	TileInstance(TileInstance&&) = delete;
 	~TileInstance() = default;
 };
 
@@ -47,7 +47,7 @@ public:
 	static std::vector<TileInstance*>& GetCurrentStorage();
 	static void FilterStorage();
 
-	static TileSizeFilter GetTileSize(const int& v_sz);
+	static TileSizeFilter GetTileSize(int v_sz);
 	static void GetTileData(TileInstance* v_tile_instance, ConvertError& v_error);
 	//Creates `$CONTENT_<uuid>` keys for all non-vanilla tiles
 	static void InitializeTileKeys();
@@ -62,7 +62,7 @@ private:
 
 	TileFolderReader() = default;
 	TileFolderReader(const TileFolderReader&) = delete;
-	TileFolderReader(TileFolderReader&) = delete;
+	TileFolderReader(TileFolderReader&&) = delete;
 	~TileFolderReader() = default;
 };
 

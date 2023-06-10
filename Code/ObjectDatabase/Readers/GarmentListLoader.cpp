@@ -5,7 +5,7 @@
 
 #pragma unmanaged
 
-void GarmentListLoader::Load(const simdjson::dom::element& v_garments, SMMod* mod, const bool& add_to_global_db)
+void GarmentListLoader::Load(const simdjson::dom::element& v_garments, SMMod* mod, bool add_to_global_db)
 {
 	if (!v_garments.is_array())
 		return;

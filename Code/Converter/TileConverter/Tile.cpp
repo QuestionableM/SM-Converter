@@ -22,7 +22,7 @@
 
 #pragma unmanaged
 
-Tile::Tile(const int& width, const int& height)
+Tile::Tile(int width, int height)
 {
 	this->m_Width = width;
 	this->m_Height = height;
@@ -39,7 +39,7 @@ Tile::~Tile()
 }
 
 
-void Tile::Resize(const int& width, const int& height)
+void Tile::Resize(int width, int height)
 {
 	assert(width < 1 || height < 1);
 
@@ -168,25 +168,24 @@ std::vector<long long> Tile::GetGround() const
 	return ground_bytes;
 }
 
-inline float lerp(const float& s, const float& e, const float& t)
+inline float lerp(float s, float e, float t)
 {
 	return s + (e - s) * t;
 }
 
-inline float blerp(const float& c00, const float& c10, const float& c01, const float& c11, const float& tx, const float& ty)
+inline float blerp(float c00, float c10, float c01, float c11, float tx, float ty)
 {
 	return lerp(lerp(c00, c10, tx), lerp(c01, c11, tx), ty);
 }
 
 inline float GetHeightPoint(
 	const std::vector<float>& vec,
-	const int& vec_width,
-	const int& vec_height,
-	const int& gridSzX,
-	const int& gridSzY,
-	const float& x,
-	const float& y
-)
+	int vec_width,
+	int vec_height,
+	int gridSzX,
+	int gridSzY,
+	float x,
+	float y)
 {
 	const float gx = x / float(vec_height) * gridSzX;
 	const float gy = y / float(vec_width) * gridSzY;
@@ -533,7 +532,7 @@ void Tile::WriteColorMap(const std::wstring& dir) const
 	FreeImage_Unload(v_colorMapData);
 }
 
-void Tile::SampleTextures(GroundTexture* tex1, GroundTexture* out_tex, const std::vector<float>& material_map, const int& gnd_width, const int& gnd_height) const
+void Tile::SampleTextures(GroundTexture* tex1, GroundTexture* out_tex, const std::vector<float>& material_map, int gnd_width, int gnd_height) const
 {
 	constexpr const float mul_div = 1.0f / 255.0f;
 

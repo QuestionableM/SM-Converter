@@ -22,7 +22,6 @@ struct WriterOffsetData
 	WriterOffsetData() = default;
 	WriterOffsetData(const WriterOffsetData&) = delete;
 	WriterOffsetData(WriterOffsetData&&) = delete;
-	WriterOffsetData(WriterOffsetData&) = delete;
 	~WriterOffsetData() = default;
 };
 

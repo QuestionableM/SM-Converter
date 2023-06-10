@@ -8,7 +8,7 @@
 
 #pragma unmanaged
 
-char* SMDecal::GetMtlNameCStr(const std::string& v_mat_name, const std::size_t& v_idx, char* v_ptr) const
+char* SMDecal::GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, char* v_ptr) const
 {
 	v_ptr = m_data->m_uuid.ToCString(v_ptr);
 	*v_ptr++ = ' ';
@@ -20,7 +20,7 @@ char* SMDecal::GetMtlNameCStr(const std::string& v_mat_name, const std::size_t& 
 	return MaterialManager::GetMaterialACStr(m_data->m_textures.material, v_ptr);
 }
 
-std::string SMDecal::GetMtlName(const std::size_t& mIdx) const
+std::string SMDecal::GetMtlName(std::size_t mIdx) const
 {
 	const std::string v_materialIdx = MaterialManager::GetMaterialA(m_data->m_textures.material);
 

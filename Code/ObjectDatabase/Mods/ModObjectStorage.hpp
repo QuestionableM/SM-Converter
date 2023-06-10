@@ -31,7 +31,7 @@ public:
 	inline static std::unordered_map<SMUuid, T*> StaticStorage = {};
 	std::unordered_map<SMUuid, T*> DynamicStorage = {};
 
-	inline std::unordered_map<SMUuid, T*>& GetStorage(const bool& add_to_global_db)
+	inline std::unordered_map<SMUuid, T*>& GetStorage(bool add_to_global_db)
 	{
 		return add_to_global_db ? StaticStorage : this->DynamicStorage;
 	}
@@ -46,7 +46,7 @@ public:
 	}
 
 	using t_adder_function = void (SMModObjectStorage::*)(T*);
-	inline t_adder_function GetAdderFunction(const bool& add_to_global_db)
+	inline t_adder_function GetAdderFunction(bool add_to_global_db)
 	{
 		return add_to_global_db ? &SMModObjectStorage::AddObjectGlobal : &SMModObjectStorage::AddObjectDynamic;
 	}
@@ -62,7 +62,7 @@ public:
 		StaticStorage.emplace(v_object->m_uuid, v_object);
 	}
 
-	inline bool ObjectExists(const SMUuid& v_uuid, const bool& add_to_global_db)
+	inline bool ObjectExists(const SMUuid& v_uuid, bool add_to_global_db)
 	{
 		const std::unordered_map<SMUuid, T*>& v_cur_map = add_to_global_db ? StaticStorage : this->DynamicStorage;
 		if (v_cur_map.find(v_uuid) == v_cur_map.end())
@@ -72,7 +72,7 @@ public:
 		return true;
 	}
 
-	inline void AddObject(T* v_object, const bool& add_to_global_db)
+	inline void AddObject(T* v_object, bool add_to_global_db)
 	{
 		const auto v_new_pair = std::make_pair(v_object->m_uuid, v_object);
 

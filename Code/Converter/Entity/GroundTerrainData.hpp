@@ -7,9 +7,9 @@
 class SMGroundTerrainData : public SMEntity
 {
 public:
-	inline EntityType Type() const override { return EntityType::GroundTerrain; }
+	inline EntityType Type() const noexcept override { return EntityType::GroundTerrain; }
 
-	inline char* GetMtlNameCStr(const std::string& v_mat_name, const std::size_t& v_idx, char* v_ptr) const override
+	inline char* GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, char* v_ptr) const override
 	{
 		*v_ptr++ = 'T';
 		*v_ptr++ = 'i';

@@ -32,7 +32,7 @@ void AssetListLoader::LoadDefaultColors(const simdjson::dom::element& jAsset, st
 	}
 }
 
-void AssetListLoader::Load(const simdjson::dom::element& fAssets, SMMod* mod, const bool& add_to_global_db)
+void AssetListLoader::Load(const simdjson::dom::element& fAssets, SMMod* mod, bool add_to_global_db)
 {
 	if (!fAssets.is_array()) return;
 

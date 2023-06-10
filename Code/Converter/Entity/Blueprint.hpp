@@ -34,7 +34,7 @@ public:
 	static SMBlueprint* FromFileWithStatus(const std::wstring& path, AddObjectFunction v_addObjFunc, ConvertError& v_error);
 	static SMBlueprint* FromJsonString(const std::string& json_str);
 
-	inline EntityType Type() const override { return EntityType::Blueprint; }
+	inline EntityType Type() const noexcept override { return EntityType::Blueprint; }
 	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const override;
 	void WriteObjectToFile(std::ofstream& file, WriterOffsetData& mOffset, const glm::mat4& transform_matrix) const override;
 	std::size_t GetAmountOfObjects() const override;

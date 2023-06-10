@@ -23,33 +23,32 @@ public:
 	GroundTexture(const std::wstring& path);
 	GroundTexture(const GroundTexture&) = delete;
 	GroundTexture(GroundTexture&&) = delete;
-	GroundTexture(GroundTexture&) = delete;
 	~GroundTexture();
 
-	bool AllocateMemory(const int& xSize, const int& ySize);
-	void Resize(const int& width, const int& height);
+	bool AllocateMemory(int xSize, int ySize);
+	void Resize(int width, int height);
 	bool LoadImageData();
 	void Clear();
 
 	void SetPath(const std::wstring& path);
 
-	inline int GetWidth() const { return m_width; }
-	inline int GetHeight() const { return m_height; }
+	inline int GetWidth() const noexcept { return m_width; }
+	inline int GetHeight() const noexcept { return m_height; }
 
-	inline FIBITMAP* Data() { return m_imageData; };
-	inline void SetData(FIBITMAP* p_tex_data) { m_imageData = p_tex_data; }
+	inline FIBITMAP* Data() noexcept { return m_imageData; };
+	inline void SetData(FIBITMAP* p_tex_data) noexcept { m_imageData = p_tex_data; }
 
-	inline void GetByte(const int& p_x, const int& p_y, RGBQUAD* p_pixel) const
+	inline void GetByte(int p_x, int p_y, RGBQUAD* p_pixel) const
 	{
 		FreeImage_GetPixelColor(m_imageData, p_x, p_y, p_pixel);
 	}
 
-	inline void SetByte(const int& p_x, const int& p_y, RGBQUAD* new_data)
+	inline void SetByte(int p_x, int p_y, RGBQUAD* new_data)
 	{
 		FreeImage_SetPixelColor(m_imageData, p_x, p_y, new_data);
 	}
 
-	void WriteToFile(const std::wstring& path, const int& quality = 90) const;
+	void WriteToFile(const std::wstring& path, int quality = 90) const;
 };
 
 using GroundTexBundle = std::array<GroundTexture*, 3>;
@@ -66,8 +65,8 @@ public:
 	static void Initialize();
 	static void ClearTextureDatabase();
 
-	static GroundTexture* GetDefaultTexture(const std::size_t& index);
-	static GroundTexture* GetTexture(const std::size_t& index, const std::size_t& type);
+	static GroundTexture* GetDefaultTexture(std::size_t index);
+	static GroundTexture* GetTexture(std::size_t index, std::size_t type);
 };
 
 #pragma managed

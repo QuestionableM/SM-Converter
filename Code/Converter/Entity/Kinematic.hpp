@@ -9,7 +9,7 @@
 class SMKinematic : public SMEntity
 {
 public:
-	inline SMKinematic(const KinematicData* v_km_data, Model* v_model, const SMColor& v_color)
+	inline SMKinematic(const KinematicData* v_km_data, Model* v_model, SMColor v_color)
 	{
 		this->m_parent = v_km_data;
 		this->m_uuid = m_parent->m_uuid;
@@ -22,10 +22,10 @@ public:
 	~SMKinematic() = default;
 
 	inline SMColor GetColor() const override { return m_color; }
-	inline EntityType Type() const { return EntityType::Kinematic; }
-	char* GetMtlNameCStr(const std::string& v_mat_name, const std::size_t& v_idx, char* v_ptr) const override;
+	inline EntityType Type() const noexcept override { return EntityType::Kinematic; }
+	char* GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, char* v_ptr) const override;
 	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const override;
-	bool GetCanWrite(const std::string& name, const std::size_t& v_idx) const override;
+	bool GetCanWrite(const std::string& name, std::size_t v_idx) const override;
 
 private:
 	SMColor m_color;

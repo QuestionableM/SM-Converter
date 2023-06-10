@@ -83,7 +83,7 @@ glm::vec3 PartListLoader::LoadPartCollision(const simdjson::dom::element& collis
 	return v_out_collision;
 }
 
-void PartListLoader::Load(const simdjson::dom::element& fParts, SMMod* mod, const bool& add_to_global_db)
+void PartListLoader::Load(const simdjson::dom::element& fParts, SMMod* mod, bool add_to_global_db)
 {
 	if (!fParts.is_array()) return;
 

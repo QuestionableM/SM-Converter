@@ -43,9 +43,9 @@ struct SubMeshData
 
 	IndexWriterFunction GetWriterFunction() const;
 
-	inline bool IsEmpty() { return m_DataIdx.empty(); }
+	inline bool IsEmpty() const noexcept { return m_DataIdx.empty(); }
 
-	inline SubMeshData(const int& sub_mesh_idx) { this->m_SubMeshIdx = sub_mesh_idx; }
+	inline SubMeshData(int sub_mesh_idx) noexcept { this->m_SubMeshIdx = sub_mesh_idx; }
 	~SubMeshData() = default;
 
 	std::string m_MaterialName;
@@ -69,7 +69,7 @@ struct Model
 
 	void WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, std::ofstream& file, const class SMEntity* pEntity);
 
-	inline bool IsEmpty() const
+	inline bool IsEmpty() const noexcept
 	{
 		return (this->subMeshData.size() <= 0 || (this->vertices.size() <= 0 && this->uvs.size() <= 0 && this->normals.size() <= 0));
 	}

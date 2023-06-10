@@ -65,7 +65,7 @@ public:
 	}
 
 	template<bool t_mod_counter, int t_tile_version>
-	static int Read(const std::vector<Byte>& bytes, const int& hvs_index, const int& len, TilePart* part)
+	static int Read(const std::vector<Byte>& bytes, int hvs_index, int len, TilePart* part)
 	{
 		MemoryWrapper memory(bytes);
 

@@ -18,32 +18,32 @@ class Tile
 	std::vector<TilePart*> m_Tiles;
 
 public:
-	Tile(const int& width, const int& height);
+	Tile(int width, int height);
 	~Tile();
 
-	inline int GetWidth() const { return m_Width; }
-	inline int GetHeight() const { return m_Height; }
-	inline int GetVersion() const { return m_Version; }
+	inline int GetWidth() const noexcept { return m_Width; }
+	inline int GetHeight() const noexcept { return m_Height; }
+	inline int GetVersion() const noexcept { return m_Version; }
 	//UUID IMPLEMENTATION GOES HERE
-	inline int GetTileType() const { return m_Type; }
-	inline long long GetCreatorId() const { return m_CreatorId; }
+	inline int GetTileType() const noexcept { return m_Type; }
+	inline long long GetCreatorId() const noexcept { return m_CreatorId; }
 
-	inline void SetVersion(const int& version) { this->m_Version = version; }
-	inline void SetTileType(const int& type) { this->m_Type = type; }
-	inline void SetCreatorId(const long long& creator_id) { this->m_CreatorId = creator_id; }
+	inline void SetVersion(int version) noexcept { this->m_Version = version; }
+	inline void SetTileType(int type) noexcept { this->m_Type = type; }
+	inline void SetCreatorId(long long creator_id) noexcept { this->m_CreatorId = creator_id; }
 
-	inline void SetPart(const int& x, const int& y, TilePart* part)
+	inline void SetPart(int x, int y, TilePart* part)
 	{
 		assert(part == nullptr);
 		m_Tiles[x + y * m_Width] = part;
 	}
 
-	inline TilePart* GetPart(const int& x, const int& y) const
+	inline TilePart* GetPart(int x, int y) const
 	{
 		return m_Tiles[x + y * m_Width];
 	}
 
-	inline TilePart* GetPartSafe(const int& x, const int& y) const
+	inline TilePart* GetPartSafe(int x, int y) const
 	{
 		if (x >= m_Width || y >= m_Height)
 			return nullptr;
@@ -51,7 +51,7 @@ public:
 		return m_Tiles[x + y * m_Width];
 	}
 
-	void Resize(const int& width, const int& height);
+	void Resize(int width, int height);
 
 	std::vector<float> GetVertexHeight() const;
 	std::vector<int> GetVertexColor() const;
@@ -69,7 +69,7 @@ private:
 
 	void FillGndTexture(GroundTexture* mGndTex, const std::size_t& tex_id) const;
 	void FillMaterialMap(std::array<struct MaterialData, 8>& mat_data) const;
-	void SampleTextures(GroundTexture* tex1, GroundTexture* out_tex, const std::vector<float>& material_map, const int& gnd_width, const int& gnd_height) const;
+	void SampleTextures(GroundTexture* tex1, GroundTexture* out_tex, const std::vector<float>& material_map, int gnd_width, int gnd_height) const;
 	void WriteGroundTextures(const std::wstring& dir) const;
 
 public:

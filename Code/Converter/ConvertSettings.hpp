@@ -16,9 +16,8 @@ struct TileConverterSettings
 
 private:
 	TileConverterSettings() = default;
-	TileConverterSettings(const TileConverterSettings&&) = delete;
+	TileConverterSettings(const TileConverterSettings&) = delete;
 	TileConverterSettings(TileConverterSettings&&) = delete;
-	TileConverterSettings(TileConverterSettings&) = delete;
 	~TileConverterSettings() = default;
 };
 
@@ -28,9 +27,8 @@ struct BlueprintConverterSettings
 
 private:
 	BlueprintConverterSettings() = default;
-	BlueprintConverterSettings(const BlueprintConverterSettings&&) = delete;
+	BlueprintConverterSettings(const BlueprintConverterSettings&) = delete;
 	BlueprintConverterSettings(BlueprintConverterSettings&&) = delete;
-	BlueprintConverterSettings(BlueprintConverterSettings&) = delete;
 	~BlueprintConverterSettings() = default;
 };
 
@@ -42,9 +40,8 @@ struct SharedConverterSettings
 
 private:
 	SharedConverterSettings() = default;
-	SharedConverterSettings(const SharedConverterSettings&&) = delete;
+	SharedConverterSettings(const SharedConverterSettings&) = delete;
 	SharedConverterSettings(SharedConverterSettings&&) = delete;
-	SharedConverterSettings(SharedConverterSettings&) = delete;
 	~SharedConverterSettings() = default;
 };
 

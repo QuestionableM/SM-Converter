@@ -9,7 +9,7 @@ class ConvertError
 public:
 	ConvertError() = default;
 
-	inline ConvertError(const unsigned short& ec, const std::wstring& error_msg)
+	inline ConvertError(unsigned short ec, const std::wstring& error_msg)
 	{
 		this->m_errorCode = ec;
 		this->m_errorMessage = error_msg;

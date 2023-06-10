@@ -32,7 +32,7 @@ public:
 		return m_emptyObject;
 	}
 
-	inline static const nlohmann::json& Get(const nlohmann::json& obj, const std::size_t& key)
+	inline static const nlohmann::json& Get(const nlohmann::json& obj, std::size_t key)
 	{
 		if (key < obj.size())
 			return obj.at(key);
@@ -104,9 +104,8 @@ private:
 	inline const static nlohmann::json m_emptyObject = nlohmann::json();
 
 	JsonReader() = default;
-	JsonReader(const JsonReader&&) = delete;
-	JsonReader(JsonReader&&)       = delete;
-	JsonReader(JsonReader&)        = delete;
+	JsonReader(const JsonReader&) = delete;
+	JsonReader(JsonReader&&) = delete;
 	~JsonReader() = default;
 };
 

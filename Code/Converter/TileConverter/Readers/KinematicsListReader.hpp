@@ -62,7 +62,7 @@ public:
 	}
 
 	template<bool t_mod_counter, int t_tile_version>
-	static int Read(const std::vector<Byte>& bytes, const int& kinematic_idx, const int& len, TilePart* part)
+	static int Read(const std::vector<Byte>& bytes, int kinematic_idx, int len, TilePart* part)
 	{
 		MemoryWrapper v_memory(bytes);
 		MEMORY_WRAPPER_DUMP_BYTES(v_memory, "./kinematics_dump", 0);

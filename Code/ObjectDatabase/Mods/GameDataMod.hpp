@@ -10,7 +10,7 @@ public:
 	GameDataMod();
 	~GameDataMod() = default;
 
-	inline ModType Type() const override { return ModType::GameData; }
+	inline ModType Type() const noexcept override { return ModType::GameData; }
 	void LoadObjectDatabase() override;
 };
 

@@ -18,7 +18,7 @@ GroundTexture::~GroundTexture()
 	this->Clear();
 }
 
-bool GroundTexture::AllocateMemory(const int& xSize, const int& ySize)
+bool GroundTexture::AllocateMemory(int xSize, int ySize)
 {
 	if (m_imageData)
 		FreeImage_Unload(m_imageData);
@@ -36,7 +36,7 @@ bool GroundTexture::AllocateMemory(const int& xSize, const int& ySize)
 	return true;
 }
 
-void GroundTexture::Resize(const int& width, const int& height)
+void GroundTexture::Resize(int width, int height)
 {
 	if (!m_imageData)
 		return;
@@ -113,7 +113,7 @@ void GroundTexture::SetPath(const std::wstring& path)
 	DebugOutL("TexPath: ", m_texturePath);
 }
 
-void GroundTexture::WriteToFile(const std::wstring& path, const int& quality) const
+void GroundTexture::WriteToFile(const std::wstring& path, int quality) const
 {
 	if (!m_imageData)
 		return;
@@ -183,12 +183,12 @@ void GroundTextureDatabase::ClearTextureDatabase()
 	}
 }
 
-GroundTexture* GroundTextureDatabase::GetDefaultTexture(const std::size_t& index)
+GroundTexture* GroundTextureDatabase::GetDefaultTexture(std::size_t index)
 {
 	return GroundTextureDatabase::DefaultTex[index];
 }
 
-GroundTexture* GroundTextureDatabase::GetTexture(const std::size_t& index, const std::size_t& type)
+GroundTexture* GroundTextureDatabase::GetTexture(std::size_t index, std::size_t type)
 {
 	return GroundTextureDatabase::TexStorage[index][type];
 }

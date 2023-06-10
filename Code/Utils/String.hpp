@@ -141,7 +141,7 @@ namespace String
 		return str_cpy;
 	}
 
-	inline std::string BytesToHexString(const std::vector<Byte>& bytes, const int& maxLength, const int& lineLength)
+	inline std::string BytesToHexString(const std::vector<Byte>& bytes, int maxLength, int lineLength)
 	{
 		std::stringstream sstream;
 		std::string v_output;
@@ -162,7 +162,7 @@ namespace String
 		return v_output;
 	}
 
-	inline std::string FloatVecToString(const float* f, const std::size_t& amount, const std::string separator = " ")
+	inline std::string FloatVecToString(const float* f, std::size_t amount, const std::string& separator = " ")
 	{
 		std::string v_output;
 
@@ -199,7 +199,7 @@ namespace String
 
 	constexpr const wchar_t g_allowedPathCharacters[] = { L'(', L')', L'.', L' ', L'_', 0x32, L'[', L']', L'-' };
 	constexpr const std::size_t g_allowedPathCharactersSz = sizeof(g_allowedPathCharacters) / sizeof(wchar_t);
-	inline bool IsPathCharacterAllowed(const wchar_t& c)
+	inline bool IsPathCharacterAllowed(wchar_t c)
 	{
 		if (std::iswalpha(c) || std::iswdigit(c))
 			return true;
@@ -212,7 +212,7 @@ namespace String
 
 	//Removes the illegal character from string and limits it to a certain size
 	template<typename T>
-	inline constexpr std::wstring LimitWstring(const T& v_str, const std::size_t& v_char_limit)
+	inline constexpr std::wstring LimitWstring(const T& v_str, std::size_t v_char_limit)
 	{
 		static_assert(std::is_same_v<T, const wchar_t*> || std::is_same_v<T, std::wstring>, "LimitWstring can only work with const wchar_t* and std::wstring");
 

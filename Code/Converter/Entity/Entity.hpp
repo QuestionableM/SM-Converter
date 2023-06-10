@@ -65,17 +65,17 @@ public:
 	inline void SetUuid(const SMUuid& uuid) { this->m_uuid = uuid; }
 	inline void SetModel(Model* model) { this->m_model = model; }
 
-	virtual EntityType Type() const = 0;
+	virtual EntityType Type() const noexcept = 0;
 	virtual std::size_t GetIndex() const { return -1; }
-	virtual char* GetMtlNameCStr(const std::string& v_mat_name, const std::size_t& v_idx, char* v_ptr) const { return v_ptr; }
-	virtual std::string GetMtlName(const std::size_t& v_idx) const { return ""; }
+	virtual char* GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, char* v_ptr) const { return v_ptr; }
+	virtual std::string GetMtlName(std::size_t v_idx) const { return ""; }
 	virtual void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const = 0;
 	virtual void WriteObjectToFile(std::ofstream& file, WriterOffsetData& mOffset, const glm::mat4& transform_matrix) const;
 	inline virtual void CalculateCenterPoint(glm::vec3& v_input) const { v_input += m_position; }
 	inline virtual std::size_t GetAmountOfObjects() const { return 1; }
 	inline virtual SMColor GetColor() const { return static_cast<int>(0x000000ff); }
 	//This option can help you to discard unwanted sub meshes (like shadow only sub meshes)
-	inline virtual bool GetCanWrite(const std::string& name, const std::size_t& v_idx) const { return true; }
+	inline virtual bool GetCanWrite(const std::string& name, std::size_t v_idx) const { return true; }
 
 protected:
 	glm::vec3 m_position = glm::vec3(0.0f, 0.0f, 0.0f);

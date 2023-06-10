@@ -13,7 +13,7 @@ namespace Crypt
 		Md5
 	};
 
-	std::string GetHashString(const void* pData, const std::size_t& mDataSize, const HashType& mType);
+	std::string GetHashString(const void* pData, std::size_t mDataSize, HashType mType);
 }
 
 #pragma managed

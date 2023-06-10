@@ -28,7 +28,7 @@ TilePart::~TilePart()
 	}
 }
 
-void TilePart::AddObject(SMEntity* object, const int& index)
+void TilePart::AddObject(SMEntity* object, int index)
 {
 	assert(object != nullptr);
 	assert(0 <= index && index <= 3);
@@ -38,7 +38,7 @@ void TilePart::AddObject(SMEntity* object, const int& index)
 	this->m_Objects[index].push_back(object);
 }
 
-void TilePart::WriteToFile(std::ofstream& model, WriterOffsetData& mOffsetData, const int& xPos, const int& zPos)
+void TilePart::WriteToFile(std::ofstream& model, WriterOffsetData& mOffsetData, int xPos, int zPos)
 {
 	constexpr const float rot_offset = 1.0f * glm::pi<float>();
 
@@ -66,10 +66,10 @@ void TilePart::WriteToFile(std::ofstream& model, WriterOffsetData& mOffsetData, 
 
 void TilePart::WriteToFileWorld(std::ofstream& v_model,
 	WriterOffsetData& v_offset,
-	const std::size_t& x_pos,
-	const std::size_t& y_pos,
-	const std::size_t& v_world_sz,
-	const char& v_rotation)
+	std::size_t x_pos,
+	std::size_t y_pos,
+	std::size_t v_world_sz,
+	char v_rotation)
 {
 	float v_rot_offset = 0.0f;
 	switch (v_rotation)

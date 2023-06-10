@@ -40,7 +40,7 @@ void ClutterListLoader::LoadClutterData(const simdjson::dom::element& fClutter, 
 	pClutter->m_groundNormal = (v_cl_ground_normal.is_bool() ? v_cl_ground_normal.get_bool() : false);
 }
 
-void ClutterListLoader::Load(const simdjson::dom::element& fClutter, SMMod* mod, const bool& add_to_global_db)
+void ClutterListLoader::Load(const simdjson::dom::element& fClutter, SMMod* mod, bool add_to_global_db)
 {
 	if (!fClutter.is_array()) return;
 

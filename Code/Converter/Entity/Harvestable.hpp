@@ -9,7 +9,7 @@
 class SMHarvestable : public SMEntity
 {
 public:
-	inline SMHarvestable(const HarvestableData* pParent, Model* pModel, const SMColor& color)
+	inline SMHarvestable(const HarvestableData* pParent, Model* pModel, SMColor color)
 	{
 		this->m_parent = pParent;
 		this->m_uuid = pParent->m_uuid;
@@ -22,10 +22,10 @@ public:
 	~SMHarvestable() = default;
 
 	inline SMColor GetColor() const override { return m_color; }
-	inline EntityType Type() const { return EntityType::Harvestable; }
-	char* GetMtlNameCStr(const std::string& v_mat_name, const std::size_t& v_idx, char* v_ptr) const override;
+	inline EntityType Type() const noexcept override { return EntityType::Harvestable; }
+	char* GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, char* v_ptr) const override;
 	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const override;
-	bool GetCanWrite(const std::string& name, const std::size_t& v_idx) const override;
+	bool GetCanWrite(const std::string& name, std::size_t v_idx) const override;
 
 private:
 	SMColor m_color;

@@ -4,7 +4,7 @@
 
 #pragma unmanaged
 
-char* SMTileClutter::GetMtlNameCStr(const std::string& v_mat_name, const std::size_t& v_idx, char* v_ptr) const
+char* SMTileClutter::GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, char* v_ptr) const
 {
 	v_ptr = m_uuid.ToCString(v_ptr);
 	*v_ptr++ = ' ';
@@ -16,7 +16,7 @@ char* SMTileClutter::GetMtlNameCStr(const std::string& v_mat_name, const std::si
 	return MaterialManager::GetMaterialACStr(m_parent->m_textures.material, v_ptr);
 }
 
-std::string	SMTileClutter::GetMtlName(const std::size_t& mIdx) const
+std::string	SMTileClutter::GetMtlName(std::size_t mIdx) const
 {
 	const std::string tex_mat = MaterialManager::GetMaterialA(m_parent->m_textures.material);
 

@@ -30,7 +30,7 @@ struct FilterSettingsData
 
 	static unsigned char GetUserDataFilter(const std::wstring& path);
 
-	inline static wchar_t* GetTileSizeName(const unsigned char& v_id)
+	inline static wchar_t* GetTileSizeName(unsigned char v_id)
 	{
 		switch (v_id)
 		{
@@ -43,7 +43,7 @@ struct FilterSettingsData
 		return L"UNKNOWN";
 	}
 
-	inline static wchar_t* GetFilterName(const unsigned char& v_id)
+	inline static wchar_t* GetFilterName(unsigned char v_id)
 	{
 		switch (v_id)
 		{
@@ -57,9 +57,8 @@ struct FilterSettingsData
 
 private:
 	FilterSettingsData() = default;
-	FilterSettingsData(const FilterSettingsData&&) = delete;
 	FilterSettingsData(const FilterSettingsData&) = delete;
-	FilterSettingsData(FilterSettingsData&) = delete;
+	FilterSettingsData(FilterSettingsData&&) = delete;
 	~FilterSettingsData() = default;
 };
 

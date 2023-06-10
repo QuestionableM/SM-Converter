@@ -85,7 +85,7 @@ void Rotations::InitializeRotations()
 	DebugOutL(0b0101_fg, "Rotations have been initialized!");
 }
 
-glm::mat4 Rotations::GetRotationMatrix(const unsigned char& v_rotation)
+glm::mat4 Rotations::GetRotationMatrix(unsigned char v_rotation)
 {
 	const std::unordered_map<unsigned char, RotationEntry>::const_iterator v_iter = Rotations::RotationTable.find(v_rotation);
 	if (v_iter == Rotations::RotationTable.end())
@@ -94,7 +94,7 @@ glm::mat4 Rotations::GetRotationMatrix(const unsigned char& v_rotation)
 	return v_iter->second.rot_matrix;
 }
 
-glm::vec3 Rotations::GetOffsetPosition(const unsigned char& v_rotation)
+glm::vec3 Rotations::GetOffsetPosition(unsigned char v_rotation)
 {
 	const std::unordered_map<unsigned char, RotationEntry>::const_iterator v_iter = Rotations::RotationTable.find(v_rotation);
 	if (v_iter == Rotations::RotationTable.end())

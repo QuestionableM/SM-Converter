@@ -27,7 +27,7 @@ public:
 		MipReader::Read(bytes, part);
 	}
 
-	inline static std::vector<Byte> Read(CellHeader* header, const int& mipOrLevel, MemoryWrapper& reader, ConvertError& cError)
+	inline static std::vector<Byte> Read(CellHeader* header, int mipOrLevel, MemoryWrapper& reader, ConvertError& cError)
 	{
 		DebugOutL("MipIndex: ", header->mipIndex[mipOrLevel], ", MipCompressedSize: ", header->mipCompressedSize[mipOrLevel]);
 		const std::vector<Byte> compressed = reader.Objects<Byte>(header->mipIndex[mipOrLevel], header->mipCompressedSize[mipOrLevel]);

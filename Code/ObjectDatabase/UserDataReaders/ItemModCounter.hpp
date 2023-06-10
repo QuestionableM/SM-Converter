@@ -40,16 +40,16 @@ struct ItemModStats
 	{
 		std::size_t	v_output = 0;
 
-		for (std::size_t a = 0; a < ItemModStats::ModVector.size(); a++)
-			v_output += ItemModStats::ModVector[a]->part_count;
+		for (auto v_cur_mod : ItemModStats::ModVector)
+			v_output += v_cur_mod->part_count;
 
 		return v_output;
 	}
 
 	inline static void Reset()
 	{
-		for (std::size_t a = 0; a < ItemModStats::ModVector.size(); a++)
-			delete ItemModStats::ModVector[a];
+		for (auto v_cur_mod : ItemModStats::ModVector)
+			delete v_cur_mod;
 
 		ItemModStats::ModStorage.clear();
 		ItemModStats::ModVector.clear();

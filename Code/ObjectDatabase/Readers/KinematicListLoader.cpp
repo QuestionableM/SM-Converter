@@ -6,7 +6,7 @@
 
 #pragma unmanaged
 
-void KinematicListLoader::Load(const simdjson::dom::element& v_kinematics, SMMod* mod, const bool& add_to_global_db)
+void KinematicListLoader::Load(const simdjson::dom::element& v_kinematics, SMMod* mod, bool add_to_global_db)
 {
 	if (!v_kinematics.is_array()) return;
 

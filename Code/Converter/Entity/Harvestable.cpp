@@ -4,7 +4,7 @@
 
 #pragma unmanaged
 
-char* SMHarvestable::GetMtlNameCStr(const std::string& v_mat_name, const std::size_t& v_idx, char* v_ptr) const
+char* SMHarvestable::GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, char* v_ptr) const
 {
 	v_ptr = m_uuid.ToCString(v_ptr);
 	*v_ptr++ = ' ';
@@ -46,7 +46,7 @@ void SMHarvestable::FillTextureMap(std::unordered_map<std::string, ObjectTexData
 	}
 }
 
-bool SMHarvestable::GetCanWrite(const std::string& name, const std::size_t& v_idx) const
+bool SMHarvestable::GetCanWrite(const std::string& name, std::size_t v_idx) const
 {
 	const SMTextureList* v_tex_list = m_parent->m_textures->GetTexList(name, v_idx);
 	if (!v_tex_list) return false;

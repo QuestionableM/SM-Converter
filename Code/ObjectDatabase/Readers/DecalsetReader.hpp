@@ -11,7 +11,7 @@ class DecalsetReader
 	DecalsetReader() = default;
 
 public:
-	static void LoadFromFile(const std::wstring& path, SMMod* mod, const bool& add_to_global_db);
+	static void LoadFromFile(const std::wstring& path, SMMod* mod, bool add_to_global_db);
 };
 
 #pragma managed

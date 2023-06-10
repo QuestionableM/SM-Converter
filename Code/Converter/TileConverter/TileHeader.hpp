@@ -40,7 +40,7 @@ public:
 			delete m_CellHeaders[a];
 	}
 
-	void FillHeaderBytes(const std::vector<Byte>& header_bytes, const std::size_t& header_size)
+	void FillHeaderBytes(const std::vector<Byte>& header_bytes, std::size_t header_size)
 	{
 		const int wh_mul = m_data.width * m_data.height;
 		for (int a = 0; a < wh_mul; a++)
@@ -132,12 +132,12 @@ public:
 		return new_tile;
 	}
 
-	const std::vector<Byte>& TileData() const
+	const std::vector<Byte>& TileData() const noexcept
 	{
 		return m_TileBytes;
 	}
 
-	CellHeader* GetHeader(const int& x, const int& y)
+	CellHeader* GetHeader(int x, int y)
 	{
 		return m_CellHeaders[(std::size_t)(x + y * m_data.width)];
 	}

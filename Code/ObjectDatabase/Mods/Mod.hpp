@@ -25,7 +25,7 @@ class SMMod
 {
 public:
 	static void ClearModStorage();
-	static SMMod* LoadFromDescription(const std::wstring& mod_folder, const bool& is_local);
+	static SMMod* LoadFromDescription(const std::wstring& mod_folder, bool is_local);
 
 	template<typename T>
 	inline static const T* GetGlobalObject(const SMUuid& uuid)
@@ -40,7 +40,7 @@ public:
 		return nullptr;
 	}
 
-	inline static ClutterData* GetGlobalClutterById(const std::size_t& idx)
+	inline static ClutterData* GetGlobalClutterById(std::size_t idx)
 	{
 		if (SMMod::ClutterVector.size() <= idx)
 		{
@@ -89,8 +89,8 @@ public:
 	}
 
 
-	inline static std::vector<CustomGame*>& GetCustomGames() { return SMMod::CustomGameVector; }
-	inline static const std::vector<SMMod*>& GetAllMods() { return SMMod::ModVector; }
+	inline static std::vector<CustomGame*>& GetCustomGames() noexcept { return SMMod::CustomGameVector; }
+	inline static const std::vector<SMMod*>& GetAllMods() noexcept { return SMMod::ModVector; }
 
 	inline static GarmentData* GetGarment(const std::string& v_category, const SMUuid& v_uuid)
 	{
@@ -105,8 +105,8 @@ public:
 		return v_cur_item->second;
 	}
 
-	inline static std::size_t GetAmountOfMods() { return SMMod::ModVector.size(); }
-	inline static std::size_t GetAmountOfObjects()
+	inline static std::size_t GetAmountOfMods() noexcept { return SMMod::ModVector.size(); }
+	inline static std::size_t GetAmountOfObjects() noexcept
 	{
 		return SMModObjectStorage<BlockData>::StaticStorage.size()
 			+ SMModObjectStorage<PartData>::StaticStorage.size()
@@ -117,27 +117,35 @@ public:
 			+ SMModObjectStorage<KinematicData>::StaticStorage.size();
 	}
 
-	void LoadFile(const std::wstring& path, const bool& add_to_global_db);
-	static void LoadShapeSetList(const std::wstring& path, SMMod* v_mod, const bool& add_to_global_db);
-	static void LoadAssetSetList(const std::wstring& path, SMMod* v_mod, const bool& add_to_global_db);
-	static void LoadHarvestableSetList(const std::wstring& path, SMMod* v_mod, const bool& add_to_global_db);
-	static void LoadKinematicSetList(const std::wstring& path, SMMod* v_mod, const bool& add_to_global_db);
+	void LoadFile(const std::wstring& path, bool add_to_global_db);
+	static void LoadShapeSetList(const std::wstring& path, SMMod* v_mod, bool add_to_global_db);
+	static void LoadAssetSetList(const std::wstring& path, SMMod* v_mod, bool add_to_global_db);
+	static void LoadHarvestableSetList(const std::wstring& path, SMMod* v_mod, bool add_to_global_db);
+	static void LoadKinematicSetList(const std::wstring& path, SMMod* v_mod, bool add_to_global_db);
 
-	void ScanDatabaseFolderRecursive(const std::wstring& folder, const bool& add_to_global_db);
-	void ScanDatabaseFolder(const std::wstring& folder, const bool& add_to_global_db);
+	void ScanDatabaseFolderRecursive(const std::wstring& folder, bool add_to_global_db);
+	void ScanDatabaseFolder(const std::wstring& folder, bool add_to_global_db);
 
 	void SetContentKey() const;
 
-	inline const SMUuid& GetUuid() const { return m_Uuid; }
-	inline const std::wstring& GetName() const { return m_Name; }
-	inline const unsigned long long& GetWorkshopId() const { return m_WorkshopId; }
-	inline const std::wstring& GetDirectory() const { return m_Directory; }
+	inline const SMUuid& GetUuid() const noexcept { return m_Uuid; }
+	inline const std::wstring& GetName() const noexcept { return m_Name; }
+	inline const unsigned long long& GetWorkshopId() const noexcept { return m_WorkshopId; }
+	inline const std::wstring& GetDirectory() const noexcept { return m_Directory; }
 
-	virtual ModType Type() const = 0;
+	virtual ModType Type() const noexcept = 0;
 	virtual void LoadObjectDatabase() = 0;
+
+	SMMod(
+		const std::wstring& v_name,
+		const std::wstring& v_directory,
+		const SMUuid& v_uuid,
+		unsigned long long v_workshop_id,
+		bool v_isLocal);
 
 	SMMod(const SMMod&) = delete;
 	SMMod(SMMod&&) = delete;
+
 	virtual ~SMMod() = default;
 
 	SMModObjectStorage<BlockData> m_Blocks;
@@ -158,8 +166,6 @@ protected:
 	std::wstring m_Directory;
 	unsigned long long m_WorkshopId;
 	bool m_isLocal;
-
-	SMMod() = default;
 
 private:
 	//Mod and Custom game storage/vectors are filled inside the constructors of the mods

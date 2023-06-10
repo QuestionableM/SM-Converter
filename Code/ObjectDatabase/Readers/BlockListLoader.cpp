@@ -47,7 +47,7 @@ void BlockListLoader::GetBlockMaterial(const simdjson::dom::element& block, SMTe
 	}
 }
 
-void BlockListLoader::Load(const simdjson::dom::element& fBlocks, SMMod* mod, const bool& add_to_global_db)
+void BlockListLoader::Load(const simdjson::dom::element& fBlocks, SMMod* mod, bool add_to_global_db)
 {
 	if (!fBlocks.is_array()) return;
 

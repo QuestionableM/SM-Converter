@@ -86,7 +86,7 @@ inline bool GetModTypeFromString(const char* v_str, ModType& v_type_ref)
 	return false;
 }
 
-SMMod* SMMod::LoadFromDescription(const std::wstring& mod_folder, const bool& is_local)
+SMMod* SMMod::LoadFromDescription(const std::wstring& mod_folder, bool is_local)
 {
 	const std::wstring mDescPath = mod_folder + L"/description.json";
 	if (!File::Exists(mDescPath)) return nullptr;
@@ -177,7 +177,7 @@ CustomGame* SMMod::GetCustomGameFromPath(const std::wstring& v_path)
 	return nullptr;
 }
 
-using DataLoaderMap = std::unordered_map<std::string, void (*)(const simdjson::dom::element&, SMMod*, const bool&)>;
+using DataLoaderMap = std::unordered_map<std::string, void (*)(const simdjson::dom::element&, SMMod*, bool)>;
 static const DataLoaderMap g_DataLoaders =
 {
 	{ "assetListRenderable", AssetListLoader::Load       },
@@ -190,7 +190,7 @@ static const DataLoaderMap g_DataLoaders =
 	{ "categoryList"       , GarmentListLoader::Load     }
 };
 
-void SMMod::LoadFile(const std::wstring& path, const bool& add_to_global_db)
+void SMMod::LoadFile(const std::wstring& path, bool add_to_global_db)
 {
 	simdjson::dom::document v_doc;
 	if (!JsonReader::LoadParseSimdjsonCommentsC(path, v_doc, simdjson::dom::element_type::OBJECT))
@@ -213,7 +213,7 @@ void SMMod::LoadFile(const std::wstring& path, const bool& add_to_global_db)
 	}
 }
 
-void SMMod::LoadAssetSetList(const std::wstring& path, SMMod* v_mod, const bool& add_to_global_db)
+void SMMod::LoadAssetSetList(const std::wstring& path, SMMod* v_mod, bool add_to_global_db)
 {
 	simdjson::dom::document v_assetset_doc;
 	if (!JsonReader::LoadParseSimdjsonCommentsC(path, v_assetset_doc, simdjson::dom::element_type::OBJECT))
@@ -236,7 +236,7 @@ void SMMod::LoadAssetSetList(const std::wstring& path, SMMod* v_mod, const bool&
 	}
 }
 
-void SMMod::LoadShapeSetList(const std::wstring& path, SMMod* v_mod, const bool& add_to_global_db)
+void SMMod::LoadShapeSetList(const std::wstring& path, SMMod* v_mod, bool add_to_global_db)
 {
 	simdjson::dom::document v_shapedb_doc;
 	if (!JsonReader::LoadParseSimdjsonCommentsC(path, v_shapedb_doc, simdjson::dom::element_type::OBJECT))
@@ -256,7 +256,7 @@ void SMMod::LoadShapeSetList(const std::wstring& path, SMMod* v_mod, const bool&
 	}
 }
 
-void SMMod::LoadHarvestableSetList(const std::wstring& path, SMMod* v_mod, const bool& add_to_global_db)
+void SMMod::LoadHarvestableSetList(const std::wstring& path, SMMod* v_mod, bool add_to_global_db)
 {
 	simdjson::dom::document v_hvsdb_doc;
 	if (!JsonReader::LoadParseSimdjsonCommentsC(path, v_hvsdb_doc, simdjson::dom::element_type::OBJECT))
@@ -279,7 +279,7 @@ void SMMod::LoadHarvestableSetList(const std::wstring& path, SMMod* v_mod, const
 	}
 }
 
-void SMMod::LoadKinematicSetList(const std::wstring& path, SMMod* v_mod, const bool& add_to_global_db)
+void SMMod::LoadKinematicSetList(const std::wstring& path, SMMod* v_mod, bool add_to_global_db)
 {
 	simdjson::dom::document v_kinematicdb_doc;
 	if (!JsonReader::LoadParseSimdjsonCommentsC(path, v_kinematicdb_doc, simdjson::dom::element_type::OBJECT))
@@ -311,7 +311,7 @@ inline bool IsShapeSetExtensionValid(const std::string& extension)
 	return false;
 }
 
-void SMMod::ScanDatabaseFolderRecursive(const std::wstring& folder, const bool& add_to_global_db)
+void SMMod::ScanDatabaseFolderRecursive(const std::wstring& folder, bool add_to_global_db)
 {
 	namespace fs = std::filesystem;
 
@@ -329,7 +329,7 @@ void SMMod::ScanDatabaseFolderRecursive(const std::wstring& folder, const bool& 
 	}
 }
 
-void SMMod::ScanDatabaseFolder(const std::wstring& folder, const bool& add_to_global_db)
+void SMMod::ScanDatabaseFolder(const std::wstring& folder, bool add_to_global_db)
 {
 	namespace fs = std::filesystem;
 
@@ -350,4 +350,18 @@ void SMMod::ScanDatabaseFolder(const std::wstring& folder, const bool& add_to_gl
 void SMMod::SetContentKey() const
 {
 	KeywordReplacer::SetModData(m_Directory, m_Uuid);
+}
+
+SMMod::SMMod(
+	const std::wstring& v_name,
+	const std::wstring& v_directory,
+	const SMUuid& v_uuid,
+	unsigned long long v_workshop_id,
+	bool v_isLocal)
+{
+	this->m_Name = v_name;
+	this->m_Directory = v_directory;
+	this->m_Uuid = v_uuid;
+	this->m_WorkshopId = v_workshop_id;
+	this->m_isLocal = v_isLocal;
 }

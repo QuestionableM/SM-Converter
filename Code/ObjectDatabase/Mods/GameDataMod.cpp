@@ -7,12 +7,12 @@
 #pragma unmanaged
 
 GameDataMod::GameDataMod()
-{
-	this->m_Name = L"Vanilla Data";
-	this->m_Directory = DatabaseConfig::GamePath;
-	this->m_Uuid = SMUuid(0x45157449ee614269, 0xa6ab3137e2945fca);
-	this->m_WorkshopId = 0;
-}
+	: SMMod(
+		L"Vanilla Data",
+		DatabaseConfig::GamePath,
+		SMUuid(0x45157449ee614269, 0xa6ab3137e2945fca),
+		0,
+		true) {}
 
 void GameDataMod::LoadObjectDatabase()
 {

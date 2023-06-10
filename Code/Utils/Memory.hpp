@@ -36,36 +36,36 @@ public:
 		this->bytes = bytes;
 	}
 
-	inline MemoryWrapper& Skip(const std::size_t& count)
+	inline MemoryWrapper& Skip(std::size_t count)
 	{
 		this->index += count;
 
 		return *this;
 	}
 
-	inline MemoryWrapper& Set(const std::size_t& index)
+	inline MemoryWrapper& Set(std::size_t index)
 	{
 		this->index = index;
 
 		return *this;
 	}
 
-	inline std::size_t Index() const
+	inline std::size_t Index() const noexcept
 	{
 		return this->index;
 	}
 
-	inline std::size_t Size() const
+	inline std::size_t Size() const noexcept
 	{
 		return this->bytes.size();
 	}
 
-	inline const Byte* Data() const
+	inline const Byte* Data() const noexcept
 	{
 		return this->bytes.data();
 	}
 
-	inline std::vector<Byte>& GetVec()
+	inline std::vector<Byte>& GetVec() noexcept
 	{
 		return this->bytes;
 	}
@@ -87,7 +87,7 @@ public:
 #endif
 
 	template<typename T, bool is_big_endian = false>
-	inline T Object(const std::size_t& offset)
+	inline T Object(std::size_t offset)
 	{
 		constexpr const std::size_t type_sz = sizeof(T);
 
@@ -127,7 +127,7 @@ public:
 	}
 
 	template<typename T, std::size_t array_size, bool is_big_endian = false>
-	inline std::array<T, array_size> ObjectsConst(const std::size_t& offset)
+	inline std::array<T, array_size> ObjectsConst(std::size_t offset)
 	{
 		std::array<T, array_size> l_output;
 		std::memcpy(l_output.data(), this->bytes.data() + offset, sizeof(T) * array_size);
@@ -140,7 +140,7 @@ public:
 		return l_output;
 	}
 
-	glm::quat GetQuat(const std::size_t& offset)
+	glm::quat GetQuat(std::size_t offset)
 	{
 		const std::array<float, 4> f_quat = this->ObjectsConst<float, 4>(offset);
 
@@ -148,7 +148,7 @@ public:
 	}
 
 	template<bool is_big_endian = false>
-	inline std::string String(const std::size_t& offset, const std::size_t& size)
+	inline std::string String(std::size_t offset, std::size_t size)
 	{
 		std::string v_string;
 		v_string.resize(size);
@@ -164,7 +164,7 @@ public:
 	}
 
 	template<bool is_big_endian = false>
-	inline std::string NextString(const std::size_t& size)
+	inline std::string NextString(std::size_t size)
 	{
 		std::string v_string;
 		v_string.resize(size);
@@ -181,10 +181,9 @@ public:
 	}
 
 	template<typename T, bool is_big_endian = false>
-	inline std::vector<T> Objects(const std::size_t& offset, const std::size_t& amount)
+	inline std::vector<T> Objects(std::size_t offset, std::size_t amount)
 	{
-		std::vector<T> obj_copy;
-		obj_copy.resize(amount);
+		std::vector<T> obj_copy(amount);
 
 		std::memcpy(obj_copy.data(), this->bytes.data() + offset, sizeof(T) * amount);
 
@@ -197,7 +196,7 @@ public:
 	}
 
 	template<typename T, bool is_big_endian = false>
-	inline void ObjectsRef(T* object_array, const std::size_t& offset, const std::size_t& amount)
+	inline void ObjectsRef(T* object_array, std::size_t offset, std::size_t amount)
 	{
 		const std::size_t final_amount = sizeof(T) * amount;
 		std::memcpy(object_array, this->bytes.data() + offset, final_amount);
@@ -209,12 +208,11 @@ public:
 	}
 
 	template<typename T, bool is_big_endian = false>
-	inline std::vector<T> NextObjects(const std::size_t& amount)
+	inline std::vector<T> NextObjects(std::size_t amount)
 	{
 		const std::size_t byte_amount = sizeof(T) * amount;
 
-		std::vector<T> obj_copy;
-		obj_copy.resize(amount);
+		std::vector<T> obj_copy(amount);
 
 		std::memcpy(obj_copy.data(), this->bytes.data() + this->index, byte_amount);
 		this->index += byte_amount;
@@ -228,7 +226,7 @@ public:
 	}
 
 	template<typename T, bool is_big_endian = false>
-	inline void NextObjectsRef(T* object_array, const std::size_t& amount)
+	inline void NextObjectsRef(T* object_array, std::size_t amount)
 	{
 		const std::size_t byte_amount = sizeof(T) * amount;
 

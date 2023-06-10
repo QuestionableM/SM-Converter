@@ -17,7 +17,7 @@ class AssetListLoader
 	static void LoadDefaultColors(const simdjson::dom::element& jAsset, std::unordered_map<std::string, SMColor>& def_colors);
 
 public:
-	static void Load(const simdjson::dom::element& fAssets, SMMod* mod, const bool& add_to_global_db);
+	static void Load(const simdjson::dom::element& fAssets, SMMod* mod, bool add_to_global_db);
 };
 
 #pragma managed

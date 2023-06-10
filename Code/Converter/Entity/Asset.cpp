@@ -23,7 +23,7 @@ SMColor SMAsset::GetColor(const std::string& color) const
 	return SMColor(static_cast<unsigned int>(0xffffff));
 }
 
-char* SMAsset::GetMtlNameCStr(const std::string& v_mat_name, const std::size_t& v_idx, char* v_ptr) const
+char* SMAsset::GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, char* v_ptr) const
 {
 	v_ptr = m_uuid.ToCString(v_ptr);
 	*v_ptr++ = ' ';
@@ -72,7 +72,7 @@ void SMAsset::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex
 	}
 }
 
-bool SMAsset::GetCanWrite(const std::string& name, const std::size_t& v_idx) const
+bool SMAsset::GetCanWrite(const std::string& name, std::size_t v_idx) const
 {
 	const SMTextureList* v_tex_list = m_parent->m_textures->GetTexList(name, v_idx);
 	if (!v_tex_list) return false;

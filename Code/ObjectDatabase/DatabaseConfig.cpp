@@ -79,7 +79,7 @@ bool DatabaseConfig::AddToStrMap(PathChecker& v_map, const std::wstring& v_new_s
 	return true;
 }
 
-void DatabaseConfig::JsonStrArrayToStrVec(const nlohmann::json& v_json, const std::string& key, std::vector<std::wstring>& v_vec, PathChecker& v_path_checker, const bool& replace_keys)
+void DatabaseConfig::JsonStrArrayToStrVec(const nlohmann::json& v_json, const std::string& key, std::vector<std::wstring>& v_vec, PathChecker& v_path_checker, bool replace_keys)
 {
 	const auto v_array = JsonReader::Get(v_json, key);
 	if (!v_array.is_array()) return;
@@ -96,7 +96,7 @@ void DatabaseConfig::JsonStrArrayToStrVec(const nlohmann::json& v_json, const st
 	}
 }
 
-void DatabaseConfig::JsonStrArrayToStrMap(const nlohmann::json& v_json, const std::string& key, PathChecker& v_map, const bool& replace_keys)
+void DatabaseConfig::JsonStrArrayToStrMap(const nlohmann::json& v_json, const std::string& key, PathChecker& v_map, bool replace_keys)
 {
 	const auto v_array = JsonReader::Get(v_json, key);
 	if (!v_array.is_array()) return;
@@ -360,7 +360,7 @@ bool DatabaseConfig::ReadUserSettings(const nlohmann::json& config_json, bool& s
 	return !user_settings.contains("UserItemFolders");
 }
 
-nlohmann::json DatabaseConfig::GetConfigJson(bool* should_write, const bool& read_from_file)
+nlohmann::json DatabaseConfig::GetConfigJson(bool* should_write, bool read_from_file)
 {
 	nlohmann::json cfgData;
 	if (read_from_file)
@@ -454,7 +454,7 @@ bool DatabaseConfig::ReplaceKeyAndAddToMap(const std::wstring& path, PathChecker
 	return DatabaseConfig::AddToStrMap(v_map, v_replaced_path);
 }
 
-void DatabaseConfig::FillUserItems(const bool& should_fill, bool& should_write)
+void DatabaseConfig::FillUserItems(bool should_fill, bool& should_write)
 {
 	if (!should_fill) return;
 

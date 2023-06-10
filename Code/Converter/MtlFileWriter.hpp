@@ -14,9 +14,8 @@ public:
 
 private:
 	MtlFileWriter() = default;
-	MtlFileWriter(const MtlFileWriter&&) = delete;
+	MtlFileWriter(const MtlFileWriter&) = delete;
 	MtlFileWriter(MtlFileWriter&&) = delete;
-	MtlFileWriter(MtlFileWriter&) = delete;
 	~MtlFileWriter() = default;
 };
 

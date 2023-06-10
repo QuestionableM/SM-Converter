@@ -258,7 +258,7 @@ public:
 		return stream.Index() - v_start_idx;
 	}
 
-	static void ReadNodes(BitStream& stream, SMPrefab* prefab, const int& count)
+	static void ReadNodes(BitStream& stream, SMPrefab* prefab, int count)
 	{
 		const int uVar2 = stream.ReadByte();
 		std::vector<std::string> tags = {};

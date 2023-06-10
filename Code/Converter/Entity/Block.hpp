@@ -11,9 +11,9 @@ class SMBlock : public SMEntity
 public:
 	inline SMBlock(const BlockData* pParent,
 		const glm::vec3& bounds,
-		const SMColor& color,
-		const unsigned char& v_rotation,
-		const std::size_t& index)
+		SMColor color,
+		unsigned char v_rotation,
+		std::size_t index)
 	{
 		this->m_parent = pParent;
 		this->m_uuid = pParent->m_uuid;
@@ -30,9 +30,9 @@ public:
 
 	inline std::size_t GetIndex() const override { return m_index; }
 	inline SMColor GetColor() const override { return m_color; }
-	inline EntityType Type() const override { return EntityType::Block; }
-	char* GetMtlNameCStr(const std::string& v_mat_name, const std::size_t& v_idx, char* v_ptr) const override;
-	std::string GetMtlName(const std::size_t& v_idx) const override;
+	inline EntityType Type() const noexcept override { return EntityType::Block; }
+	char* GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, char* v_ptr) const override;
+	std::string GetMtlName(std::size_t v_idx) const override;
 	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const override;
 	void WriteObjectToFile(std::ofstream& file, WriterOffsetData& mOffset, const glm::mat4& transform_matrix) const override;
 	glm::mat4 GetTransformMatrix() const override;

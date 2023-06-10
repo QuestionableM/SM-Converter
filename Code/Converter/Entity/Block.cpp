@@ -9,7 +9,7 @@
 
 #pragma unmanaged
 
-char* SMBlock::GetMtlNameCStr(const std::string& v_mat_name, const std::size_t& v_idx, char* v_ptr) const
+char* SMBlock::GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, char* v_ptr) const
 {
 	v_ptr = m_uuid.ToCString(v_ptr);
 	*v_ptr++ = ' ';
@@ -21,7 +21,7 @@ char* SMBlock::GetMtlNameCStr(const std::string& v_mat_name, const std::size_t& 
 	return MaterialManager::GetMaterialACStr(m_parent->m_textures.material, v_ptr);
 }
 
-std::string SMBlock::GetMtlName(const std::size_t& v_idx) const
+std::string SMBlock::GetMtlName(std::size_t v_idx) const
 {
 	const std::string v_mat_name_idx = MaterialManager::GetMaterialA(m_parent->m_textures.material);
 
@@ -98,7 +98,7 @@ void FillCustomCube(Model& model, const glm::vec3& bounds)
 	model.subMeshData.push_back(new_subMesh);
 }
 
-inline void AlignUvs(Model& model, const glm::vec3& bounds, const glm::vec3& pos, const int& tiling)
+inline void AlignUvs(Model& model, const glm::vec3& bounds, const glm::vec3& pos, int tiling)
 {
 	const float f_tiling = (float)tiling;
 

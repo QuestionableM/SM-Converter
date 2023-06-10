@@ -27,7 +27,7 @@ void DatabaseLoader::LoadGameDatabase()
 	SMMod::GameDataMod = v_game_data;
 }
 
-void DatabaseLoader::LoadModsFromPath(const std::wstring& path, const bool& is_local)
+void DatabaseLoader::LoadModsFromPath(const std::wstring& path, bool is_local)
 {
 	namespace fs = std::filesystem;
 
@@ -46,7 +46,7 @@ void DatabaseLoader::LoadModsFromPath(const std::wstring& path, const bool& is_l
 	}
 }
 
-void DatabaseLoader::LoadModsFromPaths(const std::vector<std::wstring>& path_vector, const bool& is_local)
+void DatabaseLoader::LoadModsFromPaths(const std::vector<std::wstring>& path_vector, bool is_local)
 {
 	for (const std::wstring& v_modDir : path_vector)
 		DatabaseLoader::LoadModsFromPath(v_modDir, is_local);

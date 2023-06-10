@@ -23,7 +23,7 @@ public:
 	std::string def_color_idx;
 	bool is_shadow_only = false;
 
-	std::wstring& GetStringRef(const std::size_t& idx)
+	std::wstring& GetStringRef(std::size_t idx)
 	{
 		return reinterpret_cast<std::wstring*>(&dif)[idx];
 	}
@@ -35,15 +35,14 @@ public:
 class SMSubMeshBase
 {
 public:
-	inline virtual const SMTextureList* GetTexList(const std::string& key, const std::size_t& key_idx) const = 0;
-	inline virtual void AddTexList(const std::string& key, const std::size_t& key_idx, SMTextureList* sub_data) = 0;
+	inline virtual const SMTextureList* GetTexList(const std::string& key, std::size_t key_idx) const = 0;
+	inline virtual void AddTexList(const std::string& key, std::size_t key_idx, SMTextureList* sub_data) = 0;
 
-	inline virtual SMSubMeshType Type() const = 0;
+	inline virtual SMSubMeshType Type() const noexcept = 0;
 
 	SMSubMeshBase() = default;
-	SMSubMeshBase(const SMSubMeshBase&&) = delete;
 	SMSubMeshBase(const SMSubMeshBase&) = delete;
-	SMSubMeshBase(SMSubMeshBase&) = delete;
+	SMSubMeshBase(SMSubMeshBase&&) = delete;
 	virtual ~SMSubMeshBase() = default;
 };
 
@@ -52,9 +51,8 @@ class SMSubMeshList : public SMSubMeshBase
 public:
 	SMSubMeshList() = default;
 
-	SMSubMeshList(const SMSubMeshList&&) = delete;
 	SMSubMeshList(const SMSubMeshList&) = delete;
-	SMSubMeshList(SMSubMeshList&) = delete;
+	SMSubMeshList(SMSubMeshList&&) = delete;
 
 	inline ~SMSubMeshList()
 	{
@@ -62,7 +60,7 @@ public:
 			delete m_Storage[a];
 	}
 
-	inline const SMTextureList* GetTexList(const std::string& key, const std::size_t& key_idx) const override
+	inline const SMTextureList* GetTexList(const std::string& key, std::size_t key_idx) const override
 	{
 		if (key_idx >= m_Storage.size())
 			return nullptr;
@@ -70,7 +68,7 @@ public:
 		return m_Storage[key_idx];
 	}
 
-	inline void AddTexList(const std::string& key, const std::size_t& key_idx, SMTextureList* sub_data) override
+	inline void AddTexList(const std::string& key, std::size_t key_idx, SMTextureList* sub_data) override
 	{
 		if (m_Storage.size() <= key_idx)
 			m_Storage.resize(key_idx + 1, nullptr);
@@ -78,7 +76,7 @@ public:
 		m_Storage[key_idx] = sub_data;
 	}
 
-	inline SMSubMeshType Type() const override
+	inline SMSubMeshType Type() const noexcept override
 	{
 		return SMSubMeshType::SubMeshList;
 	}
@@ -94,9 +92,8 @@ class SMSubMeshMap : public SMSubMeshBase
 public:
 	SMSubMeshMap() = default;
 
-	SMSubMeshMap(const SMSubMeshMap&&) = delete;
 	SMSubMeshMap(const SMSubMeshMap&) = delete;
-	SMSubMeshMap(SMSubMeshMap&) = delete;
+	SMSubMeshMap(SMSubMeshMap&&) = delete;
 
 	inline ~SMSubMeshMap()
 	{
@@ -104,7 +101,7 @@ public:
 			delete v_obj.second;
 	}
 
-	inline const SMTextureList* GetTexList(const std::string& key, const std::size_t& key_idx) const override
+	inline const SMTextureList* GetTexList(const std::string& key, std::size_t key_idx) const override
 	{
 		const StorageMap::const_iterator v_iter = m_Storage.find(key);
 		if (v_iter == m_Storage.end())
@@ -113,7 +110,7 @@ public:
 		return v_iter->second;
 	}
 
-	inline void AddTexList(const std::string& key, const std::size_t& key_idx, SMTextureList* sub_data) override
+	inline void AddTexList(const std::string& key, std::size_t key_idx, SMTextureList* sub_data) override
 	{
 		if (m_Storage.find(key) != m_Storage.end())
 			return;
@@ -121,7 +118,7 @@ public:
 		m_Storage.insert(std::make_pair(key, sub_data));
 	}
 
-	inline SMSubMeshType Type() const override
+	inline SMSubMeshType Type() const noexcept override
 	{
 		return SMSubMeshType::SubMeshMap;
 	}

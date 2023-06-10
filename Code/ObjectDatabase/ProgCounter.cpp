@@ -6,12 +6,12 @@ ProgState ProgCounter::State = ProgState::None;
 std::size_t ProgCounter::ProgressMax   = 0;
 std::size_t ProgCounter::ProgressValue = 0;
 
-void ProgCounter::SetState(const ProgState& nState)
+void ProgCounter::SetState(ProgState nState)
 {
 	ProgCounter::State = nState;
 }
 
-void ProgCounter::SetState(const ProgState& nState, const std::size_t& new_max)
+void ProgCounter::SetState(ProgState nState, std::size_t new_max)
 {
 	ProgCounter::State = nState;
 
@@ -61,7 +61,8 @@ static const StateData StateDataArray[] =
 	{ L"Memory cleanup...", false }
 };
 
-std::wstring ProgCounter::GetStateString()
+const static std::wstring g_no_state_string = L"NO_STATE";
+const std::wstring& ProgCounter::GetStateString()
 {
 	const std::size_t state_idx = static_cast<std::size_t>(ProgCounter::State);
 	if (state_idx > 0)
@@ -69,7 +70,7 @@ std::wstring ProgCounter::GetStateString()
 		return StateDataArray[state_idx - 1].Description;
 	}
 
-	return L"NO_STATE";
+	return g_no_state_string;
 }
 
 bool ProgCounter::StateHasNumbers()

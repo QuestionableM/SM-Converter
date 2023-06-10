@@ -24,7 +24,7 @@ public:
 		std::memcpy(&m_Data64, longs.data(), 16);
 	}
 
-	inline SMUuid(const long long& first, const long long& second, const bool& isBigEndian = false)
+	inline SMUuid(long long first, long long second, bool isBigEndian = false)
 	{
 		m_Data64[0] = first;
 		m_Data64[1] = second;
@@ -35,7 +35,7 @@ public:
 		}
 	}
 
-	inline bool IsNil() const
+	inline bool IsNil() const noexcept
 	{
 		return (m_Data64[0] == 0 && m_Data64[1] == 0);
 	}

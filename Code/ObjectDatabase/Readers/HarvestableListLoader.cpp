@@ -8,7 +8,7 @@
 
 #pragma unmanaged
 
-void HarvestableListLoader::Load(const simdjson::dom::element& fHarvestables, SMMod* mod, const bool& add_to_global_db)
+void HarvestableListLoader::Load(const simdjson::dom::element& fHarvestables, SMMod* mod, bool add_to_global_db)
 {
 	if (!fHarvestables.is_array()) return;
 	

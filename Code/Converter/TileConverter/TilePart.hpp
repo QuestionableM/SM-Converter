@@ -37,12 +37,12 @@ public:
 	TilePart(Tile* parent);
 	~TilePart();
 
-	void AddObject(SMEntity* object, const int& index = 0);
+	void AddObject(SMEntity* object, int index = 0);
 
-	inline Tile* GetParent() { return this->Parent; }
+	inline Tile* GetParent() noexcept { return this->Parent; }
 
-	void WriteToFile(std::ofstream& model, WriterOffsetData& mOffsetData, const int& xPos, const int& zPos);
-	void WriteToFileWorld(std::ofstream& v_model, WriterOffsetData& v_offset, const std::size_t& x_pos, const std::size_t& y_pos, const std::size_t& v_world_sz, const char& v_rotation);
+	void WriteToFile(std::ofstream& model, WriterOffsetData& mOffsetData, int xPos, int zPos);
+	void WriteToFileWorld(std::ofstream& v_model, WriterOffsetData& v_offset, std::size_t x_pos, std::size_t y_pos, std::size_t v_world_sz, char v_rotation);
 
 	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tData) const;
 	std::size_t GetAmountOfObjects() const;

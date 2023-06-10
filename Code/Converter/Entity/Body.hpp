@@ -29,7 +29,7 @@ public:
 		m_objects.push_back(v_entity);
 	}
 
-	inline EntityType Type() const override { return EntityType::Body; }
+	inline EntityType Type() const noexcept override { return EntityType::Body; }
 
 	inline void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const override
 	{

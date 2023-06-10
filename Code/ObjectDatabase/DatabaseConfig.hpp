@@ -44,8 +44,8 @@ public:
 	static bool AddToStrMap(PathChecker& v_map, const std::wstring& v_new_str);
 
 private:
-	static void JsonStrArrayToStrVec(const nlohmann::json& v_json, const std::string& key, std::vector<std::wstring>& v_vec, PathChecker& v_path_checker, const bool& replace_keys);
-	static void JsonStrArrayToStrMap(const nlohmann::json& v_json, const std::string& key, PathChecker& v_map, const bool& replace_keys);
+	static void JsonStrArrayToStrVec(const nlohmann::json& v_json, const std::string& key, std::vector<std::wstring>& v_vec, PathChecker& v_path_checker, bool replace_keys);
+	static void JsonStrArrayToStrMap(const nlohmann::json& v_json, const std::string& key, PathChecker& v_map, bool replace_keys);
 
 	static void ReadProgramSettings(const nlohmann::json& config_json);
 
@@ -54,12 +54,12 @@ private:
 	static void FindGamePath(const nlohmann::json& config_json, bool& should_write);
 	static bool ReadUserSettings(const nlohmann::json& config_json, bool& should_write);
 
-	static nlohmann::json GetConfigJson(bool* should_write, const bool& read_from_file);
+	static nlohmann::json GetConfigJson(bool* should_write, bool read_from_file);
 	static void AddKeywordReplacement(const std::wstring& key, const std::wstring& path);
 	static void UpdateGamePathReplacement();
 
 	static bool ReplaceKeyAndAddToMap(const std::wstring& path, PathChecker& v_map);
-	static void FillUserItems(const bool& should_fill, bool& should_write);
+	static void FillUserItems(bool should_fill, bool& should_write);
 
 public:
 	static void SaveConfig();
