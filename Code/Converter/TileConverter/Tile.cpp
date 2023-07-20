@@ -237,7 +237,7 @@ Model* Tile::GenerateTerrainMesh(const std::vector<float>& height_map) const
 	{
 		for (std::size_t x = 0; x < tWidth; x++)
 		{
-			const float& height = height_map[x + y * tWidth];
+			const float height = height_map[x + y * tWidth];
 			const float vert_x = -(static_cast<float>(x) * 2.0f) + hWidth;
 			const float vert_y = -(static_cast<float>(y) * 2.0f) + hHeight;
 
@@ -439,9 +439,7 @@ void Tile::WriteAssets(std::ofstream& model, WriterOffsetData& mOffset) const
 	{
 		for (int x = 0; x < m_Height; x++)
 		{
-			TilePart* tPart = this->GetPart(x, y);
-
-			tPart->WriteToFile(model, mOffset, x, y);
+			this->GetPart(x, y)->WriteToFile(model, mOffset, x, y);
 		}
 	}
 }
@@ -474,7 +472,7 @@ void Tile::WriteMaterials(const std::wstring& dir) const
 		{
 			for (int x = 0; x < gnd_height; x++)
 			{
-				const long long& cur_data = ground_data[x + y * gnd_width];
+				const long long cur_data = ground_data[x + y * gnd_width];
 				const long cur_chunk = static_cast<long>(cur_data >> v_curOffset);
 
 				v_pixelData.rgbRed      = static_cast<Byte>(cur_chunk >> 0);
@@ -517,7 +515,7 @@ void Tile::WriteColorMap(const std::wstring& dir) const
 	{
 		for (int x = 0; x < col_width; x++)
 		{
-			const int& cur_data = vert_colors[x + y * col_width];
+			const int cur_data = vert_colors[x + y * col_width];
 
 			v_pixelColor.rgbRed   = static_cast<Byte>(cur_data);
 			v_pixelColor.rgbGreen = static_cast<Byte>(cur_data >> 8);
