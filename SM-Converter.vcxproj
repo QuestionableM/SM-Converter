@@ -255,6 +255,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
       <AdditionalDependencies>user32.lib;FreeImage.lib;assimp$(PlatformArchitecture).lib;lz4_$(PlatformArchitecture).lib;simdjson.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\FreeImage\Lib\x$(PlatformArchitecture);$(SolutionDir)Dependencies\Assimp\Lib;$(SolutionDir)Dependencies\lz4\Lib;$(SolutionDir)Build\libs-$(PlatformShortName)-$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
       <Command>"$(SolutionDir)Dependencies\Version Counter\VersionCounter.exe"</Command>
@@ -282,6 +283,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
       <AdditionalDependencies>user32.lib;FreeImage.lib;assimp$(PlatformArchitecture).lib;lz4_$(PlatformArchitecture).lib;simdjson.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\FreeImage\Lib\x$(PlatformArchitecture);$(SolutionDir)Dependencies\Assimp\Lib;$(SolutionDir)Dependencies\lz4\Lib;$(SolutionDir)Build\libs-$(PlatformShortName)-$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
       <Command>"$(SolutionDir)Dependencies\Version Counter\VersionCounter.exe"</Command>
