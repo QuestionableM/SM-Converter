@@ -250,14 +250,10 @@ namespace SMConverter
 			CustomGame* v_current_cg = SMMod::GetCustomGameFromPath(v_tile_instance->directory);
 			if (v_current_cg)
 			{
-				v_current_cg->SetContentKey();
-
-				SMModCustomGameSwitch<false> v_cg_switch;
+				SMModCustomGameSwitch<false, true> v_cg_switch;
 				v_cg_switch.MergeContent(v_current_cg);
 
 				v_cur_tile = TileReader::ReadTile<true>(v_tile_instance->path, v_error);
-
-				KeywordReplacer::ClearContentKey();
 			}
 			else
 			{
