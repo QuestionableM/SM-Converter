@@ -19,12 +19,20 @@ void UserObjectFolderReader::ReadItemFromDirectory(const std::wstring& path)
 	const auto v_doc_root = v_item_doc.root();
 	const auto v_desc_type = v_doc_root["type"];
 
-	if (strcmp(v_desc_type.get_c_str(), "Tile") == 0)
-		TileFolderReader::LoadFromFolder(path, v_doc_root);
-	else if (strcmp(v_desc_type.get_c_str(), "Blueprint") == 0)
+	if (v_desc_type.is_string())
+	{
+		if (strcmp(v_desc_type.get_c_str(), "Tile") == 0)
+			TileFolderReader::LoadFromFolder(path, v_doc_root);
+		else if (strcmp(v_desc_type.get_c_str(), "Blueprint") == 0)
+			BlueprintFolderReader::LoadFromFolder(path, v_doc_root);
+		else if (strcmp(v_desc_type.get_c_str(), "World") == 0)
+			WorldFolderReader::LoadFromFolder(path, v_doc_root);
+	}
+	else
+	{
+		//if it doesn't have a type, then we can assume it is an old blueprint
 		BlueprintFolderReader::LoadFromFolder(path, v_doc_root);
-	else if (strcmp(v_desc_type.get_c_str(), "World") == 0)
-		WorldFolderReader::LoadFromFolder(path, v_doc_root);
+	}
 }
 
 void UserObjectFolderReader::LoadObjectsFromFolder(const std::wstring& folder)
