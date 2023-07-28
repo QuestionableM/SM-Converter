@@ -7,11 +7,14 @@
 #pragma unmanaged
 
 class GroundTexture;
+class TileHeader;
 
 class Tile
 {
+	friend class TileReader;
+
 	int m_Version;
-	int m_Type;
+	bool m_hasTerrain;
 	long long m_CreatorId;
 	int m_Width;
 	int m_Height;
@@ -19,18 +22,11 @@ class Tile
 
 public:
 	Tile(int width, int height);
+	Tile(const TileHeader& header);
 	~Tile();
 
 	inline int GetWidth() const noexcept { return m_Width; }
 	inline int GetHeight() const noexcept { return m_Height; }
-	inline int GetVersion() const noexcept { return m_Version; }
-	//UUID IMPLEMENTATION GOES HERE
-	inline int GetTileType() const noexcept { return m_Type; }
-	inline long long GetCreatorId() const noexcept { return m_CreatorId; }
-
-	inline void SetVersion(int version) noexcept { this->m_Version = version; }
-	inline void SetTileType(int type) noexcept { this->m_Type = type; }
-	inline void SetCreatorId(long long creator_id) noexcept { this->m_CreatorId = creator_id; }
 
 	inline void SetPart(int x, int y, TilePart* part)
 	{

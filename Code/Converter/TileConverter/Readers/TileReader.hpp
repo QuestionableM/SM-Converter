@@ -35,36 +35,25 @@ public:
 			return false;
 		}
 
-		MemoryWrapper mMemory = v_file_bytes;
+		MemoryWrapper v_memory = v_file_bytes;
 
-		const std::string v_tile_key = mMemory.NextString(4);
-		if (v_tile_key != "TILE")
+		const int v_tile_key = v_memory.NextObject<int>();
+		if (v_tile_key != 0x454C4954) //TILE - magic keyword
 		{
-			cError = ConvertError(1, L"TileReader::ReadTile -> Invalid File");
+			DebugOutL("Invalid File");
+			cError = ConvertError(1, L"TileHeader::ReadTile -> Invalid File");
 			return false;
 		}
 
-		v_header.version = mMemory.NextObject<int>();
-
-		if (v_header.version <= 1000000)
+		v_memory.NextObjectRef<TileHeaderBaseInfo>(&v_header);
+		if (v_header.version > 1000000)
 		{
-			v_header.uuid = mMemory.NextObject<SMUuid>();
-			v_header.creator_id = mMemory.NextObject<long long>();
+			DebugErrorL("Invalid Version");
+			cError = ConvertError(1, L"TileHeader::ReadTile -> Invalid Tile Version");
+			return false;
 		}
 
-		v_header.width = mMemory.NextObject<int>();
-		v_header.height = mMemory.NextObject<int>();
-
-		v_header.cell_header_offset = mMemory.NextObject<int>();
-		v_header.cell_header_size = mMemory.NextObject<int>();
-		mMemory.Skip(8);
-
-		if (v_header.version <= 1000000)
-		{
-			v_header.type = mMemory.NextObject<int>() >> 0x18;
-		}
-
-		if (mMemory.Index() != v_header.cell_header_offset)
+		if (v_memory.Index() != v_header.cell_header_offset)
 		{
 			cError = ConvertError(1, L"TileHeader::ReadTile -> Index doesn't match the cell header offset!");
 			return false;
@@ -100,28 +89,19 @@ public:
 	template<bool t_mod_counter>
 	static Tile* ReadTile(const std::vector<Byte>& tile_data, ConvertError& v_error)
 	{
-		TileHeader* header = TileHeader::ReadTile(tile_data, v_error);
-		if (!header) return nullptr;
+		TileHeader header;
+		if (!TileHeader::ReadTile(&header, tile_data, v_error))
+			return nullptr;
 
 	#if defined(DEBUG) || defined(_DEBUG)
-		DebugOutL("TileFileVersion: ", header->m_data.version);
-		DebugOutL("TileUuid: ", header->m_data.uuid.ToString());
-		DebugOutL("CreatorId: ", header->m_data.creator_id);
-		DebugOutL("Size: ", header->m_data.width, ", ", header->m_data.height);
-		DebugOutL("Type: ", header->m_data.type, "\n");
+		DebugOutL("TileFileVersion: ", header.m_data.version);
+		DebugOutL("TileUuid: ", header.m_data.uuid.ToString());
+		DebugOutL("CreatorId: ", header.m_data.creator_id);
+		DebugOutL("Size: ", header.m_data.width, ", ", header.m_data.height);
+		DebugOutL("Type: ", header.m_data.type, "\n");
 		DebugOutL("Header info:");
-		DebugOutL("CellHeaderOffset: ", header->m_data.cell_header_offset);
-		DebugOutL("CellHeadersSize: ", header->m_data.cell_header_size, "\n");
-
-		for (int a = 0; a < header->m_data.width * header->m_data.height; a++)
-		{
-			int x = a % header->m_data.width;
-			int y = a / header->m_data.width;
-
-			const std::vector<Byte>& bytes = header->GetHeader(x, y)->Data();
-			DebugOutL("\tBLOB(", x, ", ", y, "):");
-			DebugOutL("\t\t", String::BytesToHexString(bytes, header->m_data.cell_header_size, 32));
-		}
+		DebugOutL("CellHeaderOffset: ", header.m_data.cell_header_offset);
+		DebugOutL("CellHeadersSize: ", header.m_data.cell_header_size, "\n");
 	#endif
 
 		using u_tile_loader_function = void (*)(CellHeader*, MemoryWrapper&, TilePart*, ConvertError&);
@@ -144,23 +124,25 @@ public:
 
 		constexpr const int v_numSupportedVersions = sizeof(v_tile_loaders) / sizeof(u_tile_loader_function);
 
-		const int v_tileVersion = header->m_data.version;
+		const int v_tileVersion = header.m_data.version;
 		if (v_tileVersion < 0 || v_tileVersion > v_numSupportedVersions)
 		{
 			v_error = ConvertError(1, L"Unsupported Tile Version: " + std::to_wstring(v_tileVersion));
 			return nullptr;
 		}
 
-		MemoryWrapper reader(header->TileData());
+		if (header.m_data.width != header.m_data.height)
+		{
+			v_error = ConvertError(1, L"Weird tile dimensions: " + std::to_wstring(header.m_data.width) + L", " + std::to_wstring(header.m_data.height));
+			return nullptr;
+		}
 
-		const int tileXSize = header->m_data.width;
-		const int tileYSize = header->m_data.width;
+		MemoryWrapper reader(tile_data);
 
-		Tile* tile = new Tile(tileXSize, tileYSize);
-		tile->SetVersion(header->m_data.version);
-		tile->SetTileType(header->m_data.type);
-		tile->SetCreatorId(header->m_data.creator_id);
+		const int tileXSize = header.m_data.width;
+		const int tileYSize = header.m_data.height;
 
+		Tile* tile = new Tile(header);
 		if (tileYSize > 0)
 		{
 			u_tile_loader_function v_current_loader = v_tile_loaders[v_tileVersion - 1];
@@ -170,12 +152,12 @@ public:
 
 				for (int x = 0; x < tileXSize; x++)
 				{
-					CellHeader* h  = header->GetHeader(x, y);
+					CellHeader* h  = header.GetCellHeader(x, y);
 					TilePart* part = tile->GetPart(x, y);
 
 					if constexpr (!t_mod_counter) //mod counter doesn't need any information about the clutter, so it is skipped to improve performance
 					{
-						if (header->m_data.type == 0)
+						if (tile->m_hasTerrain)
 						{
 							MipReader::Read(h, reader, part, v_error);
 							ClutterReader::Read(h, reader, part, v_error);
@@ -186,8 +168,6 @@ public:
 				}
 			}
 		}
-
-		delete header;
 
 		if (v_error)
 		{

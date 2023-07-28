@@ -1,4 +1,5 @@
 #include "Tile.hpp"
+#include "TileHeader.hpp"
 
 #include "ObjectDatabase\GroundTextureDatabase.hpp"
 #include "ObjectDatabase\ProgCounter.hpp"
@@ -30,6 +31,14 @@ Tile::Tile(int width, int height)
 
 	for (std::size_t a = 0; a < m_Tiles.size(); a++)
 		m_Tiles[a] = new TilePart(this);
+}
+
+Tile::Tile(const TileHeader& header)
+	: Tile(header.m_data.width, header.m_data.height)
+{
+	this->m_Version = header.m_data.version;
+	this->m_hasTerrain = ((header.m_data.type >> 0x18) & 1) == 0;
+	this->m_CreatorId = header.m_data.creator_id;
 }
 
 Tile::~Tile()
@@ -346,7 +355,7 @@ Model* Tile::GenerateTerrainMesh(const std::vector<float>& height_map) const
 
 void Tile::WriteTerrain(std::ofstream& model, WriterOffsetData& mOffset, const std::vector<float>& height_map) const
 {
-	if (m_Type != 0) return;
+	if (!m_hasTerrain) return;
 
 	DebugOutL("Writing terrain...");
 	ProgCounter::SetState(ProgState::WritingGroundMesh, 0);
@@ -363,7 +372,7 @@ void Tile::WriteTerrain(std::ofstream& model, WriterOffsetData& mOffset, const s
 
 void Tile::WriteClutter(std::ofstream& model, WriterOffsetData& mOffset, const std::vector<float>& height_map) const
 {
-	if (m_Type != 0 || !TileConverterSettings::ExportClutter) return;
+	if (!m_hasTerrain || !TileConverterSettings::ExportClutter) return;
 
 	DebugOutL("Writing clutter...");
 
@@ -446,7 +455,7 @@ void Tile::WriteAssets(std::ofstream& model, WriterOffsetData& mOffset) const
 
 void Tile::WriteMaterials(const std::wstring& dir) const
 {
-	if (m_Type != 0 || !SharedConverterSettings::ExportMaterials) return;
+	if (!m_hasTerrain || !SharedConverterSettings::ExportMaterials) return;
 
 	DebugOutL("Writing materials...");
 	ProgCounter::SetState(ProgState::WritingMaterialMaps, 0);
@@ -492,7 +501,7 @@ void Tile::WriteMaterials(const std::wstring& dir) const
 
 void Tile::WriteColorMap(const std::wstring& dir) const
 {
-	if (m_Type != 0 || !SharedConverterSettings::ExportMaterials) return;
+	if (!m_hasTerrain || !SharedConverterSettings::ExportMaterials) return;
 
 	DebugOutL("Writing color map...");
 	ProgCounter::SetState(ProgState::WritingColorMap, 0);
@@ -666,7 +675,7 @@ void Tile::FillMaterialMap(std::array<MaterialData, 8>& mat_data) const
 static const std::wstring GroundTextureNames[] = { L"Dif", L"Asg", L"Nor" };
 void Tile::WriteGroundTextures(const std::wstring& dir) const
 {
-	if (m_Type != 0 || !TileConverterSettings::ExportGroundTextures) return;
+	if (!m_hasTerrain || !TileConverterSettings::ExportGroundTextures) return;
 
 	std::array<MaterialData, 8> v_materialMap = {};
 	this->FillMaterialMap(v_materialMap);

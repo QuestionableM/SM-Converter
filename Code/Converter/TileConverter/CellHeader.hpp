@@ -58,69 +58,17 @@ public:
 	/* 0x144 */std::array<int, 4> kinematicsListCompressedSize;
 	/* 0x154 */std::array<int, 4> kinematicsListSize;
 
-	std::vector<Byte> mBytes = {};
+	/* 0x164 */std::array<int, 5> some_data;
+	/* 0x178 */int voxelTerrainIndex;
+	/* 0x17C */int voxelTerrainCompressedSize;
+	/* 0x180 */int voxelTerrainSize;
 
-	inline void Read()
+	inline CellHeader(const Byte* buffer, std::size_t size)
 	{
-		MemoryWrapper mMemory(mBytes);
+		assert(size <= sizeof(CellHeader));
 
-		mMemory.ObjectsRef<int>(this->mipIndex.data()         , 0x0 , 6);
-		mMemory.ObjectsRef<int>(this->mipCompressedSize.data(), 0x18, 6);
-		mMemory.ObjectsRef<int>(this->mipSize.data()          , 0x30, 6);
-
-		this->clutterIndex          = mMemory.Object<int>(0x48);
-		this->clutterCompressedSize = mMemory.Object<int>(0x4c);
-		this->clutterSize           = mMemory.Object<int>(0x50);
-
-		mMemory.ObjectsRef<int>(this->assetListCount.data()         , 0x54, 4);
-		mMemory.ObjectsRef<int>(this->assetListIndex.data()         , 0x64, 4);
-		mMemory.ObjectsRef<int>(this->assetListCompressedSize.data(), 0x74, 4);
-		mMemory.ObjectsRef<int>(this->assetListSize.data()          , 0x84, 4);
-
-		this->blueprintListCount          = mMemory.Object<int>(0x94);
-		this->blueprintListIndex          = mMemory.Object<int>(0x98);
-		this->blueprintListCompressedSize = mMemory.Object<int>(0x9c);
-		this->blueprintListSize           = mMemory.Object<int>(0xa0);
-
-		this->nodeCount          = mMemory.Object<int>(0xa4);
-		this->nodeIndex          = mMemory.Object<int>(0xa8);
-		this->nodeCompressedSize = mMemory.Object<int>(0xac);
-		this->nodeSize           = mMemory.Object<int>(0xb0);
-
-		this->scriptCount = mMemory.Object<int>(0xb4);
-		this->scriptIndex = mMemory.Object<int>(0xb8);
-		this->scriptCompressedSize = mMemory.Object<int>(0xbc);
-		this->scriptSize = mMemory.Object<int>(0xc0);
-
-		this->prefabCount          = mMemory.Object<int>(0xc4);
-		this->prefabIndex          = mMemory.Object<int>(0xc8);
-		this->prefabCompressedSize = mMemory.Object<int>(0xcc);
-		this->prefabSize           = mMemory.Object<int>(0xd0);
-
-		this->decalCount          = mMemory.Object<int>(0xd4);
-		this->decalIndex          = mMemory.Object<int>(0xd8);
-		this->decalCompressedSize = mMemory.Object<int>(0xdc);
-		this->decalSize           = mMemory.Object<int>(0xe0);
-
-		mMemory.ObjectsRef<int>(this->harvestableListCount.data()         , 0xe4 , 4);
-		mMemory.ObjectsRef<int>(this->harvestableListIndex.data()         , 0xf4 , 4);
-		mMemory.ObjectsRef<int>(this->harvestableListCompressedSize.data(), 0x104, 4);
-		mMemory.ObjectsRef<int>(this->harvestableListSize.data()          , 0x114, 4);
-
-		mMemory.ObjectsRef<int>(this->kinematicsListCount.data(), 0x124, 4);
-		mMemory.ObjectsRef<int>(this->kinematicsListIndex.data(), 0x134, 4);
-		mMemory.ObjectsRef<int>(this->kinematicsListCompressedSize.data(), 0x144, 4);
-		mMemory.ObjectsRef<int>(this->kinematicsListSize.data(), 0x154, 4);
-	}
-
-	inline CellHeader(const std::vector<Byte>& memory)
-	{
-		this->mBytes = memory;
-	}
-
-	inline const std::vector<Byte>& Data() const
-	{
-		return this->mBytes;
+		std::memset(this, 0, sizeof(CellHeader));
+		std::memcpy(this, buffer, size);
 	}
 };
 

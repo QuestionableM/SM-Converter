@@ -212,8 +212,8 @@ public:
 #define CreateDebugConsole(ConName) DebugConsole::Create(ConName)
 #define DebugOutL(...)              DebugConsole::Out(__VA_ARGS__, 0b1110_fg, "\n")
 #define DebugOut(...)               DebugConsole::Out(__VA_ARGS__)
-#define DebugErrorL(...)            DebugConsole::Out(0b1001_fg, "ERROR: "  , __FUNCTION__, " (", __LINE__, ") -> ", __VA_ARGS__, 0b1110_fg, "\n")
-#define DebugWarningL(...)          DebugConsole::Out(0b1101_fg, "WARNING: ", __FUNCTION__, " (", __LINE__, ") -> ", __VA_ARGS__, 0b1110_fg, "\n")
+#define DebugErrorL(...)            DebugConsole::Out(0b1001_fg, "ERROR: "  , __FUNCTION__, "(", __LINE__, ") -> ", __VA_ARGS__, 0b1110_fg, "\n")
+#define DebugWarningL(...)          DebugConsole::Out(0b1101_fg, "WARNING: ", __FUNCTION__, "(", __LINE__, ") -> ", __VA_ARGS__, 0b1110_fg, "\n")
 
 #pragma managed
 

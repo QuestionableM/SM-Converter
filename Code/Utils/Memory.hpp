@@ -17,9 +17,11 @@
 
 #pragma unmanaged
 
+//Memory wrapper works by using the pointer to a vector
+//Make sure that the vector is in the same scope as the MemoryWrapper
 class MemoryWrapper
 {
-	std::vector<Byte> bytes;
+	const std::vector<Byte>* bytes;
 	std::size_t index = 0;
 
 public:
@@ -28,12 +30,12 @@ public:
 
 	inline MemoryWrapper(const std::vector<Byte>& bytes)
 	{
-		this->bytes = bytes;
+		this->bytes = &bytes;
 	}
 
 	inline void operator=(const std::vector<Byte>& bytes)
 	{
-		this->bytes = bytes;
+		this->bytes = &bytes;
 	}
 
 	inline MemoryWrapper& Skip(std::size_t count)
@@ -57,17 +59,17 @@ public:
 
 	inline std::size_t Size() const noexcept
 	{
-		return this->bytes.size();
+		return this->bytes->size();
 	}
 
 	inline const Byte* Data() const noexcept
 	{
-		return this->bytes.data();
+		return this->bytes->data();
 	}
 
-	inline std::vector<Byte>& GetVec() noexcept
+	inline const Byte* DataPtr() const noexcept
 	{
-		return this->bytes;
+		return this->bytes->data() + this->index;
 	}
 
 #if defined(DEBUG) || defined(_DEBUG)
@@ -77,8 +79,8 @@ public:
 		if (!v_output.is_open())
 			return;
 		
-		const std::size_t v_diff = std::min(this->bytes.size(), offset);
-		const std::size_t v_size = this->bytes.size() - v_diff;
+		const std::size_t v_diff = std::min<std::size_t>(this->bytes->size(), offset);
+		const std::size_t v_size = this->bytes->size() - v_diff;
 		for (std::size_t a = offset; a < v_size; a++)
 			v_output.write(reinterpret_cast<const char*>(&this->bytes[a]), 1);
 
@@ -94,7 +96,7 @@ public:
 		if constexpr (type_sz > 1) //minor optimization for 1 byte data
 		{
 			Byte obj_bytes[type_sz];
-			std::memcpy(obj_bytes, this->bytes.data() + offset, type_sz);
+			std::memcpy(obj_bytes, this->bytes->data() + offset, type_sz);
 
 			if constexpr (is_big_endian)
 			{
@@ -105,7 +107,7 @@ public:
 		}
 		else
 		{
-			return *reinterpret_cast<T*>(&this->bytes[offset]);
+			return *reinterpret_cast<const T*>(&(*this->bytes)[offset]);
 		}
 	}
 
@@ -115,7 +117,7 @@ public:
 		constexpr std::size_t type_sz = sizeof(T);
 
 		Byte obj_bytes[type_sz];
-		std::memcpy(obj_bytes, this->bytes.data() + this->index, type_sz);
+		std::memcpy(obj_bytes, this->bytes->data() + this->index, type_sz);
 		this->index += type_sz;
 
 		if constexpr (is_big_endian)
@@ -126,11 +128,26 @@ public:
 		return *reinterpret_cast<T*>(obj_bytes);
 	}
 
+	template<typename T, bool is_big_endian = false>
+	inline void NextObjectRef(T* object)
+	{
+		std::memcpy(object, this->bytes->data() + this->index, sizeof(T));
+		this->index += sizeof(T);
+
+		if constexpr (is_big_endian)
+		{
+			Byte* v_obj_start = &object;
+			Byte* v_obj_end = v_obj_start + sizeof(T);
+
+			std::reverse(v_obj_start, v_obj_end);
+		}
+	}
+
 	template<typename T, std::size_t array_size, bool is_big_endian = false>
 	inline std::array<T, array_size> ObjectsConst(std::size_t offset)
 	{
 		std::array<T, array_size> l_output;
-		std::memcpy(l_output.data(), this->bytes.data() + offset, sizeof(T) * array_size);
+		std::memcpy(l_output.data(), this->bytes->data() + offset, sizeof(T) * array_size);
 
 		if constexpr (is_big_endian)
 		{
@@ -153,7 +170,7 @@ public:
 		std::string v_string;
 		v_string.resize(size);
 
-		std::memcpy(v_string.data(), this->bytes.data() + offset, sizeof(char) * size);
+		std::memcpy(v_string.data(), this->bytes->data() + offset, sizeof(char) * size);
 
 		if constexpr (is_big_endian)
 		{
@@ -169,7 +186,7 @@ public:
 		std::string v_string;
 		v_string.resize(size);
 
-		std::memcpy(v_string.data(), this->bytes.data() + this->index, sizeof(char) * size);
+		std::memcpy(v_string.data(), this->bytes->data() + this->index, sizeof(char) * size);
 		this->index += size;
 
 		if constexpr (is_big_endian)
@@ -185,7 +202,7 @@ public:
 	{
 		std::vector<T> obj_copy(amount);
 
-		std::memcpy(obj_copy.data(), this->bytes.data() + offset, sizeof(T) * amount);
+		std::memcpy(obj_copy.data(), this->bytes->data() + offset, sizeof(T) * amount);
 
 		if constexpr (is_big_endian)
 		{
@@ -199,7 +216,7 @@ public:
 	inline void ObjectsRef(T* object_array, std::size_t offset, std::size_t amount)
 	{
 		const std::size_t final_amount = sizeof(T) * amount;
-		std::memcpy(object_array, this->bytes.data() + offset, final_amount);
+		std::memcpy(object_array, this->bytes->data() + offset, final_amount);
 
 		if constexpr (is_big_endian)
 		{
@@ -214,7 +231,7 @@ public:
 
 		std::vector<T> obj_copy(amount);
 
-		std::memcpy(obj_copy.data(), this->bytes.data() + this->index, byte_amount);
+		std::memcpy(obj_copy.data(), this->bytes->data() + this->index, byte_amount);
 		this->index += byte_amount;
 
 		if constexpr (is_big_endian)
@@ -230,7 +247,7 @@ public:
 	{
 		const std::size_t byte_amount = sizeof(T) * amount;
 
-		std::memcpy(object_array, this->bytes.data() + this->index, byte_amount);
+		std::memcpy(object_array, this->bytes->data() + this->index, byte_amount);
 		this->index += byte_amount;
 
 		if constexpr (is_big_endian)
