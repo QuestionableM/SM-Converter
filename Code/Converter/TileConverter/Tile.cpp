@@ -699,7 +699,10 @@ void Tile::WriteGroundTextures(const std::wstring& dir) const
 
 		GroundTexture gnd_tex;
 		if (!gnd_tex.AllocateMemory(v_gndTexResolution, v_gndTexResolution))
+		{
+			DebugErrorL("Couldn't allocate a ", v_gndTexResolution, ", ", v_gndTexResolution, " texture!");
 			continue;
+		}
 
 		ProgCounter::SetState(static_cast<ProgState>(writing_gnd_idx), 8);
 		this->FillGndTexture(&gnd_tex, texture_id);

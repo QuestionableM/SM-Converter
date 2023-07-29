@@ -118,7 +118,10 @@ void GroundTexture::WriteToFile(const std::wstring& path, int quality) const
 	if (!m_imageData)
 		return;
 
-	FreeImage_Save(FREE_IMAGE_FORMAT::FIF_JPEG, m_imageData, String::ToUtf8(path).c_str(), JPEG_QUALITYSUPERB);
+	if (!FreeImage_SaveU(FREE_IMAGE_FORMAT::FIF_JPEG, m_imageData, path.c_str(), JPEG_QUALITYSUPERB))
+	{
+		DebugErrorL("Couldn't save the texture: ", path);
+	}
 }
 
 

@@ -18,8 +18,8 @@ class AssetListReader
 	AssetListReader() = default;
 
 public:
-	template<bool t_mod_counter, int t_tile_version>
-	static void Read(CellHeader* header, MemoryWrapper& reader, TilePart* part, ConvertError& cError)
+	template<bool t_mod_counter>
+	static void Read(CellHeader* header, MemoryWrapper& reader, TilePart* part, int version, ConvertError& cError)
 	{
 		if (cError) return;
 
@@ -46,22 +46,22 @@ public:
 			if (debugSize != assetListCompressedSize)
 			{
 				DebugErrorL("Debug Size:", debugSize, ", assetListCompressedSize: ", assetListCompressedSize);
-				cError = ConvertError(1, L"AssetListReader::Read -> debugSize != assetListCompressedSize\nTile Version: " + std::to_wstring(t_tile_version));
+				cError = ConvertError(1, L"AssetListReader::Read -> debugSize != assetListCompressedSize\nTile Version: " + std::to_wstring(version));
 				return;
 			}
 
-			debugSize = AssetListReader::Read<t_mod_counter, t_tile_version>(bytes, a, assetListCount, part);
+			debugSize = AssetListReader::Read<t_mod_counter>(bytes, a, assetListCount, version, part);
 			if (debugSize != assetListSize)
 			{
 				DebugErrorL("Debug Size: ", debugSize, ", assetListSize: ", assetListSize);
-				cError = ConvertError(1, L"AssetListReader::Read -> debugSize != assetListSize\nTile Version: " + std::to_wstring(t_tile_version));
+				cError = ConvertError(1, L"AssetListReader::Read -> debugSize != assetListSize\nTile Version: " + std::to_wstring(version));
 				return;
 			}
 		}
 	}
 
-	template<bool t_mod_counter, int t_tile_version>
-	static int Read(const std::vector<Byte>& bytes, int asset_idx, int len, TilePart* part)
+	template<bool t_mod_counter>
+	static int Read(const std::vector<Byte>& bytes, int asset_idx, int len, int version, TilePart* part)
 	{
 		MemoryWrapper memory(bytes);
 
@@ -72,7 +72,7 @@ public:
 			const glm::quat f_quat = memory.GetQuat(index + 0xc);
 			glm::vec3 f_size;
 
-			if constexpr (t_tile_version < 5)
+			if (version < 5)
 			{
 				const float f_dimension = memory.Object<float>(index + 0x1c);
 				f_size = glm::vec3(f_dimension);
@@ -88,7 +88,7 @@ public:
 
 			SMUuid f_uuid;
 
-			if constexpr (t_tile_version < 4)
+			if (version < 4)
 			{
 				// int bVar4 = memory.Byte(index++);
 				// String str = memory.String(bVar4, index);
@@ -123,7 +123,7 @@ public:
 				}
 			}
 
-			if constexpr (t_tile_version >= 12)
+			if (version >= 12)
 			{
 				//Skip one byte that was added in the newest version of .tile files
 				index++;

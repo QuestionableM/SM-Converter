@@ -22,8 +22,8 @@ class HarvestableListReader
 	HarvestableListReader() = default;
 
 public:
-	template<bool t_mod_counter, int t_tile_version>
-	static void Read(CellHeader* header, MemoryWrapper& reader, TilePart* part, ConvertError& cError)
+	template<bool t_mod_counter>
+	static void Read(CellHeader* header, MemoryWrapper& reader, TilePart* part, int version, ConvertError& cError)
 	{
 		if (cError) return;
 
@@ -50,22 +50,22 @@ public:
 			if (debugSize != v_hvs_list_compressed_sz)
 			{
 				DebugErrorL("debugSize: ", debugSize, ", v_hvs_list_compressed_sz: ", v_hvs_list_compressed_sz);
-				cError = ConvertError(1, L"HarvestableListReader::Read -> debugSize != v_hvs_list_compressed_sz\nTile Version: " + std::to_wstring(t_tile_version));
+				cError = ConvertError(1, L"HarvestableListReader::Read -> debugSize != v_hvs_list_compressed_sz\nTile Version: " + std::to_wstring(version));
 				return;
 			}
 
-			debugSize = HarvestableListReader::Read<t_mod_counter, t_tile_version>(bytes, a, v_hvs_list_count, part);
+			debugSize = HarvestableListReader::Read<t_mod_counter>(bytes, a, v_hvs_list_count, version, part);
 			if (debugSize != v_hvs_list_sz)
 			{
 				DebugErrorL("debugSize: ", debugSize, ", v_hvs_list_sz: ", v_hvs_list_sz);
-				cError = ConvertError(1, L"HarvestableListReader::Read -> debugSize != v_hvs_list_sz\nTile Version: " + std::to_wstring(t_tile_version));
+				cError = ConvertError(1, L"HarvestableListReader::Read -> debugSize != v_hvs_list_sz\nTile Version: " + std::to_wstring(version));
 				return;
 			}
 		}
 	}
 
-	template<bool t_mod_counter, int t_tile_version>
-	static int Read(const std::vector<Byte>& bytes, int hvs_index, int len, TilePart* part)
+	template<bool t_mod_counter>
+	static int Read(const std::vector<Byte>& bytes, int hvs_index, int len, int version, TilePart* part)
 	{
 		MemoryWrapper memory(bytes);
 
@@ -85,8 +85,8 @@ public:
 			//VERSION 11 has 4 null bytes
 			//VERSION 12 seems to have 5 null bytes
 			//VERSION 13 also has 5 null bytes
-			if constexpr (t_tile_version >= 12) { index += 0x5; }
-			else if constexpr (t_tile_version >= 11) { index += 0x4; }
+			if (version >= 12) { index += 0x5; }
+			else if (version >= 11) { index += 0x4; }
 
 			const HarvestableData* hvs_data = SMMod::GetGlobalObject<HarvestableData>(f_uuid);
 

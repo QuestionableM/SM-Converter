@@ -36,8 +36,7 @@ public:
 	PrefabHeader() = default;
 	~PrefabHeader() = default;
 	
-	template<int t_pref_version>
-	inline void Read(BitStream& stream)
+	inline void Read(BitStream& stream, int version)
 	{
 		stream.Move(4 * 8);
 		blueprintCount = stream.ReadInt();
@@ -54,7 +53,7 @@ public:
 		stream.Move(4 * 8);
 		hasNodes = stream.ReadInt();
 
-		if constexpr (2 < t_pref_version)
+		if (2 < version)
 		{
 			stream.Move(4 * 8);
 			assetCount = stream.ReadInt();
@@ -67,7 +66,7 @@ public:
 			hasAssets  = 0;
 		}
 
-		if constexpr (3 < t_pref_version)
+		if (3 < version)
 		{
 			stream.Move(4 * 8);
 			decalsCount = stream.ReadInt();
@@ -80,7 +79,7 @@ public:
 			hasDecals = 0;
 		}
 
-		if constexpr (5 < t_pref_version)
+		if (5 < version)
 		{
 			stream.Move(4 * 8);
 			count_0x54 = stream.ReadInt();
@@ -93,7 +92,7 @@ public:
 			has_0x5c   = 0;
 		}
 
-		if constexpr (7 < t_pref_version)
+		if (7 < version)
 		{
 			stream.Move(4 * 8);
 			kinematicsCount = stream.ReadInt();

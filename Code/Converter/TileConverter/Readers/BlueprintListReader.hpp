@@ -14,8 +14,8 @@ class BlueprintListReader
 	BlueprintListReader() = default;
 
 public:
-	template<bool t_mod_counter, int t_tile_version>
-	static void Read(CellHeader* header, MemoryWrapper& reader, TilePart* part, ConvertError& cError)
+	template<bool t_mod_counter>
+	static void Read(CellHeader* header, MemoryWrapper& reader, TilePart* part, int version, ConvertError& cError)
 	{
 		if (cError) return;
 
@@ -35,21 +35,21 @@ public:
 		if (debugSize != header->blueprintListCompressedSize)
 		{
 			DebugErrorL("DebugSize: ", debugSize, ", header->blueprintListCompressedSize: ", header->blueprintListCompressedSize);
-			cError = ConvertError(1, L"BlueprintListReader::Read -> debugSize != header->blueprintListCompressedSize\nTile Version: " + std::to_wstring(t_tile_version));
+			cError = ConvertError(1, L"BlueprintListReader::Read -> debugSize != header->blueprintListCompressedSize\nTile Version: " + std::to_wstring(version));
 			return;
 		}
 
-		debugSize = BlueprintListReader::Read<t_mod_counter, t_tile_version>(bytes, header->blueprintListCount, part);
+		debugSize = BlueprintListReader::Read<t_mod_counter>(bytes, header->blueprintListCount, version, part);
 		if (debugSize != header->blueprintListSize)
 		{
 			DebugErrorL("DebugSize: ", debugSize, ", header->blueprintListSize: ", header->blueprintListSize);
-			cError = ConvertError(1, L"BlueprintListReader::Read -> debugSize != header->blueprintListSize\nTile Version: " + std::to_wstring(t_tile_version));
+			cError = ConvertError(1, L"BlueprintListReader::Read -> debugSize != header->blueprintListSize\nTile Version: " + std::to_wstring(version));
 			return;
 		}
 	}
 
-	template<bool t_mod_counter, int t_tile_version>
-	static int Read(const std::vector<Byte>& bytes, int count, TilePart* part)
+	template<bool t_mod_counter>
+	static int Read(const std::vector<Byte>& bytes, int count, int version, TilePart* part)
 	{
 		MemoryWrapper memory(bytes);
 
@@ -61,7 +61,7 @@ public:
 			index += 0x1c;
 
 			std::string value;
-			if constexpr (t_tile_version < 7)
+			if (version < 7)
 			{
 				const int val_len = (int)memory.Object<Byte>(index) & 0xff;
 				index++;
@@ -78,7 +78,7 @@ public:
 				index += val_len;
 			}
 
-			if constexpr (t_tile_version >= 13)
+			if (version >= 13)
 			{
 				//Skip a random null byte that was added in the newest versions of tiles
 				index++;

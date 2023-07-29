@@ -18,8 +18,8 @@ class DecalListReader
 	DecalListReader() = default;
 
 public:
-	template<bool t_mod_counter, int t_tile_version>
-	inline static void Read(CellHeader* header, MemoryWrapper& reader, TilePart* part, ConvertError& cError)
+	template<bool t_mod_counter>
+	inline static void Read(CellHeader* header, MemoryWrapper& reader, TilePart* part, int version, ConvertError& cError)
 	{
 		if (cError) return;
 
@@ -39,21 +39,21 @@ public:
 		if (debugSize != header->decalCompressedSize)
 		{
 			DebugErrorL("Debug Size: ", debugSize, ", header->decalCompressedSize: ", header->decalCompressedSize);
-			cError = ConvertError(1, L"DecalListReader::Read -> debugSize != header->decalCompressedSize\nTile Version: " + std::to_wstring(t_tile_version));
+			cError = ConvertError(1, L"DecalListReader::Read -> debugSize != header->decalCompressedSize\nTile Version: " + std::to_wstring(version));
 			return;
 		}
 
-		debugSize = DecalListReader::Read<t_mod_counter, t_tile_version>(bytes, header->decalCount, part);
+		debugSize = DecalListReader::Read<t_mod_counter>(bytes, header->decalCount, version, part);
 		if (debugSize != header->decalSize)
 		{
 			DebugErrorL("Debug Size: ", debugSize, ", header->decalSize: ", header->decalSize);
-			cError = ConvertError(1, L"DecalListReader::Read -> debugSize != header->decalSize\nTile Version: " + std::to_wstring(t_tile_version));
+			cError = ConvertError(1, L"DecalListReader::Read -> debugSize != header->decalSize\nTile Version: " + std::to_wstring(version));
 			return;
 		}
 	}
 
-	template<bool t_mod_counter, int t_tile_version>
-	inline static int Read(const std::vector<Byte>& bytes, int decal_count, TilePart* part)
+	template<bool t_mod_counter>
+	inline static int Read(const std::vector<Byte>& bytes, int decal_count, int version, TilePart* part)
 	{
 		MemoryWrapper memory(bytes);
 
@@ -69,7 +69,7 @@ public:
 			//A random value that is 4 bytes (skipped)
 
 			//Final increment is 64
-			if constexpr (t_tile_version >= 12) {
+			if (version >= 12) {
 				//Skip a random byte that was added in the newest versions of tiles
 				index += 0x41;
 			} else {

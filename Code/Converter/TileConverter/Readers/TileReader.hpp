@@ -72,18 +72,17 @@ public:
 		return TileReader::ReadTile<t_mod_counter>(v_file_bytes, cError);
 	}
 
-	template<bool t_mod_counter, int t_tile_version>
-	inline static void ReadTileData(CellHeader* v_header, MemoryWrapper& v_reader, TilePart* v_part, ConvertError& v_error)
+	template<bool t_mod_counter>
+	inline static void ReadTileData(CellHeader* v_header, MemoryWrapper& v_reader, TilePart* v_part, int version, ConvertError& v_error)
 	{
-		AssetListReader::Read<t_mod_counter, t_tile_version>      (v_header, v_reader, v_part, v_error);
-		PrefabReader::Read<t_mod_counter, t_tile_version>         (v_header, v_reader, v_part, v_error);
-		BlueprintListReader::Read<t_mod_counter, t_tile_version>  (v_header, v_reader, v_part, v_error);
-		HarvestableListReader::Read<t_mod_counter, t_tile_version>(v_header, v_reader, v_part, v_error);
-		DecalListReader::Read<t_mod_counter, t_tile_version>      (v_header, v_reader, v_part, v_error);
+		AssetListReader::Read<t_mod_counter>      (v_header, v_reader, v_part, version, v_error);
+		PrefabReader::Read<t_mod_counter>         (v_header, v_reader, v_part, version, v_error);
+		BlueprintListReader::Read<t_mod_counter>  (v_header, v_reader, v_part, version, v_error);
+		HarvestableListReader::Read<t_mod_counter>(v_header, v_reader, v_part, version, v_error);
+		DecalListReader::Read<t_mod_counter>      (v_header, v_reader, v_part, version, v_error);
 
-		if constexpr (t_tile_version >= 11) {
-			KinematicsListReader::Read<t_mod_counter, t_tile_version> (v_header, v_reader, v_part, v_error);
-		}
+		if (version >= 11)
+			KinematicsListReader::Read<t_mod_counter> (v_header, v_reader, v_part, version, v_error);
 	}
 
 	template<bool t_mod_counter>
@@ -104,28 +103,8 @@ public:
 		DebugOutL("CellHeadersSize: ", header.m_data.cell_header_size, "\n");
 	#endif
 
-		using u_tile_loader_function = void (*)(CellHeader*, MemoryWrapper&, TilePart*, ConvertError&);
-		const static u_tile_loader_function v_tile_loaders[] =
-		{
-			TileReader::ReadTileData<t_mod_counter, 1>,
-			TileReader::ReadTileData<t_mod_counter, 2>,
-			TileReader::ReadTileData<t_mod_counter, 3>,
-			TileReader::ReadTileData<t_mod_counter, 4>,
-			TileReader::ReadTileData<t_mod_counter, 5>,
-			TileReader::ReadTileData<t_mod_counter, 6>,
-			TileReader::ReadTileData<t_mod_counter, 7>,
-			TileReader::ReadTileData<t_mod_counter, 8>,
-			TileReader::ReadTileData<t_mod_counter, 9>,
-			TileReader::ReadTileData<t_mod_counter, 10>,
-			TileReader::ReadTileData<t_mod_counter, 11>,
-			TileReader::ReadTileData<t_mod_counter, 12>,
-			TileReader::ReadTileData<t_mod_counter, 13>
-		};
-
-		constexpr const int v_numSupportedVersions = sizeof(v_tile_loaders) / sizeof(u_tile_loader_function);
-
 		const int v_tileVersion = header.m_data.version;
-		if (v_tileVersion < 0 || v_tileVersion > v_numSupportedVersions)
+		if (v_tileVersion < 0 || v_tileVersion > 13)
 		{
 			v_error = ConvertError(1, L"Unsupported Tile Version: " + std::to_wstring(v_tileVersion));
 			return nullptr;
@@ -145,7 +124,6 @@ public:
 		Tile* tile = new Tile(header);
 		if (tileYSize > 0)
 		{
-			u_tile_loader_function v_current_loader = v_tile_loaders[v_tileVersion - 1];
 			for (int y = 0; y < tileYSize; y++)
 			{
 				if (v_error) break;
@@ -163,8 +141,8 @@ public:
 							ClutterReader::Read(h, reader, part, v_error);
 						}
 					}
-				
-					v_current_loader(h, reader, part, v_error);
+
+					TileReader::ReadTileData<t_mod_counter>(h, reader, part, v_tileVersion, v_error);
 				}
 			}
 		}

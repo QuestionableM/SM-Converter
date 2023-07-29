@@ -18,8 +18,8 @@ class PrefabReader
 	PrefabReader() = default;
 
 public:
-	template<bool t_mod_counter, int t_tile_version>
-	static void Read(CellHeader* header, MemoryWrapper& reader, TilePart* part, ConvertError& v_error)
+	template<bool t_mod_counter>
+	static void Read(CellHeader* header, MemoryWrapper& reader, TilePart* part, int version, ConvertError& v_error)
 	{
 		if (v_error) return;
 
@@ -39,24 +39,24 @@ public:
 		if (debugSize != header->prefabCompressedSize)
 		{
 			DebugErrorL("DebugSize: ", debugSize, ", header->prefabCompressedSize: ", header->prefabCompressedSize);
-			v_error = ConvertError(1, L"PrefabReader::Read -> debugSize != header->prefabCompressedSize\nTile Version: " + std::to_wstring(t_tile_version));
+			v_error = ConvertError(1, L"PrefabReader::Read -> debugSize != header->prefabCompressedSize\nTile Version: " + std::to_wstring(version));
 			return;
 		}
 
-		debugSize = PrefabReader::Read<t_mod_counter, t_tile_version>(bytes, header->prefabCount, part, v_error);
+		debugSize = PrefabReader::Read<t_mod_counter>(bytes, header->prefabCount, part, version, v_error);
 		if (debugSize != header->prefabSize)
 		{
 			//If the error happened in the PrefabReader::Read, then don't overwrite it with the one below
 			if (v_error) return;
 
 			DebugErrorL("DebugSize: ", debugSize, ", header->prefabSize: ", header->prefabSize);
-			v_error = ConvertError(1, L"PrefabReader::Read -> debugSize != header->prefabSize\nTile Version: " + std::to_wstring(t_tile_version));
+			v_error = ConvertError(1, L"PrefabReader::Read -> debugSize != header->prefabSize\nTile Version: " + std::to_wstring(version));
 			return;
 		}
 	}
 
-	template<bool t_mod_counter, int t_tile_version>
-	static int Read(const std::vector<Byte>& bytes, int prefabCount, TilePart* part, ConvertError& v_error)
+	template<bool t_mod_counter>
+	static int Read(const std::vector<Byte>& bytes, int prefabCount, TilePart* part, int version, ConvertError& v_error)
 	{
 		MemoryWrapper memory(bytes);
 
@@ -68,7 +68,7 @@ public:
 			
 			glm::vec3 f_size;
 
-			if constexpr (t_tile_version < 9)
+			if (version < 9)
 			{
 				f_size = glm::vec3(1.0f);
 				index += 0x1c;
