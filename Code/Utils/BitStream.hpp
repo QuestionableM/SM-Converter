@@ -21,16 +21,14 @@
 
 class BitStream
 {
-	std::vector<Byte> data;
+	const std::vector<Byte>* data;
 	int index = 0;
 
 public:
 	inline BitStream(MemoryWrapper& memory)
 	{
-		const std::size_t chunk_size = memory.Size() - memory.Index();
-		data.resize(chunk_size);
-
-		std::memcpy(data.data(), memory.Data() + memory.Index(), chunk_size);
+		this->data = memory.GetByteStorage();
+		this->index = static_cast<int>(memory.Index() * 8);
 	}
 
 #if defined(DEBUG) || defined(_DEBUG)
@@ -44,7 +42,7 @@ public:
 		{
 			const int v_index_copy = this->Index();
 
-			const std::size_t v_bytes_clamped = std::min(data.size(), static_cast<std::size_t>(v_index_copy) + num_bytes);
+			const std::size_t v_bytes_clamped = std::min(data->size(), static_cast<std::size_t>(v_index_copy) + num_bytes);
 			for (std::size_t a = 0; a < v_bytes_clamped; a++)
 			{
 				const unsigned char v_cur_byte = static_cast<unsigned char>(this->ReadByte());
@@ -69,7 +67,7 @@ public:
 
 	inline int Size() const noexcept
 	{
-		return static_cast<int>(this->data.size());
+		return static_cast<int>(this->data->size());
 	}
 
 	inline void Align() noexcept
@@ -84,56 +82,54 @@ public:
 
 	inline const Byte* Data() const noexcept
 	{
-		return this->data.data();
+		return this->data->data();
 	}
 
-	inline long long ReadNBytes(int count)
+	template<typename T>
+	inline T ReadObject()
 	{
-		if (Size() < (index >> 3) + count) return 0;
+		static_assert(std::is_arithmetic_v<T>, "BitStream::ReadObject -> Typename must be of arithmetic type!");
 
-		long long mem_off = (index >> 3);
-		int offset = (index & 7);
+		if (Size() < (index >> 3) + sizeof(T)) return 0;
 
-		long long result = 0;
-		index += count * 8;
+		const std::size_t v_mem_off = (index >> 3);
+		const std::size_t v_offset = (index & 7);
 
-		if (offset == 0)
+		T v_result = 0;
+		index += sizeof(T) * 8;
+
+		const std::vector<Byte>& v_data = *this->data;
+
+		if (v_offset == 0)
 		{
-			for (long long i = 0; i < count; i++)
+			for (std::size_t i = 0; i < sizeof(T); i++)
+				v_result |= T(v_data[v_mem_off + i]) << ((sizeof(T) - i - 1) << 3);
+		}
+		else
+		{
+			const std::size_t v_offset_inv = (8 - v_offset);
+
+			for (std::size_t i = 0; i < sizeof(T); i++)
 			{
-				const std::size_t mem_off_full = (std::size_t)(mem_off + i);
+				const Byte v_byte_a = v_data[v_mem_off + i    ] << v_offset;
+				const Byte v_byte_b = v_data[v_mem_off + i + 1] >> v_offset_inv;
 
-				result |= (((long long)data[mem_off_full]) & 0xff) << ((count - i - 1ll) << 3ll);
+				v_result |= T(v_byte_a | v_byte_b) << ((sizeof(T) - i - 1) << 3);
 			}
-
-			return result;
 		}
 
-		for (long long i = 0; i < count; i++)
-		{
-			const std::size_t mem_off_full = (std::size_t)(mem_off + i);
-
-			long a = ((((long)data[mem_off_full    ] & 0xff) << (    offset))) & 0xff;
-			long b = ((((long)data[mem_off_full + 1] & 0xff) >> (8 - offset))) & 0xff;
-
-			long long c = (a | b) & 0xff;
-
-			result |= (c << ((count - i - 1ll) << 3ll));
-		}
-
-		return result;
+		return v_result;
 	}
-
-	union int_to_float_bits
-	{
-		int integer_bits;
-		float converted_float_bits;
-	};
 
 	inline float ReadFloat()
 	{
-		union int_to_float_bits bits = {};
-		bits.integer_bits = (int)ReadNBytes(4);
+		union
+		{
+			int integer_bits;
+			float converted_float_bits;
+		} bits = {};
+
+		bits.integer_bits = ReadObject<int>();
 
 		return bits.converted_float_bits;
 	}
@@ -159,23 +155,23 @@ public:
 
 	inline int ReadInt()
 	{
-		return (int)ReadNBytes(4);
+		return int(this->ReadObject<int>());
 	}
 
 	inline int ReadShort()
 	{
-		return (int)ReadNBytes(2);
+		return int(this->ReadObject<short>());
 	}
 
 	inline int ReadByte()
 	{
-		return (int)ReadNBytes(1);
+		return int(this->ReadObject<Byte>());
 	}
 
 	inline SMUuid ReadUuid()
 	{
-		const long long first = ReadNBytes(8);
-		const long long second = ReadNBytes(8);
+		const long long first = this->ReadObject<long long>();
+		const long long second = this->ReadObject<long long>();
 
 		return SMUuid(second, first, true);
 	}
@@ -184,7 +180,7 @@ public:
 	{
 		std::vector<Byte> bytes(static_cast<std::size_t>(length));
 
-		std::memcpy(bytes.data(), data.data() + (index >> 3), length);
+		std::memcpy(bytes.data(), this->data->data() + (index >> 3), length);
 		index += length * 8;
 
 		return bytes;

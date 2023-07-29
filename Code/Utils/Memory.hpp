@@ -72,6 +72,11 @@ public:
 		return this->bytes->data() + this->index;
 	}
 
+	inline const std::vector<Byte>* GetByteStorage() const noexcept
+	{
+		return this->bytes;
+	}
+
 #if defined(DEBUG) || defined(_DEBUG)
 	inline void DumpBytes(const std::string& file_name, const std::size_t& offset = 0)
 	{
