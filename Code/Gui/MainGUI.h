@@ -217,9 +217,9 @@ namespace SMConverter
 			this->m_cb_selectedGenerator->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			this->m_cb_selectedGenerator->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F));
 			this->m_cb_selectedGenerator->FormattingEnabled = true;
-			this->m_cb_selectedGenerator->Items->AddRange(gcnew cli::array< System::Object^  >(4) {
+			this->m_cb_selectedGenerator->Items->AddRange(gcnew cli::array< System::Object^  >(2) {
 				L"Blueprint Converter (.json, .blueprint)",
-					L"Tile Converter (.tile)", L"World Script Converter (.lua)", L"Character Converter"
+					L"Tile Converter (.tile)"
 			});
 			this->m_cb_selectedGenerator->Location = System::Drawing::Point(12, 233);
 			this->m_cb_selectedGenerator->Name = L"m_cb_selectedGenerator";
