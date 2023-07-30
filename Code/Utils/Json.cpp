@@ -123,10 +123,10 @@ void JsonReader::RemoveComments(std::string& json_string)
 	std::string v_output;
 	v_output.reserve(json_string.size());
 
-	const char* const v_data_beg = json_string.data();
-	const char* const v_data_end = v_data_beg + json_string.size();
+	char* const v_data_beg = json_string.data();
+	char* const v_data_end = v_data_beg + json_string.size();
 
-	const char* v_data = v_data_beg;
+	char* v_data = v_data_beg;
 
 	std::size_t v_data_ptr = 0;
 	while (v_data != v_data_end)
@@ -135,8 +135,17 @@ void JsonReader::RemoveComments(std::string& json_string)
 		{
 		case '\"':
 			{
-				v_data = strchr(v_data + 1, '\"');
-				if (!v_data) goto smc_escape_loop;
+				const char* v_str_end = strchr(v_data + 1, '\"');
+				if (!v_str_end) goto smc_escape_loop;
+
+				//Remove the newline characters from json strings to avoid parse errors
+				while (v_data < v_str_end)
+				{
+					if (*v_data == '\n' || *v_data == '\r')
+						*v_data = ' ';
+
+					v_data++;
+				}
 
 				break;
 			}
