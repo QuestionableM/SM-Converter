@@ -293,7 +293,7 @@ public:
 			return v_header.hasAssets;
 		}
 
-		BIT_STREAM_DUMP_INTO_FILE(stream, L"./prefab_dump/prefab" + std::to_wstring(t_pref_version) + L"_assets", 100);
+		BIT_STREAM_DUMP_INTO_FILE(stream, L"./prefab_dump/prefab" + std::to_wstring(version) + L"_assets", 100);
 		const int v_idx_start = stream.Index();
 
 		for (int a = 0; a < v_header.assetCount; a++)

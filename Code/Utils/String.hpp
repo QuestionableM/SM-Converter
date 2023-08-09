@@ -197,7 +197,14 @@ namespace String
 		return false;
 	}
 
-	constexpr const wchar_t g_allowedPathCharacters[] = { L'(', L')', L'.', L' ', L'_', 0x32, L'[', L']', L'-' };
+	//Spaces cause a file write error, so we have to make sure that there are no spaces
+	inline void RemoveSpacesFromEndR(std::wstring& v_wstr)
+	{
+		while (v_wstr.back() == L' ')
+			v_wstr.pop_back();
+	}
+
+	constexpr const wchar_t g_allowedPathCharacters[] = { L'(', L')', L'[', L']', L'-', L'_', L' ', 0x32 };
 	constexpr const std::size_t g_allowedPathCharactersSz = sizeof(g_allowedPathCharacters) / sizeof(wchar_t);
 	inline bool IsPathCharacterAllowed(wchar_t c)
 	{

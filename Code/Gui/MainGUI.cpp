@@ -943,7 +943,9 @@ namespace SMConverter
 		System::Array^ v_conv_data = safe_cast<System::Array^>(e->Argument);
 
 		const std::wstring v_bp_path = msclr::interop::marshal_as<std::wstring>(safe_cast<System::String^>(v_conv_data->GetValue(static_cast<int>(1))));
-		const std::wstring v_bp_name = msclr::interop::marshal_as<std::wstring>(safe_cast<System::String^>(v_conv_data->GetValue(static_cast<int>(2))));
+
+		std::wstring v_bp_name = msclr::interop::marshal_as<std::wstring>(safe_cast<System::String^>(v_conv_data->GetValue(static_cast<int>(2))));
+		::String::RemoveSpacesFromEndR(v_bp_name);
 
 		//Load blueprint settings
 		BlueprintConverterSettings::SeparationType = safe_cast<int>(v_conv_data->GetValue(static_cast<int>(3)));
@@ -974,7 +976,9 @@ namespace SMConverter
 		System::Array^ v_conv_data = safe_cast<System::Array^>(e->Argument);
 
 		const std::wstring v_tile_path = msclr::interop::marshal_as<std::wstring>(safe_cast<System::String^>(v_conv_data->GetValue(static_cast<int>(1))));
-		const std::wstring v_tile_name = msclr::interop::marshal_as<std::wstring>(safe_cast<System::String^>(v_conv_data->GetValue(static_cast<int>(2))));
+
+		std::wstring v_tile_name = msclr::interop::marshal_as<std::wstring>(safe_cast<System::String^>(v_conv_data->GetValue(static_cast<int>(2))));
+		::String::RemoveSpacesFromEndR(v_tile_name);
 
 		//Load the tile settings
 		TileConverterSettings::ExportHarvestables = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(3)));
@@ -1014,7 +1018,9 @@ namespace SMConverter
 		System::Array^ v_conv_data = safe_cast<System::Array^>(e->Argument);
 
 		const std::wstring v_world_path = msclr::interop::marshal_as<std::wstring>(safe_cast<System::String^>(v_conv_data->GetValue(static_cast<int>(1))));
-		const std::wstring v_world_name = msclr::interop::marshal_as<std::wstring>(safe_cast<System::String^>(v_conv_data->GetValue(static_cast<int>(2))));
+
+		std::wstring v_world_name = msclr::interop::marshal_as<std::wstring>(safe_cast<System::String^>(v_conv_data->GetValue(static_cast<int>(2))));
+		::String::RemoveSpacesFromEndR(v_world_name);
 
 		//Load the tile settings
 		TileConverterSettings::ExportHarvestables = safe_cast<bool>(v_conv_data->GetValue(static_cast<int>(3)));

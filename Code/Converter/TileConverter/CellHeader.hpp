@@ -58,7 +58,9 @@ public:
 	/* 0x144 */std::array<int, 4> kinematicsListCompressedSize;
 	/* 0x154 */std::array<int, 4> kinematicsListSize;
 
-	/* 0x164 */std::array<int, 5> some_data;
+	/* 0x164 */std::array<int, 4> some_data;
+
+	/* 0x174 */int voxelTerrainCount;
 	/* 0x178 */int voxelTerrainIndex;
 	/* 0x17C */int voxelTerrainCompressedSize;
 	/* 0x180 */int voxelTerrainSize;
