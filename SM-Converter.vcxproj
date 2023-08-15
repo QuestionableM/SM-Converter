@@ -139,14 +139,14 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <DebugInformationFormat>None</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <AdditionalDependencies>user32.lib;FreeImage.lib;assimp$(PlatformArchitecture).lib;lz4_$(PlatformArchitecture).lib;simdjson.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\FreeImage\Lib\x$(PlatformArchitecture);$(SolutionDir)Dependencies\Assimp\Lib;$(SolutionDir)Dependencies\lz4\Lib;$(SolutionDir)Build\libs-$(PlatformShortName)-$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
       <Command>"$(SolutionDir)Dependencies\Version Counter\VersionCounter.exe"</Command>

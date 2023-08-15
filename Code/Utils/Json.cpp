@@ -128,97 +128,120 @@ void JsonReader::RemoveComments(std::string& json_string)
 
 	char* v_data = v_data_beg;
 
+	std::size_t v_curly_bracket_counter = 0;
+	std::size_t v_bracket_counter = 0;
+
+	bool v_bracket_flag = false;
+
 	std::size_t v_data_ptr = 0;
 	while (v_data != v_data_end)
 	{
 		switch (*v_data)
 		{
-		case '\"':
-			{
-				const char* v_str_end = strchr(v_data + 1, '\"');
-				if (!v_str_end) goto smc_escape_loop;
-
-				//Remove the newline characters from json strings to avoid parse errors
-				while (v_data < v_str_end)
-				{
-					if (*v_data == '\n' || *v_data == '\r')
-						*v_data = ' ';
-
-					v_data++;
-				}
-
-				break;
-			}
-		case '/':
-			{
-				const char* v_last_char = v_data++;
-				if (v_data == v_data_end)
-					goto smc_escape_loop;
-
-				switch (*v_data)
-				{
-				case '/':
-					{
-						v_output.append(json_string.begin() + v_data_ptr, json_string.begin() + (v_last_char - v_data_beg));
-
-						v_data = strchr(v_data, '\n');
-						if (!v_data) goto smc_escape_loop;
-
-						v_data_ptr = v_data - v_data_beg;
-						continue;
-					}
-				case '*':
-					{
-						v_output.append(json_string.begin() + v_data_ptr, json_string.begin() + (v_last_char - v_data_beg));
-
-						v_data = strstr(v_data, "*/");
-						if (!v_data) goto smc_escape_loop;
-
-						v_data_ptr = (v_data += 2) - v_data_beg;
-						continue;
-					}
-				default:
-					break;
-				}
-
-				break;
-			}
-		default:
+		case '{':
+		{
+			if (!v_bracket_flag) { v_bracket_flag = true; break; }
+			v_curly_bracket_counter++;
 			break;
 		}
-		/*if (*v_data == '\"')
+		case '[':
 		{
-			v_data = strchr(v_data + 1, '\"');
-			if (!v_data) break;
+			if (!v_bracket_flag) { v_bracket_flag = true; break; }
+			v_bracket_counter++;
+			break;
 		}
-		else if (*v_data == '/')
+		case '}':
+		{
+			if (v_curly_bracket_counter <= 0)
+			{
+				v_data++;
+				v_output.append(json_string.begin() + v_data_ptr, json_string.begin() + (v_data - v_data_beg));
+				json_string = std::move(v_output);
+				goto smc_escape_loop_no_append;
+			}
+
+			v_curly_bracket_counter--;
+
+			break;
+		}
+		case ']':
+		{
+			if (v_bracket_counter <= 0)
+			{
+				v_data++;
+				v_output.append(json_string.begin() + v_data_ptr, json_string.begin() + (v_data - v_data_beg));
+				json_string = std::move(v_output);
+				goto smc_escape_loop_no_append;
+			}
+
+			v_bracket_counter--;
+			break;
+		}
+		case '\"':
+		{
+			//Find the good string end character
+			const char* v_str_end = v_data + 1;
+			for (; v_str_end < v_data_end; v_str_end++)
+			{
+				if (*v_str_end == '\"' && *(v_str_end - 1) != '\\')
+					break;
+			}
+
+			//Remove the newline characters from json strings to avoid parse errors
+			for (; v_data < v_str_end; v_data++)
+			{
+				if (*v_data == '\n' || *v_data == '\r')
+					*v_data = ' ';
+			}
+
+			break;
+		}
+		case '/':
 		{
 			const char* v_last_char = v_data++;
 			if (v_data == v_data_end)
+				goto smc_escape_loop;
+
+			switch (*v_data)
 			{
-				break;
-			}
-			else if (*v_data == '/')
+			case '/':
 			{
 				v_output.append(json_string.begin() + v_data_ptr, json_string.begin() + (v_last_char - v_data_beg));
 
+				const char* v_backup = v_data;
 				v_data = strchr(v_data, '\n');
-				if (!v_data) break;
+				if (!v_data)
+				{
+					json_string = std::move(v_output);
+					goto smc_escape_loop_no_append;
+				}
 
 				v_data_ptr = v_data - v_data_beg;
 				continue;
 			}
-			else if (*v_data == '*')
+			case '*':
 			{
 				v_output.append(json_string.begin() + v_data_ptr, json_string.begin() + (v_last_char - v_data_beg));
 
-				v_data = strstr(v_data, "* /");
-				if (!v_data) break;
+				v_data = strstr(v_data, "*/");
+				if (!v_data)
+				{
+					json_string = std::move(v_output);
+					goto smc_escape_loop_no_append;
+				}
 
 				v_data_ptr = (v_data += 2) - v_data_beg;
 				continue;
 			}
-		}*/
+			default:
+				break;
+			}
+
+			break;
+		}
+		default:
+			break;
+		}
 
 		v_data++;
 	}
@@ -235,10 +258,8 @@ smc_escape_loop:
 			json_string = std::move(v_output);
 		}
 	}
-	//else
-	//{
-	//	v_output.append(json_string.substr(v_data_ptr));
-	//}
+
+smc_escape_loop_no_append: {}
 }
 
 bool JsonReader::LoadParseSimdjson(const std::wstring& path, simdjson::dom::document& v_doc)
@@ -336,9 +357,13 @@ bool JsonReader::LoadParseSimdjsonCommentsC(const std::wstring& path, simdjson::
 		JsonReader::RemoveComments(v_json_str);
 
 		simdjson::dom::parser v_parser;
-		v_parser.parse_into_document(v_doc, v_json_str);
+		const auto v_root = v_parser.parse_into_document(v_doc, v_json_str);
+		if (v_root.error())
+		{
+			DebugErrorL("Parse Error:\nFile: ", path, "\nError: ", simdjson::error_message(v_root.error()));
+			return false;
+		}
 
-		const auto v_root = v_doc.root();
 		if (v_root.type() != type_check)
 		{
 			DebugErrorL("Mismatching root json type!\nFile: ", path);
