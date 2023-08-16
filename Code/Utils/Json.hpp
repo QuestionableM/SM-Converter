@@ -17,9 +17,6 @@ public:
 	static nlohmann::json ParseJsonString(const std::string& json_str);
 	static nlohmann::json LoadParseJson(const std::wstring& path);
 
-	static bool LoadParseJsonLua(const std::wstring& path, nlohmann::json& v_json, std::string& v_error_message);
-	static bool ParseJsonStringLua(const std::string& json_str, nlohmann::json& v_json, std::string& v_error_message);
-
 	static void WriteJson(const std::wstring& path, const nlohmann::json& pJson);
 	static std::string WriteJsonString(const nlohmann::json& v_json);
 
@@ -55,10 +52,6 @@ public:
 	static bool LoadParseSimdjsonCommentsC(const std::wstring& path, simdjson::dom::document& v_doc, const simdjson::dom::element_type& type_check);
 	//Parse simdjson from string
 	static bool ParseSimdjsonString(const std::string& json_str, simdjson::dom::document& v_doc);
-	//Parse simdjson with error strings that can be used in lua
-	static bool LoadParseSimdjsonLua(const std::wstring& path, simdjson::dom::document& v_doc, std::string& v_error_message);
-	//Parse simdjson string with error strings that can be used in lua
-	static bool ParseSimdjsonStringLua(const std::string& json_str, simdjson::dom::document& v_doc, std::string& v_error_message);
 
 
 

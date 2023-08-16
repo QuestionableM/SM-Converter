@@ -53,52 +53,6 @@ nlohmann::json JsonReader::LoadParseJson(const std::wstring& path)
 	return m_emptyObject;
 }
 
-bool JsonReader::LoadParseJsonLua(const std::wstring& path, nlohmann::json& v_json, std::string& v_error_message)
-{
-	std::string v_fileData;
-	if (!File::ReadToString(path, v_fileData))
-	{
-		v_error_message = "Failed to open file";
-		return false;
-	}
-
-	try
-	{
-		v_json = nlohmann::json::parse(v_fileData, nullptr, true, true);
-		return true;
-	}
-	catch (nlohmann::json::parse_error& p_err)
-	{
-		v_error_message = "Parse error: " + std::string(p_err.what());
-	}
-	catch (...)
-	{
-		v_error_message = "Unknown json error";
-	}
-
-	return false;
-}
-
-bool JsonReader::ParseJsonStringLua(const std::string& json_str, nlohmann::json& v_json, std::string& v_error_message)
-{
-	try
-	{
-		v_json = nlohmann::json::parse(json_str, nullptr, true, true);
-		return true;
-	}
-	catch (nlohmann::json::parse_error& p_err)
-	{
-		v_error_message = "Parse error: " + std::string(p_err.what());
-	}
-	catch (...)
-	{
-		v_error_message = "Unknown parse error";
-	}
-
-
-	return false;
-}
-
 void JsonReader::WriteJson(const std::wstring& path, const nlohmann::json& pJson)
 {
 	std::ofstream out_file(path);
@@ -208,8 +162,7 @@ void JsonReader::RemoveComments(std::string& json_string)
 			{
 				v_output.append(json_string.begin() + v_data_ptr, json_string.begin() + (v_last_char - v_data_beg));
 
-				const char* v_backup = v_data;
-				v_data = strchr(v_data, '\n');
+				v_data = strchr(v_data + 1, '\n');
 				if (!v_data)
 				{
 					json_string = std::move(v_output);
@@ -223,7 +176,7 @@ void JsonReader::RemoveComments(std::string& json_string)
 			{
 				v_output.append(json_string.begin() + v_data_ptr, json_string.begin() + (v_last_char - v_data_beg));
 
-				v_data = strstr(v_data, "*/");
+				v_data = strstr(v_data + 1, "*/");
 				if (!v_data)
 				{
 					json_string = std::move(v_output);
@@ -267,7 +220,7 @@ bool JsonReader::LoadParseSimdjson(const std::wstring& path, simdjson::dom::docu
 	try
 	{
 		std::string v_json_str;
-		if (!File::ReadToString(path, v_json_str))
+		if (!File::ReadToStringED(path, v_json_str))
 			return false;
 
 		simdjson::dom::parser v_parser;
@@ -324,7 +277,7 @@ bool JsonReader::LoadParseSimdjsonComments(const std::wstring& path, simdjson::d
 	try
 	{
 		std::string v_json_str;
-		if (!File::ReadToString(path, v_json_str))
+		if (!File::ReadToStringED(path, v_json_str))
 			return false;
 
 		JsonReader::RemoveComments(v_json_str);
@@ -351,7 +304,7 @@ bool JsonReader::LoadParseSimdjsonCommentsC(const std::wstring& path, simdjson::
 	try
 	{
 		std::string v_json_str;
-		if (!File::ReadToString(path, v_json_str))
+		if (!File::ReadToStringED(path, v_json_str))
 			return false;
 
 		JsonReader::RemoveComments(v_json_str);
@@ -401,57 +354,6 @@ bool JsonReader::ParseSimdjsonString(const std::string& json_str, simdjson::dom:
 #else
 	catch (...) {}
 #endif
-
-	return false;
-}
-
-bool JsonReader::LoadParseSimdjsonLua(const std::wstring& path, simdjson::dom::document& v_doc, std::string& v_error_message)
-{
-	std::string v_json_str;
-	if (!File::ReadToString(path, v_json_str))
-	{
-		v_error_message = "Failed to open file";
-		return false;
-	}
-
-	JsonReader::RemoveComments(v_json_str);
-
-	try
-	{
-		simdjson::dom::parser v_parser;
-		v_parser.parse_into_document(v_doc, v_json_str);
-
-		return true;
-	}
-	catch (const simdjson::simdjson_error& v_err)
-	{
-		v_error_message = "Parse error: " + std::string(v_err.what());
-	}
-	catch (...)
-	{
-		v_error_message = "Unknown json error";
-	}
-
-	return false;
-}
-
-bool JsonReader::ParseSimdjsonStringLua(const std::string& json_str, simdjson::dom::document& v_doc, std::string& v_error_message)
-{
-	try
-	{
-		simdjson::dom::parser v_parser;
-		v_parser.parse_into_document(v_doc, json_str);
-
-		return true;
-	}
-	catch (const simdjson::simdjson_error& v_err)
-	{
-		v_error_message = "Parse error: " + std::string(v_err.what());
-	}
-	catch (...)
-	{
-		v_error_message = "Unknown parse error";
-	}
 
 	return false;
 }

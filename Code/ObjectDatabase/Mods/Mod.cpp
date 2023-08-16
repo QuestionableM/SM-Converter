@@ -205,7 +205,7 @@ void SMMod::LoadFile(const std::wstring& path, bool add_to_global_db)
 		const DataLoaderMap::const_iterator v_iter = g_DataLoaders.find(v_key_str);
 		if (v_iter == g_DataLoaders.end())
 		{
-			DebugErrorL("Couldn't find the loader for: ", v_key_str);
+			DebugErrorL("Couldn't find the loader for: ", v_key_str, "\nFile: ", path);
 			continue;
 		}
 
