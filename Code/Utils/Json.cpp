@@ -88,7 +88,7 @@ void JsonReader::RemoveComments(std::string& json_string)
 	bool v_bracket_flag = false;
 
 	std::size_t v_data_ptr = 0;
-	while (v_data != v_data_end)
+	while (v_data < v_data_end)
 	{
 		switch (*v_data)
 		{
@@ -203,7 +203,7 @@ smc_escape_loop:
 
 	if (v_data)
 	{
-		const std::size_t v_ptr_diff = v_data - v_data_beg;
+		const std::size_t v_ptr_diff = v_data - v_data_beg - 1;
 		const std::size_t v_diff_test = v_ptr_diff - v_data_ptr;
 		if (v_diff_test != json_string.size())
 		{

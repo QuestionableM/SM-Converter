@@ -63,16 +63,29 @@ bool File::ReadToStringED(const std::wstring& path, std::string& r_output)
 	std::ifstream v_input_file(path, std::ios::binary);
 	if (!v_input_file.is_open()) return false;
 
-	//Check the first 3 bytes of the file
+	v_input_file.seekg(0, std::ios::end);
+	const std::size_t v_file_size = static_cast<std::size_t>(v_input_file.tellg());
+	v_input_file.seekg(0, std::ios::beg);
+
+	if (v_file_size == 0 || v_file_size == std::size_t(-1))
+	{
+		v_input_file.close();
+		return false;
+	}
+
 	char v_encoding_buffer;
 	v_input_file.read(&v_encoding_buffer, 1);
 
-	const bool v_guess_has_encoding = (v_encoding_buffer < 0);
-	const std::size_t v_file_offset = v_guess_has_encoding ? 3 : 0;
+	//Guess if the file has an encoding which we want to skip
+	const std::size_t v_file_offset = (v_encoding_buffer < 0) ? 3 : 0;
+	if (v_file_size <= v_file_offset)
+	{
+		v_input_file.close();
+		return false;
+	}
 
-	v_input_file.seekg(0, std::ios::end);
-	r_output.resize(static_cast<std::size_t>(v_input_file.tellg()) - v_file_offset);
 	v_input_file.seekg(v_file_offset, std::ios::beg);
+	r_output.resize(v_file_size - v_file_offset);
 
 	v_input_file.read(r_output.data(), r_output.size());
 	v_input_file.close();
