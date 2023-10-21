@@ -1,4 +1,6 @@
 /.vs
 /Build
 /hash_cache.json
+/ConvertedBlueprints
+/Resources/Config.json
 *.vcxproj.user

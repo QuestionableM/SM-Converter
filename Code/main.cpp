@@ -15,8 +15,10 @@ int WINAPI WinMain(
     std::setlocale(LC_CTYPE, "en_US.UTF-8");
     CreateDebugConsole(L"World Converter Debug Console");
 
+    SetProcessDPIAware();
+
     SMConverter::Application::EnableVisualStyles();
-    SMConverter::Application::SetCompatibleTextRenderingDefault(false);
+    SMConverter::Application::SetCompatibleTextRenderingDefault(true);
     SMConverter::Application::Run(gcnew SMConverter::MainGui());
 
 	return 0;
