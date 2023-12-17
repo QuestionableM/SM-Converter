@@ -84,7 +84,7 @@ SMBody* BlueprintConv::CreateCollection(SMBlueprint* self, const std::string& v_
 
 	DebugOutL("Created a new collection: ", v_name);
 
-	BlueprintConv::BodyGroupMap.insert(std::make_pair(v_name, v_new_collection));
+	BlueprintConv::BodyGroupMap.emplace(v_name, v_new_collection);
 	self->Objects.push_back(v_new_collection);
 
 	return v_new_collection;
@@ -95,7 +95,7 @@ void BlueprintConv::CreateAndAddObjToCollection(SMBlueprint* self, const std::st
 	SMBody* v_collection = BlueprintConv::CreateCollection(self, v_name);
 
 	v_collection->Add(v_entity);
-	BlueprintConv::BodyIndexMap.insert(std::make_pair(v_entity->GetIndex(), v_collection));
+	BlueprintConv::BodyIndexMap.emplace(v_entity->GetIndex(), v_collection);
 }
 
 void BlueprintConv::CreateAndAddObjToCollectionNI(SMBlueprint* self, const std::string& v_name, SMEntity* v_entity)
@@ -109,9 +109,9 @@ void BlueprintConv::BlueprintAddObject_SeparateAll(SMBlueprint* self, SMEntity* 
 	{
 		SMBlock* v_block = reinterpret_cast<SMBlock*>(v_entity);
 
-		const std::size_t v_bounds_x = static_cast<std::size_t>(v_block->m_bounds.x);
-		const std::size_t v_bounds_y = static_cast<std::size_t>(v_block->m_bounds.y);
-		const std::size_t v_bounds_z = static_cast<std::size_t>(v_block->m_bounds.z);
+		const std::size_t v_bounds_x = static_cast<std::size_t>(v_block->m_size.x);
+		const std::size_t v_bounds_y = static_cast<std::size_t>(v_block->m_size.y);
+		const std::size_t v_bounds_z = static_cast<std::size_t>(v_block->m_size.z);
 
 		const std::string v_coll_name = "Object_" + std::to_string(self->m_object_index + 1);
 
@@ -122,22 +122,20 @@ void BlueprintConv::BlueprintAddObject_SeparateAll(SMBlueprint* self, SMEntity* 
 		else
 		{
 			SMBody* v_collection = BlueprintConv::CreateCollection(self, v_coll_name);
+			glm::vec3 v_blk_pos;
 
 			for (std::size_t x = 0; x < v_bounds_x; x++)
 			{
-				const float v_x_flt = static_cast<float>(x);
+				v_blk_pos.x = static_cast<float>(x);
 				for (std::size_t y = 0; y < v_bounds_y; y++)
 				{
-					const float v_y_flt = static_cast<float>(y);
+					v_blk_pos.y = static_cast<float>(y);
 					for (std::size_t z = 0; z < v_bounds_z; z++)
 					{
-						const float v_z_flt = static_cast<float>(z);
+						v_blk_pos.z = static_cast<float>(z);
 
-						const glm::vec3 v_vec_one = glm::vec3(1.0f);
-						SMBlock* v_new_blk = new SMBlock(v_block->m_parent, v_vec_one, v_block->m_color, v_block->m_xzRotation, 0);
-						v_new_blk->SetPosition(v_block->m_position + glm::vec3(v_x_flt, v_y_flt, v_z_flt));
-						v_new_blk->SetRotation(v_block->m_rotation);
-						v_new_blk->SetSize(v_vec_one);
+						SMBlock* v_new_blk = new SMBlock(v_block, v_block->m_position + v_blk_pos,
+							v_block->m_rotation, glm::vec3(1.0f));
 
 						v_collection->Add(v_new_blk);
 					}

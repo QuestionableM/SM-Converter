@@ -14,10 +14,8 @@ class SMBlueprint : public SMEntity
 {
 	friend class BlueprintConv;
 
-	inline SMBlueprint()
-	{
-		this->m_size = glm::vec3(0.25f);
-	}
+	inline SMBlueprint(const glm::vec3& pos, const glm::quat& rot)
+		: SMEntity(pos, rot, glm::vec3(0.25f)), m_object_index(0), m_body_index(0) {}
 
 public:
 	using AddObjectFunction = void (*)(SMBlueprint*, SMEntity*);
@@ -28,11 +26,11 @@ public:
 	static void CountFromJsonString(const std::string& str);
 
 	//For object loader
-	static SMBlueprint* LoadAutomatic(const std::string& str);
-	static SMBlueprint* FromFile(const std::wstring& path);
+	static SMBlueprint* LoadAutomatic(const std::string& str, const glm::vec3& pos, const glm::quat& rot);
+	static SMBlueprint* FromFile(const std::wstring& path, const glm::vec3& pos, const glm::quat& rot);
 	//Used by blueprint converter as it reports the conversion status
 	static SMBlueprint* FromFileWithStatus(const std::wstring& path, AddObjectFunction v_addObjFunc, ConvertError& v_error);
-	static SMBlueprint* FromJsonString(const std::string& json_str);
+	static SMBlueprint* FromJsonString(const std::string& json_str, const glm::vec3& pos, const glm::quat& rot);
 
 	inline EntityType Type() const noexcept override { return EntityType::Blueprint; }
 	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const override;
@@ -42,7 +40,7 @@ public:
 
 	inline ~SMBlueprint()
 	{
-		for (SMEntity*& pObject : this->Objects)
+		for (SMEntity* pObject : this->Objects)
 			delete pObject;
 	}
 
@@ -68,8 +66,8 @@ private:
 	void LoadBodies(const simdjson::dom::element& pJson);
 	void LoadJoints(const simdjson::dom::element& pJson);
 
-	std::size_t m_object_index = 0;
-	std::size_t m_body_index = 0;
+	std::size_t m_object_index;
+	std::size_t m_body_index;
 };
 
 #pragma managed

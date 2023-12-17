@@ -67,14 +67,15 @@ public:
 	template<bool t_mod_counter>
 	static int Read(const std::vector<Byte>& bytes, int hvs_index, int len, int version, TilePart* part)
 	{
+		SMEntityTransform v_transform;
 		MemoryWrapper memory(bytes);
 
 		int index = 0;
 		for (int a = 0; a < len; a++)
 		{
-			const glm::vec3 f_pos = memory.Object<glm::vec3>(index); //12
-			const glm::quat f_quat = memory.GetQuat(index + 0xc); //16
-			const glm::vec3 f_size = memory.Object<glm::vec3>(index + 0x1c); //12
+			v_transform.position = memory.Object<glm::vec3>(index); //12
+			v_transform.rotation = memory.GetQuat(index + 0xc); //16
+			v_transform.scale = memory.Object<glm::vec3>(index + 0x1c); //12
 
 			const SMUuid f_uuid = memory.Object<SMUuid>(index + 0x28); //16
 			const SMColor f_color = memory.Object<unsigned int>(index + 0x38); //4
@@ -101,11 +102,7 @@ public:
 				Model* hvs_model = ModelStorage::LoadModel(hvs_data->m_mesh);
 				if (!hvs_model) continue;
 
-				SMHarvestable* pNewHvs = new SMHarvestable(hvs_data, hvs_model, f_color);
-				pNewHvs->SetPosition(f_pos);
-				pNewHvs->SetRotation(f_quat);
-				pNewHvs->SetSize(f_size);
-
+				SMHarvestable* pNewHvs = new SMHarvestable(hvs_data, v_transform, hvs_model, f_color);
 				part->AddObject(pNewHvs, hvs_index);
 			}
 		}

@@ -6,19 +6,21 @@
 
 #pragma unmanaged
 
-class SMJoint : public SMEntity
+class SMJoint : public SMEntityWithModelAndUuid
 {
 public:
-	inline SMJoint(const PartData* pParent, Model* pModel, SMColor color, unsigned char v_rotation, std::size_t index)
-	{
-		this->m_parent = pParent;
-		this->m_uuid = pParent->m_uuid;
-		this->m_model = pModel;
-		this->m_color = color;
-		
-		this->m_xzRotation = v_rotation;
-		this->m_index = index;
-	}
+	inline SMJoint(
+		const PartData* pParent,
+		const glm::vec3& pos,
+		Model* pModel,
+		SMColor color,
+		unsigned char rotation,
+		std::size_t index)
+		: SMEntityWithModelAndUuid(pParent->m_uuid, pModel, pos),
+		m_parent(pParent),
+		m_index(index),
+		m_color(color),
+		m_xzRotation(rotation) {}
 
 	SMJoint(const SMJoint&) = delete;
 	SMJoint(SMJoint&) = delete;
@@ -33,10 +35,10 @@ public:
 	bool GetCanWrite(const std::string& name, std::size_t v_idx) const override;
 
 private:
-	SMColor m_color;
 	const PartData* m_parent;
-	unsigned char m_xzRotation;
 	std::size_t m_index;
+	SMColor m_color;
+	unsigned char m_xzRotation;
 };
 
 #pragma managed

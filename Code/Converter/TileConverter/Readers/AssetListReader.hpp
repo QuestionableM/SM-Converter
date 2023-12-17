@@ -63,25 +63,25 @@ public:
 	template<bool t_mod_counter>
 	static int Read(const std::vector<Byte>& bytes, int asset_idx, int len, int version, TilePart* part)
 	{
+		SMEntityTransform v_transform;
 		MemoryWrapper memory(bytes);
 
 		int index = 0;
 		for (int a = 0; a < len; a++)
 		{
-			const glm::vec3 f_pos = memory.Object<glm::vec3>(index);
-			const glm::quat f_quat = memory.GetQuat(index + 0xc);
-			glm::vec3 f_size;
+			v_transform.position = memory.Object<glm::vec3>(index);
+			v_transform.rotation = memory.GetQuat(index + 0xc);
 
 			if (version < 5)
 			{
 				const float f_dimension = memory.Object<float>(index + 0x1c);
-				f_size = glm::vec3(f_dimension);
+				v_transform.scale = glm::vec3(f_dimension);
 
 				index += 0x20;
 			}
 			else
 			{
-				f_size = memory.Object<glm::vec3>(index + 0x1c);
+				v_transform.scale = memory.Object<glm::vec3>(index + 0x1c);
 
 				index += 0x28;
 			}
@@ -119,7 +119,7 @@ public:
 					index += 4;
 
 					if (color_map.find(v_str_data) == color_map.end())
-						color_map.insert(std::make_pair(v_str_data, color));
+						color_map.emplace(v_str_data, color);
 				}
 			}
 
@@ -142,11 +142,7 @@ public:
 				Model* pModel = ModelStorage::LoadModel(asset_data->m_mesh);
 				if (!pModel) continue;
 
-				SMAsset* pNewAsset = new SMAsset(asset_data, pModel, color_map);
-				pNewAsset->SetPosition(f_pos);
-				pNewAsset->SetRotation(f_quat);
-				pNewAsset->SetSize(f_size);
-
+				SMAsset* pNewAsset = new SMAsset(asset_data, v_transform, pModel, std::move(color_map));
 				part->AddObject(pNewAsset, asset_idx);
 			}
 		}

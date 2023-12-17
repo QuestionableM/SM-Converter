@@ -11,11 +11,8 @@ public:
 	SMPrefab(const SMPrefab&) = delete;
 	SMPrefab(SMPrefab&) = delete;
 
-	inline SMPrefab(const std::wstring& path, const std::wstring& flag = L"")
-	{
-		this->path = path;
-		this->flag = flag;
-	}
+	inline SMPrefab(const std::wstring& path, const std::wstring& flag, const SMEntityTransform& transform)
+		: SMEntity(transform), path(path), flag(flag) {}
 
 	inline ~SMPrefab()
 	{

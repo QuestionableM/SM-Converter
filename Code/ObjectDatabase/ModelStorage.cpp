@@ -99,7 +99,7 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 
 		if (offset.VertexMap.find(pVertPos) == offset.VertexMap.end())
 		{
-			offset.VertexMap.insert(std::make_pair(pVertPos, ++offset.Vertex));
+			offset.VertexMap.emplace(pVertPos, ++offset.Vertex);
 
 			//This is actually faster than sprintf("%g %g %g")
 			g_modelWriterPtr = String::FromFloat(pVertPos.x, v_writer_off_two);
@@ -127,7 +127,7 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 
 			if (offset.UvMap.find(uv) == offset.UvMap.end())
 			{
-				offset.UvMap.insert(std::make_pair(uv, ++offset.Uv));
+				offset.UvMap.emplace(uv, ++offset.Uv);
 
 				g_modelWriterPtr = String::FromFloat(uv.x, v_writer_off_three);
 				*g_modelWriterPtr++ = ' ';
@@ -173,7 +173,7 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 
 			if (offset.NormalMap.find(pNormal) == offset.NormalMap.end())
 			{
-				offset.NormalMap.insert(std::make_pair(pNormal, ++offset.Normal));
+				offset.NormalMap.emplace(pNormal, ++offset.Normal);
 
 				g_modelWriterPtr = String::FromFloat(pNormal.x, v_writer_off_three);
 				*g_modelWriterPtr++ = ' ';

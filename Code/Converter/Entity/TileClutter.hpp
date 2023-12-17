@@ -4,19 +4,17 @@
 
 #pragma unmanaged
 
-class SMTileClutter : public SMEntity
+class SMTileClutter : public SMEntityWithModel
 {
 public:
 	inline SMTileClutter(ClutterData* pParent, Model* pModel)
-	{
-		this->m_parent = pParent;
-		this->m_uuid = pParent->m_uuid;
-		this->m_model = pModel;
-	}
+		: SMEntityWithModel(pModel), m_parent(pParent) {}
 
 	SMTileClutter(SMTileClutter&) = delete;
 	SMTileClutter(const SMTileClutter&) = delete;
 	~SMTileClutter() = default;
+
+	const SMUuid& GetUuid() const override { return m_parent->m_uuid; }
 
 	inline float ScaleVariance() const noexcept { return m_parent->m_scaleVariance; }
 

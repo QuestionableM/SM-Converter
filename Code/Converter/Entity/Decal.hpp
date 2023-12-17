@@ -10,13 +10,12 @@ class SMDecal : public SMEntity
 {
 public:
 	~SMDecal() = default;
+	
 	SMDecal(const SMDecal&) = delete;
 	SMDecal(SMDecal&) = delete;
-	inline SMDecal(const DecalData* data_ptr, SMColor color)
-	{
-		this->m_data = data_ptr;
-		this->m_color = color;
-	}
+	
+	inline SMDecal(const DecalData* data_ptr, const SMEntityTransform& transform, SMColor color)
+		: SMEntity(transform), m_data(data_ptr), m_color(color) {}
 
 	inline EntityType Type() const noexcept override { return EntityType::Decal; }
 

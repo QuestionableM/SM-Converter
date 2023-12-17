@@ -55,14 +55,15 @@ public:
 	template<bool t_mod_counter>
 	inline static int Read(const std::vector<Byte>& bytes, int decal_count, int version, TilePart* part)
 	{
+		SMEntityTransform v_transform;
 		MemoryWrapper memory(bytes);
 
 		int index = 0;
 		for (int a = 0; a < decal_count; a++)
 		{
-			const glm::vec3 v_pos = memory.Object<glm::vec3>(index); //12 bytes
-			const glm::quat v_quat = memory.GetQuat(index + 0xc); //16 bytes
-			const glm::vec3 v_size = memory.Object<glm::vec3>(index + 0x1c); //12 bytes
+			v_transform.position = memory.Object<glm::vec3>(index); //12 bytes
+			v_transform.rotation = memory.GetQuat(index + 0xc); //16 bytes
+			v_transform.scale = memory.Object<glm::vec3>(index + 0x1c); //12 bytes
 
 			const SMUuid v_uuid = memory.Object<SMUuid>(index + 0x28); //16 bytes
 			const SMColor v_color = memory.Object<unsigned int>(index + 0x38); //4 bytes
@@ -86,11 +87,7 @@ public:
 			{
 				if (!v_decalData) continue;
 
-				SMDecal* v_newDecal = new SMDecal(v_decalData, v_color);
-				v_newDecal->SetPosition(v_pos);
-				v_newDecal->SetRotation(v_quat);
-				v_newDecal->SetSize(v_size);
-
+				SMDecal* v_newDecal = new SMDecal(v_decalData, v_transform, v_color);
 				part->AddObject(v_newDecal);
 			}
 		}

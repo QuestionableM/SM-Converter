@@ -4,25 +4,29 @@
 
 #pragma unmanaged
 
-class SMBlock : public SMEntity
+class SMBlock : public SMEntityWithUuid
 {
 	friend class BlueprintConv;
 
 public:
-	inline SMBlock(const BlockData* pParent,
-		const glm::vec3& bounds,
-		SMColor color,
-		unsigned char v_rotation,
-		std::size_t index)
-	{
-		this->m_parent = pParent;
-		this->m_uuid = pParent->m_uuid;
-		this->m_bounds = bounds;
-		this->m_color = color;
+	inline SMBlock(SMBlock* other, const glm::vec3& pos, const glm::quat& rot, const glm::vec3& scale)
+		: SMEntityWithUuid(other->m_parent->m_uuid, pos, scale),
+		m_parent(other->m_parent),
+		m_index(0),
+		m_color(other->m_color),
+		m_xzRotation(other->m_xzRotation) {}
 
-		this->m_xzRotation = v_rotation;
-		this->m_index = index;
-	}
+	inline SMBlock(const BlockData* pParent,
+		const glm::vec3& pos,
+		const glm::vec3& scale,
+		SMColor color,
+		unsigned char rotation,
+		std::size_t index)
+		: SMEntityWithUuid(pParent->m_uuid, pos, scale),
+		m_parent(pParent),
+		m_index(index),
+		m_color(color),
+		m_xzRotation(rotation) {}
 
 	SMBlock(const SMBlock&) = delete;
 	SMBlock(SMBlock&) = delete;
@@ -38,11 +42,10 @@ public:
 	glm::mat4 GetTransformMatrix() const override;
 
 private:
-	SMColor m_color;
 	const BlockData* m_parent;
-	glm::vec3 m_bounds;
-	unsigned char m_xzRotation;
 	std::size_t m_index;
+	SMColor m_color;
+	unsigned char m_xzRotation;
 };
 
 #pragma managed

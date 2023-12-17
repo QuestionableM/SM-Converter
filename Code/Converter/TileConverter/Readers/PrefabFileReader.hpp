@@ -39,7 +39,11 @@ class PrefabFileReader
 
 public:
 	template<bool t_mod_counter>
-	inline static SMPrefab* Read(const std::wstring& path, const std::wstring& flag, ConvertError& v_error)
+	inline static SMPrefab* Read(
+		const std::wstring& path,
+		const std::wstring& flag,
+		const SMEntityTransform& transform,
+		ConvertError& v_error)
 	{
 		std::vector<Byte> v_bytes;
 		if (!File::ReadFileBytes(path, v_bytes))
@@ -48,7 +52,7 @@ public:
 			return nullptr;
 		}
 
-		return PrefabFileReader::Read<t_mod_counter>(v_bytes, path, flag, v_error);
+		return PrefabFileReader::Read<t_mod_counter>(v_bytes, path, flag, transform, v_error);
 	}
 
 	template<bool t_mod_counter>
@@ -103,7 +107,12 @@ public:
 	}
 
 	template<bool t_mod_counter>
-	inline static SMPrefab* Read(const std::vector<Byte>& bytes, const std::wstring& ppath, const std::wstring& pflag, ConvertError& v_error)
+	inline static SMPrefab* Read(
+		const std::vector<Byte>& bytes,
+		const std::wstring& ppath,
+		const std::wstring& pflag,
+		const SMEntityTransform& transform,
+		ConvertError& v_error)
 	{
 		MemoryWrapper reader(bytes);
 
@@ -122,7 +131,7 @@ public:
 
 		SMPrefab* prefab = nullptr;
 		if constexpr (!t_mod_counter) {
-			prefab = new SMPrefab(ppath, pflag);
+			prefab = new SMPrefab(ppath, pflag, transform);
 		}
 
 		PrefabFileReader::ReadPrefabHeader<t_mod_counter>(reader, prefab, version, v_error);
@@ -170,11 +179,8 @@ public:
 			}
 			else
 			{
-				SMBlueprint* blueprint = SMBlueprint::LoadAutomatic(value);
+				SMBlueprint* blueprint = SMBlueprint::LoadAutomatic(value, f_pos, f_quat);
 				if (!blueprint) continue;
-
-				blueprint->SetPosition(f_pos);
-				blueprint->SetRotation(f_quat);
 
 				prefab->AddObject(blueprint);
 			}
@@ -195,6 +201,7 @@ public:
 		BIT_STREAM_DUMP_INTO_FILE(stream, L"./prefab_dump/prefab" + std::to_wstring(version) + L"_prefabs", 100);
 		const int v_start_idx = stream.Index();
 
+		SMEntityTransform v_transform;
 		for (int a = 0; a < v_header.prefabCount; a++)
 		{
 			const int v_str_length = stream.ReadInt();
@@ -203,28 +210,24 @@ public:
 
 			DebugOutL(0b1011_fg, "Recursive Prefab Path: ", v_pref_path);
 
-			const glm::vec3 f_pos = stream.ReadVec3();
-			const glm::quat f_quat = stream.ReadQuat();
-			const glm::vec3 f_size = (version < 5) ? glm::vec3(1.0f) : stream.ReadVec3();
+			v_transform.position = stream.ReadVec3();
+			v_transform.rotation = stream.ReadQuat();
+			v_transform.scale = (version < 5) ? glm::vec3(1.0f) : stream.ReadVec3();
 
 			stream.ReadInt();
 			stream.ReadInt();
 
 			if constexpr (t_mod_counter)
 			{
-				PrefabFileReader::Read<t_mod_counter>(v_pref_path, L"", v_error);
+				PrefabFileReader::Read<t_mod_counter>(v_pref_path, L"", v_transform, v_error);
 				if (v_error) return 0;
 			}
 			else
 			{
-				SMPrefab* rec_prefab = PrefabFileReader::Read<t_mod_counter>(v_pref_path, L"", v_error);
+				SMPrefab* rec_prefab = PrefabFileReader::Read<t_mod_counter>(v_pref_path, L"", v_transform, v_error);
 				if (v_error) return 0;
 
 				if (!rec_prefab) continue;
-
-				rec_prefab->SetPosition(f_pos);
-				rec_prefab->SetRotation(f_quat);
-				rec_prefab->SetSize(f_size);
 
 				prefab->AddObject(rec_prefab);
 			}
@@ -296,11 +299,12 @@ public:
 		BIT_STREAM_DUMP_INTO_FILE(stream, L"./prefab_dump/prefab" + std::to_wstring(version) + L"_assets", 100);
 		const int v_idx_start = stream.Index();
 
+		SMEntityTransform v_transform;
 		for (int a = 0; a < v_header.assetCount; a++)
 		{
-			const glm::vec3 f_pos = stream.ReadVec3();
-			const glm::quat f_quat = stream.ReadQuat();
-			const glm::vec3 f_size = stream.ReadVec3();
+			v_transform.position = stream.ReadVec3();
+			v_transform.rotation = stream.ReadQuat();
+			v_transform.scale = stream.ReadVec3();
 
 			const SMUuid uuid = stream.ReadUuid();
 			const int materialCount = stream.ReadByte();
@@ -337,11 +341,7 @@ public:
 				Model* pModel = ModelStorage::LoadModel(v_asset_data->m_mesh);
 				if (!pModel) continue;
 
-				SMAsset* nAsset = new SMAsset(v_asset_data, pModel, color_map);
-				nAsset->SetPosition(f_pos);
-				nAsset->SetRotation(f_quat);
-				nAsset->SetSize(f_size);
-
+				SMAsset* nAsset = new SMAsset(v_asset_data, v_transform, pModel, std::move(color_map));
 				prefab->AddObject(nAsset);
 			}
 		}
@@ -361,11 +361,12 @@ public:
 		BIT_STREAM_DUMP_INTO_FILE(stream, L"./prefab_dump/prefab" + std::to_wstring(version) + L"_decals", 100);
 		const int v_start_idx = stream.Index();
 
+		SMEntityTransform v_transform;
 		for (int a = 0; a < v_header.decalsCount; a++)
 		{
-			const glm::vec3 v_pos = stream.ReadVec3();
-			const glm::quat v_quat = stream.ReadQuat();
-			const glm::vec3 v_size = stream.ReadVec3();
+			v_transform.position = stream.ReadVec3();
+			v_transform.rotation = stream.ReadQuat();
+			v_transform.scale = stream.ReadVec3();
 
 			const SMUuid v_uuid = stream.ReadUuid();
 			const SMColor v_color = stream.ReadInt();
@@ -383,11 +384,7 @@ public:
 			{
 				if (!v_decal_data) continue;
 
-				SMDecal* v_newDecal = new SMDecal(v_decal_data, v_color);
-				v_newDecal->SetPosition(v_pos);
-				v_newDecal->SetRotation(v_quat);
-				v_newDecal->SetSize(v_size);
-
+				SMDecal* v_newDecal = new SMDecal(v_decal_data, v_transform, v_color);
 				prefab->AddObject(v_newDecal);
 			}
 		}
@@ -416,11 +413,12 @@ public:
 		BIT_STREAM_DUMP_INTO_FILE(stream, L"./prefab_dump/prefab" + std::to_wstring(version) + L"_kinematics", 5000);
 		const int v_start_idx = stream.Index();
 
+		SMEntityTransform v_transform;
 		for (int a = 0; a < v_header.kinematicsCount; a++)
 		{
-			const glm::vec3 v_pos = stream.ReadVec3();
-			const glm::quat v_quat = stream.ReadQuat();
-			const glm::vec3 v_size = stream.ReadVec3();
+			v_transform.position = stream.ReadVec3();
+			v_transform.rotation = stream.ReadQuat();
+			v_transform.scale = stream.ReadVec3();
 
 			const SMUuid v_uuid = stream.ReadUuid();
 			const SMColor v_color = stream.ReadInt();
@@ -451,11 +449,7 @@ public:
 				Model* v_km_model = ModelStorage::LoadModel(v_kinematic_data->m_mesh);
 				if (!v_km_model) continue;
 
-				SMKinematic* v_new_kinematic = new SMKinematic(v_kinematic_data, v_km_model, v_color);
-				v_new_kinematic->SetPosition(v_pos);
-				v_new_kinematic->SetRotation(v_quat);
-				v_new_kinematic->SetSize(v_size);
-
+				SMKinematic* v_new_kinematic = new SMKinematic(v_kinematic_data, v_transform, v_km_model, v_color);
 				prefab->AddObject(v_new_kinematic);
 			}
 		}

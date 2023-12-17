@@ -94,7 +94,7 @@ void SMBlueprint::CountFromJsonString(const std::string& str)
 	}
 }
 
-SMBlueprint* SMBlueprint::LoadAutomatic(const std::string& str)
+SMBlueprint* SMBlueprint::LoadAutomatic(const std::string& str, const glm::vec3& pos, const glm::quat& rot)
 {
 	const std::size_t secret_idx = str.find("?JB:");
 	if (secret_idx != std::string::npos)
@@ -103,7 +103,7 @@ SMBlueprint* SMBlueprint::LoadAutomatic(const std::string& str)
 
 		DebugOutL(0b0101_fg, "LoadingBlueprintJsonString: ", bp_str);
 
-		return SMBlueprint::FromJsonString(bp_str);
+		return SMBlueprint::FromJsonString(bp_str, pos, rot);
 	}
 
 	const std::wstring wide_str = String::ToWide(str);
@@ -111,10 +111,10 @@ SMBlueprint* SMBlueprint::LoadAutomatic(const std::string& str)
 
 	DebugOutL(0b0011_fg, "LoadingBlueprintPath: ", bp_path);
 
-	return SMBlueprint::FromFile(bp_path);
+	return SMBlueprint::FromFile(bp_path, pos, rot);
 }
 
-SMBlueprint* SMBlueprint::FromFile(const std::wstring& path)
+SMBlueprint* SMBlueprint::FromFile(const std::wstring& path, const glm::vec3& pos, const glm::quat& rot)
 {
 	std::string v_fileString;
 	if (!File::ReadToString(path, v_fileString))
@@ -123,7 +123,7 @@ SMBlueprint* SMBlueprint::FromFile(const std::wstring& path)
 		return nullptr;
 	}
 
-	return SMBlueprint::FromJsonString(v_fileString);
+	return SMBlueprint::FromJsonString(v_fileString, pos, rot);
 }
 
 SMBlueprint* SMBlueprint::FromFileWithStatus(const std::wstring& path, SMBlueprint::AddObjectFunction v_addObjFunc, ConvertError& v_error)
@@ -148,7 +148,7 @@ SMBlueprint* SMBlueprint::FromFileWithStatus(const std::wstring& path, SMBluepri
 		return nullptr;
 	}
 
-	SMBlueprint* v_blueprint = new SMBlueprint();
+	SMBlueprint* v_blueprint = new SMBlueprint(glm::vec3(0.0f), glm::quat());
 
 	//Bind the custom function if it has been passed
 	if (v_addObjFunc)
@@ -160,7 +160,7 @@ SMBlueprint* SMBlueprint::FromFileWithStatus(const std::wstring& path, SMBluepri
 	return v_blueprint;
 }
 
-SMBlueprint* SMBlueprint::FromJsonString(const std::string& json_str)
+SMBlueprint* SMBlueprint::FromJsonString(const std::string& json_str, const glm::vec3& pos, const glm::quat& rot)
 {
 	simdjson::dom::document v_bp_doc;
 	if (!JsonReader::ParseSimdjsonString(json_str, v_bp_doc))
@@ -170,7 +170,7 @@ SMBlueprint* SMBlueprint::FromJsonString(const std::string& json_str)
 	if (!v_root.is_object())
 		return nullptr;
 
-	SMBlueprint* nBlueprint = new SMBlueprint();
+	SMBlueprint* nBlueprint = new SMBlueprint(pos, rot);
 
 	nBlueprint->LoadBodies(v_root);
 	nBlueprint->LoadJoints(v_root);
@@ -259,10 +259,8 @@ void SMBlueprint::LoadChild(const simdjson::dom::element& v_child)
 		const BlockData* v_blk_data = SMMod::GetGlobalObject<BlockData>(v_obj_uuid);
 		if (!v_blk_data) return;
 
-		SMBlock* v_new_blk = new SMBlock(v_blk_data, v_blk_bounds, v_obj_color, v_xzRotation, m_object_index);
-		v_new_blk->SetPosition(v_obj_pos);
-		v_new_blk->SetSize(v_blk_bounds);
-
+		SMBlock* v_new_blk = new SMBlock(v_blk_data, v_obj_pos,
+			v_blk_bounds, v_obj_color, v_xzRotation, m_object_index);
 		this->m_addObjectFunction(this, v_new_blk);
 	}
 	else
@@ -273,9 +271,8 @@ void SMBlueprint::LoadChild(const simdjson::dom::element& v_child)
 		Model* v_prt_model = ModelStorage::LoadModel(v_prt_data->m_mesh);
 		if (!v_prt_model) return;
 
-		SMPart* v_new_prt = new SMPart(v_prt_data, v_prt_model, v_obj_color, v_xzRotation, m_object_index);
-		v_new_prt->SetPosition(v_obj_pos);
-
+		SMPart* v_new_prt = new SMPart(v_prt_data, v_obj_pos,
+			v_prt_model, v_obj_color, v_xzRotation, m_object_index);
 		this->m_addObjectFunction(this, v_new_prt);
 	}
 }
@@ -308,9 +305,8 @@ void SMBlueprint::LoadJoint(const simdjson::dom::element& v_jnt)
 	Model* v_jnt_model = ModelStorage::LoadModel(v_jnt_data->m_mesh);
 	if (!v_jnt_model) return;
 
-	SMJoint* v_new_jnt = new SMJoint(v_jnt_data, v_jnt_model, v_jnt_color, v_xzRotation, v_child_idx);
-	v_new_jnt->SetPosition(v_pos_vec);
-
+	SMJoint* v_new_jnt = new SMJoint(v_jnt_data, v_pos_vec,
+		v_jnt_model, v_jnt_color, v_xzRotation, v_child_idx);
 	this->m_addObjectFunction(this, v_new_jnt);
 }
 
@@ -388,7 +384,6 @@ void SMBlueprint::LoadJoints(const simdjson::dom::element& pJson)
 	for (const auto v_jnt : v_jnt_array)
 	{
 		this->LoadJoint(v_jnt);
-
 		m_object_index++;
 	}
 }

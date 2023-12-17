@@ -74,8 +74,8 @@ public:
 	inline std::size_t GetAmountOfObjects() const override { return m_objects.size(); }
 
 private:
-	std::string m_body_name;
 	std::vector<SMEntity*> m_objects = {};
+	std::string m_body_name;
 };
 
 #pragma managed

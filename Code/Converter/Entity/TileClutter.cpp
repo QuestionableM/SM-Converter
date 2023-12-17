@@ -6,7 +6,7 @@
 
 char* SMTileClutter::GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, char* v_ptr) const
 {
-	v_ptr = m_uuid.ToCString(v_ptr);
+	v_ptr = m_parent->m_uuid.ToCString(v_ptr);
 	*v_ptr++ = ' ';
 	v_ptr = m_color.StringHexCStr(v_ptr);
 	*v_ptr++ = ' ';
@@ -20,7 +20,7 @@ std::string	SMTileClutter::GetMtlName(std::size_t mIdx) const
 {
 	const std::string tex_mat = MaterialManager::GetMaterialA(m_parent->m_textures.material);
 
-	return m_uuid.ToString() + " " + m_color.StringHex() + " " + std::to_string(mIdx + 1) + " " + tex_mat;
+	return m_parent->m_uuid.ToString() + " " + m_color.StringHex() + " " + std::to_string(mIdx + 1) + " " + tex_mat;
 }
 
 void SMTileClutter::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const

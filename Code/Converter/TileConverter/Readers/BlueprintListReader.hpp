@@ -90,11 +90,8 @@ public:
 			}
 			else
 			{
-				SMBlueprint* pNewBlueprint = SMBlueprint::LoadAutomatic(value);
+				SMBlueprint* pNewBlueprint = SMBlueprint::LoadAutomatic(value, f_pos, f_quat);
 				if (!pNewBlueprint) continue;
-
-				pNewBlueprint->SetPosition(f_pos);
-				pNewBlueprint->SetRotation(f_quat);
 
 				part->AddObject(pNewBlueprint);
 			}

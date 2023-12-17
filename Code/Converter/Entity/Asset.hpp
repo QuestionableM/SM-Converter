@@ -9,18 +9,19 @@
 
 #pragma unmanaged
 
-class SMAsset : public SMEntity
+class SMAsset : public SMEntityWithModelAndUuid
 {
 	using ColorMap = std::unordered_map<std::string, SMColor>;
 
 public:
-	inline SMAsset(const AssetData* pParent, Model* pModel, const ColorMap& color_map)
-	{
-		this->m_parent = pParent;
-		this->m_uuid = pParent->m_uuid;
-		this->m_model = pModel;
-		this->m_colors = color_map;
-	}
+	inline SMAsset(
+		const AssetData* pParent,
+		const SMEntityTransform& transform,
+		Model* pModel,
+		ColorMap&& color_map)
+		: SMEntityWithModelAndUuid(pParent->m_uuid, pModel, transform),
+		m_parent(pParent),
+		m_colors(std::move(color_map)) {}
 
 	SMAsset(const SMAsset&) = delete;
 	SMAsset(SMAsset&&) = delete;

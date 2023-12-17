@@ -6,16 +6,17 @@
 
 #pragma unmanaged
 
-class SMKinematic : public SMEntity
+class SMKinematic : public SMEntityWithModelAndUuid
 {
 public:
-	inline SMKinematic(const KinematicData* v_km_data, Model* v_model, SMColor v_color)
-	{
-		this->m_parent = v_km_data;
-		this->m_uuid = m_parent->m_uuid;
-		this->m_model = v_model;
-		this->m_color = v_color;
-	}
+	inline SMKinematic(
+		const KinematicData* pParent,
+		const SMEntityTransform& transform,
+		Model* pModel,
+		SMColor color)
+		: SMEntityWithModelAndUuid(pParent->m_uuid, pModel, transform),
+		m_parent(pParent),
+		m_color(color) {}
 
 	SMKinematic(const SMKinematic&) = delete;
 	SMKinematic(SMKinematic&) = delete;
@@ -28,8 +29,8 @@ public:
 	bool GetCanWrite(const std::string& name, std::size_t v_idx) const override;
 
 private:
-	SMColor m_color;
 	const KinematicData* m_parent;
+	SMColor m_color;
 };
 
 #pragma managed

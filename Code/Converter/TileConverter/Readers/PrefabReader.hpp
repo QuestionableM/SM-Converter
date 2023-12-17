@@ -58,24 +58,23 @@ public:
 	template<bool t_mod_counter>
 	static int Read(const std::vector<Byte>& bytes, int prefabCount, TilePart* part, int version, ConvertError& v_error)
 	{
+		SMEntityTransform v_transform;
 		MemoryWrapper memory(bytes);
 
 		int index = 0;
 		for (int a = 0; a < prefabCount; a++)
 		{
-			const glm::vec3 f_pos = memory.Object<glm::vec3>(index);
-			const glm::quat f_quat = memory.GetQuat(index + 0xc);
+			v_transform.position = memory.Object<glm::vec3>(index);
+			v_transform.rotation = memory.GetQuat(index + 0xc);
 			
-			glm::vec3 f_size;
-
 			if (version < 9)
 			{
-				f_size = glm::vec3(1.0f);
+				v_transform.scale = glm::vec3(1.0f);
 				index += 0x1c;
 			}
 			else
 			{
-				f_size = memory.Object<glm::vec3>(index + 0x1c);
+				v_transform.scale = memory.Object<glm::vec3>(index + 0x1c);
 				index += 0x28;
 			}
 
@@ -96,16 +95,12 @@ public:
 			const std::wstring v_pref_flag = String::ToWide(v_flag);
 			DebugOutL("Prefab Path: ", v_pref_path);
 
-			SMPrefab* v_new_prefab = PrefabFileReader::Read<t_mod_counter>(v_pref_path, v_pref_flag, v_error);
+			SMPrefab* v_new_prefab = PrefabFileReader::Read<t_mod_counter>(v_pref_path, v_pref_flag, v_transform, v_error);
 			if (v_error) return 0;
 
 			if constexpr (!t_mod_counter)
 			{
 				if (!v_new_prefab) continue;
-
-				v_new_prefab->SetPosition(f_pos);
-				v_new_prefab->SetRotation(f_quat);
-				v_new_prefab->SetSize(f_size);
 
 				part->AddObject(v_new_prefab);
 			}

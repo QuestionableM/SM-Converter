@@ -2,5 +2,7 @@
 /Build
 /hash_cache.json
 /ConvertedBlueprints
+/ConvertedTiles
+/ConvertedWorlds
 /Resources/Config.json
 *.vcxproj.user

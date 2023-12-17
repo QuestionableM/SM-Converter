@@ -6,16 +6,11 @@
 
 #pragma unmanaged
 
-class SMHarvestable : public SMEntity
+class SMHarvestable : public SMEntityWithModelAndUuid
 {
 public:
-	inline SMHarvestable(const HarvestableData* pParent, Model* pModel, SMColor color)
-	{
-		this->m_parent = pParent;
-		this->m_uuid = pParent->m_uuid;
-		this->m_model = pModel;
-		this->m_color = color;
-	}
+	inline SMHarvestable(const HarvestableData* pParent, const SMEntityTransform& transform, Model* pModel, SMColor color)
+		: SMEntityWithModelAndUuid(pParent->m_uuid, pModel, transform), m_parent(pParent), m_color(color) {}
 
 	SMHarvestable(const SMHarvestable&) = delete;
 	SMHarvestable(SMHarvestable&) = delete;
@@ -28,8 +23,8 @@ public:
 	bool GetCanWrite(const std::string& name, std::size_t v_idx) const override;
 
 private:
-	SMColor m_color;
 	const HarvestableData* m_parent;
+	SMColor m_color;
 };
 
 #pragma managed
