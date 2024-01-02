@@ -88,7 +88,7 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>user32.lib;FreeImage.lib;assimp$(PlatformArchitecture).lib;lz4_$(PlatformArchitecture).lib;simdjson.lib;xxhash.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>user32.lib;FreeImage.lib;assimp$(PlatformArchitecture).lib;lz4_$(PlatformArchitecture).lib;simdjson.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\FreeImage\Lib\x$(PlatformArchitecture);$(SolutionDir)Dependencies\Assimp\Lib;$(SolutionDir)Dependencies\lz4\Lib;$(SolutionDir)Build\libs-$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
@@ -115,7 +115,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
       <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>user32.lib;FreeImage.lib;assimp$(PlatformArchitecture).lib;lz4_$(PlatformArchitecture).lib;simdjson.lib;xxhash.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>user32.lib;FreeImage.lib;assimp$(PlatformArchitecture).lib;lz4_$(PlatformArchitecture).lib;simdjson.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\FreeImage\Lib\x$(PlatformArchitecture);$(SolutionDir)Dependencies\Assimp\Lib;$(SolutionDir)Dependencies\lz4\Lib;$(SolutionDir)Build\libs-$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -143,7 +143,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>user32.lib;FreeImage.lib;assimp$(PlatformArchitecture).lib;lz4_$(PlatformArchitecture).lib;simdjson.lib;xxhash.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>user32.lib;FreeImage.lib;assimp$(PlatformArchitecture).lib;lz4_$(PlatformArchitecture).lib;simdjson.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\FreeImage\Lib\x$(PlatformArchitecture);$(SolutionDir)Dependencies\Assimp\Lib;$(SolutionDir)Dependencies\lz4\Lib;$(SolutionDir)Build\libs-$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
