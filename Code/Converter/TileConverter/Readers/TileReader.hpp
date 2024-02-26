@@ -9,17 +9,18 @@
 #include "PrefabReader.hpp"
 #include "MipReader.hpp"
 
-#include "Converter\TileConverter\CellHeader.hpp"
-#include "Converter\TileConverter\TileHeader.hpp"
-#include "Converter\TileConverter\Tile.hpp"
+#include "Converter/TileConverter/CellHeader.hpp"
+#include "Converter/TileConverter/TileHeader.hpp"
+#include "Converter/TileConverter/Tile.hpp"
 
-#include "ObjectDatabase\ProgCounter.hpp"
-#include "UStd\UnmanagedString.hpp"
+#include "ObjectDatabase/ProgCounter.hpp"
+#include "UStd/UnmanagedString.hpp"
 
-#include "Utils\String.hpp"
-#include "Utils\File.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/String.hpp"
+#include "Utils/File.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class TileReader
 {
@@ -157,4 +158,4 @@ public:
 	}
 };
 
-#pragma managed
+SM_MANAGED_CODE

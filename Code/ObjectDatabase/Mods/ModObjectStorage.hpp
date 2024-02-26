@@ -1,11 +1,12 @@
 #pragma once
 
-#include "UStd\UnmanagedUnorderedMap.hpp"
+#include "UStd/UnmanagedUnorderedMap.hpp"
 
-#include "Utils\Console.hpp"
-#include "Utils\Uuid.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/Uuid.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 template<typename T>
 class SMModObjectStorage
@@ -88,4 +89,4 @@ public:
 	}
 };
 
-#pragma managed
+SM_MANAGED_CODE

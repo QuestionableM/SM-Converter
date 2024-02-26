@@ -1,10 +1,12 @@
 #pragma once
 
-#include "ObjectDatabase\ModelStorage.hpp"
-#include "Utils\Color.hpp"
+#include "ObjectDatabase/ModelStorage.hpp"
 #include "Entity.hpp"
 
-#pragma unmanaged
+#include "Utils/clr_include.hpp"
+#include "Utils/Color.hpp"
+
+SM_UNMANAGED_CODE
 
 class SMKinematic : public SMEntityWithModelAndUuid
 {
@@ -33,4 +35,4 @@ private:
 	SMColor m_color;
 };
 
-#pragma managed
+SM_MANAGED_CODE

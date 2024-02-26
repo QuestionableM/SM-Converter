@@ -1,11 +1,12 @@
 #pragma once
 
-#include "UStd\UnmanagedArray.hpp"
+#include "UStd/UnmanagedArray.hpp"
 
-#include "Utils\ByteImpl.hpp"
-#include "Utils\Memory.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/ByteImpl.hpp"
+#include "Utils/Memory.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class CellHeader
 {
@@ -74,4 +75,4 @@ public:
 	}
 };
 
-#pragma managed
+SM_MANAGED_CODE

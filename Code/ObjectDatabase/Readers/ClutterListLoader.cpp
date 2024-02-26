@@ -21,7 +21,7 @@ bool ClutterListLoader::LoadTextureData(const simdjson::dom::element& fClutter, 
 	tList.dif = KeywordReplacer::ReplaceKey(v_cl_dif_wstr);
 
 	const auto v_cl_material = fClutter["material"];
-	tList.material = (v_cl_material.is_string() ? v_cl_material.get_c_str() : "GroundVegetation");
+	tList.material = (v_cl_material.is_string() ? v_cl_material.get_c_str().value() : "GroundVegetation");
 
 	const std::wstring v_cl_mesh_wstr = String::ToWide(v_cl_mesh.get_string());
 	mesh = KeywordReplacer::ReplaceKey(v_cl_mesh_wstr);
@@ -37,7 +37,7 @@ void ClutterListLoader::LoadClutterData(const simdjson::dom::element& fClutter, 
 
 	pClutter->m_height = (v_cl_height.is_number() ? JsonReader::GetNumber<float>(v_cl_height) : 1.0f);
 	pClutter->m_scaleVariance = (v_cl_scale_variance.is_number() ? JsonReader::GetNumber<float>(v_cl_scale_variance) : 0.0f);
-	pClutter->m_groundNormal = (v_cl_ground_normal.is_bool() ? v_cl_ground_normal.get_bool() : false);
+	pClutter->m_groundNormal = (v_cl_ground_normal.is_bool() ? v_cl_ground_normal.get_bool().value() : false);
 }
 
 void ClutterListLoader::Load(const simdjson::dom::element& fClutter, SMMod* mod, bool add_to_global_db)
@@ -54,7 +54,7 @@ void ClutterListLoader::Load(const simdjson::dom::element& fClutter, SMMod* mod,
 		const auto v_uuid = v_clutter["uuid"];
 		if (!v_uuid.is_string()) continue;
 
-		const SMUuid v_clutter_uuid = v_uuid.get_c_str();
+		const SMUuid v_clutter_uuid = v_uuid.get_c_str().value();
 		if (mod->m_Clutter.ObjectExists(v_clutter_uuid, false))
 		{
 			DebugErrorL("Clutter with the specified uuid already exists! (", v_clutter_uuid.ToString(), ")");

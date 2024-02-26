@@ -1,13 +1,14 @@
 #pragma once
 
-#include "UStd\UnmanagedString.hpp"
-#include "UStd\UnmanagedArray.hpp"
+#include "UStd/UnmanagedString.hpp"
+#include "UStd/UnmanagedArray.hpp"
 
-#include "Utils\WinInclude.hpp"
-#include "Utils\ByteImpl.hpp"
-#include "Utils\Json.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/WinInclude.hpp"
+#include "Utils/ByteImpl.hpp"
+#include "Utils/Json.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 #include <FreeImage.h>
 
@@ -69,4 +70,4 @@ public:
 	static GroundTexture* GetTexture(std::size_t index, std::size_t type);
 };
 
-#pragma managed
+SM_MANAGED_CODE

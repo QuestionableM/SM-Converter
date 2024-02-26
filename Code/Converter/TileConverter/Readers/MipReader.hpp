@@ -1,16 +1,17 @@
 #pragma once
 
-#include "Converter\TileConverter\CellHeader.hpp"
-#include "Converter\TileConverter\TilePart.hpp"
+#include "Converter/TileConverter/CellHeader.hpp"
+#include "Converter/TileConverter/TilePart.hpp"
 
-#include "UStd\UnmanagedSstream.hpp"
-#include "UStd\UnmanagedIomanip.hpp"
+#include "UStd/UnmanagedSstream.hpp"
+#include "UStd/UnmanagedIomanip.hpp"
 
-#include "Utils\ByteImpl.hpp"
-#include "Utils\Memory.hpp"
-#include "Utils\Lz4Lib.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/ByteImpl.hpp"
+#include "Utils/Memory.hpp"
+#include "Utils/Lz4Lib.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class MipReader
 {
@@ -68,4 +69,4 @@ public:
 	}
 };
 
-#pragma managed
+SM_MANAGED_CODE

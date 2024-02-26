@@ -1,14 +1,15 @@
 #pragma once
 
-#include "UStd\UnmanagedIomanip.hpp"
-#include "UStd\UnmanagedSstream.hpp"
-#include "UStd\UnmanagedString.hpp"
-#include "UStd\UnmanagedVector.hpp"
+#include "UStd/UnmanagedIomanip.hpp"
+#include "UStd/UnmanagedSstream.hpp"
+#include "UStd/UnmanagedString.hpp"
+#include "UStd/UnmanagedVector.hpp"
 
-#include "Utils\WinInclude.hpp"
-#include "Utils\ByteImpl.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/WinInclude.hpp"
+#include "Utils/ByteImpl.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 #include <cwctype>
 
@@ -111,7 +112,7 @@ namespace String
 	{
 		static_assert(std::is_same_v<T, std::string> || std::is_same_v<T, std::wstring>, "ReplaceAllR can only be used with the following types: std::string, std::wstring");
 
-		T::value_type* v_iter = str.data();
+		typename T::value_type* v_iter = str.data();
 
 		if constexpr (std::is_same_v<T, std::string>) {
 			while ((v_iter = strchr(v_iter, to_replace)) != nullptr)
@@ -128,7 +129,7 @@ namespace String
 		static_assert(std::is_same_v<T, std::string> || std::is_same_v<T, std::wstring>, "ReplaceAll can only be used with the following types: std::string, std::wstring");
 
 		T str_cpy = str;
-		T::value_type* v_iter = str_cpy.data();
+		typename T::value_type* v_iter = str_cpy.data();
 
 		if constexpr (std::is_same_v<T, std::string>) {
 			while ((v_iter = strchr(v_iter, to_replace)) != nullptr)
@@ -255,7 +256,7 @@ namespace String
 
 	/*
 	 * C++ version 0.4 char* style "itoa":
-	 * Written by Lukás Chmela
+	 * Written by Lukas Chmela
 	 * Released under GPLv3.
 	 * This function does not put a null character at the end, so it's up to you to null terminate the string
 	*/
@@ -300,7 +301,7 @@ namespace String
 
 	/*
 	 * C++ version 0.4 char* style "itoa":
-	 * Written by Lukás Chmela
+	 * Written by Lukas Chmela
 	 * Released under GPLv3.
 	 * This function does not put a null character at the end, so it's up to you to null terminate the string
 	*/
@@ -457,4 +458,4 @@ namespace String
 #pragma warning(pop)
 }
 
-#pragma managed
+SM_MANAGED_CODE

@@ -25,7 +25,7 @@ void GarmentListLoader::LoadGarmentCategory(const simdjson::dom::element& v_cate
 	if (!(v_category_name_obj.is_string() && v_category_options.is_array()))
 		return;
 
-	const std::string v_category_name = v_category_name_obj.get_c_str();
+	const std::string v_category_name = v_category_name_obj.get_c_str().value();
 	if (SMMod::GarmentStorage.find(v_category_name) != SMMod::GarmentStorage.end())
 	{
 		DebugWarningL("The specified garment category already exists: ", v_category_name);
@@ -60,7 +60,7 @@ void GarmentListLoader::LoadGarmentCategory(const simdjson::dom::element& v_cate
 			continue;
 		}
 
-		const SMUuid v_garment_uuid = v_garment_uuid_obj.get_c_str();
+		const SMUuid v_garment_uuid = v_garment_uuid_obj.get_c_str().value();
 		if (v_category_data.find(v_garment_uuid) != v_category_data.end())
 		{
 			DebugWarningL("The specified garment already exists (Uuid: ", v_garment_uuid.ToString(), ")");

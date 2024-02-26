@@ -1,12 +1,13 @@
 #pragma once
 
-#include "UStd\UnmanagedUnorderedMap.hpp"
+#include "UStd/UnmanagedUnorderedMap.hpp"
 
-#include "Utils\Color.hpp"
-#include "Utils\Json.hpp"
-#include "Utils\Uuid.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/Color.hpp"
+#include "Utils/Json.hpp"
+#include "Utils/Uuid.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class SMMod;
 
@@ -24,4 +25,4 @@ private:
 	~GarmentListLoader() = default;
 };
 
-#pragma managed
+SM_MANAGED_CODE

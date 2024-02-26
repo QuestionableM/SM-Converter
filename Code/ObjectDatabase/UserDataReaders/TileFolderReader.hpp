@@ -1,15 +1,18 @@
 #pragma once
 
-#include "UStd\UnmanagedFilesystem.hpp"
-#include "UStd\UnmanagedString.hpp"
-#include "UStd\UnmanagedVector.hpp"
+#include "UStd/UnmanagedFilesystem.hpp"
+#include "UStd/UnmanagedString.hpp"
+#include "UStd/UnmanagedVector.hpp"
 
-#include "Converter\ConvertError.hpp"
+#include "Converter/ConvertError.hpp"
 #include "FilterSettingsData.hpp"
-#include "Utils\Uuid.hpp"
-#include "Utils\Json.hpp"
+#include "UserDataBase.hpp"
 
-#pragma unmanaged
+#include "Utils/clr_include.hpp"
+#include "Utils/Uuid.hpp"
+#include "Utils/Json.hpp"
+
+SM_UNMANAGED_CODE
 
 struct TileInstance
 {
@@ -34,17 +37,11 @@ struct TileInstance
 	~TileInstance() = default;
 };
 
-class TileFolderReader
+class TileFolderReader :
+	public UserDataBase<TileFolderReader, TileInstance*>
 {
 public:
-	using InstanceType = TileInstance;
-
-	inline static std::vector<TileInstance*> Storage = {};
-	inline static std::vector<TileInstance*> FilteredStorage = {};
-	inline static std::vector<TileInstance*> SearchResults = {};
-
 	static bool ShouldUseFilteredStorage();
-	static std::vector<TileInstance*>& GetCurrentStorage();
 	static void FilterStorage();
 
 	static TileSizeFilter GetTileSize(int v_sz);
@@ -66,4 +63,4 @@ private:
 	~TileFolderReader() = default;
 };
 
-#pragma managed
+SM_MANAGED_CODE

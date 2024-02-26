@@ -1,6 +1,8 @@
 #pragma once
 
-#pragma unmanaged
+#include "Utils/clr_include.hpp"
+
+SM_UNMANAGED_CODE
 
 struct TileConverterSettings
 {
@@ -45,4 +47,4 @@ private:
 	~SharedConverterSettings() = default;
 };
 
-#pragma managed
+SM_MANAGED_CODE

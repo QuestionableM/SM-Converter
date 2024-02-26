@@ -1,14 +1,15 @@
 #pragma once
 
-#include "UStd\UnmanagedString.hpp"
-#include "UStd\UnmanagedVector.hpp"
+#include "UStd/UnmanagedString.hpp"
+#include "UStd/UnmanagedVector.hpp"
 
-#include "Utils\WinInclude.hpp"
-#include "Utils\Console.hpp"
-#include "Utils\String.hpp"
-#include "Utils\Crypt.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/WinInclude.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/String.hpp"
+#include "Utils/Crypt.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class SMUuid
 {
@@ -124,4 +125,4 @@ namespace std
 	};
 }
 
-#pragma managed
+SM_MANAGED_CODE

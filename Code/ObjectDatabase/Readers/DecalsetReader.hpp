@@ -1,10 +1,11 @@
 #pragma once
 
-#include "ObjectDatabase\Mods\Mod.hpp"
+#include "ObjectDatabase/Mods/Mod.hpp"
 
-#include "UStd\UnmanagedString.hpp"
+#include "UStd/UnmanagedString.hpp"
+#include "Utils/clr_include.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class DecalsetReader
 {
@@ -14,4 +15,4 @@ public:
 	static void LoadFromFile(const std::wstring& path, SMMod* mod, bool add_to_global_db);
 };
 
-#pragma managed
+SM_MANAGED_CODE

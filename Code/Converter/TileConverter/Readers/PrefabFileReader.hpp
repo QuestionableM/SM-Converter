@@ -1,23 +1,24 @@
 #pragma once
 
-#include "ObjectDatabase\KeywordReplacer.hpp"
-#include "ObjectDatabase\ObjectDatabase.hpp"
-#include "ObjectDatabase\Mods\Mod.hpp"
+#include "ObjectDatabase/KeywordReplacer.hpp"
+#include "ObjectDatabase/ObjectDatabase.hpp"
+#include "ObjectDatabase/Mods/Mod.hpp"
 
-#include "Converter\TileConverter\Readers\PrefabHeader.hpp"
-#include "Converter\ConvertSettings.hpp"
+#include "Converter/TileConverter/Readers/PrefabHeader.hpp"
+#include "Converter/ConvertSettings.hpp"
 
-#include "Converter\Entity\Blueprint.hpp"
-#include "Converter\Entity\Prefab.hpp"
-#include "Converter\Entity\Decal.hpp"
+#include "Converter/Entity/Blueprint.hpp"
+#include "Converter/Entity/Prefab.hpp"
+#include "Converter/Entity/Decal.hpp"
 
-#include "UStd\UnmanagedAlgorithm.hpp"
+#include "UStd/UnmanagedAlgorithm.hpp"
 
-#include "Utils\Console.hpp"
-#include "Utils\Memory.hpp"
-#include "Utils\File.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/Memory.hpp"
+#include "Utils/File.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 #define STR_WIDE(n) L ## n
 #define STR_WIDE2(n) STR_WIDE(#n)
@@ -467,4 +468,4 @@ public:
 	}
 };
 
-#pragma managed
+SM_MANAGED_CODE

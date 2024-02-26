@@ -1,15 +1,16 @@
 #pragma once
 
-#include "Converter\TileConverter\CellHeader.hpp"
-#include "Converter\TileConverter\TilePart.hpp"
-#include "Converter\ConvertSettings.hpp"
+#include "Converter/TileConverter/CellHeader.hpp"
+#include "Converter/TileConverter/TilePart.hpp"
+#include "Converter/ConvertSettings.hpp"
 
-#include "ObjectDatabase\Mods\Mod.hpp"
+#include "ObjectDatabase/Mods/Mod.hpp"
 
-#include "Utils\Uuid.hpp"
-#include "Utils\Lz4Lib.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/Lz4Lib.hpp"
+#include "Utils/Uuid.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class ClutterReader
 {
@@ -120,4 +121,4 @@ public:
 	}
 };
 
-#pragma managed
+SM_MANAGED_CODE

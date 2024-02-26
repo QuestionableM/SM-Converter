@@ -1,15 +1,16 @@
 #pragma once
 
-#include "ObjectDatabase\Mods\ModObjectStorage.hpp"
-#include "ObjectDatabase\ObjectData.hpp"
+#include "ObjectDatabase/Mods/ModObjectStorage.hpp"
+#include "ObjectDatabase/ObjectData.hpp"
 
-#include "UStd\UnmanagedUnorderedMap.hpp"
-#include "UStd\UnmanagedString.hpp"
+#include "UStd/UnmanagedUnorderedMap.hpp"
+#include "UStd/UnmanagedString.hpp"
 
-#include "Utils\Uuid.hpp"
-#include "Utils\Json.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/Uuid.hpp"
+#include "Utils/Json.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 enum class ModType
 {
@@ -182,4 +183,4 @@ private:
 	friend CustomGame;
 };
 
-#pragma managed
+SM_MANAGED_CODE

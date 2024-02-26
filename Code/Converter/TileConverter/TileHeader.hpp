@@ -1,14 +1,15 @@
 #pragma once
 
-#include "Utils\ByteImpl.hpp"
-#include "Utils\Console.hpp"
-#include "Utils\Memory.hpp"
-#include "Utils\Uuid.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/ByteImpl.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/Memory.hpp"
+#include "Utils/Uuid.hpp"
 
-#include "Converter\TileConverter\CellHeader.hpp"
-#include "Converter\ConvertError.hpp"
+#include "Converter/TileConverter/CellHeader.hpp"
+#include "Converter/ConvertError.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 #pragma pack(push, 1)
 struct TileHeaderBaseInfo
@@ -99,4 +100,4 @@ public:
 	}
 };
 
-#pragma managed
+SM_MANAGED_CODE

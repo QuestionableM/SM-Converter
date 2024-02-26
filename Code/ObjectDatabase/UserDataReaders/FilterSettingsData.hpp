@@ -1,8 +1,9 @@
 #pragma once
 
-#include "UStd\UnmanagedString.hpp"
+#include "UStd/UnmanagedString.hpp"
+#include "Utils/clr_include.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 enum TileSizeFilter : unsigned char
 {
@@ -30,7 +31,7 @@ struct FilterSettingsData
 
 	static unsigned char GetUserDataFilter(const std::wstring& path);
 
-	inline static wchar_t* GetTileSizeName(unsigned char v_id)
+	inline static const wchar_t* GetTileSizeName(unsigned char v_id)
 	{
 		switch (v_id)
 		{
@@ -43,7 +44,7 @@ struct FilterSettingsData
 		return L"UNKNOWN";
 	}
 
-	inline static wchar_t* GetFilterName(unsigned char v_id)
+	inline static const wchar_t* GetFilterName(unsigned char v_id)
 	{
 		switch (v_id)
 		{
@@ -62,4 +63,4 @@ private:
 	~FilterSettingsData() = default;
 };
 
-#pragma managed
+SM_MANAGED_CODE

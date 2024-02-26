@@ -246,8 +246,8 @@ void SMBlueprint::LoadChild(const simdjson::dom::element& v_child)
 	const unsigned char v_xzRotation = Rotations::CompressRotation(v_xAxisInt, v_zAxisInt);
 
 	const glm::vec3 v_obj_pos = SMBlueprint::JsonToVector(v_position);
-	const SMUuid v_obj_uuid = v_uuid.get_c_str();
-	const SMColor v_obj_color = v_color.get_c_str();
+	const SMUuid v_obj_uuid = v_uuid.get_c_str().value();
+	const SMColor v_obj_color = v_color.get_c_str().value();
 
 	if (v_bounds.is_object())
 	{
@@ -295,8 +295,8 @@ void SMBlueprint::LoadJoint(const simdjson::dom::element& v_jnt)
 
 	const glm::vec3 v_pos_vec = SMBlueprint::JsonToVector(v_position);
 
-	const SMUuid v_jnt_uuid = v_uuid.get_c_str();
-	const SMColor v_jnt_color = v_color.get_c_str();
+	const SMUuid v_jnt_uuid = v_uuid.get_c_str().value();
+	const SMColor v_jnt_color = v_color.get_c_str().value();
 	const std::size_t v_child_idx = JsonReader::GetNumber<std::size_t>(v_child);
 
 	const PartData* v_jnt_data = SMMod::GetGlobalObject<PartData>(v_jnt_uuid);

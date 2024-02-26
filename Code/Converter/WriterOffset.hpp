@@ -1,8 +1,9 @@
 #pragma once
 
-#include "Utils\GlmUnmanaged.hpp"
+#include "Utils/GlmUnmanaged.hpp"
+#include "Utils/clr_include.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 #include <vcruntime.h>
 
@@ -25,4 +26,4 @@ struct WriterOffsetData
 	~WriterOffsetData() = default;
 };
 
-#pragma managed
+SM_MANAGED_CODE

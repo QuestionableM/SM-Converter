@@ -1,13 +1,17 @@
 #pragma once
 
-#include "UStd\UnmanagedString.hpp"
+#include "UStd/UnmanagedString.hpp"
+#include "Utils/clr_include.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class ConvertError
 {
 public:
-	ConvertError() = default;
+	ConvertError()
+	{
+		this->clear();
+	}
 
 	inline ConvertError(unsigned short ec, const std::wstring& error_msg)
 	{
@@ -31,9 +35,15 @@ public:
 		return m_errorMessage;
 	}
 
+	inline void clear()
+	{
+		m_errorCode = 0;
+		m_errorMessage.clear();
+	}
+
 private:
 	unsigned short m_errorCode = 0;
 	std::wstring m_errorMessage;
 };
 
-#pragma managed
+SM_MANAGED_CODE

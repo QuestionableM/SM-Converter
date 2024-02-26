@@ -2,9 +2,10 @@
 
 #include "TilePart.hpp"
 
-#include "UStd\UnmanagedVector.hpp"
+#include "UStd/UnmanagedVector.hpp"
+#include "Utils/clr_include.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class GroundTexture;
 class TileHeader;
@@ -73,4 +74,4 @@ public:
 	void WriteMtlFile(const std::wstring& path) const;
 };
 
-#pragma managed
+SM_MANAGED_CODE

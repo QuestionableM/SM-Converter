@@ -1,8 +1,9 @@
 #pragma once
 
+#include "Utils/clr_include.hpp"
 #include "Mod.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class CustomGame : public SMMod
 {
@@ -28,4 +29,4 @@ public:
 	std::size_t m_id;
 };
 
-#pragma managed
+SM_MANAGED_CODE

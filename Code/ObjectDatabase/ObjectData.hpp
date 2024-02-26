@@ -2,14 +2,15 @@
 
 #include "SubMeshData.hpp"
 
-#include "UStd\UnmanagedUnorderedMap.hpp"
-#include "UStd\UnmanagedString.hpp"
+#include "UStd/UnmanagedUnorderedMap.hpp"
+#include "UStd/UnmanagedString.hpp"
 
-#include "Utils\GlmUnmanaged.hpp"
-#include "Utils\Color.hpp"
-#include "Utils\Uuid.hpp"
+#include "Utils/GlmUnmanaged.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/Color.hpp"
+#include "Utils/Uuid.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class SMMod;
 
@@ -161,4 +162,4 @@ public:
 	}
 };
 
-#pragma managed
+SM_MANAGED_CODE

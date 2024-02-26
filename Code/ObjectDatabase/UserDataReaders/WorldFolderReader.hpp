@@ -1,13 +1,15 @@
 #pragma once
 
-#include "UStd\UnmanagedFilesystem.hpp"
-#include "UStd\UnmanagedString.hpp"
-#include "UStd\UnmanagedVector.hpp"
+#include "UStd/UnmanagedFilesystem.hpp"
+#include "UStd/UnmanagedString.hpp"
+#include "UStd/UnmanagedVector.hpp"
+#include "UserDataBase.hpp"
 
-#include "Utils\Uuid.hpp"
-#include "Utils\Json.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/Uuid.hpp"
+#include "Utils/Json.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 struct WorldInstance
 {
@@ -28,17 +30,11 @@ struct WorldInstance
 	~WorldInstance() = default;
 };
 
-class WorldFolderReader
+class WorldFolderReader :
+	public UserDataBase<WorldFolderReader, WorldInstance*>
 {
 public:
-	using InstanceType = WorldInstance;
-
-	inline static std::vector<WorldInstance*> Storage = {};
-	inline static std::vector<WorldInstance*> FilteredStorage = {};
-	inline static std::vector<WorldInstance*> SearchResults = {};
-
 	static bool ShouldUseFilteredStorage();
-	static std::vector<WorldInstance*>& GetCurrentStorage();
 	static void FilterStorage();
 
 	static void LoadFromFile(const std::filesystem::path& path);
@@ -53,4 +49,4 @@ private:
 	~WorldFolderReader() = default;
 };
 
-#pragma managed
+SM_MANAGED_CODE

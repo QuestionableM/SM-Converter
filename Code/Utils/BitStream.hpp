@@ -1,15 +1,16 @@
 #pragma once
 
-#include "UStd\UnmanagedVector.hpp"
+#include "UStd/UnmanagedVector.hpp"
 #if defined(DEBUG) || defined(_DEBUG)
-#include "UStd\UnmanagedFstream.hpp"
-#include "UStd\UnmanagedString.hpp"
-#include "Utils\File.hpp"
+#include "UStd/UnmanagedFstream.hpp"
+#include "UStd/UnmanagedString.hpp"
+#include "Utils/File.hpp"
 #endif
 
-#include "Utils\ByteImpl.hpp"
-#include "Utils\Memory.hpp"
-#include "Utils\Uuid.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/ByteImpl.hpp"
+#include "Utils/Memory.hpp"
+#include "Utils/Uuid.hpp"
 
 #if defined(DEBUG) || defined(_DEBUG)
 #define BIT_STREAM_DUMP_INTO_FILE(stream, file_name, num_bytes) stream.DumpContentsIntoFile(file_name, num_bytes)
@@ -17,7 +18,7 @@
 #define BIT_STREAM_DUMP_INTO_FILE(...) ((void*)0)
 #endif
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class BitStream
 {
@@ -194,4 +195,4 @@ public:
 	}
 };
 
-#pragma managed
+SM_MANAGED_CODE

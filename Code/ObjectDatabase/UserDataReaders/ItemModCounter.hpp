@@ -4,8 +4,9 @@
 #include "UStd/UnmanagedVector.hpp"
 
 #include "ObjectDatabase/Mods/Mod.hpp"
+#include "Utils/clr_include.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 struct ItemModInstance
 {
@@ -56,4 +57,4 @@ struct ItemModStats
 	}
 };
 
-#pragma managed
+SM_MANAGED_CODE

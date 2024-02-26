@@ -49,7 +49,7 @@ void AssetListLoader::Load(const simdjson::dom::element& fAssets, SMMod* mod, bo
 		const auto v_uuid = v_cur_asset["uuid"];
 		if (!v_uuid.is_string()) continue;
 
-		const SMUuid v_asset_uuid = v_uuid.get_c_str();
+		const SMUuid v_asset_uuid = v_uuid.get_c_str().value();
 		if (mod->m_Assets.ObjectExists(v_cur_db, v_asset_uuid))
 			continue;
 

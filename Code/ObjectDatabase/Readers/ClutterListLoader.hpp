@@ -1,8 +1,9 @@
 #pragma once
 
-#include "Utils\Json.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/Json.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class SMMod;
 class ClutterData;
@@ -19,4 +20,4 @@ public:
 	static void Load(const simdjson::dom::element& fClutter, SMMod* mod, bool add_to_global_db);
 };
 
-#pragma managed
+SM_MANAGED_CODE

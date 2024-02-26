@@ -1,9 +1,11 @@
 #pragma once
 
-#include "Converter\WriterOffset.hpp"
+#include "Converter/WriterOffset.hpp"
 #include "Entity.hpp"
 
-#pragma unmanaged
+#include "Utils/clr_include.hpp"
+
+SM_UNMANAGED_CODE
 
 class SMPrefab : public SMEntity
 {
@@ -45,4 +47,4 @@ private:
 	std::vector<SMEntity*> Objects = {};
 };
 
-#pragma managed
+SM_MANAGED_CODE

@@ -1,11 +1,11 @@
 #include "Block.hpp"
 
-#include "ObjectDatabase\ObjectRotations.hpp"
-#include "ObjectDatabase\MaterialManager.hpp"
-#include "ObjectDatabase\ModelStorage.hpp"
-#include "ObjectDatabase\ProgCounter.hpp"
+#include "ObjectDatabase/ObjectRotations.hpp"
+#include "ObjectDatabase/MaterialManager.hpp"
+#include "ObjectDatabase/ModelStorage.hpp"
+#include "ObjectDatabase/ProgCounter.hpp"
 
-#include "Converter\ConvertSettings.hpp"
+#include "Converter/ConvertSettings.hpp"
 
 #pragma unmanaged
 

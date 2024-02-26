@@ -1,14 +1,15 @@
 #pragma once
 
-#include "UStd\UnmanagedString.hpp"
-#include "UStd\UnmanagedVector.hpp"
+#include "UStd/UnmanagedString.hpp"
+#include "UStd/UnmanagedVector.hpp"
 
-#include "Utils\WinInclude.hpp"
-#include "Utils\ByteImpl.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/WinInclude.hpp"
+#include "Utils/ByteImpl.hpp"
 
 #include <shobjidl.h>
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 namespace File
 {
@@ -44,4 +45,4 @@ namespace File
 	bool GetAppDataPath(std::wstring& mPath);
 }
 
-#pragma managed
+SM_MANAGED_CODE

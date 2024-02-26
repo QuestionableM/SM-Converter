@@ -1,8 +1,9 @@
 #pragma once
 
-#include "UStd\UnmanagedVector.hpp"
+#include "UStd/UnmanagedVector.hpp"
+#include "Utils/clr_include.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 namespace Math
 {
@@ -66,4 +67,4 @@ namespace Math
 	}
 }
 
-#pragma managed
+SM_MANAGED_CODE

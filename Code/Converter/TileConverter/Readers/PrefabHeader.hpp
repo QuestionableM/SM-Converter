@@ -1,10 +1,11 @@
 #pragma once
 
-#include "Utils\BitStream.hpp"
-#include "Utils\Console.hpp"
-#include "Utils\Memory.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/BitStream.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/Memory.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class PrefabHeader
 {
@@ -135,4 +136,4 @@ public:
 	}
 };
 
-#pragma managed
+SM_MANAGED_CODE

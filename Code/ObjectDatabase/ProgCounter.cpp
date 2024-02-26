@@ -2,9 +2,9 @@
 
 #pragma unmanaged
 
-ProgState ProgCounter::State = ProgState::None;
-std::size_t ProgCounter::ProgressMax   = 0;
-std::size_t ProgCounter::ProgressValue = 0;
+std::atomic<ProgState> ProgCounter::State = ProgState::None;
+std::atomic_size_t ProgCounter::ProgressMax   = 0;
+std::atomic_size_t ProgCounter::ProgressValue = 0;
 
 void ProgCounter::SetState(ProgState nState)
 {
@@ -64,7 +64,7 @@ static const StateData StateDataArray[] =
 const static std::wstring g_no_state_string = L"NO_STATE";
 const std::wstring& ProgCounter::GetStateString()
 {
-	const std::size_t state_idx = static_cast<std::size_t>(ProgCounter::State);
+	const std::size_t state_idx = static_cast<std::size_t>(ProgCounter::State.load());
 	if (state_idx > 0)
 	{
 		return StateDataArray[state_idx - 1].Description;
@@ -75,7 +75,7 @@ const std::wstring& ProgCounter::GetStateString()
 
 bool ProgCounter::StateHasNumbers()
 {
-	const std::size_t state_idx = static_cast<std::size_t>(ProgCounter::State);
+	const std::size_t state_idx = static_cast<std::size_t>(ProgCounter::State.load());
 	if (state_idx > 0)
 	{
 		return StateDataArray[state_idx - 1].DisplayNumbers;

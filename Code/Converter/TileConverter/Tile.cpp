@@ -1,27 +1,26 @@
 #include "Tile.hpp"
 #include "TileHeader.hpp"
 
-#include "ObjectDatabase\GroundTextureDatabase.hpp"
-#include "ObjectDatabase\ProgCounter.hpp"
-#include "ObjectDatabase\ObjectData.hpp"
+#include "ObjectDatabase/GroundTextureDatabase.hpp"
+#include "ObjectDatabase/ProgCounter.hpp"
+#include "ObjectDatabase/ObjectData.hpp"
 
-#include "Converter\TileConverter\TileConverter.hpp"
-#include "Converter\Entity\GroundTerrainData.hpp"
-#include "Converter\MtlFileWriter.hpp"
+#include "Converter/TileConverter/TileConverter.hpp"
+#include "Converter/Entity/GroundTerrainData.hpp"
+#include "Converter/MtlFileWriter.hpp"
 
-#include "UStd\UnmanagedFilesystem.hpp"
+#include "UStd/UnmanagedFilesystem.hpp"
 
-#include "Utils\GlmUnmanaged.hpp"
-#include "Utils\WinInclude.hpp"
-#include "Utils\Console.hpp"
-#include "Utils\String.hpp"
+#include "Utils/GlmUnmanaged.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/WinInclude.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/String.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
+
 #include <PerlinNoise\PerlinNoise.hpp>
 #include <FreeImage.h>
-#pragma managed
-
-#pragma unmanaged
 
 Tile::Tile(int width, int height)
 {

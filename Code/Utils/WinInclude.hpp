@@ -51,6 +51,9 @@
 #define NOKANJI
 #define NOMETAFILE
 #define NOMINMAX
-#pragma unmanaged
+
+#include "clr_include.hpp"
+
+SM_UNMANAGED_CODE
 #include <Windows.h>
-#pragma managed
+SM_MANAGED_CODE

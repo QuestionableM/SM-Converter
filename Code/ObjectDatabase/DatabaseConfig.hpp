@@ -1,9 +1,11 @@
 #pragma once
 
-#include "UStd\UnmanagedString.hpp"
-#include "Utils\Json.hpp"
+#include "UStd/UnmanagedString.hpp"
 
-#pragma unmanaged
+#include "Utils/clr_include.hpp"
+#include "Utils/Json.hpp"
+
+SM_UNMANAGED_CODE
 
 class DatabaseConfig
 {
@@ -67,4 +69,4 @@ public:
 	static void ClearConfig();
 };
 
-#pragma managed
+SM_MANAGED_CODE

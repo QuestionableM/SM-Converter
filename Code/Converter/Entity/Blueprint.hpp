@@ -1,14 +1,15 @@
 #pragma once
 
-#include "Converter\Entity\Entity.hpp"
-#include "Converter\Entity\Block.hpp"
-#include "Converter\Entity\Joint.hpp"
-#include "Converter\Entity\Part.hpp"
-#include "Converter\ConvertError.hpp"
+#include "Converter/Entity/Entity.hpp"
+#include "Converter/Entity/Block.hpp"
+#include "Converter/Entity/Joint.hpp"
+#include "Converter/Entity/Part.hpp"
+#include "Converter/ConvertError.hpp"
 
-#include "Utils\Json.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/Json.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class SMBlueprint : public SMEntity
 {
@@ -70,4 +71,4 @@ private:
 	std::size_t m_body_index;
 };
 
-#pragma managed
+SM_MANAGED_CODE

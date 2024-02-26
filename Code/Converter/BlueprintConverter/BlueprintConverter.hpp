@@ -1,14 +1,15 @@
 #pragma once
 
-#include "ObjectDatabase\Mods\CustomGameMod.hpp"
+#include "ObjectDatabase/Mods/CustomGameMod.hpp"
 
-#include "Converter\Entity\Blueprint.hpp"
-#include "Converter\Entity\Body.hpp"
+#include "Converter/Entity/Blueprint.hpp"
+#include "Converter/Entity/Body.hpp"
+#include "Converter/ConvertError.hpp"
 
-#include "UStd\UnmanagedUnorderedMap.hpp"
-#include "Converter\ConvertError.hpp"
+#include "UStd/UnmanagedUnorderedMap.hpp"
+#include "Utils/clr_include.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 enum : int
 {
@@ -55,4 +56,4 @@ private:
 	~BlueprintConv() = default;
 };
 
-#pragma managed
+SM_MANAGED_CODE

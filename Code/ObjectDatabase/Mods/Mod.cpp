@@ -110,7 +110,7 @@ SMMod* SMMod::LoadFromDescription(const std::wstring& mod_folder, bool is_local)
 	if (!(v_mod_uuid_obj.is_string() && v_mod_name_obj.is_string()))
 		return nullptr;
 
-	const SMUuid v_mod_uuid = v_mod_uuid_obj.get_c_str();
+	const SMUuid v_mod_uuid = v_mod_uuid_obj.get_c_str().value();
 	const std::wstring v_mod_name = String::ToWide(v_mod_name_obj.get_c_str());
 
 	const std::unordered_map<SMUuid, SMMod*>& v_cur_map = (v_mod_type != ModType::CustomGame) ? SMMod::ModStorage : SMMod::CustomGameStorage;
@@ -153,7 +153,7 @@ SMMod* SMMod::LoadFromDescription(const std::wstring& mod_folder, bool is_local)
 			CustomGame* v_cg_mod = new CustomGame(v_mod_name, mod_folder, v_mod_uuid, v_mod_workshop_id, is_local);
 
 			const auto v_allow_add_mods = v_root["allow_add_mods"];
-			v_cg_mod->m_shouldUseUserMods = (v_allow_add_mods.is_bool() ? v_allow_add_mods.get_bool() : true);
+			v_cg_mod->m_shouldUseUserMods = (v_allow_add_mods.is_bool() ? v_allow_add_mods.get_bool().value() : true);
 
 			v_new_mod = v_cg_mod;
 			break;

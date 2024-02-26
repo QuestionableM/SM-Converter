@@ -1,9 +1,10 @@
 #pragma once
 
-#include "Utils\Json.hpp"
-#include "Utils\Uuid.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/Json.hpp"
+#include "Utils/Uuid.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class SMMod;
 
@@ -15,4 +16,4 @@ public:
 	static void Load(const simdjson::dom::element& fHarvestables, SMMod* mod, bool add_to_global_db);
 };
 
-#pragma managed
+SM_MANAGED_CODE
