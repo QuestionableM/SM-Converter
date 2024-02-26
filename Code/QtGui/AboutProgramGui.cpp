@@ -15,25 +15,33 @@ struct LinkLabelData
 	std::string_view link;
 };
 
-const static std::vector<LinkLabelData> g_libraryLabelRows[] =
+const static LinkLabelData g_libraryLabelRows[] =
 {
-	{
-		{ "LZ4", "https://github.com/lz4/lz4" },
-		{ "Assimp", "https://github.com/assimp/assimp" }
-	},
-	{
-		{ "GLM", "https://github.com/g-truc/glm" },
-		{ "Valve VDF", "https://github.com/TinyTinni/ValveFileVDF" }
-	},
-	{
-		{ "simdjson", "https://github.com/simdjson/simdjson" },
-		{ "PerlinNoise", "https://github.com/Reputeless/PerlinNoise" }
-	},
-	{
-		{ "FreeImage", "https://freeimage.sourceforge.io/" },
-		{ "Nlohmann Json", "https://github.com/nlohmann/json" }
-	}
+	{ "LZ4", "https://github.com/lz4/lz4" },
+	{ "Assimp", "https://github.com/assimp/assimp" },
+	{ "", "" },
+	{ "GLM", "https://github.com/g-truc/glm" },
+	{ "Valve VDF", "https://github.com/TinyTinni/ValveFileVDF" },
+	{ "", "" },
+	{ "simdjson", "https://github.com/simdjson/simdjson" },
+	{ "PerlinNoise", "https://github.com/Reputeless/PerlinNoise" },
+	{ "", "" },
+	{ "FreeImage", "https://freeimage.sourceforge.io/" },
+	{ "Nlohmann Json", "https://github.com/nlohmann/json" },
+	{ "", "" }
 };
+
+std::size_t calculateRowSize(std::size_t offset)
+{
+	constexpr std::size_t v_arraySize = sizeof(g_libraryLabelRows) / sizeof(LinkLabelData);
+	for (std::size_t a = offset; a < v_arraySize; a++)
+	{
+		if (g_libraryLabelRows[a].text.empty())
+			return a - offset;
+	}
+
+	return 0;
+}
 
 RichTextLabel::RichTextLabel(const QString& text, QWidget* parent)
 	: QLabel(text, parent)
@@ -89,22 +97,26 @@ AboutProgramGui::AboutProgramGui(QWidget* parent)
 	m_librariesLayout->setContentsMargins(0, 0, 0, 0);
 	m_librariesLayout->setSpacing(2);
 
-	constexpr std::size_t g_numLibraryRows = sizeof(g_libraryLabelRows)
-		/ sizeof(std::remove_all_extents_t<decltype(g_libraryLabelRows)>);
-
+	constexpr std::size_t g_numLibraryRows = sizeof(g_libraryLabelRows) / sizeof(LinkLabelData);
 	for (std::size_t a = 0; a < g_numLibraryRows; a++)
 	{
 		QHBoxLayout* v_new_row = new QHBoxLayout(this);
 		v_new_row->setAlignment(Qt::AlignRight | Qt::AlignBottom);
 		v_new_row->setSpacing(10);
 
-		for (const auto& v_cur_label : g_libraryLabelRows[a])
+		const std::size_t v_item_count = calculateRowSize(a);
+		for (std::size_t b = 0; b < v_item_count; b++)
+		{
+			const LinkLabelData& v_cur_label = g_libraryLabelRows[a + b];
+
 			v_new_row->addWidget(new RichTextLabel(
 				QString::fromLatin1(v_cur_label.text.data(), v_cur_label.text.size()),
 				QString::fromLatin1(v_cur_label.link.data(), v_cur_label.link.size()),
 				this));
+		}
 
 		m_librariesLayout->addLayout(v_new_row);
+		a += v_item_count;
 	}
 
 	this->adjustSize();
