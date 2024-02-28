@@ -44,3 +44,25 @@ void QtUtil::infoWithSound(QWidget* parent, const QString& title, const QString&
 
 	QMessageBox::information(parent, title, message, QMessageBox::StandardButton::Ok);
 }
+
+bool QtUtil::fileDialog(
+	QWidget* parent,
+	const QString& title,
+	QFileDialog::FileMode file_mode,
+	QString& out_file)
+{
+	QFileDialog v_dialog(parent);
+	v_dialog.setWindowTitle(title);
+	v_dialog.setAcceptMode(QFileDialog::AcceptMode::AcceptOpen);
+	v_dialog.setFileMode(file_mode);
+
+	if (v_dialog.exec() != QDialog::Accepted)
+		return false;
+
+	QStringList v_sel_files = v_dialog.selectedFiles();
+	if (v_sel_files.empty())
+		return false;
+
+	out_file = v_sel_files[0];
+	return true;
+}

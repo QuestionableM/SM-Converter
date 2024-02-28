@@ -190,6 +190,8 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClCompile Include="Code\QtGui\CustomGameSelector.cpp" />
     <ClCompile Include="Code\QtGui\FilterSettingsGui.cpp" />
     <ClCompile Include="Code\QtGui\MainGui.cpp" />
+    <ClCompile Include="Code\QtGui\PathListViewWidget.cpp" />
+    <ClCompile Include="Code\QtGui\ProgramSettingsGui.cpp" />
     <ClCompile Include="Code\QtGui\QtUtil.cpp" />
     <ClCompile Include="Code\QtGui\TileConverterSettingsGui.cpp" />
     <ClCompile Include="Code\QtGui\UserObjectListViewWidget.cpp" />
@@ -282,6 +284,8 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\QtGui\CustomGameSelector.hpp" />
     <ClInclude Include="Code\QtGui\FilterSettingsGui.hpp" />
     <ClInclude Include="Code\QtGui\MainGui.hpp" />
+    <QtMoc Include="Code\QtGui\PathListViewWidget.hpp" />
+    <ClInclude Include="Code\QtGui\ProgramSettingsGui.hpp" />
     <ClInclude Include="Code\QtGui\QtUiConstants.hpp" />
     <ClInclude Include="Code\QtGui\QtUtil.hpp" />
     <QtMoc Include="Code\QtGui\UserObjectListViewWidget.hpp" />

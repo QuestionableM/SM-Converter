@@ -51,6 +51,7 @@ public:
 	QMenu* m_settingsMenu;
 	QAction* m_reloadUserObjectsAction;
 	QAction* m_reloadObjectDatabaseAction;
+	QAction* m_openProgramSettings;
 };
 
 struct UserCharacterData;

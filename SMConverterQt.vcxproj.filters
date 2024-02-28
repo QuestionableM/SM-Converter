@@ -221,6 +221,12 @@
     <ClCompile Include="Code\QtGui\AboutProgramGui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Code\QtGui\ProgramSettingsGui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\QtGui\PathListViewWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\QtGui\MainGui.hpp">
@@ -517,9 +523,15 @@
     <ClInclude Include="Code\QtGui\AboutProgramGui.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Code\QtGui\ProgramSettingsGui.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Code\QtGui\UserObjectListViewWidget.hpp">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Code\QtGui\PathListViewWidget.hpp">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

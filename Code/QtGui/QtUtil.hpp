@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QFileDialog>
 #include <QWidget>
 
 namespace QtUtil
@@ -10,4 +11,10 @@ namespace QtUtil
     void warningWithSound(QWidget* parent, const QString& title, const QString& message);
     void errorWithSound(QWidget* parent, const QString& title, const QString& message);
     void infoWithSound(QWidget* parent, const QString& title, const QString& message);
+
+	bool fileDialog(
+        QWidget* parent,
+        const QString& title,
+        QFileDialog::FileMode file_mode,
+        QString& out_file);
 }

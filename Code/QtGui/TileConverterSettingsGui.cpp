@@ -89,11 +89,10 @@ TileConverterSettingsGui::TileConverterSettingsGui(
 	const std::wstring& filename,
 	const std::wstring& path)
 	: ConverterSettingsGuiBase(parent, filename),
-	m_settingsLayoutHolder(new QWidget(this)),
-	m_settingsLayout(new QHBoxLayout(m_settingsLayoutHolder)),
-	m_modelSettings(m_settingsLayoutHolder),
-	m_settings(m_settingsLayoutHolder),
-	m_customGameContent(m_settingsLayoutHolder, path)
+	m_settingsLayout(new QHBoxLayout(this)),
+	m_modelSettings(this),
+	m_settings(this),
+	m_customGameContent(this, path)
 {
 	this->setWindowFlags(this->windowFlags() | Qt::MSWindowsFixedSizeDialogHint);
 	this->setWindowTitle("Tile Converter Settings");
@@ -105,7 +104,7 @@ TileConverterSettingsGui::TileConverterSettingsGui(
 	m_settingsLayout->addWidget(&m_modelSettings);
 
 	m_objectLayout->addWidget(&m_objectName, 0, Qt::AlignTop);
-	m_objectLayout->addWidget(m_settingsLayoutHolder, 0, Qt::AlignTop);
+	m_objectLayout->addLayout(m_settingsLayout);
 	m_objectLayout->addWidget(&m_customGameContent, 0, Qt::AlignTop);
 	m_objectLayout->addWidget(m_convertButton, 0, Qt::AlignBottom);
 

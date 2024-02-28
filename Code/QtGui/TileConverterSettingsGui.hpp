@@ -68,7 +68,6 @@ public:
 
 	void getThreadData(TileConverterThreadData* data);
 
-	QWidget* m_settingsLayoutHolder;
 	QHBoxLayout* m_settingsLayout;
 	
 	TileModelSettingsBox m_modelSettings;

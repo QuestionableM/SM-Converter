@@ -17,6 +17,7 @@
 
 #include "BlueprintConvertSettingsGui.hpp"
 #include "TileConverterSettingsGui.hpp"
+#include "ProgramSettingsGui.hpp"
 #include "FilterSettingsGui.hpp"
 #include "AboutProgramGui.hpp"
 
@@ -82,6 +83,13 @@ MainGuiMenuBar::MainGuiMenuBar(QWidget* parent)
 	m_reloadObjectDatabaseAction->setObjectName("a_reload_obj_db");
 	m_reloadObjectDatabaseAction->setText("Reload Object Database");
 	m_settingsMenu->addAction(m_reloadObjectDatabaseAction);
+
+	m_settingsMenu->addSeparator();
+
+	m_openProgramSettings = new QAction(parent);
+	m_openProgramSettings->setObjectName("a_open_psettings");
+	m_openProgramSettings->setText("Settings");
+	m_settingsMenu->addAction(m_openProgramSettings);
 
 	m_menuBar->addAction(m_openMenu->menuAction());
 	m_menuBar->addAction(m_settingsMenu->menuAction());
@@ -149,6 +157,8 @@ MainGui::MainGui(QWidget* parent)
 		[this]() -> void { openDirectory(DatabaseConfig::TileOutputFolder, "tile"); });
 	QObject::connect(m_menuBar.m_aboutProgramAction, &QAction::triggered, this,
 		[this]() -> void { AboutProgramGui(this).exec(); });
+	QObject::connect(m_menuBar.m_openProgramSettings, &QAction::triggered, this,
+		[this]() -> void { ProgramSettingsGui(this).exec(); });
 
 	m_objectPath = new QLineEdit(this);
 	m_objectPath->setObjectName("le_object_path");
@@ -165,17 +175,14 @@ MainGui::MainGui(QWidget* parent)
 	m_selectPathButton->setText("...");
 	QObject::connect(m_selectPathButton, &QPushButton::pressed, this,
 		[this]() -> void {
-			QFileDialog v_dialog(this);
-			v_dialog.setWindowTitle("Select a Blueprint");
-			v_dialog.setAcceptMode(QFileDialog::AcceptMode::AcceptOpen);
-			v_dialog.setFileMode(QFileDialog::FileMode::ExistingFile);
-
-			if (v_dialog.exec() != QDialog::Accepted)
+			QString v_selected_file;
+			if (!QtUtil::fileDialog(this, "Select a Blueprint",
+				QFileDialog::FileMode::ExistingFile, v_selected_file))
+			{
 				return;
-			
-			QStringList v_sel_files = v_dialog.selectedFiles();
-			if (!v_sel_files.empty())
-				m_objectPath->setText(v_sel_files[0]);
+			}
+
+			m_objectPath->setText(v_selected_file);
 		}
 	);
 
