@@ -178,7 +178,7 @@ int PathListViewWidget::getTrulyVisibleLineCount(int coverage) const
 void PathListViewWidget::moveSliderToIndex(int idx)
 {
 	const int v_vision_start = this->sliderPosition();
-	const int v_vision_end = v_vision_start + this->getTrulyVisibleLineCount();
+	const int v_vision_end = v_vision_start + this->getTrulyVisibleLineCount() - 1;
 
 	if (v_vision_start <= idx && idx <= v_vision_end)
 		return;
@@ -203,17 +203,23 @@ void PathListViewWidget::selectItemFromMousePosition(QPoint pos)
 
 void PathListViewWidget::updateScrollBar()
 {
+	const int v_storage_sz = m_pathStorage.size() + 1;
+
 	const int v_lines_on_screen = this->getVisibleLineCount();
-	const bool v_is_visible = v_lines_on_screen <= m_pathStorage.size();
+	const bool v_is_visible = v_lines_on_screen <= v_storage_sz;
 
 	m_scrollBar->setVisible(v_is_visible);
 
 	if (v_is_visible)
 	{
-		m_scrollBar->setRange(0, m_pathStorage.size() - v_lines_on_screen);
+		m_scrollBar->setRange(0, v_storage_sz + 1 - v_lines_on_screen);
 
 		m_scrollBar->resize(15, this->height() - 2);
 		m_scrollBar->move(this->width() - m_scrollBar->width() - 1, 1);
+	}
+	else
+	{
+		m_scrollBar->setSliderPosition(0);
 	}
 }
 
@@ -292,8 +298,8 @@ void PathListViewWidget::openEditor(int item_idx)
 		v_edit_string = m_pathStorage[item_idx];
 
 	m_editor->setGeometry(
-		0, v_local_idx * m_itemHeight,
-		this->itemWidth(), m_itemHeight);
+		1, v_local_idx * m_itemHeight,
+		this->itemWidth() - 1, m_itemHeight);
 	m_editor->open(item_idx, v_edit_string);
 }
 
@@ -313,6 +319,9 @@ void PathListViewWidget::removeSelectedElement()
 	if (m_currentIdx == -1 || m_pathStorage.isEmpty())
 		return;
 	
+	if (!this->isIdxValidStrict(m_currentIdx))
+		return;
+
 	this->removeElement(m_currentIdx);
 	m_currentIdx = std::clamp(m_currentIdx, 0,
 		std::max((int)m_pathStorage.size() - 1, 0));
@@ -323,6 +332,8 @@ void PathListViewWidget::removeSelectedElement()
 void PathListViewWidget::paintEvent(QPaintEvent* event)
 {
 	QPainter v_painter(this);
+
+	v_painter.setRenderHint(QPainter::RenderHint::Antialiasing);
 
 	const QPalette v_palette = QApplication::palette();
 	const bool v_is_enabled = this->isEnabled();
@@ -436,6 +447,7 @@ void PathListViewWidget::applyEditorString()
 	if (v_cur_idx == m_pathStorage.size())
 	{
 		m_pathStorage.push_back(m_editor->text());
+		this->updateScrollBar();
 		return;
 	}
 
