@@ -60,7 +60,8 @@ public:
 	void updateScrollBar();
 	int sliderPosition() const;
 	int itemWidth() const;
-	bool isIndexValid(int idx) const;
+	bool isIdxValid(int idx) const;
+	bool isIdxValidStrict(int idx) const;
 	//If the index is not visible, the slider will move to that specific element
 	void moveSliderToIndex(int idx);
 	void moveCurrentIndex(bool is_up);

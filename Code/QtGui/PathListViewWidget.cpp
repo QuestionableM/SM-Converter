@@ -163,7 +163,7 @@ PathListViewWidget::PathListViewWidget(QWidget* parent)
 
 int PathListViewWidget::getVisibleLineCount() const
 {
-	return this->height() / m_itemHeight;
+	return (this->height() / m_itemHeight) + 1;
 }
 
 int PathListViewWidget::getTrulyVisibleLineCount(int coverage) const
@@ -180,10 +180,7 @@ void PathListViewWidget::moveSliderToIndex(int idx)
 	const int v_vision_start = this->sliderPosition();
 	const int v_vision_end = v_vision_start + this->getTrulyVisibleLineCount();
 
-	const bool v_is_visible = v_vision_start <= idx
-		&& idx <= v_vision_end;
-
-	if (v_is_visible)
+	if (v_vision_start <= idx && idx <= v_vision_end)
 		return;
 
 	const int v_down_force = std::max(v_vision_start - idx, 0);
@@ -197,10 +194,7 @@ void PathListViewWidget::selectItemFromMousePosition(QPoint pos)
 {
 	const int v_cur_idx = (pos.y() / m_itemHeight) + this->sliderPosition();
 
-	if (v_cur_idx < 0 || v_cur_idx >= m_pathStorage.size())
-		return;
-
-	if (v_cur_idx != m_currentIdx)
+	if (this->isIdxValid(v_cur_idx) && v_cur_idx != m_currentIdx)
 	{
 		m_currentIdx = v_cur_idx;
 		this->repaint();
@@ -210,7 +204,7 @@ void PathListViewWidget::selectItemFromMousePosition(QPoint pos)
 void PathListViewWidget::updateScrollBar()
 {
 	const int v_lines_on_screen = this->getVisibleLineCount();
-	const bool v_is_visible = v_lines_on_screen < m_pathStorage.size();
+	const bool v_is_visible = v_lines_on_screen <= m_pathStorage.size();
 
 	m_scrollBar->setVisible(v_is_visible);
 
@@ -233,7 +227,12 @@ int PathListViewWidget::itemWidth() const
 	return this->width() - (m_scrollBar->isVisible() ? m_scrollBar->width() : 0);
 }
 
-bool PathListViewWidget::isIndexValid(int idx) const
+bool PathListViewWidget::isIdxValid(int idx) const
+{
+	return idx >= 0 && idx <= m_pathStorage.size();
+}
+
+bool PathListViewWidget::isIdxValidStrict(int idx) const
 {
 	return idx >= 0 && idx < m_pathStorage.size();
 }
@@ -266,7 +265,7 @@ void PathListViewWidget::moveCurrentIndex(bool is_up)
 	}
 	else
 	{
-		if ((m_currentIdx + 1) < m_pathStorage.size())
+		if (m_currentIdx < m_pathStorage.size())
 			m_currentIdx++;
 	}
 
@@ -281,7 +280,7 @@ void PathListViewWidget::moveCurrentIndex(bool is_up)
 
 void PathListViewWidget::openEditor(int item_idx)
 {
-	if (item_idx != m_pathStorage.size() && !this->isIndexValid(item_idx))
+	if (!this->isIdxValid(item_idx))
 		return;
 
 	this->moveSliderToIndex(item_idx);
@@ -290,16 +289,7 @@ void PathListViewWidget::openEditor(int item_idx)
 	QString v_edit_string;
 	//Allow to append new elements
 	if (item_idx != m_pathStorage.size())
-	{
-		if (!this->isIndexValid(item_idx))
-			return;
-
 		v_edit_string = m_pathStorage[item_idx];
-	}
-	else
-	{
-		m_currentIdx = -1;
-	}
 
 	m_editor->setGeometry(
 		0, v_local_idx * m_itemHeight,
@@ -309,7 +299,7 @@ void PathListViewWidget::openEditor(int item_idx)
 
 void PathListViewWidget::removeElement(int idx)
 {
-	if (!this->isIndexValid(idx))
+	if (!this->isIdxValidStrict(idx))
 		return;
 
 	this->moveSliderToIndex(idx);
@@ -346,7 +336,9 @@ void PathListViewWidget::paintEvent(QPaintEvent* event)
 	const int v_offset = this->sliderPosition();
 	const int v_item_width = this->itemWidth();
 	const int v_num_vis_objects = this->getVisibleLineCount() + 1;
-	const int v_rem_lines = std::min(std::max(int(m_pathStorage.size()) - v_offset, 0), v_num_vis_objects);
+	
+	const int v_elem_count = m_pathStorage.size();
+	const int v_rem_lines = std::min(std::max(v_elem_count + 1 - v_offset, 0), v_num_vis_objects);
 
 	QTextOption v_text_option(Qt::AlignVCenter);
 	v_text_option.setWrapMode(QTextOption::NoWrap);
@@ -354,8 +346,6 @@ void PathListViewWidget::paintEvent(QPaintEvent* event)
 	for (std::size_t a = 0; a < v_rem_lines; a++)
 	{
 		const int v_cur_idx = a + v_offset;
-
-		const QString& v_cur_path = m_pathStorage[v_cur_idx];
 		const int v_cur_item_height = a * m_itemHeight;
 
 		if (v_cur_idx == m_currentIdx)
@@ -367,13 +357,16 @@ void PathListViewWidget::paintEvent(QPaintEvent* event)
 				v_sel_color);
 		}
 
+		if (v_cur_idx == v_elem_count)
+			continue;
+
 		const QRect v_text_rect(
 			v_margins.left(),
 			v_cur_item_height,
 			v_item_width - v_margins.left(),
 			m_itemHeight);
 
-		v_painter.drawText(v_text_rect, v_cur_path, v_text_option);
+		v_painter.drawText(v_text_rect, m_pathStorage[v_cur_idx], v_text_option);
 	}
 
 	v_painter.setPen(v_palette.color(v_col_group, QPalette::ColorRole::Dark));
@@ -415,6 +408,9 @@ void PathListViewWidget::mouseDoubleClickEvent(QMouseEvent* event)
 
 void PathListViewWidget::keyPressEvent(QKeyEvent* event)
 {
+	if (m_editor->isVisible())
+		return;
+
 	switch (event->key())
 	{
 	case Qt::Key::Key_F2:
@@ -443,9 +439,9 @@ void PathListViewWidget::applyEditorString()
 		return;
 	}
 
-	if (!this->isIndexValid(v_cur_idx))
-		return;
-
-	m_pathStorage[v_cur_idx] = m_editor->text();
-	this->repaint();
+	if (this->isIdxValidStrict(v_cur_idx))
+	{
+		m_pathStorage[v_cur_idx] = m_editor->text();
+		this->repaint();
+	}
 }
