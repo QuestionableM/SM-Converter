@@ -227,6 +227,9 @@
     <ClCompile Include="Code\QtGui\PathListViewWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Code\Gui\SettingsGuiChangeDetector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\QtGui\MainGui.hpp">
@@ -524,6 +527,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Code\QtGui\ProgramSettingsGui.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Gui\SettingsGuiChangeDetector.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

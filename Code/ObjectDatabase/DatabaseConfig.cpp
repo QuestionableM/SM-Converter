@@ -26,7 +26,7 @@ void DatabaseConfig::WstrMapToJson(nlohmann::json& j_obj, const std::string& key
 	nlohmann::json v_strArray = nlohmann::json::array();
 
 	for (const auto& v_item : v_map)
-		v_strArray.push_back(String::ToUtf8(v_item.first));
+		v_strArray.push_back(String::ToUtf8(v_item));
 
 	j_obj[key] = std::move(v_strArray);
 }
@@ -49,8 +49,8 @@ bool DatabaseConfig::AddToStrVec(std::vector<std::wstring>& v_vec, PathChecker& 
 		DebugWarningL("The specified path already exists: ", v_full_path);
 		return false;
 	}
-
-	v_path_checker.insert(std::make_pair(v_full_path, 1));
+	
+	v_path_checker.emplace(v_full_path);
 	v_vec.push_back(std::move(v_full_path));
 
 	return true;
@@ -75,7 +75,7 @@ bool DatabaseConfig::AddToStrMap(PathChecker& v_map, const std::wstring& v_new_s
 		return false;
 	}
 
-	v_map.insert(std::make_pair(std::move(v_full_path), 1));
+	v_map.insert(v_full_path);
 	return true;
 }
 

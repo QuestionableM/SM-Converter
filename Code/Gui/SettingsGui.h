@@ -310,7 +310,7 @@ namespace SMConverter
 		System::Void Settings_PathSelector_Click(System::Object^ sender, System::EventArgs^ e);
 		System::Void Settings_FileOption_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e);
 
-		System::Void UpdatePathListFromMap(const std::unordered_map<std::wstring, unsigned char>& v_map);
+		System::Void UpdatePathListFromMap(const std::unordered_set<std::wstring>& v_map);
 		System::Void UpdatePathListFromVec(const std::vector<std::wstring>& v_path_list);
 		System::Void UpdateCurrentPathList();
 

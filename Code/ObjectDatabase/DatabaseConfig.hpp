@@ -7,11 +7,13 @@
 
 SM_UNMANAGED_CODE
 
+#include <unordered_set>
+
 class DatabaseConfig
 {
 public:
 	//Used to remove the same path entires
-	using PathChecker = std::unordered_map<std::wstring, unsigned char>;
+	using PathChecker = std::unordered_set<std::wstring>;
 
 	constexpr static const std::wstring_view BlueprintOutputFolder = L".\\ConvertedBlueprints";
 	constexpr static const std::wstring_view TileOutputFolder = L".\\ConvertedTiles";

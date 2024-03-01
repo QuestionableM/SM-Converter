@@ -153,6 +153,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClCompile Include="Code\Converter\TileConverter\TilePart.cpp" />
     <ClCompile Include="Code\Converter\WorldConverter\World.cpp" />
     <ClCompile Include="Code\Converter\WorldConverter\WorldConverter.cpp" />
+    <ClCompile Include="Code\Gui\SettingsGuiChangeDetector.cpp" />
     <ClCompile Include="Code\ObjectDatabase\DatabaseConfig.cpp" />
     <ClCompile Include="Code\ObjectDatabase\GroundTextureDatabase.cpp" />
     <ClCompile Include="Code\ObjectDatabase\KeywordReplacer.cpp" />
@@ -241,6 +242,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\Converter\WorldConverter\World.hpp" />
     <ClInclude Include="Code\Converter\WorldConverter\WorldConverter.hpp" />
     <ClInclude Include="Code\Converter\WriterOffset.hpp" />
+    <ClInclude Include="Code\Gui\SettingsGuiChangeDetector.hpp" />
     <ClInclude Include="Code\ObjectDatabase\DatabaseConfig.hpp" />
     <ClInclude Include="Code\ObjectDatabase\GroundTextureDatabase.hpp" />
     <ClInclude Include="Code\ObjectDatabase\KeywordReplacer.hpp" />

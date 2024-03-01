@@ -6,6 +6,7 @@
 #include <QWidget>
 #include <QLayout>
 #include <QEvent>
+#include <QMenu>
 
 #include <functional>
 
@@ -44,6 +45,18 @@ private:
 	QHBoxLayout* m_layout;
 };
 
+class PathListViewContextMenu : public QMenu
+{
+public:
+	PathListViewContextMenu(QWidget* parent = nullptr);
+	~PathListViewContextMenu() = default;
+
+public:
+	QAction* m_addNewElementAction;
+	QAction* m_editElementAction;
+	QAction* m_removeElementAction;
+};
+
 class PathListViewWidget : public QWidget
 {
 public:
@@ -57,6 +70,7 @@ public:
 	int calculateItemVisibleArea(int idx) const;
 	void selectItemFromMousePosition(QPoint pos);
 
+	void updateContextMenu();
 	void updateScrollBar();
 	int sliderPosition() const;
 	int itemWidth() const;
@@ -67,9 +81,21 @@ public:
 	void moveCurrentIndex(bool is_up);
 	void openEditor(int item_idx);
 
-	void removeElement(int idx);
+	bool removeElement(int idx);
 	void removeSelectedElement();
+	void clearItemsSilent();
 
+	void addItemSilent(const QString& str);
+
+	void setRemoveElementCallback(const std::function<bool(int)>& callback);
+	void setAddElementCallback(const std::function<bool(const QString&)>& callback);
+
+	bool invokeRemoveCallback(int idx) const;
+
+public:
+	std::function<bool(int)> m_removeCallback;
+
+	PathListViewContextMenu m_contextMenu;
 	PathEditorWidget* m_editor;
 	QScrollBar* m_scrollBar;
 	QStringList m_pathStorage;
@@ -84,6 +110,7 @@ private:
 	void mouseMoveEvent(QMouseEvent* event) override;
 	void mousePressEvent(QMouseEvent* event) override;
 	void mouseDoubleClickEvent(QMouseEvent* event) override;
+	void contextMenuEvent(QContextMenuEvent* event) override;
 
 	void keyPressEvent(QKeyEvent* event) override;
 	void applyEditorString();

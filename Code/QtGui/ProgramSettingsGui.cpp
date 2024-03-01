@@ -1,10 +1,18 @@
 #include "ProgramSettingsGui.hpp"
 
-#include "PathListViewWidget.hpp"
+#include "Utils/Console.hpp"
+
 #include "QtUiConstants.hpp"
 #include "QtUtil.hpp"
 
 #include <QKeyEvent>
+
+enum : unsigned int
+{
+	SMFileOption_LocalModFolders = 0,
+	SMFileOption_WorkshopModFolders = 1,
+	SMFileOption_UserItemFolders = 2
+};
 
 ////////////////////////PATH GROUP BOX///////////////////
 
@@ -52,15 +60,51 @@ SettingsGeneralTab::SettingsGeneralTab(QWidget* parent)
 
 SettingsPathsTab::SettingsPathsTab(QWidget* parent)
 	: QWidget(parent),
-	m_listBox(new QComboBox(this)),
+	m_changeDetector(),
+	m_pathListView(new PathListViewWidget(this)),
+	m_folderOptions(new QComboBox(this)),
 	m_mainLayout(new QVBoxLayout(this))
 {
-	m_listBox->addItem("Local Mod Folders");
-	m_listBox->addItem("Mod Folders");
-	m_listBox->addItem("User Item Folders");
+	QObject::connect(
+		m_folderOptions, &QComboBox::currentIndexChanged,
+		this, &SettingsPathsTab::updateCurrentPathList);
 
-	m_mainLayout->addWidget(new PathListViewWidget(this));
-	m_mainLayout->addWidget(m_listBox, 0, Qt::AlignBottom);
+	m_folderOptions->addItem("Local Mod Folders");
+	m_folderOptions->addItem("Mod Folders");
+	m_folderOptions->addItem("User Item Folders");
+
+	m_mainLayout->addWidget(m_pathListView);
+	m_mainLayout->addWidget(m_folderOptions, 0, Qt::AlignBottom);
+
+	m_pathListView->setAddElementCallback(
+		[](const QString& str) -> bool {
+			DebugOutL("New element: ", str.toStdString());
+			return true;
+		}
+	);
+
+	m_pathListView->setRemoveElementCallback(
+		[this](int idx) -> bool {
+			DebugOutL("Remove element[", idx, "] = ", m_pathListView->m_pathStorage[idx].toStdString());
+			return true;
+		}
+	);
+}
+
+void SettingsPathsTab::updateCurrentPathList()
+{
+	switch (m_folderOptions->currentIndex())
+	{
+	case SMFileOption_LocalModFolders:
+		this->updatePathListView(m_changeDetector.m_localModList);
+		break;
+	case SMFileOption_WorkshopModFolders:
+		this->updatePathListView(m_changeDetector.m_workshopModList);
+		break;
+	case SMFileOption_UserItemFolders:
+		this->updatePathListView(m_changeDetector.m_userItemFolders);
+		break;
+	}
 }
 
 ////////////////////PROGRAM SETTINGS GUI////////////////////

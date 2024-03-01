@@ -81,13 +81,13 @@ namespace SMConverter
 		this->UpdateCurrentPathList();
 	}
 
-	void SettingsGui::UpdatePathListFromMap(const std::unordered_map<std::wstring, unsigned char>& v_map)
+	void SettingsGui::UpdatePathListFromMap(const std::unordered_set<std::wstring>& v_map)
 	{
 		m_lb_pathList->BeginUpdate();
 		m_lb_pathList->Items->Clear();
 
 		for (const auto& v_cur_item : v_map)
-			m_lb_pathList->Items->Add(gcnew System::String(v_cur_item.first.c_str()));
+			m_lb_pathList->Items->Add(gcnew System::String(v_cur_item.c_str()));
 
 		m_lb_pathList->EndUpdate();
 	}
@@ -178,19 +178,19 @@ namespace SMConverter
 		case SMFileOption_LocalModFolders:
 			{
 				SettingsChangeDetector::RemoveFromCheckedVec(m_changeDetector->m_localModList, m_changeDetector->m_modListMap, static_cast<std::size_t>(v_cur_idx));
-				m_changeDetector->UpdateChange<SettingsChangeDetector_LocalModList>();
+				m_changeDetector->UpdateChange(SettingsChangeDetector_LocalModList);
 				break;
 			}
 		case SMFileOption_WorkshopModFolders:
 			{
 				SettingsChangeDetector::RemoveFromCheckedVec(m_changeDetector->m_workshopModList, m_changeDetector->m_modListMap, static_cast<std::size_t>(v_cur_idx));
-				m_changeDetector->UpdateChange<SettingsChangeDetector_WorkshopModList>();
+				m_changeDetector->UpdateChange(SettingsChangeDetector_WorkshopModList);
 				break;
 			}
 		case SMFileOption_UserItemFolders:
 			{
 				SettingsChangeDetector::RemoveFromMap(m_changeDetector->m_userItemFolders, this->GetSelectedPathListString());
-				m_changeDetector->UpdateChange<SettingsChangeDetector_UserItemFolder>();
+				m_changeDetector->UpdateChange(SettingsChangeDetector_UserItemFolder);
 				break;
 			}
 		}
@@ -225,19 +225,19 @@ namespace SMConverter
 		case SMFileOption_LocalModFolders:
 			{
 				is_success = DatabaseConfig::AddToStrVec(m_changeDetector->m_localModList, m_changeDetector->m_modListMap, v_new_path);
-				m_changeDetector->UpdateChange<SettingsChangeDetector_LocalModList>();
+				m_changeDetector->UpdateChange(SettingsChangeDetector_LocalModList);
 				break;
 			}
 		case SMFileOption_WorkshopModFolders:
 			{
 				is_success = DatabaseConfig::AddToStrVec(m_changeDetector->m_workshopModList, m_changeDetector->m_modListMap, v_new_path);
-				m_changeDetector->UpdateChange<SettingsChangeDetector_WorkshopModList>();
+				m_changeDetector->UpdateChange(SettingsChangeDetector_WorkshopModList);
 				break;
 			}
 		case SMFileOption_UserItemFolders:
 			{
 				is_success = DatabaseConfig::AddToStrMap(m_changeDetector->m_userItemFolders, v_new_path);
-				m_changeDetector->UpdateChange<SettingsChangeDetector_UserItemFolder>();
+				m_changeDetector->UpdateChange(SettingsChangeDetector_UserItemFolder);
 				break;
 			}
 		}
@@ -313,7 +313,7 @@ namespace SMConverter
 	void SettingsGui::Settings_OpenLinksInSteam_CheckedChanged(System::Object^ sender, System::EventArgs^ e)
 	{
 		m_changeDetector->m_openLinksInSteam = m_cb_openLinksInSteam->Checked;
-		m_changeDetector->UpdateChange<SettingsChangeDetector_OpenLinksInSteam>();
+		m_changeDetector->UpdateChange(SettingsChangeDetector_OpenLinksInSteam);
 
 		this->UpdateSaveButton();
 	}
@@ -321,7 +321,7 @@ namespace SMConverter
 	void SettingsGui::Settings_GamePath_TextChanged(System::Object^ sender, System::EventArgs^ e)
 	{
 		m_changeDetector->m_gamePath = msclr::interop::marshal_as<std::wstring>(m_tb_gamePath->Text);
-		m_changeDetector->UpdateChange<SettingsChangeDetector_GamePath>();
+		m_changeDetector->UpdateChange(SettingsChangeDetector_GamePath);
 
 		this->UpdateSaveButton();
 	}

@@ -130,10 +130,25 @@ void PathEditorWidget::onFocusChanged(QWidget* old, QWidget* now)
 		this->setVisible(false);
 }
 
+////////////////////PATH LIST VIEW CONTEXT MENU////////////////////
+
+PathListViewContextMenu::PathListViewContextMenu(QWidget* parent)
+	: QMenu(parent),
+	m_addNewElementAction(new QAction("Add", this)),
+	m_editElementAction(new QAction("Edit", this)),
+	m_removeElementAction(new QAction("Remove"))
+{
+	this->addAction(m_addNewElementAction);
+	this->addAction(m_editElementAction);
+	this->addSeparator();
+	this->addAction(m_removeElementAction);
+}
+
 ///////////////////////PATH LIST VIEW WIDGET///////////////////////
 
 PathListViewWidget::PathListViewWidget(QWidget* parent)
 	: QWidget(parent),
+	m_contextMenu(this),
 	m_editor(new PathEditorWidget(this)),
 	m_scrollBar(new QScrollBar(Qt::Vertical, this))
 {
@@ -159,6 +174,20 @@ PathListViewWidget::PathListViewWidget(QWidget* parent)
 	QObject::connect(
 		m_editor, &PathEditorWidget::onStringApplied,
 		this, &PathListViewWidget::applyEditorString);
+
+	QObject::connect(m_contextMenu.m_addNewElementAction, &QAction::triggered, this,
+		[this]() -> void {
+			m_currentIdx = m_pathStorage.size();
+			this->openEditor(m_currentIdx);
+		}
+	);
+
+	QObject::connect(m_contextMenu.m_editElementAction, &QAction::triggered, this,
+		[this]() -> void { this->openEditor(m_currentIdx); });
+
+	QObject::connect(
+		m_contextMenu.m_removeElementAction, &QAction::triggered,
+		this, &PathListViewWidget::removeSelectedElement);
 }
 
 int PathListViewWidget::getVisibleLineCount() const
@@ -199,6 +228,16 @@ void PathListViewWidget::selectItemFromMousePosition(QPoint pos)
 		m_currentIdx = v_cur_idx;
 		this->repaint();
 	}
+
+	this->updateContextMenu();
+}
+
+void PathListViewWidget::updateContextMenu()
+{
+	const bool v_idx_valid = this->isIdxValidStrict(m_currentIdx);
+
+	m_contextMenu.m_editElementAction->setEnabled(v_idx_valid);
+	m_contextMenu.m_removeElementAction->setEnabled(v_idx_valid);
 }
 
 void PathListViewWidget::updateScrollBar()
@@ -303,30 +342,58 @@ void PathListViewWidget::openEditor(int item_idx)
 	m_editor->open(item_idx, v_edit_string);
 }
 
-void PathListViewWidget::removeElement(int idx)
+bool PathListViewWidget::removeElement(int idx)
 {
 	if (!this->isIdxValidStrict(idx))
-		return;
+		return false;
 
+	if (!this->invokeRemoveCallback(idx))
+		return false;
+	
 	this->moveSliderToIndex(idx);
 	m_pathStorage.erase(m_pathStorage.begin() + idx);
 
 	this->updateScrollBar();
+	return true;
 }
 
 void PathListViewWidget::removeSelectedElement()
 {
-	if (m_currentIdx == -1 || m_pathStorage.isEmpty())
+	if (!this->removeElement(m_currentIdx))
 		return;
 	
-	if (!this->isIdxValidStrict(m_currentIdx))
-		return;
-
-	this->removeElement(m_currentIdx);
 	m_currentIdx = std::clamp(m_currentIdx, 0,
 		std::max((int)m_pathStorage.size() - 1, 0));
 
 	this->repaint();
+}
+
+void PathListViewWidget::clearItemsSilent()
+{
+	m_pathStorage.clear();
+}
+
+void PathListViewWidget::addItemSilent(const QString& str)
+{
+	m_pathStorage.push_back(str);
+}
+
+void PathListViewWidget::setRemoveElementCallback(const std::function<bool(int)>& callback)
+{
+	m_removeCallback = callback;
+}
+
+void PathListViewWidget::setAddElementCallback(const std::function<bool(const QString&)>& callback)
+{
+	m_editor->setInputFilter(callback);
+}
+
+bool PathListViewWidget::invokeRemoveCallback(int idx) const
+{
+	if (!m_removeCallback)
+		return true;
+	
+	return m_removeCallback(idx);
 }
 
 void PathListViewWidget::paintEvent(QPaintEvent* event)
@@ -413,8 +480,16 @@ void PathListViewWidget::mousePressEvent(QMouseEvent* event)
 
 void PathListViewWidget::mouseDoubleClickEvent(QMouseEvent* event)
 {
+	if (event->button() != Qt::MouseButton::LeftButton)
+		return;
+
 	const int v_global_idx = (event->pos().y() / m_itemHeight) + this->sliderPosition();
 	this->openEditor(v_global_idx);
+}
+
+void PathListViewWidget::contextMenuEvent(QContextMenuEvent* event)
+{
+	m_contextMenu.exec(event->globalPos());
 }
 
 void PathListViewWidget::keyPressEvent(QKeyEvent* event)
