@@ -24,11 +24,32 @@ public:
 	QHBoxLayout* m_hLayout;
 };
 
-class SettingsGeneralTab : public QWidget
+class SettingsTabBase : public QWidget
+{
+	Q_OBJECT
+
+public:
+	inline SettingsTabBase(QWidget* parent = nullptr)
+		: QWidget(parent) {}
+	~SettingsTabBase() = default;
+
+signals:
+	void onSettingChanged();
+};
+
+class SettingsGeneralTab : public SettingsTabBase
 {
 public:
-	SettingsGeneralTab(QWidget* parent = nullptr);
+	SettingsGeneralTab(
+		SettingsChangeDetector& detector,
+		QWidget* parent = nullptr);
 	~SettingsGeneralTab() = default;
+
+	void onCheckboxUpdate();
+	void onGamePathUpdate();
+
+public:
+	SettingsChangeDetector& m_changeDetector;
 
 	PathGroupBox* m_pathGroupBox;
 	QCheckBox* m_bOpenLinksInSteam;
@@ -36,10 +57,12 @@ public:
 	QVBoxLayout* m_mainLayout;
 };
 
-class SettingsPathsTab : public QWidget
+class SettingsPathsTab : public SettingsTabBase
 {
 public:
-	SettingsPathsTab(QWidget* parent = nullptr);
+	SettingsPathsTab(
+		SettingsChangeDetector& detector,
+		QWidget* parent = nullptr);
 	~SettingsPathsTab() = default;
 
 	template<typename T>
@@ -56,9 +79,11 @@ public:
 
 	void updateCurrentPathList();
 
-public:
-	SettingsChangeDetector m_changeDetector;
+	bool onElementAdded(int idx, const QString& str);
+	bool onElementRemove(int idx);
 
+public:
+	SettingsChangeDetector& m_changeDetector;
 	PathListViewWidget* m_pathListView;
 
 	QComboBox* m_folderOptions;
@@ -71,12 +96,27 @@ public:
 	ProgramSettingsGui(QWidget* parent = nullptr);
 	~ProgramSettingsGui() = default;
 
+	void updateSaveButton();
+	void saveButtonClick();
+
+	bool shouldReloadObjectDatabase() const;
+	bool shouldReloadUserObjects() const;
+
 private:
 	void keyPressEvent(QKeyEvent* event) override;
+	void closeEvent(QCloseEvent* event) override;
 
-public:
+private:
+	SettingsChangeDetector m_changeDetector;
+
+	SettingsGeneralTab* m_generalTab;
+	SettingsPathsTab* m_pathsTab;
+
 	QTabWidget* m_tabBar;
 	QPushButton* m_saveSettingsBtn;
 
 	QVBoxLayout* m_layout;
+
+	bool m_bReloadObjectDatabase;
+	bool m_bReloadUserObjects;
 };

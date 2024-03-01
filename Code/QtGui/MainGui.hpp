@@ -76,6 +76,7 @@ private:
 	void searchTextChanged();
 
 	void openDirectory(const std::wstring_view& path_view, const char* type_str);
+	void openProgramSettings();
 	void openFilterSettings();
 
 	bool convertBlueprint(const std::wstring& filename, const std::wstring& path);

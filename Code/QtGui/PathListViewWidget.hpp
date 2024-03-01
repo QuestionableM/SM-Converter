@@ -23,7 +23,7 @@ public:
 	void finish(bool apply_string);
 
 	bool invokeInputFilter();
-	void setInputFilter(const std::function<bool(const QString&)>& filter);
+	void setInputFilter(const std::function<bool(int, const QString&)>& filter);
 	int currentIndex() const;
 	QString text() const;
 
@@ -36,7 +36,9 @@ signals:
 	void onStringApplied();
 
 private:
-	std::function<bool(const QString&)> m_inputFilter;
+	std::function<bool(int, const QString&)> m_inputFilter;
+
+	QString m_originalText;
 	int m_currentIdx;
 
 	QLineEdit* m_path;
@@ -88,7 +90,7 @@ public:
 	void addItemSilent(const QString& str);
 
 	void setRemoveElementCallback(const std::function<bool(int)>& callback);
-	void setAddElementCallback(const std::function<bool(const QString&)>& callback);
+	void setAddElementCallback(const std::function<bool(int, const QString&)>& callback);
 
 	bool invokeRemoveCallback(int idx) const;
 

@@ -11,6 +11,7 @@
 
 PathEditorWidget::PathEditorWidget(QWidget* parent)
 	: QWidget(parent),
+	m_originalText(""),
 	m_currentIdx(-1),
 	m_path(new QLineEdit(this)),
 	m_selectPathButton(new QPushButton("...", this)),
@@ -56,6 +57,7 @@ void PathEditorWidget::open(int line_idx, const QString& current_path)
 	if (this->isVisible())
 		return;
 
+	m_originalText = current_path;
 	m_path->setText(current_path);
 	m_currentIdx = line_idx;
 
@@ -66,11 +68,17 @@ void PathEditorWidget::open(int line_idx, const QString& current_path)
 
 void PathEditorWidget::finish(bool apply_string)
 {
-	if (!this->invokeInputFilter())
-		return;
+	if (apply_string && m_path->text() != m_originalText)
+	{
+		this->blockSignals(true);
+		const bool v_filter_valid = this->invokeInputFilter();
+		this->blockSignals(false);
 
-	if (apply_string)
+		if (!v_filter_valid)
+			return;
+
 		this->onStringApplied();
+	}
 
 	this->setVisible(false);
 
@@ -84,10 +92,10 @@ bool PathEditorWidget::invokeInputFilter()
 	if (!m_inputFilter)
 		return true;
 
-	return m_inputFilter(m_path->text());
+	return m_inputFilter(m_currentIdx, m_path->text());
 }
 
-void PathEditorWidget::setInputFilter(const std::function<bool(const QString&)>& filter)
+void PathEditorWidget::setInputFilter(const std::function<bool(int, const QString&)>& filter)
 {
 	m_inputFilter = filter;
 }
@@ -383,7 +391,7 @@ void PathListViewWidget::setRemoveElementCallback(const std::function<bool(int)>
 	m_removeCallback = callback;
 }
 
-void PathListViewWidget::setAddElementCallback(const std::function<bool(const QString&)>& callback)
+void PathListViewWidget::setAddElementCallback(const std::function<bool(int, const QString&)>& callback)
 {
 	m_editor->setInputFilter(callback);
 }

@@ -5,6 +5,7 @@
 #include "ObjectDatabase/UserDataReaders/UserCharacterReader.hpp"
 #include "ObjectDatabase/UserDataReaders/WorldFolderReader.hpp"
 #include "ObjectDatabase/UserDataReaders/TileFolderReader.hpp"
+#include "ObjectDatabase/GroundTextureDatabase.hpp"
 #include "ObjectDatabase/KeywordReplacer.hpp"
 #include "ObjectDatabase/ObjectDatabase.hpp"
 #include "ObjectDatabase/DatabaseConfig.hpp"
@@ -157,8 +158,9 @@ MainGui::MainGui(QWidget* parent)
 		[this]() -> void { openDirectory(DatabaseConfig::TileOutputFolder, "tile"); });
 	QObject::connect(m_menuBar.m_aboutProgramAction, &QAction::triggered, this,
 		[this]() -> void { AboutProgramGui(this).exec(); });
-	QObject::connect(m_menuBar.m_openProgramSettings, &QAction::triggered, this,
-		[this]() -> void { ProgramSettingsGui(this).exec(); });
+	QObject::connect(
+		m_menuBar.m_openProgramSettings, &QAction::triggered,
+		this, &MainGui::openProgramSettings);
 
 	m_objectPath = new QLineEdit(this);
 	m_objectPath->setObjectName("le_object_path");
@@ -518,6 +520,23 @@ void MainGui::openDirectory(
 	}
 }
 
+void MainGui::openProgramSettings()
+{
+	ProgramSettingsGui v_settings(this);
+	v_settings.exec();
+
+	if (v_settings.shouldReloadObjectDatabase())
+	{
+		DatabaseConfig::ReadConfig();
+		GroundTextureDatabase::Initialize();
+
+		this->loadObjectDatabase(false);
+	}
+
+	if (v_settings.shouldReloadUserObjects())
+		this->loadUserObjects();
+}
+
 void MainGui::openFilterSettings()
 {
 	FilterSettingsGui v_gui(this);
@@ -714,7 +733,7 @@ void MainGui::updateUIState(bool db_loaded, bool objs_loaded, bool obj_converted
 
 	m_convertButton->setEnabled(v_db_loaded_and_obj_converted 
 		&& (m_objectPath->text().length() > 0 || m_objectList->selectedIndex() >= 0));
-	//Options button toggle here (db_loaded_and_obj_converted)
+	m_menuBar.m_openProgramSettings->setEnabled(db_loaded && objs_loaded && obj_converted);
 
 	m_converterTypeBox->setEnabled(obj_converted);
 	m_menuBar.setEnabled(obj_converted);
