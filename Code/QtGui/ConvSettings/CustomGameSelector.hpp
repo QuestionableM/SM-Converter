@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AlignedGroupBox.hpp"
+#include "QtGui/CustomWidgets/AlignedGroupBox.hpp"
 
 #include <string>
 

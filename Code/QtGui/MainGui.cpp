@@ -16,11 +16,12 @@
 #include "Converter/TileConverter/TileConverter.hpp"
 #include "Converter/ConvertSettings.hpp"
 
-#include "BlueprintConvertSettingsGui.hpp"
-#include "TileConverterSettingsGui.hpp"
+#include "ConvSettings/BlueprintConvertSettingsGui.hpp"
+#include "ConvSettings/TileConverterSettingsGui.hpp"
 #include "ProgramSettingsGui.hpp"
 #include "FilterSettingsGui.hpp"
 #include "AboutProgramGui.hpp"
+#include "MainGuiMenuBar.hpp"
 
 #include "Utils/File.hpp"
 #include "QtUtil.hpp"
@@ -31,99 +32,39 @@
 #include <QLineEdit>
 #include <QMenuBar>
 
-MainGuiMenuBar::MainGuiMenuBar(QWidget* parent)
-{
-	m_menuBar = new QMenuBar(parent);
-	m_menuBar->setObjectName("main_menu_bar");
-
-	m_openMenu = new QMenu(m_menuBar);
-	m_openMenu->setObjectName("open_menu");
-	m_openMenu->setTitle("Open");
-
-	m_openBlueprintOutDirAction = new QAction(parent);
-	m_openBlueprintOutDirAction->setObjectName("a_open_bp_out_dir");
-	m_openBlueprintOutDirAction->setText("Blueprint output directory");
-	m_openMenu->addAction(m_openBlueprintOutDirAction);
-
-	m_openWorldOutDirAction = new QAction(parent);
-	m_openWorldOutDirAction->setObjectName("a_open_wlrd_dir");
-	m_openWorldOutDirAction->setText("World Output Directory");
-	m_openMenu->addAction(m_openWorldOutDirAction);
-
-	m_openTileOutDirAction = new QAction(parent);
-	m_openTileOutDirAction->setObjectName("a_open_tile_dir");
-	m_openTileOutDirAction->setText("Tile Output Directory");
-	m_openMenu->addAction(m_openTileOutDirAction);
-
-	m_openMenu->addSeparator();
-
-	m_aboutProgramAction = new QAction(parent);
-	m_aboutProgramAction->setObjectName("a_about_program");
-	m_aboutProgramAction->setText("About Program");
-	m_openMenu->addAction(m_aboutProgramAction);
-
-	m_openMenu->addSeparator();
-
-	m_aboutQtAction = new QAction(parent);
-	m_aboutQtAction->setObjectName("a_about_qt");
-	m_aboutQtAction->setText("About QT");
-	QObject::connect(m_aboutQtAction, &QAction::triggered, QApplication::aboutQt);
-
-	m_openMenu->addAction(m_aboutQtAction);
-
-	m_settingsMenu = new QMenu(m_menuBar);
-	m_settingsMenu->setObjectName("settings_menu");
-	m_settingsMenu->setTitle("Settings");
-
-	m_reloadUserObjectsAction = new QAction(parent);
-	m_reloadUserObjectsAction->setObjectName("a_reload_user_objs");
-	m_reloadUserObjectsAction->setText("Reload User Objects");
-	m_settingsMenu->addAction(m_reloadUserObjectsAction);
-
-	m_reloadObjectDatabaseAction = new QAction(parent);
-	m_reloadObjectDatabaseAction->setObjectName("a_reload_obj_db");
-	m_reloadObjectDatabaseAction->setText("Reload Object Database");
-	m_settingsMenu->addAction(m_reloadObjectDatabaseAction);
-
-	m_settingsMenu->addSeparator();
-
-	m_openProgramSettings = new QAction(parent);
-	m_openProgramSettings->setObjectName("a_open_psettings");
-	m_openProgramSettings->setText("Settings");
-	m_settingsMenu->addAction(m_openProgramSettings);
-
-	m_menuBar->addAction(m_openMenu->menuAction());
-	m_menuBar->addAction(m_settingsMenu->menuAction());
-}
-
-
-MainGuiMenuBar::~MainGuiMenuBar()
-{
-	delete m_menuBar;
-}
-
-void MainGuiMenuBar::resize()
-{
-	m_menuBar->setGeometry(0, 0, m_menuBar->parentWidget()->width(), 22);
-}
-
-int MainGuiMenuBar::x() const { return m_menuBar->x(); }
-int MainGuiMenuBar::y() const { return m_menuBar->y(); }
-int MainGuiMenuBar::width() const { return m_menuBar->width(); }
-int MainGuiMenuBar::height() const { return m_menuBar->height(); }
-
-void MainGuiMenuBar::setEnabled(bool value)
-{
-	m_menuBar->setEnabled(value);
-}
-
 MainGui::MainGui(QWidget* parent)
 	: QMainWindow(parent),
-	m_menuBar(this)
+	m_contextMenu(new ObjectListContextMenu(this)),
+	m_menuBar(new MainGuiMenuBar(this)),
+	m_objectPathButton(new QPushButton("...", this)),
+	m_objectPath(new QLineEdit(this)),
+	m_searchFilterButton(new QPushButton("Filter", this)),
+	m_searchBox(new QLineEdit(this)),
+	m_dbProgressBar(new QProgressBar(this)),
+	m_dbProgressStatus(new LabelTimer("NONE", this)),
+	m_dbLoaderThread(nullptr),
+	m_objectList(new UserObjectListView(this)),
+	m_objectLoaderStatus(new LabelTimer("NONE", this)),
+	m_userObjectLoaderThread(nullptr),
+	m_converterTypeBox(new QComboBox(this)),
+	m_convertButton(new QPushButton("Convert", this)),
+	m_converterThread(nullptr),
+	m_converterReturnCode()
 {
 	g_mainGuiPtr = this;
 
-	//UI INITIALIZATION
+	this->initializeUI();
+	this->connectEvents();
+	this->initializeDatabase();
+}
+
+MainGui::~MainGui()
+{
+	g_mainGuiPtr = nullptr;
+}
+
+void MainGui::initializeUI()
+{
 	this->setWindowTitle(
 		"SM Converter"
 #if defined(_DEBUG) || defined(DEBUG)
@@ -133,81 +74,12 @@ MainGui::MainGui(QWidget* parent)
 	this->setMinimumSize(450, 350);
 	this->resize(450, 350);
 
-	m_objectList = new UserObjectListView(this);
-	m_objectList->setObjectName("obj_list");
-	m_objectList->setEnabled(false);
-	QObject::connect(m_objectList, &UserObjectListView::selectedIndexChanged, this, &MainGui::selectedObjectChanged);
+	m_objectList->setContextMenuStrip(m_contextMenu);
 
-	m_objectLoaderStatusUpdater = new QTimer(this);
-	m_objectLoaderStatusUpdater->setObjectName("tmr_usr_obj_status_updater");
-	QObject::connect(m_objectLoaderStatusUpdater, &QTimer::timeout, this, &MainGui::updateUserObjectStatusCallback);
-
-	m_objectLoaderStatus = new QLabel("NONE", this);
-	m_objectLoaderStatus->setObjectName("lbl_usr_obj_status");
-
-	//Add button callbacks
-	QObject::connect(m_menuBar.m_reloadUserObjectsAction, &QAction::triggered, this, &MainGui::loadUserObjects);
-	QObject::connect(m_menuBar.m_reloadObjectDatabaseAction, &QAction::triggered, this,
-		[this]() -> void { loadObjectDatabase(false); });
-
-	QObject::connect(m_menuBar.m_openBlueprintOutDirAction, &QAction::triggered, this,
-		[this]() -> void { openDirectory(DatabaseConfig::BlueprintOutputFolder, "blueprint"); });
-	QObject::connect(m_menuBar.m_openWorldOutDirAction, &QAction::triggered, this,
-		[this]() -> void { openDirectory(DatabaseConfig::WorldOutputFolder, "world"); });
-	QObject::connect(m_menuBar.m_openTileOutDirAction, &QAction::triggered, this,
-		[this]() -> void { openDirectory(DatabaseConfig::TileOutputFolder, "tile"); });
-	QObject::connect(m_menuBar.m_aboutProgramAction, &QAction::triggered, this,
-		[this]() -> void { AboutProgramGui(this).exec(); });
-	QObject::connect(
-		m_menuBar.m_openProgramSettings, &QAction::triggered,
-		this, &MainGui::openProgramSettings);
-
-	m_objectPath = new QLineEdit(this);
-	m_objectPath->setObjectName("le_object_path");
 	m_objectPath->setPlaceholderText("Object path");
-	QObject::connect(m_objectPath, &QLineEdit::textChanged, this, &MainGui::objectPathTextChanged);
-
-	m_searchBox = new QLineEdit(this);
-	m_searchBox->setObjectName("le_search_box");
 	m_searchBox->setPlaceholderText("Search");
-	QObject::connect(m_searchBox, &QLineEdit::textChanged, this, &MainGui::searchTextChanged);
 
-	m_selectPathButton = new QPushButton(this);
-	m_selectPathButton->setObjectName("pbtn_path");
-	m_selectPathButton->setText("...");
-	QObject::connect(m_selectPathButton, &QPushButton::pressed, this,
-		[this]() -> void {
-			QString v_selected_file;
-			if (!QtUtil::fileDialog(this, "Select a Blueprint",
-				QFileDialog::FileMode::ExistingFile, v_selected_file))
-			{
-				return;
-			}
-
-			m_objectPath->setText(v_selected_file);
-		}
-	);
-
-	m_filterButton = new QPushButton(this);
-	m_filterButton->setObjectName("pbtn_filter");
-	m_filterButton->setText("Filter");
-	QObject::connect(m_filterButton, &QPushButton::clicked, this, &MainGui::openFilterSettings);
-
-	m_progressBar = new QProgressBar(this);
-	m_progressBar->setObjectName("pb_progress");
-	m_progressBar->setTextVisible(false);
-
-	m_progressStatus = new QLabel(this);
-	m_progressStatus->setObjectName("lbl_progress_status");
-
-	m_convertButton = new QPushButton(this);
-	m_convertButton->setObjectName("pbtn_convert");
-	m_convertButton->setText("Convert");
-	m_convertButton->setEnabled(false);
-	QObject::connect(m_convertButton, &QPushButton::clicked, this, &MainGui::convert);
-
-	m_converterTypeBox = new QComboBox(this);
-	m_converterTypeBox->setObjectName("cb_converter_type");
+	m_dbProgressBar->setTextVisible(false);
 
 	m_converterTypeBox->addItem("Blueprint Converter (.json, .blueprint)");
 	m_converterTypeBox->addItem("Tile Converter (.tile)");
@@ -221,27 +93,58 @@ MainGui::MainGui(QWidget* parent)
 #endif
 
 	m_converterTypeBox->setCurrentIndex(0);
+}
+
+void MainGui::connectEvents()
+{
+	QObject::connect(m_objectLoaderStatus->m_timer, &QTimer::timeout, this, &MainGui::updateUserObjectStatusCallback);
+	QObject::connect(m_dbProgressStatus->m_timer, &QTimer::timeout, this, &MainGui::updateDbProgressCallback);
+	
+	QObject::connect(m_menuBar->m_reloadUserObjectsAction, &QAction::triggered, this, &MainGui::loadUserObjects);
+	QObject::connect(m_menuBar->m_reloadObjectDatabaseAction, &QAction::triggered, this,
+		[this]() -> void { loadObjectDatabase(false); });
+	QObject::connect(m_menuBar->m_openBlueprintOutDirAction, &QAction::triggered, this,
+		[this]() -> void { openDirectory(DatabaseConfig::BlueprintOutputFolder, "blueprint"); });
+	QObject::connect(m_menuBar->m_openWorldOutDirAction, &QAction::triggered, this,
+		[this]() -> void { openDirectory(DatabaseConfig::WorldOutputFolder, "world"); });
+	QObject::connect(m_menuBar->m_openTileOutDirAction, &QAction::triggered, this,
+		[this]() -> void { openDirectory(DatabaseConfig::TileOutputFolder, "tile"); });
+	QObject::connect(m_menuBar->m_aboutProgramAction, &QAction::triggered, this,
+		[this]() -> void { AboutProgramGui(this).exec(); });
+	QObject::connect(
+		m_menuBar->m_openProgramSettingsAction, &QAction::triggered,
+		this, &MainGui::openProgramSettings);
+	
+	QObject::connect(m_objectList, &UserObjectListView::selectedIndexChanged, this, &MainGui::selectedObjectChanged);
 	QObject::connect(m_converterTypeBox, &QComboBox::currentIndexChanged, this, &MainGui::converterTypeChanged);
+	
+	QObject::connect(m_objectPath, &QLineEdit::textChanged, this, &MainGui::objectPathTextChanged);
+	QObject::connect(m_searchBox, &QLineEdit::textChanged, this, &MainGui::searchTextChanged);
 
-	m_progressUpdater = new QTimer(this);
-	m_progressUpdater->setObjectName("tmr_status_updater");
-	QObject::connect(m_progressUpdater, &QTimer::timeout, this, &MainGui::updateProgressCallback);
+	QObject::connect(m_searchFilterButton, &QPushButton::clicked, this, &MainGui::openFilterSettings);
+	QObject::connect(m_convertButton, &QPushButton::clicked, this, &MainGui::convert);
+	QObject::connect(m_objectPathButton, &QPushButton::clicked, this,
+		[this]() -> void {
+			QString v_selected_file;
+			if (!QtUtil::fileDialog(this, "Select a Blueprint",
+				QFileDialog::FileMode::ExistingFile, v_selected_file))
+			{
+				return;
+			}
 
-	//DATABASE INITIALIZATION
+			m_objectPath->setText(v_selected_file);
+		}
+	);
+}
+
+void MainGui::initializeDatabase()
+{
 	DatabaseLoader::InitializeDatabase();
 
-	m_dbLoaderThread = nullptr;
 	this->loadObjectDatabase(true);
-
-	m_userObjectLoaderThread = nullptr;
 	this->loadUserObjects();
 
 	this->updateSearchTextBox();
-}
-
-MainGui::~MainGui()
-{
-	g_mainGuiPtr = nullptr;
 }
 
 constexpr int g_windowMargin = 10;
@@ -254,33 +157,33 @@ void MainGui::resizeEvent(QResizeEvent* event)
 {
 	this->blockSignals(true);
 
-	m_menuBar.resize();
+	m_menuBar->resize(this->width(), 22);
 
 	const int v_util_btn_start_x = this->width() - g_windowMargin - g_utilBtnWidth;
 	const int v_edit_box_width = this->width() - g_utilBtnWidth - g_windowMargin * 3;
 	const int v_convert_btn_height = m_convertButton->fontMetrics().height() + g_windowMargin * 2;
 
-	m_selectPathButton->setGeometry(
+	m_objectPathButton->setGeometry(
 		v_util_btn_start_x,
-		m_menuBar.y() + m_menuBar.height() + g_windowMargin,
+		m_menuBar->y() + m_menuBar->height() + g_windowMargin,
 		g_utilBtnWidth,
 		g_commonWidgetHeight);
 
 	m_objectPath->setGeometry(
 		g_windowMargin,
-		m_selectPathButton->y(),
+		m_objectPathButton->y(),
 		v_edit_box_width,
 		g_commonWidgetHeight);
 
-	m_filterButton->setGeometry(
+	m_searchFilterButton->setGeometry(
 		v_util_btn_start_x,
-		m_selectPathButton->y() + m_selectPathButton->height() + g_windowMargin,
+		m_objectPathButton->y() + m_objectPathButton->height() + g_windowMargin,
 		g_utilBtnWidth,
 		g_commonWidgetHeight);
 
 	m_searchBox->setGeometry(
 		g_windowMargin,
-		m_filterButton->y(),
+		m_searchFilterButton->y(),
 		v_edit_box_width,
 		g_commonWidgetHeight);
 
@@ -296,17 +199,17 @@ void MainGui::resizeEvent(QResizeEvent* event)
 		this->width() - g_windowMargin * 2,
 		g_commonWidgetHeight);
 
-	m_progressBar->setGeometry(
+	m_dbProgressBar->setGeometry(
 		g_windowMargin,
 		this->height() - g_progressBarHeight - g_windowMargin,
 		this->width() - m_convertButton->width() - g_windowMargin * 3,
 		g_progressBarHeight);
 
-	m_progressStatus->setGeometry(
+	m_dbProgressStatus->setGeometry(
 		g_windowMargin,
 		m_convertButton->y(),
-		m_progressBar->width(),
-		m_progressStatus->fontMetrics().height());
+		m_dbProgressBar->width(),
+		m_dbProgressStatus->fontMetrics().height());
 
 	const int v_object_list_y = m_searchBox->y() + m_searchBox->height() + g_windowMargin;
 
@@ -355,7 +258,7 @@ void MainGui::updateUserObjectStatusCallback()
 
 void MainGui::userObjectsLoadedCallback()
 {
-	m_objectLoaderStatusUpdater->stop();
+	m_objectLoaderStatus->m_timer->stop();
 	m_objectLoaderStatus->setVisible(false);
 
 	if (m_userObjectLoaderThread)
@@ -370,8 +273,8 @@ void MainGui::userObjectsLoadedCallback()
 
 void MainGui::converterFinishedCallback()
 {
-	m_progressUpdater->stop();
-	m_progressBar->setValue(m_progressBar->maximum());
+	m_dbProgressStatus->m_timer->stop();
+	m_dbProgressBar->setValue(m_dbProgressBar->maximum());
 
 	if (m_converterThread)
 	{
@@ -379,11 +282,12 @@ void MainGui::converterFinishedCallback()
 		m_converterThread = nullptr;
 	}
 
-	std::lock_guard v_lock_g(m_converterReturnCodeMutex);
+	std::lock_guard v_lock_g(m_converterReturnCode);
+	auto& v_returnCode = m_converterReturnCode.data();
 
-	if (!m_converterReturnCode)
+	if (!v_returnCode)
 	{
-		m_progressStatus->setText("Success!");
+		m_dbProgressStatus->setText("Success!");
 
 		constexpr const static std::wstring_view v_resultMessages[] =
 		{
@@ -400,23 +304,23 @@ void MainGui::converterFinishedCallback()
 	}
 	else
 	{
-		m_progressStatus->setText("Fail!");
+		m_dbProgressStatus->setText("Fail!");
 
 		QtUtil::errorWithSound(this,
 			"Convert Error",
-			QString::fromStdWString(m_converterReturnCode.GetErrorMsg()));
+			QString::fromStdWString(v_returnCode.GetErrorMsg()));
 	}
 
-	m_converterReturnCode.clear();
+	v_returnCode.clear();
 
 	this->updateUIState(this->isGameDatabaseLoaded(), this->isUserDatabaseLoaded(), true);
-	m_progressBar->setValue(0);
+	m_dbProgressBar->setValue(0);
 }
 
 void MainGui::databaseLoadedCallback()
 {
-	m_progressUpdater->stop();
-	m_progressBar->setValue(0);
+	m_dbProgressStatus->m_timer->stop();
+	m_dbProgressBar->setValue(0);
 
 	if (m_dbLoaderThread)
 	{
@@ -427,13 +331,13 @@ void MainGui::databaseLoadedCallback()
 	const std::size_t v_mod_count = SMMod::GetAmountOfMods();
 	const std::size_t v_obj_count = SMMod::GetAmountOfObjects();
 
-	m_progressStatus->setText(
+	m_dbProgressStatus->setText(
 		QString("Successfully loaded %1 objects from %2 mods").arg(v_obj_count).arg(v_mod_count));
 
 	this->updateUIState(true, this->isUserDatabaseLoaded(), true);
 }
 
-void MainGui::updateProgressCallback()
+void MainGui::updateDbProgressCallback()
 {
 	if (ProgCounter::State == ProgState::None)
 		return;
@@ -444,8 +348,8 @@ void MainGui::updateProgressCallback()
 		const std::size_t v_max_val = ProgCounter::ProgressMax;
 		const std::size_t v_cur_val = std::min(ProgCounter::ProgressValue.load(), v_max_val);
 
-		m_progressBar->setMaximum(int(v_max_val));
-		m_progressBar->setValue(int(v_cur_val));
+		m_dbProgressBar->setMaximum(int(v_max_val));
+		m_dbProgressBar->setValue(int(v_cur_val));
 
 		//Append numbers to the string
 		v_state_output.append(L"(");
@@ -456,10 +360,10 @@ void MainGui::updateProgressCallback()
 	}
 	else
 	{
-		m_progressBar->setValue(m_progressBar->maximum());
+		m_dbProgressBar->setValue(m_dbProgressBar->maximum());
 	}
 
-	m_progressStatus->setText(QString::fromStdWString(v_state_output));
+	m_dbProgressStatus->setText(QString::fromStdWString(v_state_output));
 }
 
 void MainGui::converterTypeChanged()
@@ -559,14 +463,14 @@ bool MainGui::convertBlueprint(const std::wstring& filename, const std::wstring&
 	m_converterThread = QThread::create(
 		[this](BlueprintConverterThreadData thread_data) -> void
 		{
-			std::lock_guard v_lock_g(m_converterReturnCodeMutex);
+			std::lock_guard v_lock_g(m_converterReturnCode);
 
 			thread_data.applySettings();
 
 			BlueprintConv::ConvertToModel(
 				thread_data.path,
 				thread_data.name,
-				m_converterReturnCode,
+				m_converterReturnCode.data(),
 				thread_data.custom_game_idx.getPtr());
 		},
 		v_thread_data
@@ -588,14 +492,14 @@ bool MainGui::convertTile(const std::wstring& filename, const std::wstring& path
 	m_converterThread = QThread::create(
 		[this](TileConverterThreadData thread_data) -> void
 		{
-			std::lock_guard v_lock_g(m_converterReturnCodeMutex);
+			std::lock_guard v_lock_g(m_converterReturnCode);
 
 			thread_data.applySettings();
 			
 			TileConv::ConvertToModel(
 				thread_data.path,
 				thread_data.name,
-				m_converterReturnCode,
+				m_converterReturnCode.data(),
 				thread_data.custom_game_idx.getPtr());
 		},
 		v_thread_data
@@ -653,7 +557,7 @@ void MainGui::convertSelectedIndex()
 	if (v_converter_ready)
 	{
 		this->updateUIState(this->isGameDatabaseLoaded(), this->isUserDatabaseLoaded(), false);
-		m_progressUpdater->start(50);
+		m_dbProgressStatus->m_timer->start(50);
 
 		QObject::connect(m_converterThread, &QThread::finished, this, &MainGui::converterFinishedCallback);
 		m_converterThread->start();
@@ -722,21 +626,21 @@ void MainGui::updateUIState(bool db_loaded, bool objs_loaded, bool obj_converted
 	const bool v_objs_loaded_and_obj_converted = objs_loaded && obj_converted;
 	const bool v_db_loaded_and_obj_converted = db_loaded && obj_converted;
 
-	m_selectPathButton->setEnabled(v_db_loaded_and_obj_converted);
-	m_filterButton->setEnabled(v_db_loaded_and_obj_converted);
+	m_objectPathButton->setEnabled(v_db_loaded_and_obj_converted);
+	m_searchFilterButton->setEnabled(v_db_loaded_and_obj_converted);
 	m_objectPath->setEnabled(v_db_loaded_and_obj_converted);
 	m_searchBox->setEnabled(v_db_loaded_and_obj_converted);
 
-	m_menuBar.m_reloadObjectDatabaseAction->setEnabled(v_db_loaded_and_obj_converted);
-	m_menuBar.m_reloadUserObjectsAction->setEnabled(v_objs_loaded_and_obj_converted);
+	m_menuBar->m_reloadObjectDatabaseAction->setEnabled(v_db_loaded_and_obj_converted);
+	m_menuBar->m_reloadUserObjectsAction->setEnabled(v_objs_loaded_and_obj_converted);
 	m_objectList->setEnabled(v_objs_loaded_and_obj_converted);
 
 	m_convertButton->setEnabled(v_db_loaded_and_obj_converted 
 		&& (m_objectPath->text().length() > 0 || m_objectList->selectedIndex() >= 0));
-	m_menuBar.m_openProgramSettings->setEnabled(db_loaded && objs_loaded && obj_converted);
+	m_menuBar->m_openProgramSettingsAction->setEnabled(db_loaded && objs_loaded && obj_converted);
 
 	m_converterTypeBox->setEnabled(obj_converted);
-	m_menuBar.setEnabled(obj_converted);
+	m_menuBar->setEnabled(obj_converted);
 
 	//Update context menu strips here
 	/*
@@ -903,7 +807,7 @@ void MainGui::loadObjectDatabase(bool reload_key_replacer)
 	QObject::connect(m_dbLoaderThread, &QThread::finished, this, &MainGui::databaseLoadedCallback);
 
 	this->updateUIState(false, this->isUserDatabaseLoaded(), true);
-	m_progressUpdater->start(50);
+	m_dbProgressStatus->m_timer->start(50);
 	m_dbLoaderThread->start();
 }
 
@@ -923,7 +827,7 @@ void MainGui::loadUserObjects()
 	this->updateObjectPathTextBox();
 
 	this->updateUIState(this->isGameDatabaseLoaded(), false, true);
-	m_objectLoaderStatusUpdater->start(50);
+	m_objectLoaderStatus->m_timer->start(50);
 	m_userObjectLoaderThread->start();
 }
 

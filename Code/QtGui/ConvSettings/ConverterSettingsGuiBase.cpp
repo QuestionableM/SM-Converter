@@ -1,7 +1,7 @@
 #include "ConverterSettingsGuiBase.hpp"
 
 #include "Converter/ConvertSettings.hpp"
-#include "QtUiConstants.hpp"
+#include "QtGui/QtUiConstants.hpp"
 
 #include "ObjectDatabase/Mods/Mod.hpp"
 

@@ -1,13 +1,12 @@
 #include "PathListViewWidget.hpp"
 
-#include "QtUtil.hpp"
+#include "Utils/Console.hpp"
+#include "QtGui/QtUtil.hpp"
 
 #include <QApplication>
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QPainter>
-
-#include "Utils/Console.hpp"
 
 PathEditorWidget::PathEditorWidget(QWidget* parent)
 	: QWidget(parent),

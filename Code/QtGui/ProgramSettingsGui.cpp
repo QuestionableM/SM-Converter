@@ -232,6 +232,8 @@ ProgramSettingsGui::ProgramSettingsGui(QWidget* parent)
 	m_bReloadUserObjects(false)
 {
 	this->setWindowTitle("Program Settings");
+	this->setMinimumWidth(450);
+	this->setMinimumHeight(300);
 
 	QObject::connect(
 		m_pathsTab, &SettingsPathsTab::onSettingChanged,

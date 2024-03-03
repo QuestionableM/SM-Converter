@@ -1,13 +1,12 @@
 #include "UserObjectListViewWidget.hpp"
 
+#include "Utils/Console.hpp"
+
 #include <QApplication>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QStyle>
 #include <QMenu>
-
-#include "Utils/Console.hpp"
-#include "MainGui.hpp"
 
 UserObjectListView::UserObjectListView(QWidget* parent)
 	: QWidget(parent)

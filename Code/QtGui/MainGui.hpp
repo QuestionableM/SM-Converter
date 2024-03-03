@@ -1,7 +1,12 @@
 #pragma once
 
-#include "UserObjectListViewWidget.hpp"
+#include "CustomWidgets/UserObjectListViewWidget.hpp"
+#include "CustomWidgets/LabelTimer.hpp"
+#include "MainGuiContextMenu.hpp"
+#include "MainGuiMenuBar.hpp"
+
 #include "Converter/ConvertError.hpp"
+#include "Utils/MutexData.hpp"
 
 #include <QtWidgets/QMainWindow>
 #include <QProgressBar>
@@ -24,36 +29,6 @@ enum : unsigned short
 	ConvType_CharacterConverter = 3
 };
 
-class MainGuiMenuBar
-{
-public:
-	MainGuiMenuBar(QWidget* parent = nullptr);
-	~MainGuiMenuBar();
-
-	void resize();
-
-	int x() const;
-	int y() const;
-	int width() const;
-	int height() const;
-
-	void setEnabled(bool value);
-
-	QMenuBar* m_menuBar;
-
-	QMenu* m_openMenu;
-	QAction* m_openBlueprintOutDirAction;
-	QAction* m_openWorldOutDirAction;
-	QAction* m_openTileOutDirAction;
-	QAction* m_aboutProgramAction;
-	QAction* m_aboutQtAction;
-
-	QMenu* m_settingsMenu;
-	QAction* m_reloadUserObjectsAction;
-	QAction* m_reloadObjectDatabaseAction;
-	QAction* m_openProgramSettings;
-};
-
 struct UserCharacterData;
 
 class MainGui : public QMainWindow
@@ -62,6 +37,10 @@ public:
 	MainGui(QWidget* parent = nullptr);
 	~MainGui();
 
+	void initializeUI();
+	void connectEvents();
+	void initializeDatabase();
+
 private:
 	void resizeEvent(QResizeEvent* event) override;
 
@@ -69,7 +48,7 @@ private:
 	void userObjectsLoadedCallback();
 	void converterFinishedCallback();
 	void databaseLoadedCallback();
-	void updateProgressCallback();
+	void updateDbProgressCallback();
 	void converterTypeChanged();
 	void selectedObjectChanged();
 	void objectPathTextChanged();
@@ -137,29 +116,25 @@ public:
 private:
 	int m_lastSearchLength = 0;
 
-	MainGuiMenuBar m_menuBar;
+	ObjectListContextMenu* m_contextMenu;
+	MainGuiMenuBar* m_menuBar;
 	
-	UserObjectListView* m_objectList;
-	QTimer* m_objectLoaderStatusUpdater;
-	QLabel* m_objectLoaderStatus;
-
+	QPushButton* m_objectPathButton;
 	QLineEdit* m_objectPath;
+	QPushButton* m_searchFilterButton;
 	QLineEdit* m_searchBox;
 
-	QPushButton* m_selectPathButton;
-	QPushButton* m_filterButton;
-
-	QPushButton* m_convertButton;
-	QComboBox* m_converterTypeBox;
-
-	QProgressBar* m_progressBar;
-	QLabel* m_progressStatus;
-	QTimer* m_progressUpdater;
-
+	QProgressBar* m_dbProgressBar;
+	LabelTimer* m_dbProgressStatus;
 	QThread* m_dbLoaderThread;
+
+	UserObjectListView* m_objectList;
+	LabelTimer* m_objectLoaderStatus;
 	QThread* m_userObjectLoaderThread;
 
-	std::mutex m_converterReturnCodeMutex;
-	ConvertError m_converterReturnCode;
+	QComboBox* m_converterTypeBox;
+	QPushButton* m_convertButton;
 	QThread* m_converterThread;
+
+	MutexData<ConvertError> m_converterReturnCode;
 };

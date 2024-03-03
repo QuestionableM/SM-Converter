@@ -197,22 +197,22 @@
     <ClCompile Include="Code\QtGui\QtUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Code\QtGui\UserObjectListViewWidget.cpp">
+    <ClCompile Include="Code\QtGui\CustomWidgets\UserObjectListViewWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Code\QtGui\BlueprintConvertSettingsGui.cpp">
+    <ClCompile Include="Code\QtGui\ConvSettings\BlueprintConvertSettingsGui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Code\QtGui\ConverterSettingsGuiBase.cpp">
+    <ClCompile Include="Code\QtGui\ConvSettings\ConverterSettingsGuiBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Code\QtGui\TileConverterSettingsGui.cpp">
+    <ClCompile Include="Code\QtGui\ConvSettings\TileConverterSettingsGui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Code\QtGui\AlignedGroupBox.cpp">
+    <ClCompile Include="Code\QtGui\CustomWidgets\AlignedGroupBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Code\QtGui\CustomGameSelector.cpp">
+    <ClCompile Include="Code\QtGui\ConvSettings\CustomGameSelector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Code\QtGui\FilterSettingsGui.cpp">
@@ -224,10 +224,19 @@
     <ClCompile Include="Code\QtGui\ProgramSettingsGui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Code\QtGui\PathListViewWidget.cpp">
+    <ClCompile Include="Code\QtGui\CustomWidgets\PathListViewWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Code\Gui\SettingsGuiChangeDetector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\QtGui\MainGuiMenuBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\QtGui\MainGuiContextMenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\QtGui\CustomWidgets\LabelTimer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -502,22 +511,22 @@
     <ClInclude Include="Code\ObjectDatabase\UserDataReaders\UserDataBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Code\QtGui\BlueprintConvertSettingsGui.hpp">
+    <ClInclude Include="Code\QtGui\ConvSettings\BlueprintConvertSettingsGui.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Code\QtGui\ConverterSettingsGuiBase.hpp">
+    <ClInclude Include="Code\QtGui\ConvSettings\ConverterSettingsGuiBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Code\QtGui\QtUiConstants.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Code\QtGui\TileConverterSettingsGui.hpp">
+    <ClInclude Include="Code\QtGui\ConvSettings\TileConverterSettingsGui.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Code\QtGui\CustomGameSelector.hpp">
+    <ClInclude Include="Code\QtGui\ConvSettings\CustomGameSelector.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Code\QtGui\AlignedGroupBox.hpp">
+    <ClInclude Include="Code\QtGui\CustomWidgets\AlignedGroupBox.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Code\QtGui\FilterSettingsGui.hpp">
@@ -529,12 +538,24 @@
     <ClInclude Include="Code\Gui\SettingsGuiChangeDetector.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Code\QtGui\MainGuiMenuBar.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\QtGui\MainGuiContextMenu.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\QtGui\CustomWidgets\LabelTimer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Utils\MutexData.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="Code\QtGui\UserObjectListViewWidget.hpp">
+    <QtMoc Include="Code\QtGui\CustomWidgets\UserObjectListViewWidget.hpp">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="Code\QtGui\PathListViewWidget.hpp">
+    <QtMoc Include="Code\QtGui\CustomWidgets\PathListViewWidget.hpp">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="Code\QtGui\ProgramSettingsGui.hpp">

@@ -1,8 +1,7 @@
 #include "BlueprintConvertSettingsGui.hpp"
 
 #include "Converter/ConvertSettings.hpp"
-
-#include "QtUiConstants.hpp"
+#include "QtGui/QtUiConstants.hpp"
 
 //////////BLUEPRINT CONVERTER THREAD DATA//////////
 

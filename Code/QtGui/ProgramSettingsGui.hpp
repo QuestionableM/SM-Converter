@@ -1,8 +1,8 @@
 #pragma once
 
+#include "QtGui/CustomWidgets/PathListViewWidget.hpp"
+#include "QtGui/CustomWidgets/AlignedGroupBox.hpp"
 #include "Gui/SettingsGuiChangeDetector.hpp"
-#include "PathListViewWidget.hpp"
-#include "AlignedGroupBox.hpp"
 
 #include <QPushButton>
 #include <QTabWidget>
