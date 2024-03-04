@@ -25,8 +25,8 @@ struct BlueprintInstance
 	std::wstring directory;
 	std::wstring preview_image;
 
-	unsigned long long workshop_id;
-	unsigned char v_filter;
+	std::uint64_t workshop_id;
+	std::uint8_t v_filter;
 
 	BlueprintInstance() = default;
 	BlueprintInstance(const BlueprintInstance&) = delete;

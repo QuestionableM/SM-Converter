@@ -25,11 +25,11 @@ struct TileInstance
 
 	std::wstring preview_image;
 
-	unsigned long long workshop_id;
-	unsigned long long creator_id;
+	std::uint64_t workshop_id;
+	std::uint64_t creator_id;
 
-	unsigned char v_filter;
-	unsigned char v_size_filter;
+	std::uint8_t v_filter;
+	std::uint8_t v_size_filter;
 
 	TileInstance() = default;
 	TileInstance(const TileInstance&) = delete;

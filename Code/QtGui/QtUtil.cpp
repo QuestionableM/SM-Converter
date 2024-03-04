@@ -10,12 +10,17 @@
 
 bool QtUtil::openDirInExplorer(const std::wstring& pathIn)
 {
-	return QProcess::startDetached("explorer.exe", QStringList{ QString::fromStdWString(pathIn) });
+	return QProcess::startDetached("explorer.exe",
+		QStringList{ QString::fromStdWString(pathIn) });
 }
 
 bool QtUtil::showFileInExplorer(const std::wstring& pathIn)
 {
-	return QProcess::startDetached("explorer.exe", QStringList{ "/select", ",", QString::fromStdWString(pathIn) });
+	QStringList v_params;
+	v_params += QLatin1String("/select,");
+	v_params += QDir::toNativeSeparators(QString::fromStdWString(pathIn));
+
+	return QProcess::startDetached("explorer.exe", v_params);
 }
 
 void QtUtil::warningWithSound(QWidget* parent, const QString& title, const QString& message)

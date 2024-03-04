@@ -26,9 +26,11 @@
 #include "Utils/File.hpp"
 #include "QtUtil.hpp"
 
+#include <QDesktopServices>
 #include <QApplication>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QClipboard>
 #include <QLineEdit>
 #include <QMenuBar>
 
@@ -135,6 +137,22 @@ void MainGui::connectEvents()
 			m_objectPath->setText(v_selected_file);
 		}
 	);
+
+	QObject::connect(
+		m_contextMenu->m_openInSteamWorkshopAction, &QAction::triggered,
+		this, &MainGui::openItemInSteamWorkshop);
+
+	QObject::connect(
+		m_contextMenu->m_openInExplorerAction, &QAction::triggered,
+		this, &MainGui::openItemInExplorer);
+
+	QObject::connect(
+		m_contextMenu->m_copyUuidAction, &QAction::triggered,
+		this, &MainGui::copyItemUuid);
+
+	QObject::connect(
+		m_contextMenu->m_copyCreatorIdAction, &QAction::triggered,
+		this, &MainGui::copyItemAuthorId);
 }
 
 void MainGui::initializeDatabase()
@@ -448,6 +466,109 @@ void MainGui::openFilterSettings()
 
 	if (v_gui.filtersChanged())
 		this->updateSearchResults(0);
+}
+
+void MainGui::openItemInSteamWorkshop()
+{
+	std::uint64_t v_steamId;
+	switch (m_converterTypeBox->currentIndex())
+	{
+	case ConvType_BlueprintConverter:
+		v_steamId = this->getSelectedObjectSteamId<BlueprintFolderReader>();
+		break;
+	case ConvType_TileConverter:
+		v_steamId = this->getSelectedObjectSteamId<TileFolderReader>();
+		break;
+	case ConvType_WorldConverter:
+		v_steamId = this->getSelectedObjectSteamId<WorldFolderReader>();
+		break;
+	default:
+		return;
+	}
+
+	if (!v_steamId)
+		return;
+
+	QString v_workshopUrl;
+	if (DatabaseConfig::OpenLinksInSteam)
+		v_workshopUrl.append("steam://openurl/");
+
+	v_workshopUrl.append("https://steamcommunity.com/sharedfiles/filedetails/?id=");
+	v_workshopUrl.append(QString::number(v_steamId, 10));
+	
+	QDesktopServices::openUrl(v_workshopUrl);
+}
+
+void MainGui::openItemInExplorer()
+{
+	std::wstring v_objPath;
+	switch (m_converterTypeBox->currentIndex())
+	{
+	case ConvType_BlueprintConverter:
+		v_objPath = this->getSelectedObjectPath<BlueprintFolderReader>();
+		break;
+	case ConvType_TileConverter:
+		v_objPath = this->getSelectedObjectPath<TileFolderReader>();
+		break;
+	case ConvType_WorldConverter:
+		v_objPath = this->getSelectedObjectPath<WorldFolderReader>();
+		break;
+	default:
+		return;
+	}
+
+	if (v_objPath.empty())
+		return;
+
+	QtUtil::showFileInExplorer(v_objPath);
+}
+
+void MainGui::copyItemAuthorId()
+{
+	std::uint64_t v_itemAuthorId = 0;
+	switch (m_converterTypeBox->currentIndex())
+	{
+	case ConvType_BlueprintConverter:
+		v_itemAuthorId = this->getSelectedObjectAuthorId<BlueprintFolderReader>();
+		break;
+	case ConvType_TileConverter:
+		v_itemAuthorId = this->getSelectedObjectAuthorId<TileFolderReader>();
+		break;
+	case ConvType_WorldConverter:
+		v_itemAuthorId = this->getSelectedObjectAuthorId<WorldFolderReader>();
+		break;
+	default:
+		return;
+	}
+
+	if (!v_itemAuthorId)
+		return;
+
+	QApplication::clipboard()->setText(QString::number(v_itemAuthorId, 10));
+}
+
+void MainGui::copyItemUuid()
+{
+	std::string v_itemUuid;
+	switch (m_converterTypeBox->currentIndex())
+	{
+	case ConvType_BlueprintConverter:
+		v_itemUuid = this->getSelectedObjectUuid<BlueprintFolderReader>();
+		break;
+	case ConvType_TileConverter:
+		v_itemUuid = this->getSelectedObjectUuid<TileFolderReader>();
+		break;
+	case ConvType_WorldConverter:
+		v_itemUuid = this->getSelectedObjectUuid<WorldFolderReader>();
+		break;
+	default:
+		break;
+	}
+
+	if (v_itemUuid.empty())
+		return;
+
+	QApplication::clipboard()->setText(QString::fromStdString(v_itemUuid));
 }
 
 bool MainGui::convertBlueprint(const std::wstring& filename, const std::wstring& path)

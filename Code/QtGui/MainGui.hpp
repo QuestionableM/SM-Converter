@@ -31,6 +31,12 @@ enum : unsigned short
 
 struct UserCharacterData;
 
+template<typename T, typename = int>
+struct HasCreatorId : std::false_type {};
+
+template<typename T>
+struct HasCreatorId<T, decltype((void)T::creator_id, 0)> : std::true_type {};
+
 class MainGui : public QMainWindow
 {
 public:
@@ -57,6 +63,10 @@ private:
 	void openDirectory(const std::wstring_view& path_view, const char* type_str);
 	void openProgramSettings();
 	void openFilterSettings();
+	void openItemInSteamWorkshop();
+	void openItemInExplorer();
+	void copyItemAuthorId();
+	void copyItemUuid();
 
 	bool convertBlueprint(const std::wstring& filename, const std::wstring& path);
 	bool convertTile(const std::wstring& filename, const std::wstring& path);
@@ -93,6 +103,50 @@ private:
 			return v_cur_list[v_sel_idx];
 
 		return nullptr;
+	}
+
+	template<typename T>
+	inline std::uint64_t getSelectedObjectSteamId()
+	{
+		typename T::ObjectType v_curObj = this->getSelectedObject<T>();
+		if (v_curObj)
+			return v_curObj->workshop_id;
+
+		return 0;
+	}
+
+	template<typename T>
+	inline std::wstring getSelectedObjectPath()
+	{
+		typename T::ObjectType v_curObj = this->getSelectedObject<T>();
+		if (v_curObj)
+			return v_curObj->path;
+
+		return L"";
+	}
+
+	template<typename T>
+	inline std::uint64_t getSelectedObjectAuthorId()
+	{
+		if constexpr (
+			HasCreatorId<std::remove_pointer_t<typename T::ObjectType>>::value)
+		{
+			typename T::ObjectType v_curObj = this->getSelectedObject<T>();
+			if (v_curObj)
+				return v_curObj->creator_id;
+		}
+
+		return 0;
+	}
+
+	template<typename T>
+	inline std::string getSelectedObjectUuid()
+	{
+		typename T::ObjectType v_curObj = this->getSelectedObject<T>();
+		if (v_curObj)
+			return v_curObj->uuid.ToString();
+
+		return "";
 	}
 
 	void updateUIState(bool db_loaded, bool objs_loaded, bool obj_converted);
