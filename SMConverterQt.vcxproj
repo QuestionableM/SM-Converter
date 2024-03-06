@@ -189,12 +189,14 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClCompile Include="Code\QtGui\ConvSettings\BlueprintConvertSettingsGui.cpp" />
     <ClCompile Include="Code\QtGui\ConvSettings\ConverterSettingsGuiBase.cpp" />
     <ClCompile Include="Code\QtGui\ConvSettings\CustomGameSelector.cpp" />
+    <ClCompile Include="Code\QtGui\CustomWidgets\ImageBox.cpp" />
     <ClCompile Include="Code\QtGui\CustomWidgets\LabelTimer.cpp" />
     <ClCompile Include="Code\QtGui\FilterSettingsGui.cpp" />
     <ClCompile Include="Code\QtGui\MainGui.cpp" />
     <ClCompile Include="Code\QtGui\MainGuiContextMenu.cpp" />
     <ClCompile Include="Code\QtGui\MainGuiMenuBar.cpp" />
     <ClCompile Include="Code\QtGui\CustomWidgets\PathListViewWidget.cpp" />
+    <ClCompile Include="Code\QtGui\ObjectInfoGui.cpp" />
     <ClCompile Include="Code\QtGui\ProgramSettingsGui.cpp" />
     <ClCompile Include="Code\QtGui\QtUtil.cpp" />
     <ClCompile Include="Code\QtGui\ConvSettings\TileConverterSettingsGui.cpp" />
@@ -287,6 +289,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\QtGui\ConvSettings\BlueprintConvertSettingsGui.hpp" />
     <ClInclude Include="Code\QtGui\ConvSettings\ConverterSettingsGuiBase.hpp" />
     <ClInclude Include="Code\QtGui\ConvSettings\CustomGameSelector.hpp" />
+    <ClInclude Include="Code\QtGui\CustomWidgets\ImageBox.hpp" />
     <ClInclude Include="Code\QtGui\CustomWidgets\LabelTimer.hpp" />
     <ClInclude Include="Code\QtGui\FilterSettingsGui.hpp" />
     <ClInclude Include="Code\QtGui\MainGui.hpp" />
@@ -294,6 +297,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <QtMoc Include="Code\QtGui\ProgramSettingsGui.hpp" />
     <ClInclude Include="Code\QtGui\MainGuiContextMenu.hpp" />
     <ClInclude Include="Code\QtGui\MainGuiMenuBar.hpp" />
+    <ClInclude Include="Code\QtGui\ObjectInfoGui.hpp" />
     <ClInclude Include="Code\QtGui\QtUiConstants.hpp" />
     <ClInclude Include="Code\QtGui\QtUtil.hpp" />
     <QtMoc Include="Code\QtGui\CustomWidgets\UserObjectListViewWidget.hpp" />

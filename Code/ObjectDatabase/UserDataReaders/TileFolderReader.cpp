@@ -42,9 +42,9 @@ TileSizeFilter TileFolderReader::GetTileSize(int v_sz)
 	}
 }
 
-void TileFolderReader::GetTileData(TileInstance* v_tile_instance, ConvertError& v_error)
+void TileFolderReader::GetTileData(const std::wstring& path, ConvertError& v_error)
 {
-	Tile* v_tile = TileReader::ReadTile<true>(v_tile_instance->path, v_error);
+	Tile* v_tile = TileReader::ReadTile<true>(path, v_error);
 	if (v_tile) delete v_tile;
 }
 

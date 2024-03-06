@@ -1,17 +1,17 @@
 #include "Blueprint.hpp"
 
-#include "ObjectDatabase\UserDataReaders\ItemModCounter.hpp"
-#include "ObjectDatabase\KeywordReplacer.hpp"
-#include "ObjectDatabase\ObjectRotations.hpp"
-#include "ObjectDatabase\ProgCounter.hpp"
-#include "ObjectDatabase\Mods\Mod.hpp"
+#include "ObjectDatabase/UserDataReaders/ItemModCounter.hpp"
+#include "ObjectDatabase/KeywordReplacer.hpp"
+#include "ObjectDatabase/ObjectRotations.hpp"
+#include "ObjectDatabase/ProgCounter.hpp"
+#include "ObjectDatabase/Mods/Mod.hpp"
 
-#include "Utils\GlmUnmanaged.hpp"
-#include "Utils\Console.hpp"
-#include "Utils\String.hpp"
-#include "Utils\File.hpp"
+#include "Utils/GlmUnmanaged.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/String.hpp"
+#include "Utils/File.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 void SMBlueprint::LoadAndCountAutomatic(const std::string& str)
 {

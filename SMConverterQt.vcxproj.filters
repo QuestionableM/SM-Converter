@@ -239,6 +239,12 @@
     <ClCompile Include="Code\QtGui\CustomWidgets\LabelTimer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Code\QtGui\ObjectInfoGui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\QtGui\CustomWidgets\ImageBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\QtGui\MainGui.hpp">
@@ -548,6 +554,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Code\Utils\MutexData.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\QtGui\ObjectInfoGui.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\QtGui\CustomWidgets\ImageBox.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

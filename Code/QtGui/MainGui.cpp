@@ -23,6 +23,7 @@
 #include "AboutProgramGui.hpp"
 #include "MainGuiMenuBar.hpp"
 
+#include "QtUiConstants.hpp"
 #include "Utils/File.hpp"
 #include "QtUtil.hpp"
 
@@ -67,12 +68,7 @@ MainGui::~MainGui()
 
 void MainGui::initializeUI()
 {
-	this->setWindowTitle(
-		"SM Converter"
-#if defined(_DEBUG) || defined(DEBUG)
-		" (DEBUG)"
-#endif
-	);
+	this->setWindowTitle(SMCONV_MAIN_GUI_TITLE);
 	this->setMinimumSize(450, 350);
 	this->resize(450, 350);
 
@@ -86,9 +82,9 @@ void MainGui::initializeUI()
 	m_converterTypeBox->addItem("Blueprint Converter (.json, .blueprint)");
 	m_converterTypeBox->addItem("Tile Converter (.tile)");
 
-#if defined(SMCONV_ENABLE_WORLD_CONVERTER) //Mostly finished
+//#if defined(SMCONV_ENABLE_WORLD_CONVERTER) //Mostly finished
 	m_converterTypeBox->addItem("World Converter (.json, .world)");
-#endif
+//#endif
 
 #if defined(SMCONV_ENABLE_CHARACTER_CONVERTER) //WIP
 	m_converterTypeBox->addItem("Character Converter");
@@ -161,6 +157,10 @@ void MainGui::connectEvents()
 	QObject::connect(
 		m_contextMenu->m_copyUuidAction, &QAction::triggered,
 		this, &MainGui::copyItemUuid);
+
+	QObject::connect(
+		m_contextMenu->m_showObjectInfoAction, &QAction::triggered,
+		this, &MainGui::openObjectInfoGui);
 }
 
 void MainGui::initializeDatabase()
@@ -172,12 +172,6 @@ void MainGui::initializeDatabase()
 
 	this->updateSearchTextBox();
 }
-
-constexpr int g_windowMargin = 10;
-constexpr int g_convertBtnWidth = 100;
-constexpr int g_utilBtnWidth = 75;
-constexpr int g_commonWidgetHeight = 22;
-constexpr int g_progressBarHeight = 15;
 
 void MainGui::resizeEvent(QResizeEvent* event)
 {
@@ -598,6 +592,22 @@ void MainGui::copyItemUuid()
 		return;
 
 	QApplication::clipboard()->setText(QString::fromStdString(v_itemUuid));
+}
+
+void MainGui::openObjectInfoGui()
+{
+	switch (m_converterTypeBox->currentIndex())
+	{
+	case ConvType_BlueprintConverter:
+		this->openObjectInfoGuiInternal<BlueprintFolderReader>();
+		break;
+	case ConvType_TileConverter:
+		this->openObjectInfoGuiInternal<TileFolderReader>();
+		break;
+	case ConvType_WorldConverter:
+		this->openObjectInfoGuiInternal<WorldFolderReader>();
+		break;
+	}
 }
 
 bool MainGui::convertBlueprint(const std::wstring& filename, const std::wstring& path)

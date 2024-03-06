@@ -45,7 +45,7 @@ public:
 	static void FilterStorage();
 
 	static TileSizeFilter GetTileSize(int v_sz);
-	static void GetTileData(TileInstance* v_tile_instance, ConvertError& v_error);
+	static void GetTileData(const std::wstring& path, ConvertError& v_error);
 	//Creates `$CONTENT_<uuid>` keys for all non-vanilla tiles
 	static void InitializeTileKeys();
 

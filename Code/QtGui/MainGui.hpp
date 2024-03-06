@@ -4,6 +4,7 @@
 #include "CustomWidgets/LabelTimer.hpp"
 #include "MainGuiContextMenu.hpp"
 #include "MainGuiMenuBar.hpp"
+#include "ObjectInfoGui.hpp"
 
 #include "Converter/ConvertError.hpp"
 #include "Utils/MutexData.hpp"
@@ -21,7 +22,7 @@
 
 #define MAINGUI_P MainGui::g_mainGuiPtr
 
-enum : unsigned short
+enum : std::uint16_t
 {
 	ConvType_BlueprintConverter = 0,
 	ConvType_TileConverter      = 1,
@@ -74,6 +75,7 @@ private:
 	void copyItemWorkshopId();
 	void copyItemAuthorId();
 	void copyItemUuid();
+	void openObjectInfoGui();
 
 	bool convertBlueprint(const std::wstring& filename, const std::wstring& path);
 	bool convertTile(const std::wstring& filename, const std::wstring& path);
@@ -154,6 +156,14 @@ private:
 			return v_curObj->uuid.ToString();
 
 		return "";
+	}
+
+	template<typename T>
+	inline void openObjectInfoGuiInternal()
+	{
+		typename T::ObjectType v_curObj = this->getSelectedObject<T>();
+		if (v_curObj)
+			ObjectInfoGui(v_curObj, this).exec();
 	}
 
 	void updateUIState(bool db_loaded, bool objs_loaded, bool obj_converted);
