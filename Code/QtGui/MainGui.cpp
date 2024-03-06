@@ -147,12 +147,20 @@ void MainGui::connectEvents()
 		this, &MainGui::openItemInExplorer);
 
 	QObject::connect(
-		m_contextMenu->m_copyUuidAction, &QAction::triggered,
-		this, &MainGui::copyItemUuid);
+		m_contextMenu->m_openCreatorProfile, &QAction::triggered,
+		this, &MainGui::openCreatorProfile);
+
+	QObject::connect(
+		m_contextMenu->m_copyWorkshopIdAction, &QAction::triggered,
+		this, &MainGui::copyItemWorkshopId);
 
 	QObject::connect(
 		m_contextMenu->m_copyCreatorIdAction, &QAction::triggered,
 		this, &MainGui::copyItemAuthorId);
+	
+	QObject::connect(
+		m_contextMenu->m_copyUuidAction, &QAction::triggered,
+		this, &MainGui::copyItemUuid);
 }
 
 void MainGui::initializeDatabase()
@@ -398,9 +406,8 @@ void MainGui::converterTypeChanged()
 
 void MainGui::selectedObjectChanged()
 {
-	//Update the convert button here
 	this->updateConvertButton();
-	//Update context menu strip here 
+	this->updateContextMenu();
 
 	if (m_objectList->selectedIndex() >= 0)
 	{
@@ -424,6 +431,37 @@ void MainGui::searchTextChanged()
 	this->updateConvertButton();
 
 	m_lastSearchLength = m_searchBox->text().length();
+}
+
+
+std::uint64_t MainGui::getAuthorIdFromSelection()
+{
+	switch (m_converterTypeBox->currentIndex())
+	{
+	case ConvType_BlueprintConverter:
+		return this->getSelectedObjectAuthorId<BlueprintFolderReader>();
+	case ConvType_TileConverter:
+		return this->getSelectedObjectAuthorId<TileFolderReader>();
+	case ConvType_WorldConverter:
+		return this->getSelectedObjectAuthorId<WorldFolderReader>();
+	default:
+		return 0;
+	}
+}
+
+std::uint64_t MainGui::getWorkshopIdFromSelection()
+{
+	switch (m_converterTypeBox->currentIndex())
+	{
+	case ConvType_BlueprintConverter:
+		return this->getSelectedObjectSteamId<BlueprintFolderReader>();
+	case ConvType_TileConverter:
+		return this->getSelectedObjectSteamId<TileFolderReader>();
+	case ConvType_WorldConverter:
+		return this->getSelectedObjectSteamId<WorldFolderReader>();
+	default:
+		return 0;
+	}
 }
 
 void MainGui::openDirectory(
@@ -470,23 +508,8 @@ void MainGui::openFilterSettings()
 
 void MainGui::openItemInSteamWorkshop()
 {
-	std::uint64_t v_steamId;
-	switch (m_converterTypeBox->currentIndex())
-	{
-	case ConvType_BlueprintConverter:
-		v_steamId = this->getSelectedObjectSteamId<BlueprintFolderReader>();
-		break;
-	case ConvType_TileConverter:
-		v_steamId = this->getSelectedObjectSteamId<TileFolderReader>();
-		break;
-	case ConvType_WorldConverter:
-		v_steamId = this->getSelectedObjectSteamId<WorldFolderReader>();
-		break;
-	default:
-		return;
-	}
-
-	if (!v_steamId)
+	const std::uint64_t v_itemSteamId = this->getWorkshopIdFromSelection();
+	if (!v_itemSteamId)
 		return;
 
 	QString v_workshopUrl;
@@ -494,7 +517,7 @@ void MainGui::openItemInSteamWorkshop()
 		v_workshopUrl.append("steam://openurl/");
 
 	v_workshopUrl.append("https://steamcommunity.com/sharedfiles/filedetails/?id=");
-	v_workshopUrl.append(QString::number(v_steamId, 10));
+	v_workshopUrl.append(QString::number(v_itemSteamId, 10));
 	
 	QDesktopServices::openUrl(v_workshopUrl);
 }
@@ -523,24 +546,30 @@ void MainGui::openItemInExplorer()
 	QtUtil::showFileInExplorer(v_objPath);
 }
 
+void MainGui::openCreatorProfile()
+{
+	const std::uint64_t v_itemAuthorId = this->getAuthorIdFromSelection();
+	if (!v_itemAuthorId)
+		return;
+
+	const QString v_authorUrl = QString("http://steamcommunity.com/profiles/%1")
+		.arg(QString::number(v_itemAuthorId, 10));
+
+	QDesktopServices::openUrl(v_authorUrl);
+}
+
+void MainGui::copyItemWorkshopId()
+{
+	const std::uint64_t v_itemWorkshopId = this->getWorkshopIdFromSelection();
+	if (!v_itemWorkshopId)
+		return;
+
+	QApplication::clipboard()->setText(QString::number(v_itemWorkshopId, 10));
+}
+
 void MainGui::copyItemAuthorId()
 {
-	std::uint64_t v_itemAuthorId = 0;
-	switch (m_converterTypeBox->currentIndex())
-	{
-	case ConvType_BlueprintConverter:
-		v_itemAuthorId = this->getSelectedObjectAuthorId<BlueprintFolderReader>();
-		break;
-	case ConvType_TileConverter:
-		v_itemAuthorId = this->getSelectedObjectAuthorId<TileFolderReader>();
-		break;
-	case ConvType_WorldConverter:
-		v_itemAuthorId = this->getSelectedObjectAuthorId<WorldFolderReader>();
-		break;
-	default:
-		return;
-	}
-
+	const std::uint64_t v_itemAuthorId = this->getAuthorIdFromSelection();
 	if (!v_itemAuthorId)
 		return;
 
@@ -746,6 +775,7 @@ void MainGui::updateUIState(bool db_loaded, bool objs_loaded, bool obj_converted
 {
 	const bool v_objs_loaded_and_obj_converted = objs_loaded && obj_converted;
 	const bool v_db_loaded_and_obj_converted = db_loaded && obj_converted;
+	const bool v_everything_loaded = db_loaded && objs_loaded && obj_converted;
 
 	m_objectPathButton->setEnabled(v_db_loaded_and_obj_converted);
 	m_searchFilterButton->setEnabled(v_db_loaded_and_obj_converted);
@@ -758,25 +788,12 @@ void MainGui::updateUIState(bool db_loaded, bool objs_loaded, bool obj_converted
 
 	m_convertButton->setEnabled(v_db_loaded_and_obj_converted 
 		&& (m_objectPath->text().length() > 0 || m_objectList->selectedIndex() >= 0));
-	m_menuBar->m_openProgramSettingsAction->setEnabled(db_loaded && objs_loaded && obj_converted);
+	m_menuBar->m_openProgramSettingsAction->setEnabled(v_everything_loaded);
 
 	m_converterTypeBox->setEnabled(obj_converted);
 	m_menuBar->setEnabled(obj_converted);
 
-	//Update context menu strips here
-	/*
-		m_cms_blueprint->Enabled = objlist_and_obj_loaded;
-		m_btn_openBlueprintFolder->Enabled = false;
-		m_btn_openBlueprintInSteamWorkshop->Enabled = false;
-
-		m_cms_tile->Enabled = objlist_and_obj_loaded;
-		m_btn_openTileInSteamWorkshop->Enabled = false;
-		m_btn_openTileFolder->Enabled = false;
-		m_btn_findTileCreatorInSteam->Enabled = false;
-
-		if (objlist_and_obj_loaded)
-			this->UpdateContextMenuStrip();
-	*/
+	m_contextMenu->setEnabled(v_everything_loaded);
 }
 
 void MainGui::updateSearchResults(int last_search_length)
@@ -884,6 +901,23 @@ void MainGui::updateConvertButton()
 {
 	m_convertButton->setEnabled((m_objectPath->text().length() > 0 || m_objectList->selectedIndex() >= 0) &&
 		this->isGameDatabaseLoaded());
+}
+
+void MainGui::updateContextMenu()
+{
+	const int v_cur_idx = m_converterTypeBox->currentIndex();
+
+	const bool v_is_char_conv = v_cur_idx != ConvType_CharacterConverter;
+	m_contextMenu->m_copyUuidAction->setEnabled(v_is_char_conv);
+	m_contextMenu->m_showObjectInfoAction->setEnabled(v_is_char_conv);
+
+	const bool v_has_creator_id = this->getAuthorIdFromSelection() != 0;
+	m_contextMenu->m_copyCreatorIdAction->setEnabled(v_has_creator_id);
+	m_contextMenu->m_openCreatorProfile->setEnabled(v_has_creator_id);
+
+	const bool v_has_workshop_id = this->getWorkshopIdFromSelection() != 0;
+	m_contextMenu->m_openInSteamWorkshopAction->setEnabled(v_has_workshop_id);
+	m_contextMenu->m_copyWorkshopIdAction->setEnabled(v_has_workshop_id);
 }
 
 void MainGui::updateObjectList()

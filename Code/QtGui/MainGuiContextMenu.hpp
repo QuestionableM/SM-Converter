@@ -11,6 +11,8 @@ public:
 public:
 	QAction* m_openInSteamWorkshopAction;
 	QAction* m_openInExplorerAction;
+	QAction* m_openCreatorProfile;
+	QAction* m_copyWorkshopIdAction;
 	QAction* m_copyCreatorIdAction;
 	QAction* m_copyUuidAction;
 	QAction* m_showObjectInfoAction;

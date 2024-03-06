@@ -60,11 +60,18 @@ private:
 	void objectPathTextChanged();
 	void searchTextChanged();
 
+	std::uint64_t getAuthorIdFromSelection();
+	std::uint64_t getWorkshopIdFromSelection();
+
 	void openDirectory(const std::wstring_view& path_view, const char* type_str);
 	void openProgramSettings();
 	void openFilterSettings();
+
+	//Context menu functions
 	void openItemInSteamWorkshop();
 	void openItemInExplorer();
+	void openCreatorProfile();
+	void copyItemWorkshopId();
 	void copyItemAuthorId();
 	void copyItemUuid();
 
@@ -156,6 +163,7 @@ private:
 	void updateObjectPathTextBox();
 	void updateSearchTextBox();
 	void updateConvertButton();
+	void updateContextMenu();
 	void updateObjectList();
 
 	void loadObjectDatabase(bool reload_key_replacer);
