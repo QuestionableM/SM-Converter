@@ -21,7 +21,7 @@ struct ItemModStats
 
 	inline static void IncrementModPart(SMMod* v_mod)
 	{
-		const SMUuid v_cur_uuid = (v_mod != nullptr) ? v_mod->GetUuid() : SMUuid();
+		const SMUuid v_cur_uuid = (v_mod != nullptr) ? v_mod->GetUuid() : SMUuid::Null;
 
 		const auto v_iter = ItemModStats::ModStorage.find(v_cur_uuid);
 		if (v_iter == ItemModStats::ModStorage.end())

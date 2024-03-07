@@ -270,10 +270,7 @@ void MainGui::updateUserObjectStatusCallback()
 		break;
 	}
 
-	m_objectLoaderStatus->setText(v_status_text);
-	m_objectLoaderStatus->resize(
-		m_objectLoaderStatus->fontMetrics().size(0, m_objectLoaderStatus->text()));
-	this->updateUserObjectStatusPosition();
+	this->updateUserObjectStatusText(v_status_text);
 }
 
 void MainGui::userObjectsLoadedCallback()
@@ -348,11 +345,11 @@ void MainGui::databaseLoadedCallback()
 		m_dbLoaderThread = nullptr;
 	}
 
-	const std::size_t v_mod_count = SMMod::GetAmountOfMods();
-	const std::size_t v_obj_count = SMMod::GetAmountOfObjects();
+	const QString v_final_status = QString("Successfully loaded %1 objects from %2 mods")
+		.arg(SMMod::GetAmountOfObjects())
+		.arg(SMMod::GetAmountOfMods());
 
-	m_dbProgressStatus->setText(
-		QString("Successfully loaded %1 objects from %2 mods").arg(v_obj_count).arg(v_mod_count));
+	m_dbProgressStatus->setText(v_final_status);
 
 	this->updateUIState(true, this->isUserDatabaseLoaded(), true);
 }
@@ -502,18 +499,7 @@ void MainGui::openFilterSettings()
 
 void MainGui::openItemInSteamWorkshop()
 {
-	const std::uint64_t v_itemSteamId = this->getWorkshopIdFromSelection();
-	if (!v_itemSteamId)
-		return;
-
-	QString v_workshopUrl;
-	if (DatabaseConfig::OpenLinksInSteam)
-		v_workshopUrl.append("steam://openurl/");
-
-	v_workshopUrl.append("https://steamcommunity.com/sharedfiles/filedetails/?id=");
-	v_workshopUrl.append(QString::number(v_itemSteamId, 10));
-	
-	QDesktopServices::openUrl(v_workshopUrl);
+	QtUtil::openItemInSteam(this->getWorkshopIdFromSelection());
 }
 
 void MainGui::openItemInExplorer()
@@ -788,9 +774,9 @@ void MainGui::updateUIState(bool db_loaded, bool objs_loaded, bool obj_converted
 	const bool v_everything_loaded = db_loaded && objs_loaded && obj_converted;
 
 	m_objectPathButton->setEnabled(v_db_loaded_and_obj_converted);
-	m_searchFilterButton->setEnabled(v_db_loaded_and_obj_converted);
 	m_objectPath->setEnabled(v_db_loaded_and_obj_converted);
-	m_searchBox->setEnabled(v_db_loaded_and_obj_converted);
+	m_searchFilterButton->setEnabled(v_objs_loaded_and_obj_converted);
+	m_searchBox->setEnabled(v_objs_loaded_and_obj_converted);
 
 	m_menuBar->m_reloadObjectDatabaseAction->setEnabled(v_db_loaded_and_obj_converted);
 	m_menuBar->m_reloadUserObjectsAction->setEnabled(v_objs_loaded_and_obj_converted);
@@ -854,6 +840,18 @@ void MainGui::filterObjectStorage(int conv_type)
 	case ConvType_CharacterConverter:
 		UserCharacterReader::UpdateStorage();
 		break;
+	}
+}
+
+void MainGui::updateUserObjectStatusText(const QString& new_text)
+{
+	m_objectLoaderStatus->setText(new_text);
+
+	if (m_objectLoaderStatus->isVisible())
+	{
+		m_objectLoaderStatus->resize(
+			m_objectLoaderStatus->fontMetrics().size(0, m_objectLoaderStatus->text()));
+		this->updateUserObjectStatusPosition();
 	}
 }
 
@@ -930,6 +928,23 @@ void MainGui::updateContextMenu()
 	m_contextMenu->m_copyWorkshopIdAction->setEnabled(v_has_workshop_id);
 }
 
+const char* MainGui::getNoObjectsTextForSpecificConverter() const
+{
+	switch (m_converterTypeBox->currentIndex())
+	{
+	case ConvType_BlueprintConverter:
+		return "No Blueprints";
+	case ConvType_TileConverter:
+		return "No Tiles";
+	case ConvType_WorldConverter:
+		return "No Worlds";
+	case ConvType_CharacterConverter:
+		return "No Characters";
+	default:
+		return "No Objects";
+	}
+}
+
 void MainGui::updateObjectList()
 {
 	m_objectList->silentClear();
@@ -951,6 +966,15 @@ void MainGui::updateObjectList()
 	}
 
 	m_objectList->updateGraphics();
+
+	const bool v_empty = m_objectList->m_objectStorage.empty();
+
+	m_objectLoaderStatus->setVisible(v_empty);
+	if (v_empty)
+	{
+		this->updateUserObjectStatusText(
+			this->getNoObjectsTextForSpecificConverter());
+	}
 }
 
 

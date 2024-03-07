@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ObjectDatabase/UserDataReaders/FilterSettingsData.hpp"
+#include "QtGui/CustomWidgets/CenteredLabel.hpp"
 #include "QtGui/CustomWidgets/ImageBox.hpp"
 
 #include <QListWidget>
@@ -8,8 +9,41 @@
 #include <QLayout>
 #include <QLabel>
 #include <QImage>
+#include <QMenu>
 
 #include <string>
+
+class ModListContextMenu : public QMenu
+{
+public:
+	ModListContextMenu(QWidget* parent = nullptr);
+	~ModListContextMenu() = default;
+
+	QAction* m_openInSteamWorkshopAction;
+	QAction* m_openInExplorerAction;
+};
+
+class ModListWidget : public QListWidget
+{
+public:
+	ModListWidget(QWidget* parent = nullptr);
+	~ModListWidget() = default;
+
+	class SMMod* getSelectedMod() const;
+	void updateContextMenu();
+	void updateModList();
+
+
+	void openModInWorkshop();
+	void openModInExplorer();
+
+private:
+	void contextMenuEvent(QContextMenuEvent* event) override;
+
+private:
+	ModListContextMenu* m_contextMenu;
+	CenteredLabel* m_noModsLabel;
+};
 
 class ObjectInfoGui : public QDialog
 {
@@ -22,7 +56,6 @@ public:
 
 private:
 	void appendPartsStats();
-	void updateModStorage();
 
 	template<typename T>
 	inline void appendMainObjectInfo(T* obj)
@@ -47,5 +80,5 @@ private:
 	ImageBox* m_objectImage;
 	//Handles all the label data about the object
 	QVBoxLayout* m_infoLayout;
-	QListWidget* m_modList;
+	ModListWidget* m_modList;
 };

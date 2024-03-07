@@ -1,5 +1,8 @@
 #include "QtUtil.hpp"
 
+#include "ObjectDatabase/DatabaseConfig.hpp"
+
+#include <QDesktopServices>
 #include <QMessageBox>
 #include <QProcess>
 
@@ -48,6 +51,21 @@ void QtUtil::infoWithSound(QWidget* parent, const QString& title, const QString&
 #endif
 
 	QMessageBox::information(parent, title, message, QMessageBox::StandardButton::Ok);
+}
+
+void QtUtil::openItemInSteam(std::uint64_t steam_id)
+{
+	if (!steam_id)
+		return;
+
+	QString v_workshopUrl;
+	if (DatabaseConfig::OpenLinksInSteam)
+		v_workshopUrl.append("steam://openurl/");
+
+	v_workshopUrl.append("https://steamcommunity.com/sharedfiles/filedetails/?id=");
+	v_workshopUrl.append(QString::number(steam_id, 10));
+
+	QDesktopServices::openUrl(v_workshopUrl);
 }
 
 bool QtUtil::fileDialog(

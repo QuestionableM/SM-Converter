@@ -12,6 +12,8 @@ namespace QtUtil
     void errorWithSound(QWidget* parent, const QString& title, const QString& message);
     void infoWithSound(QWidget* parent, const QString& title, const QString& message);
 
+    void openItemInSteam(std::uint64_t steam_id);
+
 	bool fileDialog(
         QWidget* parent,
         const QString& title,

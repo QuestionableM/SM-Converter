@@ -131,7 +131,7 @@ public:
 
 	inline const SMUuid& GetUuid() const noexcept { return m_Uuid; }
 	inline const std::wstring& GetName() const noexcept { return m_Name; }
-	inline const unsigned long long& GetWorkshopId() const noexcept { return m_WorkshopId; }
+	inline std::uint64_t GetWorkshopId() const noexcept { return m_WorkshopId; }
 	inline const std::wstring& GetDirectory() const noexcept { return m_Directory; }
 
 	virtual ModType Type() const noexcept = 0;

@@ -9,7 +9,111 @@
 #include "Converter/WorldConverter/World.hpp"
 #include "Converter/Entity/Blueprint.hpp"
 
+#include "Utils/Console.hpp"
 #include "QtGui/QtUtil.hpp"
+
+#include <QContextMenuEvent>
+
+ModListContextMenu::ModListContextMenu(QWidget* parent)
+	: QMenu(parent),
+	m_openInSteamWorkshopAction(new QAction("Open in Steam Workshop", this)),
+	m_openInExplorerAction(new QAction("Open in File Explorer", this))
+{
+	this->addAction(m_openInSteamWorkshopAction);
+	this->addAction(m_openInExplorerAction);
+}
+
+////////////////////////MOD LIST WIDGET////////////////////////
+
+ModListWidget::ModListWidget(QWidget* parent)
+	: QListWidget(parent),
+	m_noModsLabel(new CenteredLabel("No Mods", this)),
+	m_contextMenu(new ModListContextMenu(this))
+{
+	this->setSelectionMode(QAbstractItemView::SingleSelection);
+
+	QObject::connect(
+		m_contextMenu->m_openInSteamWorkshopAction, &QAction::triggered,
+		this, &ModListWidget::openModInWorkshop);
+
+	QObject::connect(
+		m_contextMenu->m_openInExplorerAction, &QAction::triggered,
+		this, &ModListWidget::openModInExplorer);
+}
+
+SMMod* ModListWidget::getSelectedMod() const
+{
+	const int v_cur_idx = this->currentIndex().row();
+	if (v_cur_idx < 0 || v_cur_idx > int(ItemModStats::ModVector.size()))
+		return nullptr;
+
+	return ItemModStats::ModVector[v_cur_idx]->mod;
+}
+
+void ModListWidget::updateContextMenu()
+{
+	SMMod* v_cur_mod = this->getSelectedMod();
+	if (!v_cur_mod)
+	{
+		m_contextMenu->m_openInSteamWorkshopAction->setEnabled(false);
+		m_contextMenu->m_openInExplorerAction->setEnabled(false);
+		return;
+	}
+
+	m_contextMenu->m_openInSteamWorkshopAction->setEnabled(v_cur_mod->GetWorkshopId() != 0);
+	m_contextMenu->m_openInExplorerAction->setEnabled(File::Exists(v_cur_mod->GetDirectory()));
+}
+
+void ModListWidget::updateModList()
+{
+	m_noModsLabel->setVisible(ItemModStats::ModVector.empty());
+
+	this->blockSignals(true);
+	this->clear();
+
+	for (const ItemModInstance* v_mod_data : ItemModStats::ModVector)
+	{
+		std::wstring v_mod_name = (v_mod_data->mod != nullptr)
+			? v_mod_data->mod->GetName()
+			: L"UNKNOWN_MOD";
+
+		v_mod_name.append(L" (");
+		v_mod_name.append(std::to_wstring(v_mod_data->part_count));
+		v_mod_name.append(L")");
+
+		this->addItem(QString::fromStdWString(v_mod_name));
+	}
+
+	this->blockSignals(false);
+	this->update();
+}
+
+void ModListWidget::openModInWorkshop()
+{
+	SMMod* v_cur_mod = this->getSelectedMod();
+	if (v_cur_mod)
+		QtUtil::openItemInSteam(v_cur_mod->GetWorkshopId());
+}
+
+void ModListWidget::openModInExplorer()
+{
+	SMMod* v_cur_mod = this->getSelectedMod();
+	if (!(v_cur_mod && File::Exists(v_cur_mod->GetDirectory())))
+	{
+		QtUtil::warningWithSound(this, "Invalid Mod", "Mod Folder doesn't exist!");
+		return;
+	}
+
+	QtUtil::openDirInExplorer(v_cur_mod->GetDirectory());
+}
+
+void ModListWidget::contextMenuEvent(QContextMenuEvent* event)
+{
+	this->updateContextMenu();
+	m_contextMenu->exec(event->globalPos());
+}
+
+/////////////////////////OBJECT INFO GUI//////////////////////////
 
 ObjectInfoGui::ObjectInfoGui(const QString& title, const std::wstring& image, QWidget* parent)
 	: QDialog(parent),
@@ -17,7 +121,7 @@ ObjectInfoGui::ObjectInfoGui(const QString& title, const std::wstring& image, QW
 	m_mainInfoLayout(new QHBoxLayout(this)),
 	m_objectImage(new ImageBox(QString::fromStdWString(image))),
 	m_infoLayout(new QVBoxLayout(this)),
-	m_modList(new QListWidget(this))
+	m_modList(new ModListWidget(this))
 {
 	this->setWindowTitle(title);
 
@@ -44,7 +148,7 @@ ObjectInfoGui::ObjectInfoGui(BlueprintInstance* bprint, QWidget* parent)
 	
 	this->appendMainObjectInfo<BlueprintInstance>(bprint);
 	this->appendPartsStats();
-	this->updateModStorage();
+	m_modList->updateModList();
 }
 
 static bool readWorldData(
@@ -101,7 +205,7 @@ ObjectInfoGui::ObjectInfoGui(WorldInstance* world, QWidget* parent)
 		new QLabel(QString("World Size: %1x%1").arg(v_world_width), this));
 	
 	this->appendPartsStats();
-	this->updateModStorage();
+	m_modList->updateModList();
 }
 
 static void readTileData(const std::wstring& tile_path, ConvertError& v_error)
@@ -142,7 +246,7 @@ ObjectInfoGui::ObjectInfoGui(TileInstance* tile, QWidget* parent)
 	m_infoLayout->addWidget(new QLabel(v_tile_sz, this));
 
 	this->appendPartsStats();
-	this->updateModStorage();
+	m_modList->updateModList();
 }
 
 void ObjectInfoGui::appendPartsStats()
@@ -154,26 +258,4 @@ void ObjectInfoGui::appendPartsStats()
 
 	m_infoLayout->addWidget(new QLabel(v_part_count, this));
 	m_infoLayout->addWidget(new QLabel(v_mod_count, this));
-}
-
-void ObjectInfoGui::updateModStorage()
-{
-	m_modList->blockSignals(true);
-	m_modList->clear();
-
-	for (const ItemModInstance* v_mod_data : ItemModStats::ModVector)
-	{
-		std::wstring v_mod_name = (v_mod_data->mod != nullptr)
-			? v_mod_data->mod->GetName()
-			: L"UNKNOWN_MOD";
-
-		v_mod_name.append(L" (");
-		v_mod_name.append(std::to_wstring(v_mod_data->part_count));
-		v_mod_name.append(L")");
-
-		m_modList->insertItem(0, QString::fromStdWString(v_mod_name));
-	}
-
-	m_modList->blockSignals(false);
-	m_modList->update();
 }

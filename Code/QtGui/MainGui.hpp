@@ -169,11 +169,13 @@ private:
 	void updateUIState(bool db_loaded, bool objs_loaded, bool obj_converted);
 	void updateSearchResults(int last_search_length);
 	void filterObjectStorage(int conv_type);
+	void updateUserObjectStatusText(const QString& new_text);
 	void updateUserObjectStatusPosition();
 	void updateObjectPathTextBox();
 	void updateSearchTextBox();
 	void updateConvertButton();
 	void updateContextMenu();
+	const char* getNoObjectsTextForSpecificConverter() const;
 	void updateObjectList();
 
 	void loadObjectDatabase(bool reload_key_replacer);
