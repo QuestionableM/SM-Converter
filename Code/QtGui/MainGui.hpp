@@ -50,6 +50,7 @@ public:
 
 private:
 	void resizeEvent(QResizeEvent* event) override;
+	void closeEvent(QCloseEvent* event) override;
 
 	void updateUserObjectStatusCallback();
 	void userObjectsLoadedCallback();
@@ -76,6 +77,20 @@ private:
 	void copyItemAuthorId();
 	void copyItemUuid();
 	void openObjectInfoGui();
+
+	template<typename ThreadDataClass, typename ConverterClass>
+	inline static void ConverterFunction(MainGui* self, ThreadDataClass thread_data)
+	{
+		std::lock_guard v_lock_g(self->m_converterReturnCode);
+
+		thread_data.applySettings();
+
+		ConverterClass::ConvertToModel(
+			thread_data.path,
+			thread_data.name,
+			self->m_converterReturnCode.data(),
+			thread_data.custom_game_idx.getPtr());
+	}
 
 	bool convertBlueprint(const std::wstring& filename, const std::wstring& path);
 	bool convertTile(const std::wstring& filename, const std::wstring& path);

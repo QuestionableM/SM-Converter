@@ -13,6 +13,7 @@
 #include "ObjectDatabase/Mods/Mod.hpp"
 
 #include "Converter/BlueprintConverter/BlueprintConverter.hpp"
+#include "Converter/WorldConverter/WorldConverter.hpp"
 #include "Converter/TileConverter/TileConverter.hpp"
 #include "Converter/ConvertSettings.hpp"
 
@@ -31,6 +32,7 @@
 #include <QApplication>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QCloseEvent>
 #include <QClipboard>
 #include <QLineEdit>
 #include <QMenuBar>
@@ -242,6 +244,23 @@ void MainGui::resizeEvent(QResizeEvent* event)
 	this->updateUserObjectStatusPosition();
 
 	this->blockSignals(false);
+}
+
+void MainGui::closeEvent(QCloseEvent* event)
+{
+	const bool v_thread_running = m_converterThread
+		&& m_converterThread->isRunning();
+
+	if (!v_thread_running) return;
+
+	QMessageBox v_mbox(QMessageBox::Question,
+		"Closing",
+		"Are you sure you want to close the program while an item is being converted?\n\nClosing the program might produce a corrupt model!",
+		QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No,
+		this);
+
+	if (v_mbox.exec() != QMessageBox::StandardButton::Yes)
+		event->ignore();
 }
 
 void MainGui::updateUserObjectStatusCallback()
@@ -607,21 +626,9 @@ bool MainGui::convertBlueprint(const std::wstring& filename, const std::wstring&
 	v_conv_settings.getThreadData(&v_thread_data);
 
 	m_converterThread = QThread::create(
-		[this](BlueprintConverterThreadData thread_data) -> void
-		{
-			std::lock_guard v_lock_g(m_converterReturnCode);
+		MainGui::ConverterFunction<BlueprintConverterThreadData, BlueprintConv>, this, v_thread_data);
 
-			thread_data.applySettings();
-
-			BlueprintConv::ConvertToModel(
-				thread_data.path,
-				thread_data.name,
-				m_converterReturnCode.data(),
-				thread_data.custom_game_idx.getPtr());
-		},
-		v_thread_data
-	);
-
+	DebugOutL(__FUNCTION__);
 	return true;
 }
 
@@ -636,20 +643,7 @@ bool MainGui::convertTile(const std::wstring& filename, const std::wstring& path
 	v_conv_settings.getThreadData(&v_thread_data);
 
 	m_converterThread = QThread::create(
-		[this](TileConverterThreadData thread_data) -> void
-		{
-			std::lock_guard v_lock_g(m_converterReturnCode);
-
-			thread_data.applySettings();
-			
-			TileConv::ConvertToModel(
-				thread_data.path,
-				thread_data.name,
-				m_converterReturnCode.data(),
-				thread_data.custom_game_idx.getPtr());
-		},
-		v_thread_data
-	);
+		MainGui::ConverterFunction<TileConverterThreadData, TileConv>, this, v_thread_data);
 
 	DebugOutL(__FUNCTION__);
 	return true;
@@ -657,8 +651,19 @@ bool MainGui::convertTile(const std::wstring& filename, const std::wstring& path
 
 bool MainGui::convertWorld(const std::wstring& filename, const std::wstring& path)
 {
+	TileConverterSettingsGui v_conv_settings(this, filename, path);
+	if (v_conv_settings.exec() != QDialog::DialogCode::Accepted)
+		return false;
+
+	TileConverterThreadData v_thread_data;
+	v_thread_data.path = path;
+	v_conv_settings.getThreadData(&v_thread_data);
+
+	m_converterThread = QThread::create(
+		MainGui::ConverterFunction<TileConverterThreadData, WorldConverter>, this, v_thread_data);
+
 	DebugOutL(__FUNCTION__);
-	return false;
+	return true;
 }
 
 bool MainGui::convertCharacter(const std::wstring& filename, const UserCharacterData& v_data)
