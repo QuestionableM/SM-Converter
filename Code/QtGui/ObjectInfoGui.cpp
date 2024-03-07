@@ -127,6 +127,7 @@ ObjectInfoGui::ObjectInfoGui(const QString& title, const std::wstring& image, QW
 
 	m_objectImage->setFixedSize(100, 100);
 	m_mainLayout->addLayout(m_mainInfoLayout);
+	m_mainLayout->addWidget(new QLabel("Mod List"), 0, Qt::AlignLeft | Qt::AlignBottom);
 	m_mainLayout->addWidget(m_modList);
 
 	m_mainInfoLayout->setAlignment(Qt::AlignTop);
