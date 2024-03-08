@@ -167,8 +167,6 @@ void MainGui::connectEvents()
 
 void MainGui::initializeDatabase()
 {
-	DatabaseLoader::InitializeDatabase();
-
 	this->loadObjectDatabase(true);
 	this->loadUserObjects();
 

@@ -192,6 +192,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClCompile Include="Code\QtGui\CustomWidgets\CenteredLabel.cpp" />
     <ClCompile Include="Code\QtGui\CustomWidgets\ImageBox.cpp" />
     <ClCompile Include="Code\QtGui\CustomWidgets\LabelTimer.cpp" />
+    <ClCompile Include="Code\QtGui\DarkTheme\winDark.cpp" />
     <ClCompile Include="Code\QtGui\FilterSettingsGui.cpp" />
     <ClCompile Include="Code\QtGui\MainGui.cpp" />
     <ClCompile Include="Code\QtGui\MainGuiContextMenu.cpp" />
@@ -293,6 +294,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\QtGui\CustomWidgets\CenteredLabel.hpp" />
     <ClInclude Include="Code\QtGui\CustomWidgets\ImageBox.hpp" />
     <ClInclude Include="Code\QtGui\CustomWidgets\LabelTimer.hpp" />
+    <ClInclude Include="Code\QtGui\DarkTheme\winDark.h" />
     <ClInclude Include="Code\QtGui\FilterSettingsGui.hpp" />
     <ClInclude Include="Code\QtGui\MainGui.hpp" />
     <QtMoc Include="Code\QtGui\CustomWidgets\PathListViewWidget.hpp" />

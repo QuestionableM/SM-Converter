@@ -349,6 +349,9 @@ bool DatabaseConfig::ReadUserSettings(const nlohmann::json& config_json, bool& s
 		const auto& v_open_in_steam = JsonReader::Get(user_settings, "OpenLinksInSteam");
 		DatabaseConfig::OpenLinksInSteam = v_open_in_steam.is_boolean() ? v_open_in_steam.get<bool>() : false;
 
+		const auto& v_is_dark_mode = JsonReader::Get(user_settings, "IsDarkMode");
+		DatabaseConfig::IsDarkMode = v_is_dark_mode.is_boolean() ? v_is_dark_mode.get<bool>() : true;
+
 		DatabaseConfig::JsonStrArrayToStrVec(user_settings, "LocalModFolders", DatabaseConfig::LocalModFolders, DatabaseConfig::ModPathChecker, false);
 		DatabaseConfig::JsonStrArrayToStrVec(user_settings, "ModFolders", DatabaseConfig::ModFolders, DatabaseConfig::ModPathChecker, false);
 
@@ -495,6 +498,7 @@ void DatabaseConfig::SaveConfig()
 		user_settings["WorkshopDirectory"] = String::ToUtf8(DatabaseConfig::WorkshopFolder);
 
 		user_settings["OpenLinksInSteam"] = DatabaseConfig::OpenLinksInSteam;
+		user_settings["IsDarkMode"] = DatabaseConfig::IsDarkMode;
 
 		DatabaseConfig::WstrVecToJson(user_settings, "ModFolders", DatabaseConfig::ModFolders);
 		DatabaseConfig::WstrVecToJson(user_settings, "LocalModFolders", DatabaseConfig::LocalModFolders);

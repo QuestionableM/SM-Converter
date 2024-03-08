@@ -248,6 +248,9 @@
     <ClCompile Include="Code\QtGui\CustomWidgets\CenteredLabel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Code\QtGui\DarkTheme\winDark.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\QtGui\MainGui.hpp">
@@ -566,6 +569,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Code\QtGui\CustomWidgets\CenteredLabel.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\QtGui\DarkTheme\winDark.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

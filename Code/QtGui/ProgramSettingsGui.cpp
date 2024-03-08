@@ -49,8 +49,6 @@ PathGroupBox::PathGroupBox(const QString& title, QWidget* parent)
 	m_hLayout->addWidget(m_path);
 	m_hLayout->addWidget(m_selectPathButton);
 
-	const QMargins v_margins = m_layout->contentsMargins();
-	m_layout->setContentsMargins(v_margins.left(), 0, v_margins.right(), v_margins.bottom());
 	m_layout->addLayout(m_hLayout);
 }
 
@@ -63,29 +61,45 @@ SettingsGeneralTab::SettingsGeneralTab(
 	m_changeDetector(detector),
 	m_pathGroupBox(new PathGroupBox("Path to Scrap Mechanic Folder", this)),
 	m_bOpenLinksInSteam(new QCheckBox("Open Links in Steam", this)),
+	m_bDarkMode(new QCheckBox("Dark Mode (Restart required)", this)),
 	m_mainLayout(new QVBoxLayout(this))
 {
 	m_mainLayout->setAlignment(Qt::AlignTop);
 	m_mainLayout->addWidget(m_pathGroupBox);
 	m_mainLayout->addWidget(m_bOpenLinksInSteam);
+	m_mainLayout->addWidget(m_bDarkMode);
 
 	m_bOpenLinksInSteam->setChecked(DatabaseConfig::OpenLinksInSteam);
+	m_bDarkMode->setChecked(DatabaseConfig::IsDarkMode);
+
 	m_pathGroupBox->m_path->setText(
 		QString::fromStdWString(DatabaseConfig::GamePath));
 
 	QObject::connect(
 		m_bOpenLinksInSteam, &QCheckBox::stateChanged,
-		this, &SettingsGeneralTab::onCheckboxUpdate);
+		this, &SettingsGeneralTab::onOpenLinksInSteamStateChange);
+
+	QObject::connect(
+		m_bDarkMode, &QCheckBox::stateChanged,
+		this, &SettingsGeneralTab::onDarkModeStateChange);
 
 	QObject::connect(
 		m_pathGroupBox->m_path, &QLineEdit::textChanged,
 		this, &SettingsGeneralTab::onGamePathUpdate);
 }
 
-void SettingsGeneralTab::onCheckboxUpdate()
+void SettingsGeneralTab::onOpenLinksInSteamStateChange()
 {
 	m_changeDetector.m_openLinksInSteam = m_bOpenLinksInSteam->isChecked();
 	m_changeDetector.UpdateChange(SettingsChangeDetector_OpenLinksInSteam);
+
+	this->onSettingChanged();
+}
+
+void SettingsGeneralTab::onDarkModeStateChange()
+{
+	m_changeDetector.m_darkMode = m_bDarkMode->isChecked();
+	m_changeDetector.UpdateChange(SettingsChangeDetector_DarkMode);
 
 	this->onSettingChanged();
 }

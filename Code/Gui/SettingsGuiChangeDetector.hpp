@@ -16,7 +16,8 @@ enum : unsigned char
 	SettingsChangeDetector_WorkshopModList  = (1 << 1),
 	SettingsChangeDetector_UserItemFolder   = (1 << 2),
 	SettingsChangeDetector_OpenLinksInSteam = (1 << 3),
-	SettingsChangeDetector_GamePath         = (1 << 4)
+	SettingsChangeDetector_GamePath         = (1 << 4),
+	SettingsChangeDetector_DarkMode         = (1 << 5)
 };
 
 class SettingsChangeDetector
@@ -57,14 +58,15 @@ public:
 	void UpdateChange(unsigned char op_id);
 	void ApplyChanges();
 
-	std::wstring m_gamePath = L"";
+	std::wstring m_gamePath;
 
-	std::vector<std::wstring> m_localModList = {};
-	std::vector<std::wstring> m_workshopModList = {};
-	std::unordered_set<std::wstring> m_modListMap = {};
-	std::unordered_set<std::wstring> m_userItemFolders = {};
+	std::vector<std::wstring> m_localModList;
+	std::vector<std::wstring> m_workshopModList;
+	std::unordered_set<std::wstring> m_modListMap;
+	std::unordered_set<std::wstring> m_userItemFolders;
 	
-	bool m_openLinksInSteam = false;
+	bool m_openLinksInSteam;
+	bool m_darkMode;
 
 private:
 	unsigned char m_changeData;

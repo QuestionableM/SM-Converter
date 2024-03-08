@@ -45,7 +45,8 @@ public:
 		QWidget* parent = nullptr);
 	~SettingsGeneralTab() = default;
 
-	void onCheckboxUpdate();
+	void onOpenLinksInSteamStateChange();
+	void onDarkModeStateChange();
 	void onGamePathUpdate();
 
 public:
@@ -53,6 +54,7 @@ public:
 
 	PathGroupBox* m_pathGroupBox;
 	QCheckBox* m_bOpenLinksInSteam;
+	QCheckBox* m_bDarkMode;
 
 	QVBoxLayout* m_mainLayout;
 };

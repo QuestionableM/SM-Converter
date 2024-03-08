@@ -11,6 +11,7 @@ SettingsChangeDetector::SettingsChangeDetector()
 	m_modListMap(DatabaseConfig::ModPathChecker),
 	m_userItemFolders(DatabaseConfig::UserItemFolders),
 	m_openLinksInSteam(DatabaseConfig::OpenLinksInSteam),
+	m_darkMode(DatabaseConfig::IsDarkMode),
 	m_changeData(0) {}
 
 void SettingsChangeDetector::RemoveFromCheckedVec(
@@ -50,6 +51,9 @@ void SettingsChangeDetector::UpdateChange(unsigned char op_id)
 	case SettingsChangeDetector_GamePath:
 		this->SetChangeBit(op_id, m_gamePath != DatabaseConfig::GamePath);
 		break;
+	case SettingsChangeDetector_DarkMode:
+		this->SetChangeBit(op_id, m_darkMode != DatabaseConfig::IsDarkMode);
+		break;
 	}
 }
 
@@ -77,6 +81,7 @@ void SettingsChangeDetector::ApplyChanges()
 
 	//Doesn't matter for boolean that much
 	DatabaseConfig::OpenLinksInSteam = m_openLinksInSteam;
+	DatabaseConfig::IsDarkMode = m_darkMode;
 
 	m_changeData = 0x0;
 }

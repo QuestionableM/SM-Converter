@@ -28,6 +28,7 @@ public:
 	inline static std::wstring WorkshopFolder = L"";
 
 	inline static bool OpenLinksInSteam = false;
+	inline static bool IsDarkMode = true;
 
 	inline static PathChecker AssetListFolders     = {};
 	inline static PathChecker UserItemFolders      = {};
