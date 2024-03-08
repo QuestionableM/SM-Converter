@@ -23,16 +23,17 @@ struct LinkLabelData
 
 const static LinkLabelData g_libraryLabelRows[] =
 {
+	{ "QT", "https://www.qt.io/" },
 	{ "LZ4", "https://github.com/lz4/lz4" },
-	{ "Assimp", "https://github.com/assimp/assimp" },
-	{ "", "" },
 	{ "GLM", "https://github.com/g-truc/glm" },
 	{ "Valve VDF", "https://github.com/TinyTinni/ValveFileVDF" },
 	{ "", "" },
+	{ "Assimp", "https://github.com/assimp/assimp" },
 	{ "simdjson", "https://github.com/simdjson/simdjson" },
 	{ "PerlinNoise", "https://github.com/Reputeless/PerlinNoise" },
 	{ "", "" },
 	{ "FreeImage", "https://freeimage.sourceforge.io/" },
+	{ "Qt-WinDark", "https://github.com/envyen/qt-winDark" },
 	{ "Nlohmann Json", "https://github.com/nlohmann/json" },
 	{ "", "" }
 };
