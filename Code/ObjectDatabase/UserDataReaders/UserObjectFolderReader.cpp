@@ -75,7 +75,7 @@ void UserObjectFolderReader::ReadFromConfig()
 	UserCharacterReader::ClearStorage();
 
 	for (const auto& v_item_folder : DatabaseConfig::UserItemFolders)
-		UserObjectFolderReader::LoadObjectsFromFolder(v_item_folder.first);
+		UserObjectFolderReader::LoadObjectsFromFolder(v_item_folder);
 
 	UserObjectFolderReader::LoadObjectsFromFolder(DatabaseConfig::WorkshopFolder);
 	UserCharacterReader::LoadCharacters();

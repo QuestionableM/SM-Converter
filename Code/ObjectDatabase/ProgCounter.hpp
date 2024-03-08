@@ -1,8 +1,12 @@
 #pragma once
 
-#include "UStd\UnmanagedString.hpp"
+#include "Utils/clr_include.hpp"
 
-#pragma unmanaged
+#include "UStd/UnmanagedString.hpp"
+
+SM_UNMANAGED_CODE
+
+#include <atomic>
 
 enum class ProgState : std::size_t
 {
@@ -44,9 +48,9 @@ enum class ProgState : std::size_t
 class ProgCounter
 {
 public:
-	static ProgState State;
-	static std::size_t ProgressMax;
-	static std::size_t ProgressValue;
+	static std::atomic<ProgState> State; 
+	static std::atomic_size_t ProgressMax;
+	static std::atomic_size_t ProgressValue;
 
 	static void SetState(ProgState nState);
 	static void SetState(ProgState nState, std::size_t new_max);
@@ -55,4 +59,4 @@ public:
 	static bool StateHasNumbers();
 };
 
-#pragma managed
+SM_MANAGED_CODE

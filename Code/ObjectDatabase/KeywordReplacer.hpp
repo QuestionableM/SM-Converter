@@ -1,9 +1,11 @@
 #pragma once
 
-#include "UStd\UnmanagedUnorderedMap.hpp"
-#include "Utils\Uuid.hpp"
+#include "UStd/UnmanagedUnorderedMap.hpp"
 
-#pragma unmanaged
+#include "Utils/clr_include.hpp"
+#include "Utils/Uuid.hpp"
+
+SM_UNMANAGED_CODE
 
 class KeywordReplacer
 {
@@ -39,4 +41,4 @@ private:
 	inline static StringMap m_ResourceUpgrades = {};
 };
 
-#pragma managed
+SM_MANAGED_CODE

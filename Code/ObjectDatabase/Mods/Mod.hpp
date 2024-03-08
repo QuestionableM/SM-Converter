@@ -1,15 +1,16 @@
 #pragma once
 
-#include "ObjectDatabase\Mods\ModObjectStorage.hpp"
-#include "ObjectDatabase\ObjectData.hpp"
+#include "ObjectDatabase/Mods/ModObjectStorage.hpp"
+#include "ObjectDatabase/ObjectData.hpp"
 
-#include "UStd\UnmanagedUnorderedMap.hpp"
-#include "UStd\UnmanagedString.hpp"
+#include "UStd/UnmanagedUnorderedMap.hpp"
+#include "UStd/UnmanagedString.hpp"
 
-#include "Utils\Uuid.hpp"
-#include "Utils\Json.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/Uuid.hpp"
+#include "Utils/Json.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 enum class ModType
 {
@@ -130,7 +131,7 @@ public:
 
 	inline const SMUuid& GetUuid() const noexcept { return m_Uuid; }
 	inline const std::wstring& GetName() const noexcept { return m_Name; }
-	inline const unsigned long long& GetWorkshopId() const noexcept { return m_WorkshopId; }
+	inline std::uint64_t GetWorkshopId() const noexcept { return m_WorkshopId; }
 	inline const std::wstring& GetDirectory() const noexcept { return m_Directory; }
 
 	virtual ModType Type() const noexcept = 0;
@@ -182,4 +183,4 @@ private:
 	friend CustomGame;
 };
 
-#pragma managed
+SM_MANAGED_CODE

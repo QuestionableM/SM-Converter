@@ -1,11 +1,12 @@
 #pragma once
 
-#include "UStd\UnmanagedString.hpp"
+#include "UStd/UnmanagedString.hpp"
 
-#include "Utils\ByteImpl.hpp"
-#include "Utils\String.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/ByteImpl.hpp"
+#include "Utils/String.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class SMColor
 {
@@ -243,14 +244,8 @@ public:
 		Byte m_bytes[4];
 		unsigned int m_color;
 
-		struct
-		{
-			Byte r;
-			Byte g;
-			Byte b;
-			Byte a;
-		};
+		struct { Byte r, g, b, a; };
 	};
 };
 
-#pragma managed
+SM_MANAGED_CODE

@@ -11,13 +11,6 @@ bool WorldFolderReader::ShouldUseFilteredStorage()
 	return (FilterSettingsData::UserDataFilter != UserDataFilter_Any);
 }
 
-std::vector<WorldInstance*>& WorldFolderReader::GetCurrentStorage()
-{
-	return WorldFolderReader::ShouldUseFilteredStorage()
-		? WorldFolderReader::FilteredStorage
-		: WorldFolderReader::Storage;
-}
-
 void WorldFolderReader::FilterStorage()
 {
 	WorldFolderReader::FilteredStorage.clear();
@@ -40,7 +33,7 @@ void WorldFolderReader::LoadFromFile(const std::filesystem::path& path)
 	v_new_world->workshop_id = 0ull;
 	v_new_world->v_filter = FilterSettingsData::GetUserDataFilter(v_new_world->path);
 
-	WorldFolderReader::Storage.push_back(v_new_world);
+	WorldFolderReader::PushToStorage(v_new_world);
 }
 
 void WorldFolderReader::LoadFromFolder(const std::wstring& path, const simdjson::dom::element& v_cur_elem)
@@ -86,7 +79,7 @@ void WorldFolderReader::LoadFromFolder(const std::wstring& path, const simdjson:
 
 	v_new_world->v_filter = FilterSettingsData::GetUserDataFilter(v_new_world->path);
 
-	WorldFolderReader::Storage.push_back(v_new_world);
+	WorldFolderReader::PushToStorage(v_new_world);
 }
 
 void WorldFolderReader::ClearStorage()
@@ -94,7 +87,5 @@ void WorldFolderReader::ClearStorage()
 	for (WorldInstance* v_world_instance : WorldFolderReader::Storage)
 		delete v_world_instance;
 
-	WorldFolderReader::Storage.clear();
-	WorldFolderReader::SearchResults.clear();
-	WorldFolderReader::FilteredStorage.clear();
+	WorldFolderReader::ClearBase();
 }

@@ -1,9 +1,11 @@
 #pragma once
 
-#include "ObjectDatabase\Mods\Mod.hpp"
-#include "Utils\Json.hpp"
+#include "ObjectDatabase/Mods/Mod.hpp"
 
-#pragma unmanaged
+#include "Utils/clr_include.hpp"
+#include "Utils/Json.hpp"
+
+SM_UNMANAGED_CODE
 
 class DecalsetListReader
 {
@@ -11,4 +13,4 @@ public:
 	static void Load(const simdjson::dom::element& j_data, SMMod* mod, bool add_to_global_db);
 };
 
-#pragma managed
+SM_MANAGED_CODE

@@ -23,7 +23,7 @@ void KinematicListLoader::Load(const simdjson::dom::element& v_kinematics, SMMod
 		const auto v_uuid = v_kinematic["uuid"];
 		if (!v_uuid.is_string()) continue;
 
-		const SMUuid v_km_uuid = v_uuid.get_c_str();
+		const SMUuid v_km_uuid = v_uuid.get_c_str().value();
 		if (mod->m_Kinematics.ObjectExists(v_cur_db, v_km_uuid))
 			continue;
 

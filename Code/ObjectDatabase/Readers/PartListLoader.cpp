@@ -102,7 +102,7 @@ void PartListLoader::Load(const simdjson::dom::element& fParts, SMMod* mod, bool
 
 		if (!v_uuid.is_string()) continue;
 
-		const SMUuid v_prt_uuid = v_uuid.get_c_str();
+		const SMUuid v_prt_uuid = v_uuid.get_c_str().value();
 		if (mod->m_Parts.ObjectExists(v_cur_db, v_prt_uuid))
 			continue;
 
@@ -116,7 +116,7 @@ void PartListLoader::Load(const simdjson::dom::element& fParts, SMMod* mod, bool
 		v_new_part->m_textures = v_tex_data;
 		v_new_part->m_uuid = v_prt_uuid;
 		v_new_part->m_mod = mod;
-		v_new_part->m_defaultColor = (v_color.is_string() ? v_color.get_c_str() : "375000");
+		v_new_part->m_defaultColor = (v_color.is_string() ? v_color.get_c_str().value() : "375000");
 		v_new_part->m_bounds = PartListLoader::LoadPartCollision(v_prt);
 
 		(mod->m_Parts.*v_adder_func)(v_new_part);

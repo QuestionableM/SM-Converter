@@ -1,21 +1,22 @@
 #pragma once
 
-#include "UStd\UnmanagedAlgorithm.hpp"
-#include "UStd\UnmanagedVector.hpp"
-#include "UStd\UnmanagedString.hpp"
-#include "UStd\UnmanagedArray.hpp"
+#include "UStd/UnmanagedAlgorithm.hpp"
+#include "UStd/UnmanagedVector.hpp"
+#include "UStd/UnmanagedString.hpp"
+#include "UStd/UnmanagedArray.hpp"
 
 #if defined(DEBUG) || defined(_DEBUG)
-#include "UStd\UnmanagedFstream.hpp"
+#include "UStd/UnmanagedFstream.hpp"
 #define MEMORY_WRAPPER_DUMP_BYTES(wrapper, file_name, offset) wrapper.DumpBytes(file_name, offset)
 #else
 #define MEMORY_WRAPPER_DUMP_BYTES(...) ((void*)0)
 #endif
 
-#include "Utils\GlmUnmanaged.hpp"
-#include "Utils\ByteImpl.hpp"
+#include "Utils/GlmUnmanaged.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/ByteImpl.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 //Memory wrapper works by using the pointer to a vector
 //Make sure that the vector is in the same scope as the MemoryWrapper
@@ -262,4 +263,4 @@ public:
 	}
 };
 
-#pragma managed
+SM_MANAGED_CODE

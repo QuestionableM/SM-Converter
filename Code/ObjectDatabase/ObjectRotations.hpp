@@ -1,8 +1,9 @@
 #pragma once
 
-#include "Utils\GlmUnmanaged.hpp"
+#include "Utils/GlmUnmanaged.hpp"
+#include "Utils/clr_include.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 namespace Rotations
 {
@@ -32,4 +33,4 @@ namespace Rotations
 	}
 }
 
-#pragma managed
+SM_MANAGED_CODE

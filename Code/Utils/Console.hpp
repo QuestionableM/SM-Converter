@@ -2,12 +2,14 @@
 
 #ifdef SMC_ENABLE_DEBUG_CONSOLE
 
-#include "UStd\UnmanagedString.hpp"
-#include "UStd\UnmanagedVector.hpp"
+#include "clr_include.hpp"
 
-#include "Utils\WinInclude.hpp"
+SM_UNMANAGED_CODE
 
-#pragma unmanaged
+#include <string>
+#include <vector>
+
+#include "Utils/WinInclude.hpp"
 
 #include <stdio.h>
 
@@ -215,7 +217,7 @@ public:
 #define DebugErrorL(...)            DebugConsole::Out(0b1001_fg, "ERROR: "  , __FUNCTION__, "(", __LINE__, ") -> ", __VA_ARGS__, 0b1110_fg, "\n")
 #define DebugWarningL(...)          DebugConsole::Out(0b1101_fg, "WARNING: ", __FUNCTION__, "(", __LINE__, ") -> ", __VA_ARGS__, 0b1110_fg, "\n")
 
-#pragma managed
+SM_MANAGED_CODE
 
 #else
 #define CreateDebugConsole(ConName) ((void*)0)

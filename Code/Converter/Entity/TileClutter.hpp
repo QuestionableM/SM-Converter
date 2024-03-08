@@ -1,8 +1,9 @@
 #pragma once
 
+#include "Utils/clr_include.hpp"
 #include "Entity.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class SMTileClutter : public SMEntityWithModel
 {
@@ -30,4 +31,4 @@ private:
 	SMColor m_color = 0xffffff;
 };
 
-#pragma managed
+SM_MANAGED_CODE

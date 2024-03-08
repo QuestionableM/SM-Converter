@@ -1,8 +1,9 @@
 #pragma once
 
-#include "Utils\Json.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/Json.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class SMMod;
 
@@ -14,4 +15,4 @@ public:
 	static void Load(const simdjson::dom::element& v_kinematics, SMMod* mod, bool add_to_global_db);
 };
 
-#pragma managed
+SM_MANAGED_CODE

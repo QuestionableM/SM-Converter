@@ -1,35 +1,60 @@
 #include "SettingsGuiChangeDetector.hpp"
 
-#include "ObjectDatabase\DatabaseConfig.hpp"
+#include "ObjectDatabase/DatabaseConfig.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 SettingsChangeDetector::SettingsChangeDetector()
+	: m_gamePath(DatabaseConfig::GamePath),
+	m_localModList(DatabaseConfig::LocalModFolders),
+	m_workshopModList(DatabaseConfig::ModFolders),
+	m_modListMap(DatabaseConfig::ModPathChecker),
+	m_userItemFolders(DatabaseConfig::UserItemFolders),
+	m_openLinksInSteam(DatabaseConfig::OpenLinksInSteam),
+	m_darkMode(DatabaseConfig::IsDarkMode),
+	m_changeData(0) {}
+
+void SettingsChangeDetector::RemoveFromCheckedVec(
+	std::vector<std::wstring>& vec,
+	std::unordered_set<std::wstring>& map,
+	std::size_t idx)
 {
-	m_modListMap = DatabaseConfig::ModPathChecker;
-	m_localModList = DatabaseConfig::LocalModFolders;
-	m_workshopModList = DatabaseConfig::ModFolders;
-	m_userItemFolders = DatabaseConfig::UserItemFolders;
-
-	m_openLinksInSteam = DatabaseConfig::OpenLinksInSteam;
-
-	m_gamePath = DatabaseConfig::GamePath;
+	SettingsChangeDetector::RemoveFromMap(map, vec[idx]);
+	vec.erase(vec.begin() + idx);
 }
 
-void SettingsChangeDetector::RemoveFromCheckedVec(std::vector<std::wstring>& v_vec, std::unordered_map<std::wstring, unsigned char>& v_map, const std::size_t& v_idx)
+void SettingsChangeDetector::RemoveFromMap(
+	std::unordered_set<std::wstring>& map,
+	const std::wstring& path)
 {
-	const auto v_iter = v_map.find(v_vec[v_idx]);
-	if (v_iter != v_map.end())
-		v_map.erase(v_iter);
-
-	v_vec.erase(v_vec.begin() + v_idx);
+	const auto v_iter = map.find(path);
+	if (v_iter != map.end())
+		map.erase(v_iter);
 }
 
-void SettingsChangeDetector::RemoveFromMap(std::unordered_map<std::wstring, unsigned char>& v_map, const std::wstring& v_path)
+void SettingsChangeDetector::UpdateChange(unsigned char op_id)
 {
-	const auto v_iter = v_map.find(v_path);
-	if (v_iter != v_map.end())
-		v_map.erase(v_iter);
+	switch (op_id)
+	{
+	case SettingsChangeDetector_LocalModList:
+		this->SetChangeBit(op_id, m_localModList != DatabaseConfig::LocalModFolders);
+		break;
+	case SettingsChangeDetector_WorkshopModList:
+		this->SetChangeBit(op_id, m_workshopModList != DatabaseConfig::ModFolders);
+		break;
+	case SettingsChangeDetector_UserItemFolder:
+		this->SetChangeBit(op_id, m_userItemFolders != DatabaseConfig::UserItemFolders);
+		break;
+	case SettingsChangeDetector_OpenLinksInSteam:
+		this->SetChangeBit(op_id, m_openLinksInSteam != DatabaseConfig::OpenLinksInSteam);
+		break;
+	case SettingsChangeDetector_GamePath:
+		this->SetChangeBit(op_id, m_gamePath != DatabaseConfig::GamePath);
+		break;
+	case SettingsChangeDetector_DarkMode:
+		this->SetChangeBit(op_id, m_darkMode != DatabaseConfig::IsDarkMode);
+		break;
+	}
 }
 
 void SettingsChangeDetector::ApplyChanges()
@@ -56,6 +81,7 @@ void SettingsChangeDetector::ApplyChanges()
 
 	//Doesn't matter for boolean that much
 	DatabaseConfig::OpenLinksInSteam = m_openLinksInSteam;
+	DatabaseConfig::IsDarkMode = m_darkMode;
 
 	m_changeData = 0x0;
 }

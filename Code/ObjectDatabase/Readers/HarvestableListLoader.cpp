@@ -25,7 +25,7 @@ void HarvestableListLoader::Load(const simdjson::dom::element& fHarvestables, SM
 		const auto v_uuid_obj = v_hvs["uuid"];
 		if (!v_uuid_obj.is_string()) continue;
 
-		const SMUuid v_hvs_uuid = v_uuid_obj.get_c_str();
+		const SMUuid v_hvs_uuid = v_uuid_obj.get_c_str().value();
 		if (mod->m_Harvestables.ObjectExists(v_cur_db, v_hvs_uuid))
 			continue;
 

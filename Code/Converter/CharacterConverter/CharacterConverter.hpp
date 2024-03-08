@@ -1,9 +1,10 @@
 #pragma once
 
-#include "ObjectDatabase\UserDataReaders\UserCharacterData.hpp"
-#include "Converter\ConvertError.hpp"
+#include "ObjectDatabase/UserDataReaders/UserCharacterData.hpp"
+#include "Converter/ConvertError.hpp"
+#include "Utils/clr_include.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class CharacterConverter
 {
@@ -19,4 +20,4 @@ private:
 	~CharacterConverter() = default;
 };
 
-#pragma managed
+SM_MANAGED_CODE

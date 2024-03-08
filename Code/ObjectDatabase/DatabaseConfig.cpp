@@ -26,7 +26,7 @@ void DatabaseConfig::WstrMapToJson(nlohmann::json& j_obj, const std::string& key
 	nlohmann::json v_strArray = nlohmann::json::array();
 
 	for (const auto& v_item : v_map)
-		v_strArray.push_back(String::ToUtf8(v_item.first));
+		v_strArray.push_back(String::ToUtf8(v_item));
 
 	j_obj[key] = std::move(v_strArray);
 }
@@ -49,8 +49,8 @@ bool DatabaseConfig::AddToStrVec(std::vector<std::wstring>& v_vec, PathChecker& 
 		DebugWarningL("The specified path already exists: ", v_full_path);
 		return false;
 	}
-
-	v_path_checker.insert(std::make_pair(v_full_path, 1));
+	
+	v_path_checker.emplace(v_full_path);
 	v_vec.push_back(std::move(v_full_path));
 
 	return true;
@@ -75,7 +75,7 @@ bool DatabaseConfig::AddToStrMap(PathChecker& v_map, const std::wstring& v_new_s
 		return false;
 	}
 
-	v_map.insert(std::make_pair(std::move(v_full_path), 1));
+	v_map.insert(v_full_path);
 	return true;
 }
 
@@ -349,6 +349,9 @@ bool DatabaseConfig::ReadUserSettings(const nlohmann::json& config_json, bool& s
 		const auto& v_open_in_steam = JsonReader::Get(user_settings, "OpenLinksInSteam");
 		DatabaseConfig::OpenLinksInSteam = v_open_in_steam.is_boolean() ? v_open_in_steam.get<bool>() : false;
 
+		const auto& v_is_dark_mode = JsonReader::Get(user_settings, "IsDarkMode");
+		DatabaseConfig::IsDarkMode = v_is_dark_mode.is_boolean() ? v_is_dark_mode.get<bool>() : true;
+
 		DatabaseConfig::JsonStrArrayToStrVec(user_settings, "LocalModFolders", DatabaseConfig::LocalModFolders, DatabaseConfig::ModPathChecker, false);
 		DatabaseConfig::JsonStrArrayToStrVec(user_settings, "ModFolders", DatabaseConfig::ModFolders, DatabaseConfig::ModPathChecker, false);
 
@@ -495,6 +498,7 @@ void DatabaseConfig::SaveConfig()
 		user_settings["WorkshopDirectory"] = String::ToUtf8(DatabaseConfig::WorkshopFolder);
 
 		user_settings["OpenLinksInSteam"] = DatabaseConfig::OpenLinksInSteam;
+		user_settings["IsDarkMode"] = DatabaseConfig::IsDarkMode;
 
 		DatabaseConfig::WstrVecToJson(user_settings, "ModFolders", DatabaseConfig::ModFolders);
 		DatabaseConfig::WstrVecToJson(user_settings, "LocalModFolders", DatabaseConfig::LocalModFolders);

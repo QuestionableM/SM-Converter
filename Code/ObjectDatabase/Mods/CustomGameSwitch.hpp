@@ -1,11 +1,13 @@
 #pragma once
 
-#include "ObjectDatabase\Mods\CustomGameMod.hpp"
-#include "ObjectDatabase\KeywordReplacer.hpp"
-#include "UStd\UnmanagedUnorderedMap.hpp"
-#include "Utils\Console.hpp"
+#include "ObjectDatabase/Mods/CustomGameMod.hpp"
+#include "ObjectDatabase/KeywordReplacer.hpp"
+#include "UStd/UnmanagedUnorderedMap.hpp"
 
-#pragma unmanaged
+#include "Utils/clr_include.hpp"
+#include "Utils/Console.hpp"
+
+SM_UNMANAGED_CODE
 
 template<bool t_modify_blocks_only, bool t_sets_content_key>
 class SMModCustomGameSwitch
@@ -118,4 +120,4 @@ private:
 	std::unordered_map<SMUuid, KinematicData*> m_Kinematics;
 };
 
-#pragma managed
+SM_MANAGED_CODE

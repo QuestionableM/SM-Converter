@@ -1,10 +1,11 @@
 #pragma once
 
-#include "Converter\TileConverter\Readers\TileReader.hpp"
-#include "Converter\TileConverter\Tile.hpp"
-#include "ObjectDatabase\ProgCounter.hpp"
+#include "Converter/TileConverter/Readers/TileReader.hpp"
+#include "Converter/TileConverter/Tile.hpp"
+#include "ObjectDatabase/ProgCounter.hpp"
+#include "Utils/clr_include.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 struct WorldCellData
 {
@@ -206,4 +207,4 @@ private:
 	std::vector<WorldCellData> m_cellMap = {};
 };
 
-#pragma managed
+SM_MANAGED_CODE

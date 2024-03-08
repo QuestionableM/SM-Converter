@@ -53,7 +53,7 @@ void DecalsetReader::LoadFromFile(const std::wstring& path, SMMod* mod, bool add
 		if (v_decal_reg_array.size() != 4)
 			continue;
 
-		const SMUuid v_decal_uuid = v_uuid.get_c_str();
+		const SMUuid v_decal_uuid = v_uuid.get_c_str().value();
 		if (mod->m_Decals.ObjectExists(v_decal_uuid, add_to_global_db))
 			continue;
 

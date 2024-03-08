@@ -1,5 +1,8 @@
 #pragma once
-#pragma unmanaged
+
+#include "Utils/clr_include.hpp"
+
+SM_UNMANAGED_CODE
 
 #include <nlohmann\json.hpp>
 
@@ -102,4 +105,4 @@ private:
 	~JsonReader() = default;
 };
 
-#pragma managed
+SM_MANAGED_CODE

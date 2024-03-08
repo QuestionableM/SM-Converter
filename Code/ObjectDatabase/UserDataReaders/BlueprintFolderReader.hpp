@@ -1,15 +1,18 @@
 #pragma once
 
-#include "UStd\UnmanagedFilesystem.hpp"
-#include "Ustd\UnmanagedString.hpp"
-#include "Ustd\UnmanagedVector.hpp"
+#include "UStd/UnmanagedFilesystem.hpp"
+#include "Ustd/UnmanagedString.hpp"
+#include "Ustd/UnmanagedVector.hpp"
 
 #include "ObjectDatabase/Mods/Mod.hpp"
 #include "FilterSettingsData.hpp"
-#include "Utils\Uuid.hpp"
-#include "Utils\Json.hpp"
+#include "UserDataBase.hpp"
 
-#pragma unmanaged
+#include "Utils/clr_include.hpp"
+#include "Utils/Uuid.hpp"
+#include "Utils/Json.hpp"
+
+SM_UNMANAGED_CODE
 
 struct BlueprintInstance
 {
@@ -22,8 +25,8 @@ struct BlueprintInstance
 	std::wstring directory;
 	std::wstring preview_image;
 
-	unsigned long long workshop_id;
-	unsigned char v_filter;
+	std::uint64_t workshop_id;
+	std::uint8_t v_filter;
 
 	BlueprintInstance() = default;
 	BlueprintInstance(const BlueprintInstance&) = delete;
@@ -31,17 +34,11 @@ struct BlueprintInstance
 	~BlueprintInstance() = default;
 };
 
-class BlueprintFolderReader
+class BlueprintFolderReader :
+	public UserDataBase<BlueprintFolderReader, BlueprintInstance*>
 {
 public:
-	using InstanceType = BlueprintInstance;
-
-	inline static std::vector<BlueprintInstance*> Storage = {};
-	inline static std::vector<BlueprintInstance*> FilteredStorage = {};
-	inline static std::vector<BlueprintInstance*> SearchResults = {};
-
 	static bool ShouldUseFilteredStorage();
-	static std::vector<BlueprintInstance*>& GetCurrentStorage();
 	static void FilterStorage();
 
 	static void LoadFromFile(const std::filesystem::path& path);
@@ -56,4 +53,4 @@ private:
 	~BlueprintFolderReader() = default;
 };
 
-#pragma managed
+SM_MANAGED_CODE

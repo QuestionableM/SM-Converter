@@ -1,4 +1,7 @@
 #pragma once
-#pragma unmanaged
+
+#include "Utils/clr_include.hpp"
+
+SM_UNMANAGED_CODE
 #include <algorithm>
-#pragma managed
+SM_MANAGED_CODE

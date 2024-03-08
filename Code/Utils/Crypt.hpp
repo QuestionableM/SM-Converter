@@ -1,8 +1,9 @@
 #pragma once
 
-#include "UStd\UnmanagedString.hpp"
+#include "UStd/UnmanagedString.hpp"
+#include "Utils/clr_include.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 namespace Crypt
 {
@@ -16,4 +17,4 @@ namespace Crypt
 	std::string GetHashString(const void* pData, std::size_t mDataSize, HashType mType);
 }
 
-#pragma managed
+SM_MANAGED_CODE

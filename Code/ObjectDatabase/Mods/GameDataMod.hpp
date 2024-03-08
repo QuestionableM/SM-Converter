@@ -1,8 +1,9 @@
 #pragma once
 
+#include "Utils/clr_include.hpp"
 #include "Mod.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class GameDataMod : public SMMod
 {
@@ -14,4 +15,4 @@ public:
 	void LoadObjectDatabase() override;
 };
 
-#pragma managed
+SM_MANAGED_CODE

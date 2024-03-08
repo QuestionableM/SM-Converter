@@ -1,15 +1,16 @@
 #pragma once
 
-#include "ObjectDatabase\ObjectData.hpp"
-#include "Converter\WriterOffset.hpp"
+#include "ObjectDatabase/ObjectData.hpp"
+#include "Converter/WriterOffset.hpp"
 
-#include "UStd\UnmanagedString.hpp"
+#include "UStd/UnmanagedString.hpp"
 
-#include "Utils\GlmUnmanaged.hpp"
-#include "Utils\Color.hpp"
-#include "Utils\Uuid.hpp"
+#include "Utils/GlmUnmanaged.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/Color.hpp"
+#include "Utils/Uuid.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 struct ObjectTexData
 {
@@ -168,4 +169,4 @@ protected:
 	SMUuid m_uuid;
 };
 
-#pragma managed
+SM_MANAGED_CODE

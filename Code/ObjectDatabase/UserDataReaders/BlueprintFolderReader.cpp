@@ -15,13 +15,6 @@ bool BlueprintFolderReader::ShouldUseFilteredStorage()
 	return (FilterSettingsData::UserDataFilter != UserDataFilter_Any);
 }
 
-std::vector<BlueprintInstance*>& BlueprintFolderReader::GetCurrentStorage()
-{
-	return BlueprintFolderReader::ShouldUseFilteredStorage()
-		? BlueprintFolderReader::FilteredStorage
-		: BlueprintFolderReader::Storage;
-}
-
 void BlueprintFolderReader::FilterStorage()
 {
 	BlueprintFolderReader::FilteredStorage.clear();
@@ -44,7 +37,7 @@ void BlueprintFolderReader::LoadFromFile(const std::filesystem::path& path)
 	v_new_bp->workshop_id = 0ull;
 	v_new_bp->v_filter = FilterSettingsData::GetUserDataFilter(v_new_bp->path);
 
-	BlueprintFolderReader::Storage.push_back(v_new_bp);
+	BlueprintFolderReader::PushToStorage(v_new_bp);
 }
 
 void BlueprintFolderReader::LoadFromFolder(const std::wstring& folder, const simdjson::dom::element& v_cur_elem)
@@ -74,7 +67,7 @@ void BlueprintFolderReader::LoadFromFolder(const std::wstring& folder, const sim
 	const auto v_bp_workshop_id = v_cur_elem["fileId"];
 	v_new_bp->workshop_id = (v_bp_workshop_id.is_number() ? JsonReader::GetNumber<unsigned long long>(v_bp_workshop_id) : 0ull);
 
-	BlueprintFolderReader::Storage.push_back(v_new_bp);
+	BlueprintFolderReader::PushToStorage(v_new_bp);
 }
 
 void BlueprintFolderReader::ClearStorage()
@@ -82,7 +75,5 @@ void BlueprintFolderReader::ClearStorage()
 	for (std::size_t a = 0; a < BlueprintFolderReader::Storage.size(); a++)
 		delete BlueprintFolderReader::Storage[a];
 
-	BlueprintFolderReader::Storage.clear();
-	BlueprintFolderReader::SearchResults.clear();
-	BlueprintFolderReader::FilteredStorage.clear();
+	BlueprintFolderReader::ClearBase();
 }

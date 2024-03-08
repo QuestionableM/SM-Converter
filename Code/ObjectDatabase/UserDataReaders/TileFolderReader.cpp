@@ -17,13 +17,6 @@ bool TileFolderReader::ShouldUseFilteredStorage()
 	return (FilterSettingsData::TileSizeFilter != TileSizeFilter_Any || FilterSettingsData::UserDataFilter != UserDataFilter_Any);
 }
 
-std::vector<TileInstance*>& TileFolderReader::GetCurrentStorage()
-{
-	return TileFolderReader::ShouldUseFilteredStorage()
-		? TileFolderReader::FilteredStorage
-		: TileFolderReader::Storage;
-}
-
 void TileFolderReader::FilterStorage()
 {
 	TileFolderReader::FilteredStorage.clear();
@@ -49,9 +42,9 @@ TileSizeFilter TileFolderReader::GetTileSize(int v_sz)
 	}
 }
 
-void TileFolderReader::GetTileData(TileInstance* v_tile_instance, ConvertError& v_error)
+void TileFolderReader::GetTileData(const std::wstring& path, ConvertError& v_error)
 {
-	Tile* v_tile = TileReader::ReadTile<true>(v_tile_instance->path, v_error);
+	Tile* v_tile = TileReader::ReadTile<true>(path, v_error);
 	if (v_tile) delete v_tile;
 }
 
@@ -96,7 +89,7 @@ void TileFolderReader::LoadFromFile(const std::filesystem::path& path)
 	if (File::Exists(v_preview_img))
 		v_new_tile->preview_image = v_preview_img;
 
-	TileFolderReader::Storage.push_back(v_new_tile);
+	TileFolderReader::PushToStorage(v_new_tile);
 	TileFolderReader::TileMap.insert(std::make_pair(v_new_tile->uuid, v_new_tile));
 }
 
@@ -111,7 +104,7 @@ void TileFolderReader::LoadFromFolder(const std::wstring& path, const simdjson::
 		return;
 
 	const std::wstring v_tile_filename = String::ToWide(v_name.get_string());
-	const SMUuid v_content_uuid = v_uuid.get_c_str();
+	const SMUuid v_content_uuid = v_uuid.get_c_str().value();
 
 	std::wstring v_tile_path_str = path + L"/" + v_tile_filename;
 	if (!File::Exists(v_tile_path_str))
@@ -155,7 +148,7 @@ void TileFolderReader::LoadFromFolder(const std::wstring& path, const simdjson::
 	v_new_tile->v_size_filter = TileFolderReader::GetTileSize(v_tile_info.width);
 	v_new_tile->v_filter = FilterSettingsData::GetUserDataFilter(v_new_tile->path);
 
-	TileFolderReader::Storage.push_back(v_new_tile);
+	TileFolderReader::PushToStorage(v_new_tile);
 	TileFolderReader::TileMap.insert(std::make_pair(v_new_tile->uuid, v_new_tile));
 }
 
@@ -164,7 +157,6 @@ void TileFolderReader::ClearStorage()
 	for (std::size_t a = 0; a < TileFolderReader::Storage.size(); a++)
 		delete TileFolderReader::Storage[a];
 
-	TileFolderReader::SearchResults.clear();
-	TileFolderReader::Storage.clear();
 	TileFolderReader::TileMap.clear();
+	TileFolderReader::ClearBase();
 }

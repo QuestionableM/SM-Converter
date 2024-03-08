@@ -1,13 +1,14 @@
 #pragma once
 
-#include "ObjectDatabase\ObjectData.hpp"
+#include "ObjectDatabase/ObjectData.hpp"
 
-#include "UStd\UnmanagedString.hpp"
-#include "UStd\UnmanagedVector.hpp"
+#include "UStd/UnmanagedString.hpp"
+#include "UStd/UnmanagedVector.hpp"
 
-#include "Utils\Json.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/Json.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class DatabaseLoader
 {
@@ -22,4 +23,4 @@ public:
 	static void InitializeDatabase();
 };
 
-#pragma managed
+SM_MANAGED_CODE

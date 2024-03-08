@@ -1,15 +1,19 @@
 #pragma once
 
-#include "UStd\UnmanagedString.hpp"
-#include "Utils\Json.hpp"
+#include "UStd/UnmanagedString.hpp"
 
-#pragma unmanaged
+#include "Utils/clr_include.hpp"
+#include "Utils/Json.hpp"
+
+SM_UNMANAGED_CODE
+
+#include <unordered_set>
 
 class DatabaseConfig
 {
 public:
 	//Used to remove the same path entires
-	using PathChecker = std::unordered_map<std::wstring, unsigned char>;
+	using PathChecker = std::unordered_set<std::wstring>;
 
 	constexpr static const std::wstring_view BlueprintOutputFolder = L".\\ConvertedBlueprints";
 	constexpr static const std::wstring_view TileOutputFolder = L".\\ConvertedTiles";
@@ -24,6 +28,7 @@ public:
 	inline static std::wstring WorkshopFolder = L"";
 
 	inline static bool OpenLinksInSteam = false;
+	inline static bool IsDarkMode = true;
 
 	inline static PathChecker AssetListFolders     = {};
 	inline static PathChecker UserItemFolders      = {};
@@ -67,4 +72,4 @@ public:
 	static void ClearConfig();
 };
 
-#pragma managed
+SM_MANAGED_CODE

@@ -1,10 +1,12 @@
 #pragma once
 
-#include "ObjectDatabase\ObjectData.hpp"
-#include "Utils\Color.hpp"
+#include "ObjectDatabase/ObjectData.hpp"
 #include "Entity.hpp"
 
-#pragma unmanaged
+#include "Utils/clr_include.hpp"
+#include "Utils/Color.hpp"
+
+SM_UNMANAGED_CODE
 
 class SMDecal : public SMEntity
 {
@@ -29,4 +31,4 @@ private:
 	SMColor m_color;
 };
 
-#pragma managed
+SM_MANAGED_CODE

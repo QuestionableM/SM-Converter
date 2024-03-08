@@ -12,13 +12,6 @@ bool UserCharacterReader::ShouldUseFilteredStorage()
 	return (FilterSettingsData::UserDataFilter != UserDataFilter_Any);
 }
 
-std::vector<UserCharacterInstance*>& UserCharacterReader::GetCurrentStorage()
-{
-	return UserCharacterReader::ShouldUseFilteredStorage()
-		? UserCharacterReader::FilteredStorage
-		: UserCharacterReader::Storage;
-}
-
 void UserCharacterReader::FilterStorage()
 {
 	UserCharacterReader::FilteredStorage.clear();
@@ -47,7 +40,7 @@ void UserCharacterReader::LoadFromFile(const std::filesystem::path& path)
 	v_new_instance->directory = path.wstring();
 	v_new_instance->v_filter = FilterSettingsData::GetUserDataFilter(v_new_instance->path);
 
-	UserCharacterReader::Storage.push_back(v_new_instance);
+	UserCharacterReader::PushToStorage(v_new_instance);
 }
 
 void UserCharacterReader::LoadCharacters()
@@ -76,7 +69,5 @@ void UserCharacterReader::ClearStorage()
 	for (UserCharacterInstance* v_char_instance : UserCharacterReader::Storage)
 		delete v_char_instance;
 
-	UserCharacterReader::Storage.clear();
-	UserCharacterReader::SearchResults.clear();
-	UserCharacterReader::FilteredStorage.clear();
+	UserCharacterReader::ClearBase();
 }

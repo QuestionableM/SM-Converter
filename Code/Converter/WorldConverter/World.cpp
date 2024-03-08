@@ -1,18 +1,17 @@
 #include "World.hpp"
 
-#include "Converter\Entity\GroundTerrainData.hpp"
-#include "Converter\MtlFileWriter.hpp"
+#include "Converter/Entity/GroundTerrainData.hpp"
+#include "Converter/MtlFileWriter.hpp"
 
-#include "Utils\File.hpp"
-#include "Utils\Json.hpp"
-#include "Utils\Math.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/File.hpp"
+#include "Utils/Json.hpp"
+#include "Utils/Math.hpp"
 
-#pragma unmanaged
-#include <PerlinNoise\PerlinNoise.hpp>
+SM_UNMANAGED_CODE
+
+#include <PerlinNoise/PerlinNoise.hpp>
 #include <FreeImage.h>
-#pragma managed
-
-#pragma unmanaged
 
 void SMWorld::GetVertexHeight(std::vector<float>& v_vert_array) const
 {

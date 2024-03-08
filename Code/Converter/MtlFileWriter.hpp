@@ -1,11 +1,12 @@
 #pragma once
 
-#include "Converter\Entity\Entity.hpp"
+#include "Converter/Entity/Entity.hpp"
 
-#include "UStd\UnmanagedUnorderedMap.hpp"
-#include "UStd\UnmanagedString.hpp"
+#include "UStd/UnmanagedUnorderedMap.hpp"
+#include "UStd/UnmanagedString.hpp"
+#include "Utils/clr_include.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class MtlFileWriter
 {
@@ -19,4 +20,4 @@ private:
 	~MtlFileWriter() = default;
 };
 
-#pragma managed
+SM_MANAGED_CODE

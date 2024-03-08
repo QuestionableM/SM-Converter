@@ -1,15 +1,16 @@
 #pragma once
 
-#include "Converter\WriterOffset.hpp"
+#include "Converter/WriterOffset.hpp"
 
-#include "UStd\UnmanagedUnorderedMap.hpp"
-#include "UStd\UnmanagedFstream.hpp"
-#include "UStd\UnmanagedString.hpp"
-#include "UStd\UnmanagedVector.hpp"
+#include "UStd/UnmanagedUnorderedMap.hpp"
+#include "UStd/UnmanagedFstream.hpp"
+#include "UStd/UnmanagedString.hpp"
+#include "UStd/UnmanagedVector.hpp"
 
-#include "Utils\GlmUnmanaged.hpp"
+#include "Utils/GlmUnmanaged.hpp"
+#include "Utils/clr_include.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 #include <assimp\postprocess.h>
 #include <assimp\Importer.hpp>
@@ -99,4 +100,4 @@ public:
 	static void ClearStorage();
 };
 
-#pragma managed
+SM_MANAGED_CODE

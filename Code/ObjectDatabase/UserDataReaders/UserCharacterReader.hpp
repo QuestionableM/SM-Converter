@@ -1,13 +1,15 @@
 #pragma once
 
-#include "UStd\UnmanagedFilesystem.hpp"
-#include "UStd\UnmanagedVector.hpp"
+#include "UStd/UnmanagedFilesystem.hpp"
+#include "UStd/UnmanagedVector.hpp"
 
 #include "UserCharacterData.hpp"
+#include "UserDataBase.hpp"
 
-#include "Utils\Uuid.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/Uuid.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 struct UserCharacterInstance
 {
@@ -27,16 +29,10 @@ struct UserCharacterInstance
 };
 
 class UserCharacterReader
+	: public UserDataBase<UserCharacterReader, UserCharacterInstance*>
 {
 public:
-	using InstanceType = UserCharacterInstance;
-
-	inline static std::vector<UserCharacterInstance*> Storage = {};
-	inline static std::vector<UserCharacterInstance*> FilteredStorage = {};
-	inline static std::vector<UserCharacterInstance*> SearchResults = {};
-
 	static bool ShouldUseFilteredStorage();
-	static std::vector<UserCharacterInstance*>& GetCurrentStorage();
 	static void FilterStorage();
 	
 	static void LoadFromFile(const std::filesystem::path& path);
@@ -51,4 +47,4 @@ private:
 	~UserCharacterReader() = default;
 };
 
-#pragma managed
+SM_MANAGED_CODE

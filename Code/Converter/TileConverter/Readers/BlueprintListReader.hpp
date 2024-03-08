@@ -1,13 +1,14 @@
 #pragma once
 
-#include "Converter\TileConverter\CellHeader.hpp"
-#include "Converter\TileConverter\TilePart.hpp"
-#include "Converter\TileConverter\Tile.hpp"
+#include "Converter/TileConverter/CellHeader.hpp"
+#include "Converter/TileConverter/TilePart.hpp"
+#include "Converter/TileConverter/Tile.hpp"
 
-#include "Utils\Memory.hpp"
-#include "Utils\Lz4Lib.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/Memory.hpp"
+#include "Utils/Lz4Lib.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class BlueprintListReader
 {
@@ -101,4 +102,4 @@ public:
 	}
 };
 
-#pragma managed
+SM_MANAGED_CODE

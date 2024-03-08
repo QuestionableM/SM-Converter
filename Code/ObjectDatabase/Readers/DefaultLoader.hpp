@@ -1,9 +1,11 @@
 #pragma once
 
-#include "ObjectDatabase\ObjectData.hpp"
-#include "Utils\Json.hpp"
+#include "ObjectDatabase/ObjectData.hpp"
 
-#pragma unmanaged
+#include "Utils/clr_include.hpp"
+#include "Utils/Json.hpp"
+
+SM_UNMANAGED_CODE
 
 class DefaultLoader
 {
@@ -17,4 +19,4 @@ public:
 	static bool LoadRenderable(const simdjson::dom::element& jAsset, SMSubMeshBase** tData, std::wstring& mesh);
 };
 
-#pragma managed
+SM_MANAGED_CODE

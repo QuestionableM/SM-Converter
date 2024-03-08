@@ -1,10 +1,12 @@
 #pragma once
 
-#include "UStd\UnmanagedUnorderedMap.hpp"
-#include "UStd\UnmanagedString.hpp"
-#include "UStd\UnmanagedVector.hpp"
+#include "Utils/clr_include.hpp"
 
-#pragma unmanaged
+#include "UStd/UnmanagedUnorderedMap.hpp"
+#include "UStd/UnmanagedString.hpp"
+#include "UStd/UnmanagedVector.hpp"
+
+SM_UNMANAGED_CODE
 
 enum class SMSubMeshType : unsigned char
 {
@@ -127,4 +129,4 @@ private:
 	StorageMap m_Storage = {};
 };
 
-#pragma managed
+SM_MANAGED_CODE

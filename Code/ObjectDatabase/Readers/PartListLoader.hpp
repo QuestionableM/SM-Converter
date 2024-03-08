@@ -1,10 +1,11 @@
 #pragma once
 
-#include "Utils\GlmUnmanaged.hpp"
-#include "Utils\Json.hpp"
-#include "Utils\Uuid.hpp"
+#include "Utils/GlmUnmanaged.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/Json.hpp"
+#include "Utils/Uuid.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class SMMod;
 
@@ -32,4 +33,4 @@ private:
 	static const __CollisionLoaderData g_collisionDataLoaders[];
 };
 
-#pragma managed
+SM_MANAGED_CODE

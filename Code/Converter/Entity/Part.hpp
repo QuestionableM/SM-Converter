@@ -1,10 +1,12 @@
 #pragma once
 
-#include "ObjectDatabase\ModelStorage.hpp"
-#include "Utils\Color.hpp"
+#include "ObjectDatabase/ModelStorage.hpp"
 #include "Entity.hpp"
 
-#pragma unmanaged
+#include "Utils/clr_include.hpp"
+#include "Utils/Color.hpp"
+
+SM_UNMANAGED_CODE
 
 class SMPart : public SMEntityWithModelAndUuid
 {
@@ -40,4 +42,4 @@ private:
 	unsigned char m_xzRotation;
 };
 
-#pragma managed
+SM_MANAGED_CODE

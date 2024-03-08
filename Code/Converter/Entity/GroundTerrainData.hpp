@@ -1,8 +1,9 @@
 #pragma once
 
+#include "Utils/clr_include.hpp"
 #include "Entity.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class SMGroundTerrainData : public SMEntity
 {
@@ -35,4 +36,4 @@ public:
 	inline void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const override {}
 };
 
-#pragma managed
+SM_MANAGED_CODE

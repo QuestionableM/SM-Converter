@@ -1,8 +1,9 @@
 #pragma once
 
+#include "Utils/clr_include.hpp"
 #include "Entity.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class SMBlock : public SMEntityWithUuid
 {
@@ -48,4 +49,4 @@ private:
 	unsigned char m_xzRotation;
 };
 
-#pragma managed
+SM_MANAGED_CODE

@@ -1,10 +1,14 @@
 #pragma once
 
-#include "UStd\UnmanagedUnorderedMap.hpp"
-#include "UStd\UnmanagedString.hpp"
-#include "UStd\UnmanagedVector.hpp"
+#include "UStd/UnmanagedUnorderedMap.hpp"
+#include "UStd/UnmanagedString.hpp"
+#include "UStd/UnmanagedVector.hpp"
 
-#pragma unmanaged
+#include "Utils/clr_include.hpp"
+
+SM_UNMANAGED_CODE
+
+#include <unordered_set>
 
 enum : unsigned char
 {
@@ -12,7 +16,8 @@ enum : unsigned char
 	SettingsChangeDetector_WorkshopModList  = (1 << 1),
 	SettingsChangeDetector_UserItemFolder   = (1 << 2),
 	SettingsChangeDetector_OpenLinksInSteam = (1 << 3),
-	SettingsChangeDetector_GamePath         = (1 << 4)
+	SettingsChangeDetector_GamePath         = (1 << 4),
+	SettingsChangeDetector_DarkMode         = (1 << 5)
 };
 
 class SettingsChangeDetector
@@ -24,19 +29,15 @@ public:
 	SettingsChangeDetector(SettingsChangeDetector&) = delete;
 	~SettingsChangeDetector() = default;
 
-	static void RemoveFromCheckedVec(std::vector<std::wstring>& v_vec, std::unordered_map<std::wstring, unsigned char>& v_map, const std::size_t& v_idx);
-	static void RemoveFromMap(std::unordered_map<std::wstring, unsigned char>& v_map, const std::wstring& v_path);
+	static void RemoveFromCheckedVec(
+		std::vector<std::wstring>& vec,
+		std::unordered_set<std::wstring>& map,
+		std::size_t idx);
+	static void RemoveFromMap(
+		std::unordered_set<std::wstring>& map,
+		const std::wstring& path);
 
-	std::wstring m_gamePath = L"";
-	std::unordered_map<std::wstring, unsigned char> m_modListMap = {};
-	std::vector<std::wstring> m_localModList    = {};
-	std::vector<std::wstring> m_workshopModList = {};
-	std::unordered_map<std::wstring, unsigned char> m_userItemFolders = {};
-
-	bool m_openLinksInSteam = false;
-
-
-	inline void SetChangeBit(const unsigned char& bit, const bool& is_set)
+	inline void SetChangeBit(unsigned char bit, bool is_set)
 	{
 		if (is_set)
 			m_changeData |= bit;
@@ -44,7 +45,7 @@ public:
 			m_changeData &= ~bit;
 	}
 
-	inline bool IsAnyBitSet(const unsigned char& bit)
+	inline bool IsAnyBitSet(const unsigned char& bit) const
 	{
 		return (m_changeData & bit) != 0;
 	}
@@ -54,25 +55,21 @@ public:
 		return (m_changeData != 0);
 	}
 
-	template<unsigned char t_option_id>
-	inline constexpr void UpdateChange()
-	{
-		if constexpr (t_option_id == SettingsChangeDetector_LocalModList)
-			this->SetChangeBit(t_option_id, m_localModList != DatabaseConfig::LocalModFolders);
-		else if constexpr (t_option_id == SettingsChangeDetector_WorkshopModList)
-			this->SetChangeBit(t_option_id, m_workshopModList != DatabaseConfig::ModFolders);
-		else if constexpr (t_option_id == SettingsChangeDetector_UserItemFolder)
-			this->SetChangeBit(t_option_id, m_userItemFolders != DatabaseConfig::UserItemFolders);
-		else if constexpr (t_option_id == SettingsChangeDetector_OpenLinksInSteam)
-			this->SetChangeBit(t_option_id, m_openLinksInSteam != DatabaseConfig::OpenLinksInSteam);
-		else if constexpr (t_option_id == SettingsChangeDetector_GamePath)
-			this->SetChangeBit(t_option_id, m_gamePath != DatabaseConfig::GamePath);
-	}
-
+	void UpdateChange(unsigned char op_id);
 	void ApplyChanges();
 
+	std::wstring m_gamePath;
+
+	std::vector<std::wstring> m_localModList;
+	std::vector<std::wstring> m_workshopModList;
+	std::unordered_set<std::wstring> m_modListMap;
+	std::unordered_set<std::wstring> m_userItemFolders;
+	
+	bool m_openLinksInSteam;
+	bool m_darkMode;
+
 private:
-	unsigned char m_changeData = 0x0;
+	unsigned char m_changeData;
 };
 
-#pragma managed
+SM_MANAGED_CODE

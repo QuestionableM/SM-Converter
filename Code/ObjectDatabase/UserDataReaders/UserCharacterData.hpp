@@ -1,8 +1,9 @@
 #pragma once
 
-#include "Utils\Uuid.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/Uuid.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 struct UserCharacterData
 {
@@ -48,4 +49,4 @@ struct UserCharacterData
 	bool from_file(const std::wstring& path);
 };
 
-#pragma managed
+SM_MANAGED_CODE

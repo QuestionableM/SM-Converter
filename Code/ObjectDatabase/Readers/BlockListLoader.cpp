@@ -67,7 +67,7 @@ void BlockListLoader::Load(const simdjson::dom::element& fBlocks, SMMod* mod, bo
 
 		if (!v_uuid.is_string()) continue;
 
-		const SMUuid v_blk_uuid = v_uuid.get_c_str();
+		const SMUuid v_blk_uuid = v_uuid.get_c_str().value();
 		if (mod->m_Blocks.ObjectExists(v_cur_db, v_blk_uuid))
 			continue;
 
@@ -82,7 +82,7 @@ void BlockListLoader::Load(const simdjson::dom::element& fBlocks, SMMod* mod, bo
 		v_new_blk->m_uuid = v_blk_uuid;
 		v_new_blk->m_textures = v_tList;
 		v_new_blk->m_tiling = v_blk_tiling;
-		v_new_blk->m_defaultColor = (v_color.is_string() ? v_color.get_c_str() : "375000");
+		v_new_blk->m_defaultColor = (v_color.is_string() ? v_color.get_c_str().value() : "375000");
 		v_new_blk->m_mod = mod;
 
 		(mod->m_Blocks.*v_adder_func)(v_new_blk);

@@ -1,9 +1,11 @@
 #pragma once
 
-#include "UStd\UnmanagedUnorderedMap.hpp"
-#include "UStd\UnmanagedString.hpp"
+#include "Utils/clr_include.hpp"
 
-#pragma unmanaged
+#include "UStd/UnmanagedUnorderedMap.hpp"
+#include "UStd/UnmanagedString.hpp"
+
+SM_UNMANAGED_CODE
 
 class MaterialManager
 {
@@ -21,4 +23,4 @@ private:
 	static MaterialMap m_materialStorage;
 };
 
-#pragma managed
+SM_MANAGED_CODE

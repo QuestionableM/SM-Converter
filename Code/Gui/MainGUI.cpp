@@ -295,8 +295,8 @@ namespace SMConverter
 		std::wstring v_state_output = ProgCounter::GetStateString();
 		if (ProgCounter::StateHasNumbers())
 		{
-			const std::size_t v_max_val = ProgCounter::ProgressMax;
-			const std::size_t v_cur_val = std::min(ProgCounter::ProgressValue, v_max_val);
+			const std::size_t v_max_val = ProgCounter::ProgressMax.load();
+			const std::size_t v_cur_val = std::min(ProgCounter::ProgressValue.load(), v_max_val);
 
 			m_pb_progress->Maximum = static_cast<int>(v_max_val);
 			m_pb_progress->Value   = static_cast<int>(v_cur_val);
@@ -529,58 +529,21 @@ namespace SMConverter
 		}
 	}
 
-	template<typename T>
-	inline void SearchFunction(
-		const std::wstring& search_str,
-		int v_lastSearchLength,
-		int v_currentSearchLength)
-	{
-		if (T::Storage.empty())
-			return;
-
-		if (v_lastSearchLength != 0 && v_currentSearchLength > v_lastSearchLength)
-		{
-			std::size_t v_newCacheSize = 0;
-
-			for (T::InstanceType* v_cur_instance : T::SearchResults)
-				if (v_cur_instance->lower_name.find(search_str) != std::wstring::npos)
-					T::SearchResults[v_newCacheSize++] = v_cur_instance;
-
-			T::SearchResults.resize(v_newCacheSize);
-		}
-		else
-		{
-			T::SearchResults.clear();
-
-			const std::vector<T::InstanceType*>& v_cur_array = T::GetCurrentStorage();
-			for (T::InstanceType* v_cur_instance : v_cur_array)
-				if (v_cur_instance->lower_name.find(search_str) != std::wstring::npos)
-					T::SearchResults.push_back(v_cur_instance);
-		}
-	}
-
-	template<typename T>
-	inline constexpr void UpdateUserStorage()
-	{
-		if (T::ShouldUseFilteredStorage())
-			T::FilterStorage();
-	}
-
 	inline void FilterStorageIfNeeded(int selected_index)
 	{
 		switch (selected_index)
 		{
 		case Generator_BlueprintConverter:
-			UpdateUserStorage<BlueprintFolderReader>();
+			BlueprintFolderReader::UpdateStorage();
 			break;
 		case Generator_TileConverter:
-			UpdateUserStorage<TileFolderReader>();
+			TileFolderReader::UpdateStorage();
 			break;
 		case Generator_WorldConverter:
-			UpdateUserStorage<WorldFolderReader>();
+			WorldFolderReader::UpdateStorage();
 			break;
 		case Generator_CharacterConverter:
-			UpdateUserStorage<UserCharacterReader>();
+			UserCharacterReader::UpdateStorage();
 			break;
 		}
 	}
@@ -597,16 +560,16 @@ namespace SMConverter
 			switch (m_cb_selectedGenerator->SelectedIndex)
 			{
 			case Generator_BlueprintConverter:
-				SearchFunction<BlueprintFolderReader>(v_search_str, last_search_length, m_tb_searchBox->TextLength);
+				BlueprintFolderReader::Search(v_search_str, last_search_length, m_tb_searchBox->TextLength);
 				break;
 			case Generator_TileConverter:
-				SearchFunction<TileFolderReader>(v_search_str, last_search_length, m_tb_searchBox->TextLength);
+				TileFolderReader::Search(v_search_str, last_search_length, m_tb_searchBox->TextLength);
 				break;
 			case Generator_WorldConverter:
-				SearchFunction<WorldFolderReader>(v_search_str, last_search_length, m_tb_searchBox->TextLength);
+				WorldFolderReader::Search(v_search_str, last_search_length, m_tb_searchBox->TextLength);
 				break;
 			case Generator_CharacterConverter:
-				SearchFunction<UserCharacterReader>(v_search_str, last_search_length, m_tb_searchBox->TextLength);
+				UserCharacterReader::Search(v_search_str, last_search_length, m_tb_searchBox->TextLength);
 				break;
 			}
 		}

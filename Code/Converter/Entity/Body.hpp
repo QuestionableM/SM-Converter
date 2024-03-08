@@ -2,13 +2,14 @@
 
 #include "Entity.hpp"
 
-#include "Converter\ConvertSettings.hpp"
+#include "Converter/ConvertSettings.hpp"
+#include "Utils/clr_include.hpp"
 
-#include "UStd\UnmanagedFstream.hpp"
-#include "UStd\UnmanagedString.hpp"
-#include "UStd\UnmanagedVector.hpp"
+#include "UStd/UnmanagedFstream.hpp"
+#include "UStd/UnmanagedString.hpp"
+#include "UStd/UnmanagedVector.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class SMBody : public SMEntity
 {
@@ -78,4 +79,4 @@ private:
 	std::string m_body_name;
 };
 
-#pragma managed
+SM_MANAGED_CODE

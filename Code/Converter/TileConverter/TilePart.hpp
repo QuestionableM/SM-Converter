@@ -1,15 +1,16 @@
 #pragma once
 
-#include "Converter\Entity\TileClutter.hpp"
-#include "Converter\Entity\Harvestable.hpp"
-#include "Converter\Entity\Blueprint.hpp"
-#include "Converter\Entity\Prefab.hpp"
-#include "Converter\Entity\Asset.hpp"
-#include "Converter\WriterOffset.hpp"
+#include "Converter/Entity/TileClutter.hpp"
+#include "Converter/Entity/Harvestable.hpp"
+#include "Converter/Entity/Blueprint.hpp"
+#include "Converter/Entity/Prefab.hpp"
+#include "Converter/Entity/Asset.hpp"
+#include "Converter/WriterOffset.hpp"
 
-#include "Utils\ByteImpl.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/ByteImpl.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class Tile;
 
@@ -48,4 +49,4 @@ public:
 	std::size_t GetAmountOfObjects() const;
 };
 
-#pragma managed
+SM_MANAGED_CODE

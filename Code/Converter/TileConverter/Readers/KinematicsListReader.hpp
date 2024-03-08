@@ -1,18 +1,19 @@
 #pragma once
 
-#include "Converter\TileConverter\CellHeader.hpp"
-#include "Converter\TileConverter\Tile.hpp"
-#include "Converter\Entity\Kinematic.hpp"
+#include "Converter/TileConverter/CellHeader.hpp"
+#include "Converter/TileConverter/Tile.hpp"
+#include "Converter/Entity/Kinematic.hpp"
 
-#include "ObjectDatabase\UserDataReaders\ItemModCounter.hpp"
-#include "ObjectDatabase\ObjectDatabase.hpp"
-#include "ObjectDatabase\Mods\Mod.hpp"
+#include "ObjectDatabase/UserDataReaders\ItemModCounter.hpp"
+#include "ObjectDatabase/ObjectDatabase.hpp"
+#include "ObjectDatabase/Mods/Mod.hpp"
 
-#include "Utils\BitStream.hpp"
-#include "Utils\String.hpp"
-#include "Utils\Lz4Lib.hpp"
+#include "Utils/clr_include.hpp"
+#include "Utils/BitStream.hpp"
+#include "Utils/String.hpp"
+#include "Utils/Lz4Lib.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 class KinematicsListReader
 {
@@ -117,4 +118,4 @@ public:
 	}
 };
 
-#pragma managed
+SM_MANAGED_CODE
