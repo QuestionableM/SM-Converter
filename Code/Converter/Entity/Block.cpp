@@ -30,22 +30,18 @@ std::string SMBlock::GetMtlName(std::size_t v_idx) const
 
 void SMBlock::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
 {
-	const std::string mtl_name = this->GetMtlName(0);
-	if (tex_map.find(mtl_name) != tex_map.end())
+	std::string v_mtlName = this->GetMtlName(0);
+	if (tex_map.find(v_mtlName) != tex_map.end())
 		return;
 
-	ObjectTexData oTexData;
-	oTexData.m_textures = m_parent->m_textures;
-	oTexData.m_tex_color = this->m_color;
-
-	tex_map.insert(std::make_pair(mtl_name, oTexData));
+	tex_map.emplace(std::move(v_mtlName), ObjectTexDataConstructInfo(m_parent->m_textures, m_color));
 }
 
-void GenerateUVs(Model& model, const glm::vec3& bounds, const glm::vec3& pos, int tiling)
+static void GenerateUVs(Model& model, const glm::vec3& bounds, const glm::vec3& pos, int tiling)
 {
-	model.uvs.resize(24);
+	model.m_uvs.resize(24);
 
-	const static glm::vec4 block_texture_normals[6] =
+	const static glm::vec4 v_blockTextureNormals[6] =
 	{
 		{  0.0f,  0.0f,  1.0f,  1.0f },
 		{  1.0f,  1.0f,  0.0f,  0.0f },
@@ -55,21 +51,21 @@ void GenerateUVs(Model& model, const glm::vec3& bounds, const glm::vec3& pos, in
 		{ -1.0f,  0.0f,  0.0f, -1.0f }
 	};
 
-	const float v_tiling_adj = 1.0f / (float)tiling;
-	const glm::vec3 v_offset_pos = pos + bounds;
+	const float v_tilingAdj = 1.0f / (float)tiling;
+	const glm::vec3 v_offsetPos = pos + bounds;
 
-	for (SubMeshData* v_cur_sub_mesh : model.subMeshData)
+	for (const SubMeshData& v_curSubMesh : model.m_subMeshData)
 	{
-		for (auto& v_cur_face : v_cur_sub_mesh->m_DataIdx)
+		for (const auto& v_curFace : v_curSubMesh.m_dataIdx)
 		{
-			for (auto& v_cur_vert_data : v_cur_face)
+			for (const VertexData& v_curVertData : v_curFace)
 			{
-				const glm::vec3 v_block_pos = model.vertices[v_cur_vert_data.m_Vert] + v_offset_pos;
+				const glm::vec3 v_vertPos = model.m_vertices[v_curVertData.m_vert] + v_offsetPos;
 
-				const glm::vec4& v_cur_norm = block_texture_normals[v_cur_vert_data.m_Norm];
-				const glm::vec4 v_uv_data = glm::vec4(v_block_pos.x, v_block_pos.y, v_block_pos.y, v_block_pos.z) * v_cur_norm;
+				const glm::vec4& v_curNorm = v_blockTextureNormals[v_curVertData.m_norm];
+				const glm::vec4 v_uvData = glm::vec4(v_vertPos.x, v_vertPos.y, v_vertPos.y, v_vertPos.z) * v_curNorm;
 
-				model.uvs[v_cur_vert_data.m_Uv] = (glm::vec2(v_uv_data.x, v_uv_data.y) + glm::vec2(v_uv_data.z, v_uv_data.w)) * v_tiling_adj;
+				model.m_uvs[v_curVertData.m_uv] = (glm::vec2(v_uvData.x, v_uvData.y) + glm::vec2(v_uvData.z, v_uvData.w)) * v_tilingAdj;
 			}
 		}
 	}
@@ -77,7 +73,7 @@ void GenerateUVs(Model& model, const glm::vec3& bounds, const glm::vec3& pos, in
 
 void FillCustomCube(Model& model, const glm::vec3& bounds, const glm::vec3& position, int tiling)
 {
-	model.vertices =
+	model.m_vertices =
 	{
 		{ -bounds.x,  bounds.y,  bounds.z },
 		{ -bounds.x, -bounds.y, -bounds.z },
@@ -91,7 +87,7 @@ void FillCustomCube(Model& model, const glm::vec3& bounds, const glm::vec3& posi
 
 	if (SharedConverterSettings::ExportNormals)
 	{
-		model.normals =
+		model.m_normals =
 		{
 			{ -1.0f,  0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f },
 			{  1.0f,  0.0f, 0.0f }, { 0.0f, 0.0f,  1.0f },
@@ -99,28 +95,25 @@ void FillCustomCube(Model& model, const glm::vec3& bounds, const glm::vec3& posi
 		};
 	}
 
-	SubMeshData* new_subMesh = new SubMeshData(0);
-
-	new_subMesh->has_normals = SharedConverterSettings::ExportNormals;
-	new_subMesh->has_uvs     = SharedConverterSettings::ExportUvs;
-
-	new_subMesh->m_DataIdx =
-	{
-		{ { 0, 0 , 0 }, { 1, 1 , 0 }, { 2, 2 , 0 } },
-		{ { 3, 3 , 1 }, { 4, 4 , 1 }, { 1, 5 , 1 } },
-		{ { 5, 6 , 2 }, { 6, 7 , 2 }, { 4, 8 , 2 } },
-		{ { 7, 9 , 3 }, { 2, 10, 3 }, { 6, 11, 3 } },
-		{ { 4, 12, 4 }, { 2, 13, 4 }, { 1, 14, 4 } },
-		{ { 3, 15, 5 }, { 7, 16, 5 }, { 5, 17, 5 } },
-		{ { 0, 0 , 0 }, { 3, 18, 0 }, { 1, 1 , 0 } },
-		{ { 3, 3 , 1 }, { 5, 19, 1 }, { 4, 4 , 1 } },
-		{ { 5, 6 , 2 }, { 7, 20, 2 }, { 6, 7 , 2 } },
-		{ { 7, 9 , 3 }, { 0, 21, 3 }, { 2, 10, 3 } },
-		{ { 4, 12, 4 }, { 6, 22, 4 }, { 2, 13, 4 } },
-		{ { 3, 15, 5 }, { 0, 23, 5 }, { 7, 16, 5 } }
-	};
-
-	model.subMeshData.push_back(new_subMesh);
+	model.m_subMeshData.emplace_back(
+		0,
+		SharedConverterSettings::ExportNormals,
+		SharedConverterSettings::ExportUvs,
+		std::initializer_list<std::vector<VertexData>>{
+			{ { 0, 0 , 0 }, { 1, 1 , 0 }, { 2, 2 , 0 } },
+			{ { 3, 3 , 1 }, { 4, 4 , 1 }, { 1, 5 , 1 } },
+			{ { 5, 6 , 2 }, { 6, 7 , 2 }, { 4, 8 , 2 } },
+			{ { 7, 9 , 3 }, { 2, 10, 3 }, { 6, 11, 3 } },
+			{ { 4, 12, 4 }, { 2, 13, 4 }, { 1, 14, 4 } },
+			{ { 3, 15, 5 }, { 7, 16, 5 }, { 5, 17, 5 } },
+			{ { 0, 0 , 0 }, { 3, 18, 0 }, { 1, 1 , 0 } },
+			{ { 3, 3 , 1 }, { 5, 19, 1 }, { 4, 4 , 1 } },
+			{ { 5, 6 , 2 }, { 7, 20, 2 }, { 6, 7 , 2 } },
+			{ { 7, 9 , 3 }, { 0, 21, 3 }, { 2, 10, 3 } },
+			{ { 4, 12, 4 }, { 6, 22, 4 }, { 2, 13, 4 } },
+			{ { 3, 15, 5 }, { 0, 23, 5 }, { 7, 16, 5 } }
+		}
+	);
 
 	if (SharedConverterSettings::ExportUvs)
 		GenerateUVs(model, bounds, position, tiling);

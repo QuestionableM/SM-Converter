@@ -9,19 +9,19 @@
 
 void DefaultLoader::LoadTextureList(const simdjson::dom::array& texList, SMTextureList* v_tex_list)
 {
-	const int v_arr_sz = static_cast<int>(texList.size());
-	const int v_list_sz = (v_arr_sz > 3 ? 3 : v_arr_sz);
+	const int v_arrSz = static_cast<int>(texList.size());
+	const int v_listSz = (v_arrSz > 3 ? 3 : v_arrSz);
 
-	for (int a = 0; a < v_list_sz; a++)
+	for (int a = 0; a < v_listSz; a++)
 	{
-		const auto v_cur_item = texList.at(a);
+		const auto v_curItem = texList.at(a);
 
-		if (v_cur_item.is_string())
+		if (v_curItem.is_string())
 		{
-			std::wstring& v_wstr_path = v_tex_list->GetStringRef(a);
+			std::wstring& v_wstrPath = v_tex_list->getStringRef(a);
 
-			v_wstr_path = String::ToWide(v_cur_item.get_string());
-			KeywordReplacer::ReplaceKeyR(v_wstr_path);
+			v_wstrPath = String::ToWide(v_curItem.get_string());
+			KeywordReplacer::ReplaceKeyR(v_wstrPath);
 		}
 	}
 }

@@ -17,7 +17,7 @@ void MtlFileWriter::Write(const std::wstring& path, const std::unordered_map<std
 		std::string output_str = "newmtl " + v_tex_data.first;
 		output_str.append("\nNs 324");
 		output_str.append("\nKa 1 1 1\nKd ");
-		output_str.append(v_tex_data.second.m_tex_color.StringNormalized());
+		output_str.append(v_tex_data.second.m_texColor.StringNormalized());
 		output_str.append("\nKs 0.5 0.5 0.5");
 		output_str.append("\nKe 0 0 0");
 		output_str.append("\nNi 1.45");

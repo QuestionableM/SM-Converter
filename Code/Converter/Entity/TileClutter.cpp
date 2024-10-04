@@ -25,13 +25,12 @@ std::string	SMTileClutter::GetMtlName(std::size_t mIdx) const
 
 void SMTileClutter::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
 {
-	const std::string mtl_name = this->GetMtlName(0);
-	if (tex_map.find(mtl_name) != tex_map.end())
+	std::string v_mtlName = this->GetMtlName(0);
+	if (tex_map.find(v_mtlName) != tex_map.end())
 		return;
 
-	ObjectTexData oTexData;
-	oTexData.m_textures = m_parent->m_textures;
-	oTexData.m_tex_color = this->m_color;
-
-	tex_map.insert(std::make_pair(mtl_name, oTexData));
+	tex_map.emplace(
+		std::move(v_mtlName),
+		ObjectTexDataConstructInfo(m_parent->m_textures, m_color)
+	);
 }

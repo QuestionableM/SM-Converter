@@ -16,7 +16,7 @@ void MaterialManager::Initialize()
 	if (!JsonReader::LoadParseSimdjsonCommentsC(DatabaseConfig::MaterialMapPath.data(), v_doc, simdjson::dom::element_type::OBJECT))
 		return;
 
-	for (const auto v_object : v_doc.root().get_object())
+	for (const auto& v_object : v_doc.root().get_object())
 	{
 		if (!v_object.value.is_number()) continue;
 

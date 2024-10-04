@@ -25,24 +25,22 @@ char* SMHarvestable::GetMtlNameCStr(const std::string& v_mat_name, std::size_t v
 
 void SMHarvestable::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
 {
-	const std::string mtl_first_part = m_uuid.ToString() + ' ' + m_color.StringHex() + ' ';
-	for (std::size_t a = 0; a < m_model->subMeshData.size(); a++)
+	const std::string v_mtlFirstPart = m_uuid.ToString() + ' ' + m_color.StringHex() + ' ';
+
+	const std::size_t v_modelSubMeshCount = m_model->m_subMeshData.size();
+	for (std::size_t a = 0; a < v_modelSubMeshCount; a++)
 	{
-		const SubMeshData* pSubMesh = m_model->subMeshData[a];
-		const SMTextureList* v_tex_list = m_parent->m_textures->GetTexList(pSubMesh->m_MaterialName, a);
-		if (!v_tex_list) continue;
+		const SubMeshData& v_curSubMesh = m_model->m_subMeshData[a];
+		const SMTextureList* v_pTexList = m_parent->m_textures->GetTexList(v_curSubMesh.m_materialName, a);
+		if (!v_pTexList) continue;
 
-		const std::string v_mat_idx = MaterialManager::GetMaterialA(v_tex_list->material);
-		const std::string v_mat_name = mtl_first_part + std::to_string(a + 1) + " " + v_mat_idx;
+		const std::string v_matIdx = MaterialManager::GetMaterialA(v_pTexList->material);
+		std::string v_matName = v_mtlFirstPart + std::to_string(a + 1) + " " + v_matIdx;
 
-		if (tex_map.find(v_mat_name) != tex_map.end())
+		if (tex_map.find(v_matName) != tex_map.end())
 			continue;
 
-		ObjectTexData v_obj_tex_data;
-		v_obj_tex_data.m_textures = *v_tex_list;
-		v_obj_tex_data.m_tex_color = m_color;
-
-		tex_map.insert(std::make_pair(v_mat_name, v_obj_tex_data));
+		tex_map.emplace(std::move(v_matName), ObjectTexDataConstructInfo(*v_pTexList, m_color));
 	}
 }
 

@@ -29,17 +29,13 @@ std::string SMDecal::GetMtlName(std::size_t mIdx) const
 
 void SMDecal::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
 {
-	const std::string v_mtlName = this->GetMtlName(0);
+	std::string v_mtlName = this->GetMtlName(0);
 	if (tex_map.find(v_mtlName) != tex_map.end())
 		return;
 
-	ObjectTexData v_texData;
-	v_texData.m_textures = m_data->m_textures;
-	v_texData.m_tex_color = m_color;
-
 	DebugOutL("Added a new material: ", v_mtlName);
 
-	tex_map.insert(std::make_pair(v_mtlName, v_texData));
+	tex_map.emplace(std::move(v_mtlName), ObjectTexDataConstructInfo(m_data->m_textures, m_color));
 }
 
 void SMDecal::WriteObjectToFile(std::ofstream& file, WriterOffsetData& mOffset, const glm::mat4& transform_matrix) const

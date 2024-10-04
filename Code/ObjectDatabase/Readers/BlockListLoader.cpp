@@ -15,14 +15,14 @@ bool BlockListLoader::GetBlockTextures(const simdjson::dom::element& block, SMTe
 {
 	for (int a = 0; a < 3; a++)
 	{
-		const auto v_cur_tex = block[blkTexNames[a]];
+		const auto v_curTex = block[blkTexNames[a]];
 
-		if (v_cur_tex.is_string())
+		if (v_curTex.is_string())
 		{
-			std::wstring& v_str_ref = tex.GetStringRef(a);
+			std::wstring& v_wstrRef = tex.getStringRef(a);
 
-			v_str_ref = String::ToWide(v_cur_tex.get_string());
-			KeywordReplacer::ReplaceKeyR(v_str_ref);
+			v_wstrRef = String::ToWide(v_curTex.get_string());
+			KeywordReplacer::ReplaceKeyR(v_wstrRef);
 		}
 	}
 
@@ -80,7 +80,7 @@ void BlockListLoader::Load(const simdjson::dom::element& fBlocks, SMMod* mod, bo
 
 		BlockData* v_new_blk = new BlockData();
 		v_new_blk->m_uuid = v_blk_uuid;
-		v_new_blk->m_textures = v_tList;
+		v_new_blk->m_textures = std::move(v_tList);
 		v_new_blk->m_tiling = v_blk_tiling;
 		v_new_blk->m_defaultColor = (v_color.is_string() ? v_color.get_c_str().value() : "375000");
 		v_new_blk->m_mod = mod;

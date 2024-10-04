@@ -203,6 +203,11 @@ public:
 		return v_string;
 	}
 
+	const Byte* getPointer(std::size_t offset) const noexcept
+	{
+		return this->bytes->data() + offset;
+	}
+
 	template<typename T, bool is_big_endian = false>
 	inline std::vector<T> Objects(std::size_t offset, std::size_t amount)
 	{

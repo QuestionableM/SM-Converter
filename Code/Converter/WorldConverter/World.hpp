@@ -63,7 +63,7 @@ public:
 		{
 			if (v_new_tile) delete v_new_tile;
 
-			DebugErrorL("Couldn't read the specified tile: ", v_full_path, "\nError: ", v_error.GetErrorMsg());
+			DebugErrorL("Couldn't read the specified tile: ", v_full_path, "\nError: ", v_error.getErrorMsg());
 			return nullptr;
 		}
 

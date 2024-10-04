@@ -57,8 +57,7 @@ void DecalsetReader::LoadFromFile(const std::wstring& path, SMMod* mod, bool add
 		if (mod->m_Decals.ObjectExists(v_decal_uuid, add_to_global_db))
 			continue;
 
-		const std::string_view v_mat_view = v_material.get_string();
-		v_texList.material = std::string(v_mat_view.data(), v_mat_view.size());
+		v_texList.material.assign(v_material.get_string().value());
 
 		DecalData* v_new_decal = new DecalData();
 		v_new_decal->m_name = std::string(v_decal.key.data(), v_decal.key.size());

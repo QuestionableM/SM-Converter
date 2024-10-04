@@ -154,11 +154,11 @@ Model* SMWorld::GenerateTerrainMesh(const std::vector<float>& v_vert_array) cons
 	std::vector<std::size_t> normal_div = {};
 	if (SharedConverterSettings::ExportNormals)
 	{
-		tMesh->normals.reserve(v_world_size_sq);
+		tMesh->m_normals.reserve(v_world_size_sq);
 		normal_div.reserve(v_world_size_sq);
 	}
 
-	tMesh->vertices.reserve(v_world_size_sq);
+	tMesh->m_vertices.reserve(v_world_size_sq);
 	for (std::size_t y = 0; y < v_world_size; y++)
 	{
 		for (std::size_t x = 0; x < v_world_size; x++)
@@ -167,11 +167,11 @@ Model* SMWorld::GenerateTerrainMesh(const std::vector<float>& v_vert_array) cons
 			const float vert_x = -(static_cast<float>(x) * 2.0f) + vf_world_size;
 			const float vert_y = -(static_cast<float>(y) * 2.0f) + vf_world_size;
 
-			tMesh->vertices.push_back(glm::vec3(vert_x, vert_y, height));
+			tMesh->m_vertices.emplace_back(vert_x, vert_y, height);
 
 			if (SharedConverterSettings::ExportNormals)
 			{
-				tMesh->normals.push_back(glm::vec3(0.0f));
+				tMesh->m_normals.emplace_back(0.0f);
 				normal_div.push_back(1);
 			}
 		}
@@ -181,7 +181,7 @@ Model* SMWorld::GenerateTerrainMesh(const std::vector<float>& v_vert_array) cons
 	{
 		const float v_uv_size = static_cast<float>(v_world_size - 1);
 
-		tMesh->uvs.reserve(v_world_size_sq);
+		tMesh->m_uvs.reserve(v_world_size_sq);
 		for (std::size_t y = 0; y < v_world_size; y++)
 		{
 			for (std::size_t x = 0; x < v_world_size; x++)
@@ -189,18 +189,19 @@ Model* SMWorld::GenerateTerrainMesh(const std::vector<float>& v_vert_array) cons
 				const float u = static_cast<float>(x) / v_uv_size;
 				const float v = static_cast<float>(y) / v_uv_size;
 
-				tMesh->uvs.push_back(glm::vec2(u, v));
+				tMesh->m_uvs.emplace_back(u, v);
 			}
 		}
 	}
 
-	SubMeshData* pSubMesh = new SubMeshData(0);
-
-	pSubMesh->has_normals = SharedConverterSettings::ExportNormals;
-	pSubMesh->has_uvs = SharedConverterSettings::ExportUvs;
+	SubMeshData v_newSubMesh(
+		0,
+		SharedConverterSettings::ExportNormals,
+		SharedConverterSettings::ExportUvs
+	);
 
 	//generate normals
-	pSubMesh->m_DataIdx.reserve(v_world_size_sq);
+	v_newSubMesh.m_dataIdx.reserve(v_world_size_sq);
 	for (std::size_t y = 0; y < v_world_size - 1; y++)
 	{
 		for (std::size_t x = 0; x < v_world_size - 1; x++)
@@ -212,18 +213,18 @@ Model* SMWorld::GenerateTerrainMesh(const std::vector<float>& v_vert_array) cons
 
 			if (SharedConverterSettings::ExportNormals)
 			{
-				const glm::vec3& p1 = tMesh->vertices[h00];
-				const glm::vec3& p2 = tMesh->vertices[h01];
-				const glm::vec3& p3 = tMesh->vertices[h10];
-				const glm::vec3& p4 = tMesh->vertices[h11];
+				const glm::vec3& p1 = tMesh->m_vertices[h00];
+				const glm::vec3& p2 = tMesh->m_vertices[h01];
+				const glm::vec3& p3 = tMesh->m_vertices[h10];
+				const glm::vec3& p4 = tMesh->m_vertices[h11];
 
 				const glm::vec3 t1_norm = CalculateNormalVector(p1, p3, p2); //first_triangle
 				const glm::vec3 t2_norm = CalculateNormalVector(p2, p3, p4); //second_triangle
 
-				tMesh->normals[h00] += t1_norm;
-				tMesh->normals[h01] += (t1_norm + t2_norm);
-				tMesh->normals[h10] += (t1_norm + t2_norm);
-				tMesh->normals[h11] += t2_norm;
+				tMesh->m_normals[h00] += t1_norm;
+				tMesh->m_normals[h01] += (t1_norm + t2_norm);
+				tMesh->m_normals[h10] += (t1_norm + t2_norm);
+				tMesh->m_normals[h11] += t2_norm;
 
 				normal_div[h00] += 1;
 				normal_div[h01] += 2;
@@ -236,8 +237,8 @@ Model* SMWorld::GenerateTerrainMesh(const std::vector<float>& v_vert_array) cons
 			const VertexData vert3 = { h10, SharedConverterSettings::ExportUvs ? h10 : 0, SharedConverterSettings::ExportNormals ? h10 : 0 };
 			const VertexData vert4 = { h11, SharedConverterSettings::ExportUvs ? h11 : 0, SharedConverterSettings::ExportNormals ? h11 : 0 };
 
-			pSubMesh->m_DataIdx.push_back({ vert1, vert3, vert2 });
-			pSubMesh->m_DataIdx.push_back({ vert2, vert3, vert4 });
+			v_newSubMesh.m_dataIdx.emplace_back(std::initializer_list{ vert1, vert3, vert2 });
+			v_newSubMesh.m_dataIdx.emplace_back(std::initializer_list{ vert2, vert3, vert4 });
 		}
 	}
 
@@ -253,15 +254,15 @@ Model* SMWorld::GenerateTerrainMesh(const std::vector<float>& v_vert_array) cons
 				const std::size_t h10 = (x + 1) + (y    ) * v_world_size;
 				const std::size_t h11 = (x + 1) + (y + 1) * v_world_size;
 
-				tMesh->normals[h00] = glm::normalize(tMesh->normals[h00] / static_cast<float>(normal_div[h00]));
-				tMesh->normals[h01] = glm::normalize(tMesh->normals[h01] / static_cast<float>(normal_div[h01]));
-				tMesh->normals[h10] = glm::normalize(tMesh->normals[h10] / static_cast<float>(normal_div[h10]));
-				tMesh->normals[h11] = glm::normalize(tMesh->normals[h11] / static_cast<float>(normal_div[h11]));
+				tMesh->m_normals[h00] = glm::normalize(tMesh->m_normals[h00] / static_cast<float>(normal_div[h00]));
+				tMesh->m_normals[h01] = glm::normalize(tMesh->m_normals[h01] / static_cast<float>(normal_div[h01]));
+				tMesh->m_normals[h10] = glm::normalize(tMesh->m_normals[h10] / static_cast<float>(normal_div[h10]));
+				tMesh->m_normals[h11] = glm::normalize(tMesh->m_normals[h11] / static_cast<float>(normal_div[h11]));
 			}
 		}
 	}
 
-	tMesh->subMeshData.push_back(pSubMesh);
+	tMesh->m_subMeshData.emplace_back(std::move(v_newSubMesh));
 
 	return tMesh;
 }
@@ -390,8 +391,7 @@ void SMWorld::WriteMtlFile(const std::wstring& path) const
 	}
 
 	{
-		ObjectTexData v_tileGroundTextureData;
-		v_tileGroundTextureData.m_tex_color = 0xffffff;
+		ObjectTexData v_tileGroundTextureData(0xffffff);
 
 		if (TileConverterSettings::ExportGroundTextures)
 		{
@@ -400,7 +400,7 @@ void SMWorld::WriteMtlFile(const std::wstring& path) const
 			v_tileGroundTextureData.m_textures.nor = L"./GroundTexture_Nor.jpg";
 		}
 
-		v_tex_data["TileGroundTerrain"] = v_tileGroundTextureData;
+		v_tex_data["TileGroundTerrain"] = std::move(v_tileGroundTextureData);
 	}
 
 	MtlFileWriter::Write(path, v_tex_data);

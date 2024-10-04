@@ -18,68 +18,98 @@ SM_UNMANAGED_CODE
 
 struct VertexData
 {
-	std::size_t m_Vert;
-	std::size_t m_Uv;
-	std::size_t m_Norm;
+	inline VertexData(std::size_t vertIdx, std::size_t uvIdx, std::size_t normIdx) noexcept :
+		m_vert(vertIdx),
+		m_uv(uvIdx),
+		m_norm(normIdx)
+	{}
+
+	std::size_t m_vert;
+	std::size_t m_uv;
+	std::size_t m_norm;
 };
 
 struct IndexWriterArguments
 {
-	const struct Model* m_model;
-	const struct SubMeshData* m_sub_mesh;
-	WriterOffsetData* offset;
+	IndexWriterArguments(
+		const struct Model* pModel,
+		WriterOffsetData& offsetData,
+		const std::vector<glm::vec3>& translatedVertices,
+		const std::vector<glm::vec3>& translatedNormals
+	) :
+		m_model(pModel),
+		m_subMesh(nullptr),
+		m_offset(offsetData),
+		m_translatedVertices(translatedVertices),
+		m_translatedNormals(translatedNormals)
+	{}
 
-	std::vector<glm::vec3>* translated_vertices;
-	std::vector<glm::vec3>* translated_normals;
+	const struct Model* m_model;
+	const struct SubMeshData* m_subMesh;
+	WriterOffsetData& m_offset;
+
+	const std::vector<glm::vec3>& m_translatedVertices;
+	const std::vector<glm::vec3>& m_translatedNormals;
 };
 
 struct SubMeshData
 {
 	using IndexWriterFunction = void(*)(const IndexWriterArguments&, const VertexData&);
 
-	static void IndexWriter_None(const IndexWriterArguments& v_data, const VertexData& v_vert);
-	static void IndexWriter_Normals(const IndexWriterArguments& v_data, const VertexData& v_vert);
-	static void IndexWriter_Uvs(const IndexWriterArguments& v_data, const VertexData& v_vert);
-	static void IndexWriter_UvsAndNormals(const IndexWriterArguments& v_data, const VertexData& v_vert);
+	SubMeshData(
+		std::uint32_t idx,
+		bool hasNormals,
+		bool hasUvs);
 
-	IndexWriterFunction GetWriterFunction() const;
+	SubMeshData(
+		std::uint32_t idx,
+		bool hasNormals,
+		bool hasUvs,
+		const std::vector<std::vector<VertexData>>& dataIdx);
 
-	inline bool IsEmpty() const noexcept { return m_DataIdx.empty(); }
-
-	inline SubMeshData(int sub_mesh_idx) noexcept { this->m_SubMeshIdx = sub_mesh_idx; }
+	SubMeshData(SubMeshData&& other) noexcept;
 	~SubMeshData() = default;
 
-	std::string m_MaterialName;
-	unsigned int m_SubMeshIdx;
+	static void IndexWriter_None(const IndexWriterArguments& data, const VertexData& vert);
+	static void IndexWriter_Normals(const IndexWriterArguments& data, const VertexData& vert);
+	static void IndexWriter_Uvs(const IndexWriterArguments& data, const VertexData& vert);
+	static void IndexWriter_UvsAndNormals(const IndexWriterArguments& data, const VertexData& vert);
 
-	std::vector<std::vector<VertexData>> m_DataIdx;
+	IndexWriterFunction getWriterFunction() const noexcept;
+	inline bool isEmpty() const noexcept { return m_dataIdx.empty(); }
 
-	bool has_normals;
-	bool has_uvs;
+	std::string m_materialName;
+
+	std::vector<std::vector<VertexData>> m_dataIdx;
+
+	std::uint32_t m_subMeshIdx;
+	bool m_hasNormals;
+	bool m_hasUvs;
 };
 
 struct Model
 {
-	std::vector<glm::vec3> vertices;
-	std::vector<glm::vec3> normals;
-	std::vector<glm::vec2> uvs;
-	std::vector<SubMeshData*> subMeshData;
+	Model(const std::wstring& mesh_path);
+	Model();
 
-	std::wstring meshPath;
-	bool has_cached_uvs = false;
+	Model(const Model&) = delete;
+	Model(Model&) = delete;
 
 	void WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, std::ofstream& file, const class SMEntity* pEntity);
 
 	inline bool IsEmpty() const noexcept
 	{
-		return (this->subMeshData.size() <= 0 || (this->vertices.size() <= 0 && this->uvs.size() <= 0 && this->normals.size() <= 0));
+		return m_subMeshData.empty() || (m_vertices.empty() && m_uvs.empty() && m_normals.empty());
 	}
 
-	inline Model(const std::wstring& mesh_path) { this->meshPath = mesh_path; }
-	Model() = default;
-	Model(const Model&) = delete;
-	Model(Model&) = delete;
-	~Model();
+	std::wstring m_path;
+
+	std::vector<glm::vec3> m_vertices;
+	std::vector<glm::vec3> m_normals;
+	std::vector<glm::vec2> m_uvs;
+	std::vector<SubMeshData> m_subMeshData;
+
+	bool m_bUvsCached;
 };
 
 class ModelStorage
@@ -90,10 +120,10 @@ class ModelStorage
 	inline static Assimp::Importer Importer = Assimp::Importer();
 
 	static const aiScene* LoadScene(const std::wstring& path);
-	static void LoadVertices(const aiMesh*& mesh, Model*& model);
-	static void LoadMaterialName(const aiScene*& scene, const aiMesh*& mesh, SubMeshData*& sub_mesh);
-	static void LoadIndices(const aiMesh*& mesh, Model*& model, SubMeshData*& sub_mesh);
-	static void LoadSubMeshes(const aiScene*& scene, Model*& model);
+	static void LoadVertices(const aiMesh* mesh, Model* model);
+	static void LoadMaterialName(const aiScene* pScene, const aiMesh* pMesh, SubMeshData& subMesh);
+	static void LoadIndices(const aiMesh* pMesh, Model* pModel, SubMeshData& subMesh);
+	static void LoadSubMeshes(const aiScene* pScene, Model* pModel);
 public:
 	static Model* LoadModel(const std::wstring& path);
 

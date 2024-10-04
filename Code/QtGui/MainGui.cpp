@@ -342,7 +342,7 @@ void MainGui::converterFinishedCallback()
 
 		QtUtil::errorWithSound(this,
 			"Convert Error",
-			QString::fromStdWString(v_returnCode.GetErrorMsg()));
+			QString::fromStdWString(v_returnCode.getErrorMsg()));
 	}
 
 	v_returnCode.clear();

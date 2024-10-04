@@ -12,63 +12,96 @@ static char g_modelWriterBuf[1024];
 static char* g_modelWriterBufferEnd = g_modelWriterBuf + sizeof(g_modelWriterBuf);
 static char* g_modelWriterPtr;
 
-void SubMeshData::IndexWriter_None(const IndexWriterArguments& v_data, const VertexData& v_vert)
+SubMeshData::SubMeshData(
+	std::uint32_t idx,
+	bool hasNormals,
+	bool hasUvs
+) :
+	m_materialName(),
+	m_dataIdx(),
+	m_subMeshIdx(idx),
+	m_hasNormals(hasNormals),
+	m_hasUvs(hasUvs)
+{}
+
+SubMeshData::SubMeshData(
+	std::uint32_t idx,
+	bool hasNormals,
+	bool hasUvs,
+	const std::vector<std::vector<VertexData>>& dataIdx
+) :
+	m_materialName(),
+	m_dataIdx(dataIdx),
+	m_subMeshIdx(idx),
+	m_hasNormals(hasNormals),
+	m_hasUvs(hasUvs)
+{}
+
+SubMeshData::SubMeshData(SubMeshData&& other) noexcept :
+	m_materialName(std::move(other.m_materialName)),
+	m_dataIdx(std::move(other.m_dataIdx)),
+	m_subMeshIdx(other.m_subMeshIdx),
+	m_hasNormals(other.m_hasNormals),
+	m_hasUvs(other.m_hasUvs)
+{}
+
+void SubMeshData::IndexWriter_None(const IndexWriterArguments& data, const VertexData& vert)
 {
-	const glm::vec3& v_vertex = (*v_data.translated_vertices)[v_vert.m_Vert];
-	const std::size_t& v_vert_idx = v_data.offset->VertexMap.at(v_vertex);
+	const glm::vec3& v_vertex = data.m_translatedVertices[vert.m_vert];
+	const std::size_t v_vertIdx = data.m_offset.VertexMap.at(v_vertex);
 
 	*g_modelWriterPtr++ = ' ';
-	g_modelWriterPtr = String::FromInteger<std::size_t>(v_vert_idx, g_modelWriterPtr);
+	g_modelWriterPtr = String::FromInteger<std::size_t>(v_vertIdx, g_modelWriterPtr);
 }
 
-void SubMeshData::IndexWriter_Normals(const IndexWriterArguments& v_data, const VertexData& v_vert)
+void SubMeshData::IndexWriter_Normals(const IndexWriterArguments& data, const VertexData& vert)
 {
-	const glm::vec3& v_vertex = (*v_data.translated_vertices)[v_vert.m_Vert];
-	const glm::vec3& v_normal = (*v_data.translated_normals)[v_vert.m_Norm];
+	const glm::vec3& v_vertex = data.m_translatedVertices[vert.m_vert];
+	const glm::vec3& v_normal = data.m_translatedNormals[vert.m_norm];
 
-	const std::size_t& v_vert_idx = v_data.offset->VertexMap.at(v_vertex);
-	const std::size_t& v_norm_idx = v_data.offset->NormalMap.at(v_normal);
+	const std::size_t v_vertIdx = data.m_offset.VertexMap.at(v_vertex);
+	const std::size_t v_normIdx = data.m_offset.NormalMap.at(v_normal);
 
 	*g_modelWriterPtr++ = ' ';
-	g_modelWriterPtr = String::FromInteger<std::size_t>(v_vert_idx, g_modelWriterPtr);
+	g_modelWriterPtr = String::FromInteger<std::size_t>(v_vertIdx, g_modelWriterPtr);
 	*g_modelWriterPtr++ = '/';
 	*g_modelWriterPtr++ = '/';
-	g_modelWriterPtr = String::FromInteger<std::size_t>(v_norm_idx, g_modelWriterPtr);
+	g_modelWriterPtr = String::FromInteger<std::size_t>(v_normIdx, g_modelWriterPtr);
 }
 
-void SubMeshData::IndexWriter_Uvs(const IndexWriterArguments& v_data, const VertexData& v_vert)
+void SubMeshData::IndexWriter_Uvs(const IndexWriterArguments& data, const VertexData& vert)
 {
-	const glm::vec3& v_vertex = (*v_data.translated_vertices)[v_vert.m_Vert];
+	const glm::vec3& v_vertex = data.m_translatedVertices[vert.m_vert];
 	//const glm::vec2& v_uv = v_data.m_model->uvs[v_vert.m_Uv];
 
-	const std::size_t& v_vert_idx = v_data.offset->VertexMap.at(v_vertex);
+	const std::size_t v_vertIdx = data.m_offset.VertexMap.at(v_vertex);
 	//const std::size_t& v_uv_idx = v_data.offset->UvMap.at(v_uv);
 
 	*g_modelWriterPtr++ = ' ';
-	g_modelWriterPtr = String::FromInteger<std::size_t>(v_vert_idx, g_modelWriterPtr);
+	g_modelWriterPtr = String::FromInteger<std::size_t>(v_vertIdx, g_modelWriterPtr);
 	*g_modelWriterPtr++ = '/';
-	g_modelWriterPtr = String::FromInteger<std::size_t>(v_vert.m_Uv, g_modelWriterPtr);
+	g_modelWriterPtr = String::FromInteger<std::size_t>(vert.m_uv, g_modelWriterPtr);
 }
 
-void SubMeshData::IndexWriter_UvsAndNormals(const IndexWriterArguments& v_data, const VertexData& v_vert)
+void SubMeshData::IndexWriter_UvsAndNormals(const IndexWriterArguments& data, const VertexData& vert)
 {
-	const glm::vec3& v_vertex = (*v_data.translated_vertices)[v_vert.m_Vert];
-	const glm::vec3& v_normal = (*v_data.translated_normals)[v_vert.m_Norm];
+	const glm::vec3& v_vertex = data.m_translatedVertices[vert.m_vert];
+	const glm::vec3& v_normal = data.m_translatedNormals[vert.m_norm];
 
-	const std::size_t& v_vert_idx = v_data.offset->VertexMap.at(v_vertex);
-	const std::size_t& v_norm_idx = v_data.offset->NormalMap.at(v_normal);
+	const std::size_t v_vertIdx = data.m_offset.VertexMap.at(v_vertex);
+	const std::size_t v_normIdx = data.m_offset.NormalMap.at(v_normal);
 
 	*g_modelWriterPtr++ = ' ';
-	g_modelWriterPtr = String::FromInteger<std::size_t>(v_vert_idx, g_modelWriterPtr);
+	g_modelWriterPtr = String::FromInteger<std::size_t>(v_vertIdx, g_modelWriterPtr);
 	*g_modelWriterPtr++ = '/';
-	g_modelWriterPtr = String::FromInteger<std::size_t>(v_vert.m_Uv, g_modelWriterPtr);
+	g_modelWriterPtr = String::FromInteger<std::size_t>(vert.m_uv, g_modelWriterPtr);
 	*g_modelWriterPtr++ = '/';
-	g_modelWriterPtr = String::FromInteger<std::size_t>(v_norm_idx, g_modelWriterPtr);
+	g_modelWriterPtr = String::FromInteger<std::size_t>(v_normIdx, g_modelWriterPtr);
 }
 
-SubMeshData::IndexWriterFunction SubMeshData::GetWriterFunction() const
+SubMeshData::IndexWriterFunction SubMeshData::getWriterFunction() const noexcept
 {
-	const static SubMeshData::IndexWriterFunction v_writer_functions[4] =
+	const SubMeshData::IndexWriterFunction v_writerFunctions[4] =
 	{
 		SubMeshData::IndexWriter_None,
 		SubMeshData::IndexWriter_Normals,
@@ -76,14 +109,34 @@ SubMeshData::IndexWriterFunction SubMeshData::GetWriterFunction() const
 		SubMeshData::IndexWriter_UvsAndNormals
 	};
 
-	const int v_func_idx = static_cast<int>(this->has_normals) | (static_cast<int>(this->has_uvs) << 1);
-	return v_writer_functions[v_func_idx];
+	const std::uint32_t v_funcIdx = static_cast<std::uint32_t>(m_hasNormals) | (static_cast<std::uint32_t>(m_hasUvs) << 1);
+	return v_writerFunctions[v_funcIdx];
 }
+
+/////////////////////// MODEL //////////////////////
+
+Model::Model(const std::wstring& mesh_path) :
+	m_path(mesh_path),
+	m_vertices(),
+	m_normals(),
+	m_uvs(),
+	m_subMeshData(),
+	m_bUvsCached(false)
+{}
+
+Model::Model() :
+	m_path(),
+	m_vertices(),
+	m_normals(),
+	m_uvs(),
+	m_subMeshData(),
+	m_bUvsCached(false)
+{}
 
 void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, std::ofstream& file, const SMEntity* pEntity)
 {
-	std::vector<glm::vec3> mTranslatedVertices(this->vertices.size());
-	std::vector<glm::vec3> mTranslatedNormals(this->normals.size());
+	std::vector<glm::vec3> v_translatedVertices(m_vertices.size());
+	std::vector<glm::vec3> v_translatedNormals(m_normals.size());
 
 	char* v_writer_off_two = g_modelWriterBuf + 2;
 	char* v_writer_off_three = g_modelWriterBuf + 3;
@@ -91,68 +144,78 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 	g_modelWriterBuf[0] = 'v';
 	g_modelWriterBuf[1] = ' ';
 
-	for (std::size_t a = 0; a < this->vertices.size(); a++)
+	const std::size_t v_verticesCount = m_vertices.size();
+	for (std::size_t a = 0; a < v_verticesCount; a++)
 	{
-		const glm::vec3 pVertPos = model_mat * glm::vec4(this->vertices[a], 1.0f);
+		const glm::vec3 v_vertex = model_mat * glm::vec4(m_vertices[a], 1.0f);
 
-		mTranslatedVertices[a] = pVertPos;
+		v_translatedVertices[a] = v_vertex;
 
-		if (offset.VertexMap.find(pVertPos) == offset.VertexMap.end())
+		if (offset.VertexMap.emplace(v_vertex, ++offset.Vertex).second)
 		{
-			offset.VertexMap.emplace(pVertPos, ++offset.Vertex);
-
 			//This is actually faster than sprintf("%g %g %g")
-			g_modelWriterPtr = String::FromFloat(pVertPos.x, v_writer_off_two);
+			g_modelWriterPtr = String::FromFloat(v_vertex.x, v_writer_off_two);
 			*g_modelWriterPtr++ = ' ';
-			g_modelWriterPtr = String::FromFloat(pVertPos.y, g_modelWriterPtr);
+			g_modelWriterPtr = String::FromFloat(v_vertex.y, g_modelWriterPtr);
 			*g_modelWriterPtr++ = ' ';
-			g_modelWriterPtr = String::FromFloat(pVertPos.z, g_modelWriterPtr);
+			g_modelWriterPtr = String::FromFloat(v_vertex.z, g_modelWriterPtr);
 			*g_modelWriterPtr++ = '\n';
 
 			file.write(g_modelWriterBuf, g_modelWriterPtr - g_modelWriterBuf);
 		}
+		else
+		{
+			offset.Vertex--;
+		}
 	}
 
-	if (SharedConverterSettings::ExportUvs && !this->has_cached_uvs)
+	if (SharedConverterSettings::ExportUvs && !m_bUvsCached)
 	{
-		this->has_cached_uvs = true;
+		m_bUvsCached = true;
 
 		g_modelWriterBuf[1] = 't';
 		g_modelWriterBuf[2] = ' ';
 
 		//Writing the uvs
-		for (std::size_t a = 0; a < this->uvs.size(); a++)
+		const std::size_t v_uvCount = m_uvs.size();
+		for (std::size_t a = 0; a < v_uvCount; a++)
 		{
-			const glm::vec2& uv = this->uvs[a];
+			const glm::vec2& v_uv = m_uvs[a];
 
-			if (offset.UvMap.find(uv) == offset.UvMap.end())
+			if (offset.UvMap.emplace(v_uv, ++offset.Uv).second)
 			{
-				offset.UvMap.emplace(uv, ++offset.Uv);
-
-				g_modelWriterPtr = String::FromFloat(uv.x, v_writer_off_three);
+				g_modelWriterPtr = String::FromFloat(v_uv.x, v_writer_off_three);
 				*g_modelWriterPtr++ = ' ';
-				g_modelWriterPtr = String::FromFloat(uv.y, g_modelWriterPtr);
+				g_modelWriterPtr = String::FromFloat(v_uv.y, g_modelWriterPtr);
 				*g_modelWriterPtr++ = '\n';
 
 				file.write(g_modelWriterBuf, g_modelWriterPtr - g_modelWriterBuf);
 			}
+			else
+			{
+				offset.Uv--;
+			}
 		}
 
 		//Connecting indexes
-		for (std::size_t a = 0; a < this->subMeshData.size(); a++)
+		const std::size_t v_subMeshDataCount = m_subMeshData.size();
+		for (std::size_t a = 0; a < v_subMeshDataCount; a++)
 		{
-			SubMeshData* v_sub_mesh = this->subMeshData[a];
-			if (!v_sub_mesh->has_uvs) continue;
+			SubMeshData& v_curSubMesh = m_subMeshData[a];
+			if (!v_curSubMesh.m_hasUvs) continue;
 
-			for (std::size_t b = 0; b < v_sub_mesh->m_DataIdx.size(); b++)
+			const std::size_t v_dataIdxCount = v_curSubMesh.m_dataIdx.size();
+			for (std::size_t b = 0; b < v_dataIdxCount; b++)
 			{
-				std::vector<VertexData>& v_vert_data = v_sub_mesh->m_DataIdx[b];
-				for (std::size_t c = 0; c < v_vert_data.size(); c++)
-				{
-					VertexData& v_cur_vert = v_vert_data[c];
+				std::vector<VertexData>& v_vecVertData = v_curSubMesh.m_dataIdx[b];
 
-					const glm::vec2& v_cur_uv = this->uvs[v_cur_vert.m_Uv];
-					v_cur_vert.m_Uv = offset.UvMap.at(v_cur_uv);
+				const std::size_t v_vertDataCount = v_vecVertData.size();
+				for (std::size_t c = 0; c < v_vertDataCount; c++)
+				{
+					VertexData& v_curVert = v_vecVertData[c];
+
+					const glm::vec2& v_curUv = m_uvs[v_curVert.m_uv];
+					v_curVert.m_uv = offset.UvMap.at(v_curUv);
 				}
 			}
 		}
@@ -163,44 +226,44 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 		g_modelWriterBuf[1] = 'n';
 		g_modelWriterBuf[2] = ' ';
 
-		const glm::mat3 v_rot_matrix(model_mat);
+		const glm::mat3 v_rotMatrix(model_mat);
 
-		for (std::size_t a = 0; a < this->normals.size(); a++)
+		const std::size_t v_normalCount = m_normals.size();
+		for (std::size_t a = 0; a < v_normalCount; a++)
 		{
-			const glm::vec3 pNormal = v_rot_matrix * this->normals[a];
+			const glm::vec3 v_normal = v_rotMatrix * m_normals[a];
 
-			mTranslatedNormals[a] = pNormal;
+			v_translatedNormals[a] = v_normal;
 
-			if (offset.NormalMap.find(pNormal) == offset.NormalMap.end())
+			if (offset.NormalMap.emplace(v_normal, ++offset.Normal).second)
 			{
-				offset.NormalMap.emplace(pNormal, ++offset.Normal);
-
-				g_modelWriterPtr = String::FromFloat(pNormal.x, v_writer_off_three);
+				g_modelWriterPtr = String::FromFloat(v_normal.x, v_writer_off_three);
 				*g_modelWriterPtr++ = ' ';
-				g_modelWriterPtr = String::FromFloat(pNormal.y, g_modelWriterPtr);
+				g_modelWriterPtr = String::FromFloat(v_normal.y, g_modelWriterPtr);
 				*g_modelWriterPtr++ = ' ';
-				g_modelWriterPtr = String::FromFloat(pNormal.z, g_modelWriterPtr);
+				g_modelWriterPtr = String::FromFloat(v_normal.z, g_modelWriterPtr);
 				*g_modelWriterPtr++ = '\n';
 
 				file.write(g_modelWriterBuf, g_modelWriterPtr - g_modelWriterBuf);
 			}
+			else
+			{
+				offset.Normal--;
+			}
 		}
 	}
 
-	IndexWriterArguments v_idx_writer_arg;
-	v_idx_writer_arg.m_model = this;
-	v_idx_writer_arg.offset = &offset;
-	v_idx_writer_arg.translated_normals = &mTranslatedNormals;
-	v_idx_writer_arg.translated_vertices = &mTranslatedVertices;
+	IndexWriterArguments v_idxWriterArgs(this, offset, v_translatedVertices, v_translatedNormals);
 
-	for (std::size_t mIdx = 0; mIdx < this->subMeshData.size(); mIdx++)
+	const std::size_t v_subMeshDataCount = m_subMeshData.size();
+	for (std::size_t mIdx = 0; mIdx < v_subMeshDataCount; mIdx++)
 	{
-		const SubMeshData* pSubMesh = this->subMeshData[mIdx];
+		const SubMeshData& v_curSubMesh = m_subMeshData[mIdx];
 
 		if (pEntity != nullptr)
 		{
 			//Skip writing the sub mesh if entity doesn't allow it
-			if (!pEntity->GetCanWrite(pSubMesh->m_MaterialName, mIdx))
+			if (!pEntity->GetCanWrite(v_curSubMesh.m_materialName, mIdx))
 				continue;
 
 			if (SharedConverterSettings::ExportMaterials)
@@ -214,32 +277,35 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 				*g_modelWriterPtr++ = 'l';
 				*g_modelWriterPtr++ = ' ';
 
-				g_modelWriterPtr = pEntity->GetMtlNameCStr(pSubMesh->m_MaterialName, mIdx, g_modelWriterPtr);
+				g_modelWriterPtr = pEntity->GetMtlNameCStr(v_curSubMesh.m_materialName, mIdx, g_modelWriterPtr);
 				*g_modelWriterPtr++ = '\n';
 
 				file.write(g_modelWriterBuf, g_modelWriterPtr - g_modelWriterBuf);
 			}
 		}
 
-		v_idx_writer_arg.m_sub_mesh = pSubMesh;
+		v_idxWriterArgs.m_subMesh = &v_curSubMesh;
 
-		SubMeshData::IndexWriterFunction v_writer_func = pSubMesh->GetWriterFunction();
+		SubMeshData::IndexWriterFunction v_pWriterFunc = v_curSubMesh.getWriterFunction();
 
-		for (std::size_t a = 0; a < pSubMesh->m_DataIdx.size(); a++)
+		const std::size_t v_quadCount = v_curSubMesh.m_dataIdx.size();
+		for (std::size_t a = 0; a < v_quadCount; a++)
 		{
 			//Put the pointer back to the beginning of the buffer
 			g_modelWriterPtr = g_modelWriterBuf;
 			*g_modelWriterPtr++ = 'f';
 
-			const std::vector<VertexData>& v_vert_vec = pSubMesh->m_DataIdx[a];
-			if (v_vert_vec.size() > 30) //The N-Gon is too big to be handled with a fast for loop
+			const std::vector<VertexData>& v_vecVerts = v_curSubMesh.m_dataIdx[a];
+			const std::size_t v_vecVertsSz = v_vecVerts.size();
+
+			if (v_vecVertsSz > 30) //The N-Gon is too big to be handled with a fast for loop
 			{
 				for (std::size_t b = 0; b < 30; b++)
-					v_writer_func(v_idx_writer_arg, v_vert_vec[b]);
+					v_pWriterFunc(v_idxWriterArgs, v_vecVerts[b]);
 
-				for (std::size_t b = 30; b < v_vert_vec.size(); b++)
+				for (std::size_t b = 30; b < v_vecVertsSz; b++)
 				{
-					v_writer_func(v_idx_writer_arg, v_vert_vec[b]);
+					v_pWriterFunc(v_idxWriterArgs, v_vecVerts[b]);
 
 					//never let the writer reach the end of the buffer
 					if ((g_modelWriterBufferEnd - g_modelWriterPtr) < 100)
@@ -253,8 +319,8 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 			}
 			else
 			{
-				for (std::size_t b = 0; b < v_vert_vec.size(); b++)
-					v_writer_func(v_idx_writer_arg, v_vert_vec[b]);
+				for (std::size_t b = 0; b < v_vecVertsSz; b++)
+					v_pWriterFunc(v_idxWriterArgs, v_vecVerts[b]);
 			}
 
 			*g_modelWriterPtr++ = '\n';
@@ -264,14 +330,7 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 	}
 }
 
-Model::~Model()
-{
-	for (SubMeshData*& data_ptr : this->subMeshData)
-		delete data_ptr;
-}
-
-
-
+////////////////// MODEL STORAGE ///////////////////////
 
 const aiScene* ModelStorage::LoadScene(const std::wstring& path)
 {
@@ -284,96 +343,104 @@ const aiScene* ModelStorage::LoadScene(const std::wstring& path)
 	);
 }
 
-void ModelStorage::LoadVertices(const aiMesh*& mesh, Model*& model)
+void ModelStorage::LoadVertices(const aiMesh* mesh, Model* model)
 {
-	const bool has_uvs     = (SharedConverterSettings::ExportUvs     && mesh->HasTextureCoords(0));
-	const bool has_normals = (SharedConverterSettings::ExportNormals && mesh->HasNormals());
+	model->m_vertices.insert(
+		model->m_vertices.end(),
+		reinterpret_cast<const glm::vec3*>(mesh->mVertices),
+		reinterpret_cast<const glm::vec3*>(mesh->mVertices) + std::size_t(mesh->mNumVertices)
+	);
 
-	if (has_uvs) model->uvs.reserve(mesh->mNumVertices);
-	if (has_normals) model->normals.reserve(mesh->mNumVertices);
-
-	model->vertices.reserve(mesh->mNumVertices);
-	for (unsigned int a = 0; a < mesh->mNumVertices; a++)
+	if (SharedConverterSettings::ExportNormals && mesh->HasNormals())
 	{
-		model->vertices.push_back(*reinterpret_cast<glm::vec3*>(&mesh->mVertices[a]));
+		model->m_normals.insert(
+			model->m_normals.end(),
+			reinterpret_cast<const glm::vec3*>(mesh->mNormals),
+			reinterpret_cast<const glm::vec3*>(mesh->mNormals) + std::size_t(mesh->mNumVertices)
+		);
+	}
 
-		if (has_uvs) model->uvs.push_back(*reinterpret_cast<glm::vec2*>(&mesh->mTextureCoords[0][a]));
-		if (has_normals) model->normals.push_back(*reinterpret_cast<glm::vec3*>(&mesh->mNormals[a]));
+	if (SharedConverterSettings::ExportUvs && mesh->HasTextureCoords(0))
+	{
+		model->m_uvs.reserve(std::size_t(mesh->mNumVertices));
+		for (std::uint32_t a = 0; a < mesh->mNumVertices; a++)
+			model->m_uvs.emplace_back(*reinterpret_cast<const glm::vec2*>(&mesh->mTextureCoords[0][a]));
 	}
 }
 
-void ModelStorage::LoadMaterialName(const aiScene*& scene, const aiMesh*& mesh, SubMeshData*& sub_mesh)
+void ModelStorage::LoadMaterialName(const aiScene* pScene, const aiMesh* pMesh, SubMeshData& subMesh)
 {
-	if (!scene->HasMaterials()) return;
+	if (!pScene->HasMaterials()) return;
 
-	const aiMaterial* cMeshMat = scene->mMaterials[mesh->mMaterialIndex];
+	const aiMaterial* cMeshMat = pScene->mMaterials[pMesh->mMaterialIndex];
 	aiString cMatName;
 	cMeshMat->Get(AI_MATKEY_NAME, cMatName);
 
-	sub_mesh->m_MaterialName = std::string(cMatName.C_Str(), cMatName.length);
+	subMesh.m_materialName.assign(cMatName.C_Str(), cMatName.length);
 }
 
-void ModelStorage::LoadIndices(const aiMesh*& mesh, Model*& model, SubMeshData*& sub_mesh)
+void ModelStorage::LoadIndices(const aiMesh* pMesh, Model* pModel, SubMeshData& subMesh)
 {
-	const std::size_t l_VertOffset = model->vertices.size();
-	const std::size_t l_UvOffset = model->uvs.size();
-	const std::size_t l_NormalOffset = model->normals.size();
+	const std::size_t v_vertOffset = pModel->m_vertices.size();
+	const std::size_t v_uvOffset = pModel->m_uvs.size();
+	const std::size_t v_normalOffset = pModel->m_normals.size();
 
-	sub_mesh->m_DataIdx.reserve(mesh->mNumFaces);
-	for (unsigned int a = 0; a < mesh->mNumFaces; a++)
+	subMesh.m_dataIdx.reserve(pMesh->mNumFaces);
+	for (std::uint32_t a = 0; a < pMesh->mNumFaces; a++)
 	{
-		const aiFace& cFace = mesh->mFaces[a];
-		std::vector<VertexData> d_idx;
+		const aiFace& v_curFace = pMesh->mFaces[a];
+		std::vector<VertexData> v_vecVerts;
 
-		d_idx.reserve(cFace.mNumIndices);
-		for (unsigned int b = 0; b < cFace.mNumIndices; b++)
+		v_vecVerts.reserve(v_curFace.mNumIndices);
+		for (std::uint32_t b = 0; b < v_curFace.mNumIndices; b++)
 		{
-			const std::size_t l_ind_idx = (std::size_t)cFace.mIndices[b];
+			const std::size_t v_indIdx = (std::size_t)v_curFace.mIndices[b];
 
-			VertexData nVert;
-			nVert.m_Vert = l_ind_idx + l_VertOffset;
-			nVert.m_Uv   = (sub_mesh->has_uvs     ? (l_ind_idx + l_UvOffset)     : 0);
-			nVert.m_Norm = (sub_mesh->has_normals ? (l_ind_idx + l_NormalOffset) : 0);
-
-			d_idx.push_back(nVert);
+			v_vecVerts.emplace_back(
+				v_indIdx + v_vertOffset,
+				subMesh.m_hasUvs     ? (v_indIdx + v_uvOffset    ) : 0,
+				subMesh.m_hasNormals ? (v_indIdx + v_normalOffset) : 0
+			);
 		}
 
-		sub_mesh->m_DataIdx.push_back(d_idx);
+		subMesh.m_dataIdx.emplace_back(std::move(v_vecVerts));
 	}
 }
 
-void ModelStorage::LoadSubMeshes(const aiScene*& scene, Model*& model)
+void ModelStorage::LoadSubMeshes(const aiScene* pScene, Model* pModel)
 {
-	model->subMeshData.reserve(scene->mNumMeshes);
-	for (unsigned int a = 0; a < scene->mNumMeshes; a++)
+	pModel->m_subMeshData.reserve(pScene->mNumMeshes);
+	for (std::uint32_t a = 0; a < pScene->mNumMeshes; a++)
 	{
-		const aiMesh* cMesh = scene->mMeshes[a];
-		SubMeshData* cSubMesh = new SubMeshData(a);
+		const aiMesh* v_pCurMesh = pScene->mMeshes[a];
 
-		cSubMesh->has_normals = (SharedConverterSettings::ExportNormals && cMesh->HasNormals());
-		cSubMesh->has_uvs     = (SharedConverterSettings::ExportUvs     && cMesh->HasTextureCoords(0));
+		SubMeshData v_newSubMesh(
+			a,
+			SharedConverterSettings::ExportNormals && v_pCurMesh->HasNormals(),
+			SharedConverterSettings::ExportUvs && v_pCurMesh->HasTextureCoords(0)
+		);
 
-		ModelStorage::LoadIndices(cMesh, model, cSubMesh);
-		ModelStorage::LoadVertices(cMesh, model);
-		ModelStorage::LoadMaterialName(scene, cMesh, cSubMesh);
+		ModelStorage::LoadIndices(v_pCurMesh, pModel, v_newSubMesh);
+		ModelStorage::LoadVertices(v_pCurMesh, pModel);
+		ModelStorage::LoadMaterialName(pScene, v_pCurMesh, v_newSubMesh);
 
-		model->subMeshData.push_back(cSubMesh);
+		pModel->m_subMeshData.emplace_back(std::move(v_newSubMesh));
 	}
 }
 
 Model* ModelStorage::LoadModel(const std::wstring& path)
 {
-	const ModelMap::const_iterator v_iter = ModelStorage::CachedModels.find(path);
+	const auto v_iter = ModelStorage::CachedModels.find(path);
 	if (v_iter != ModelStorage::CachedModels.end())
 		return v_iter->second;
 
-	const aiScene* ModelScene = ModelStorage::LoadScene(path);
-	if (ModelScene && ModelScene->HasMeshes())
+	const aiScene* v_pScene = ModelStorage::LoadScene(path);
+	if (v_pScene && v_pScene->HasMeshes())
 	{
 		Model* newModel = new Model(path);
-		ModelStorage::LoadSubMeshes(ModelScene, newModel);
+		ModelStorage::LoadSubMeshes(v_pScene, newModel);
 
-		CachedModels.insert(std::make_pair(path, newModel));
+		ModelStorage::CachedModels.emplace(path, newModel);
 		Importer.FreeScene();
 
 		return newModel;
@@ -387,8 +454,8 @@ Model* ModelStorage::LoadModel(const std::wstring& path)
 
 void ModelStorage::ClearStorage()
 {
-	for (auto& model_data : CachedModels)
+	for (auto& model_data : ModelStorage::CachedModels)
 		delete model_data.second;
 
-	CachedModels.clear();
+	ModelStorage::CachedModels.clear();
 }

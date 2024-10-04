@@ -17,6 +17,46 @@ enum class SMSubMeshType : unsigned char
 class SMTextureList
 {
 public:
+	SMTextureList() = default;
+	~SMTextureList() = default;
+
+	SMTextureList(const SMTextureList& other) = default;
+
+	inline SMTextureList(SMTextureList&& other) noexcept :
+		dif(std::move(other.dif)),
+		asg(std::move(other.asg)),
+		nor(std::move(other.nor)),
+		material(std::move(other.material)),
+		def_color_idx(std::move(other.def_color_idx)),
+		is_shadow_only(other.is_shadow_only)
+	{}
+
+	inline void operator=(const SMTextureList& other)
+	{
+		this->dif = other.dif;
+		this->asg = other.asg;
+		this->nor = other.nor;
+		this->material = other.material;
+		this->def_color_idx = other.def_color_idx;
+		this->is_shadow_only = other.is_shadow_only;
+	}
+
+	inline void operator=(SMTextureList&& other) noexcept
+	{
+		this->dif = std::move(other.dif);
+		this->asg = std::move(other.asg);
+		this->nor = std::move(other.nor);
+		this->material = std::move(other.material);
+		this->def_color_idx = std::move(other.def_color_idx);
+		this->is_shadow_only = other.is_shadow_only;
+	}
+
+	// Should only go from 0 to 2
+	std::wstring& getStringRef(std::size_t idx) noexcept
+	{
+		return reinterpret_cast<std::wstring*>(&dif)[idx];
+	}
+
 	std::wstring dif;
 	std::wstring asg;
 	std::wstring nor;
@@ -24,14 +64,6 @@ public:
 	std::string material;
 	std::string def_color_idx;
 	bool is_shadow_only = false;
-
-	std::wstring& GetStringRef(std::size_t idx)
-	{
-		return reinterpret_cast<std::wstring*>(&dif)[idx];
-	}
-
-	SMTextureList() = default;
-	~SMTextureList() = default;
 };
 
 class SMSubMeshBase

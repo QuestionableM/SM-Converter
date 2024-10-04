@@ -7,6 +7,10 @@ SM_UNMANAGED_CODE
 
 struct UserCharacterData
 {
+	UserCharacterData();
+
+	bool from_file(const std::wstring& path);
+
 	unsigned int version;
 	bool is_female;
 
@@ -45,8 +49,6 @@ struct UserCharacterData
 
 		unsigned int colors[9];
 	};
-
-	bool from_file(const std::wstring& path);
 };
 
 SM_MANAGED_CODE

@@ -4,6 +4,13 @@
 
 #pragma unmanaged
 
+UserCharacterData::UserCharacterData() :
+	version(0),
+	is_female(false),
+	garments(),
+	colors()
+{}
+
 template<typename T>
 inline void read_bytes_r(std::ifstream& v_file, T& v_value)
 {

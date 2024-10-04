@@ -195,7 +195,7 @@ ObjectInfoGui::ObjectInfoGui(WorldInstance* world, QWidget* parent)
 	if (v_error)
 	{
 		const QString v_error_msg = QString("Error: %1")
-			.arg(QString::fromStdWString(v_error.GetErrorMsg()));
+			.arg(QString::fromStdWString(v_error.getErrorMsg()));
 
 		QtUtil::errorWithSound(this, "World Read Error", v_error_msg);
 		return;
@@ -234,7 +234,7 @@ ObjectInfoGui::ObjectInfoGui(TileInstance* tile, QWidget* parent)
 	if (v_error)
 	{
 		const QString v_error_str = QString("Error: %1")
-			.arg(QString::fromStdWString(v_error.GetErrorMsg()));
+			.arg(QString::fromStdWString(v_error.getErrorMsg()));
 
 		QtUtil::errorWithSound(this, "Tile Read Error", v_error_str);
 		return;

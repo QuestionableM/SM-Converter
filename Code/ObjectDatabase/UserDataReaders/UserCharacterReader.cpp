@@ -32,7 +32,7 @@ void UserCharacterReader::LoadFromFile(const std::filesystem::path& path)
 	if (!v_char_data.from_file(v_char_file))
 		return;
 
-	UserCharacterInstance* v_new_instance = new UserCharacterInstance{};
+	UserCharacterInstance* v_new_instance = new UserCharacterInstance();
 	v_new_instance->character_data = v_char_data;
 	v_new_instance->path = std::move(v_char_file);
 	v_new_instance->name = path.filename().wstring();

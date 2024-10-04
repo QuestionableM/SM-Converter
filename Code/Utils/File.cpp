@@ -15,10 +15,9 @@ namespace fs = std::filesystem;
 
 bool File::ReadFileBytes(const std::wstring& path, std::vector<Byte>& bytes)
 {
-	std::ifstream input_file(path, std::ios::binary);
+	std::ifstream input_file(path, std::ios::binary | std::ios::ate);
 	if (!input_file.is_open()) return false;
 
-	input_file.seekg(0, std::ios::end);
 	bytes.resize(static_cast<std::size_t>(input_file.tellg()));
 	input_file.seekg(0, std::ios::beg);
 
@@ -30,10 +29,9 @@ bool File::ReadFileBytes(const std::wstring& path, std::vector<Byte>& bytes)
 
 bool File::ReadToString(const std::wstring& path, std::string& r_output)
 {
-	std::ifstream input_file(path, std::ios::binary);
+	std::ifstream input_file(path, std::ios::binary | std::ios::ate);
 	if (!input_file.is_open()) return false;
 
-	input_file.seekg(0, std::ios::end);
 	r_output.resize(input_file.tellg());
 	input_file.seekg(0, std::ios::beg);
 
@@ -45,10 +43,9 @@ bool File::ReadToString(const std::wstring& path, std::string& r_output)
 
 bool File::ReadToStringNormal(const std::wstring& path, std::string& r_output)
 {
-	std::ifstream v_input_file(path);
+	std::ifstream v_input_file(path, std::ios::ate);
 	if (!v_input_file.is_open()) return false;
 
-	v_input_file.seekg(0, std::ios::end);
 	r_output.resize(v_input_file.tellg());
 	v_input_file.seekg(0, std::ios::beg);
 
@@ -60,10 +57,9 @@ bool File::ReadToStringNormal(const std::wstring& path, std::string& r_output)
 
 bool File::ReadToStringED(const std::wstring& path, std::string& r_output)
 {
-	std::ifstream v_input_file(path, std::ios::binary);
+	std::ifstream v_input_file(path, std::ios::binary | std::ios::ate);
 	if (!v_input_file.is_open()) return false;
 
-	v_input_file.seekg(0, std::ios::end);
 	const std::size_t v_file_size = static_cast<std::size_t>(v_input_file.tellg());
 	v_input_file.seekg(0, std::ios::beg);
 
@@ -96,7 +92,7 @@ bool File::ReadToStringED(const std::wstring& path, std::string& r_output)
 bool File::Exists(const std::wstring& path)
 {
 	std::error_code ec;
-	bool exists = fs::exists(path, ec);
+	const bool exists = fs::exists(path, ec);
 
 	return (!ec && exists);
 }
@@ -104,35 +100,39 @@ bool File::Exists(const std::wstring& path)
 bool File::CreateDirectorySafe(const std::wstring& path)
 {
 	std::error_code e_error;
-	bool exists = fs::exists(path, e_error);
-	bool exists_correct = (!e_error && exists);
+	const bool exists = fs::exists(path, e_error);
+	const bool exists_correct = (!e_error && exists);
 
 	std::error_code f_error;
-	bool file_created = fs::create_directory(path, f_error);
-	bool file_correct = (!f_error && file_created);
+	const bool file_created = fs::create_directory(path, f_error);
+	const bool file_correct = (!f_error && file_created);
 
 	return (exists_correct || file_correct);
 }
 
-static wchar_t v_fullPathBuffer[512] = {};
+static wchar_t g_fullPathBuffer[512] = {};
 
 bool File::GetFullFilePath(const std::wstring& path, std::wstring& v_output)
 {
-	if (GetFullPathNameW(path.c_str(), 512, v_fullPathBuffer, nullptr) == 0)
-		return false;
+	const DWORD v_pathNameSz = GetFullPathNameW(
+		path.c_str(),
+		sizeof(g_fullPathBuffer) / sizeof(wchar_t),
+		g_fullPathBuffer,
+		nullptr
+	);
 
-	v_output = std::wstring(v_fullPathBuffer);
+	if (v_pathNameSz == 0) return false;
+
+	v_output.assign(g_fullPathBuffer, v_pathNameSz);
 	return true;
 }
 
 bool File::GetFullFilePathLower(const std::wstring& path, std::wstring& v_output)
 {
-	if (GetFullPathNameW(path.c_str(), 512, v_fullPathBuffer, nullptr) == 0)
+	if (!File::GetFullFilePath(path, v_output))
 		return false;
 
-	v_output = std::wstring(v_fullPathBuffer);
 	String::ToLowerR(v_output);
-
 	return true;
 }
 
@@ -173,7 +173,7 @@ bool File::IsSubPath(const std::wstring& parent_dir, const std::wstring& sub_dir
 bool File::Equivalent(const std::wstring& p1, const std::wstring& p2)
 {
 	std::error_code ec;
-	bool is_equivalent = fs::equivalent(p1, p2, ec);
+	const bool is_equivalent = fs::equivalent(p1, p2, ec);
 
 	return (is_equivalent && !ec);
 }
@@ -213,7 +213,7 @@ std::wstring File::OpenFileDialog(
 
 					if (SUCCEEDED(hr))
 					{
-						_Output = std::wstring(pszFilePath);
+						_Output.assign(pszFilePath);
 						CoTaskMemFree(pszFilePath);
 					}
 
@@ -230,11 +230,10 @@ std::wstring File::OpenFileDialog(
 
 bool File::GetAppDataPath(std::wstring& mPath)
 {
-	TCHAR szPath[MAX_PATH];
-	if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, szPath)))
+	WCHAR szPath[MAX_PATH];
+	if (SUCCEEDED(SHGetFolderPathW(NULL, CSIDL_APPDATA, NULL, 0, szPath)))
 	{
-		mPath = std::wstring(szPath);
-
+		mPath.assign(szPath);
 		return true;
 	}
 

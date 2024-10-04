@@ -12,10 +12,52 @@
 
 SM_UNMANAGED_CODE
 
+// A fast in place constructor for unordered_maps
+struct ObjectTexDataConstructInfo
+{
+	inline ObjectTexDataConstructInfo(const SMTextureList& texList, const SMColor color) :
+		m_texturesRef(texList),
+		m_texColor(color)
+	{}
+
+	const SMTextureList& m_texturesRef;
+	SMColor m_texColor;
+};
+
 struct ObjectTexData
 {
+	ObjectTexData() = default;
+
+	inline ObjectTexData(const SMColor color) :
+		m_textures(),
+		m_texColor(color)
+	{}
+
+	inline ObjectTexData(const SMTextureList& texList, const SMColor color) :
+		m_textures(texList),
+		m_texColor(color)
+	{}
+
+	inline ObjectTexData(const ObjectTexDataConstructInfo& info) :
+		m_textures(info.m_texturesRef),
+		m_texColor(info.m_texColor)
+	{}
+
+	inline ObjectTexData(ObjectTexData&& other) noexcept :
+		m_textures(std::move(other.m_textures)),
+		m_texColor(other.m_texColor)
+	{}
+
+	inline void operator=(ObjectTexData&& other) noexcept
+	{
+		m_textures = std::move(other.m_textures);
+		m_texColor = other.m_texColor;
+	}
+
+	ObjectTexData(const ObjectTexData& other) = default;
+
 	SMTextureList m_textures;
-	SMColor m_tex_color;
+	SMColor m_texColor;
 };
 
 struct Model;

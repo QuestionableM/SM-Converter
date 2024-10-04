@@ -10,24 +10,33 @@ class SMBlock : public SMEntityWithUuid
 	friend class BlueprintConv;
 
 public:
-	inline SMBlock(SMBlock* other, const glm::vec3& pos, const glm::quat& rot, const glm::vec3& scale)
-		: SMEntityWithUuid(other->m_parent->m_uuid, pos, scale),
+	inline SMBlock(
+		SMBlock* other,
+		const glm::vec3& pos,
+		const glm::quat& rot,
+		const glm::vec3& scale
+	) : 
+		SMEntityWithUuid(other->m_parent->m_uuid, pos, scale),
 		m_parent(other->m_parent),
 		m_index(0),
 		m_color(other->m_color),
-		m_xzRotation(other->m_xzRotation) {}
+		m_xzRotation(other->m_xzRotation)
+	{}
 
-	inline SMBlock(const BlockData* pParent,
+	inline SMBlock(
+		const BlockData* pParent,
 		const glm::vec3& pos,
 		const glm::vec3& scale,
 		SMColor color,
 		unsigned char rotation,
-		std::size_t index)
-		: SMEntityWithUuid(pParent->m_uuid, pos, scale),
+		std::size_t index
+	) :
+		SMEntityWithUuid(pParent->m_uuid, pos, scale),
 		m_parent(pParent),
 		m_index(index),
 		m_color(color),
-		m_xzRotation(rotation) {}
+		m_xzRotation(rotation)
+	{}
 
 	SMBlock(const SMBlock&) = delete;
 	SMBlock(SMBlock&) = delete;
