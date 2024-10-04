@@ -34,11 +34,12 @@ void HarvestableListLoader::Load(const simdjson::dom::element& fHarvestables, SM
 		if (!DefaultLoader::LoadRenderable(v_hvs, &v_tData, v_tMesh))
 			continue;
 
-		HarvestableData* v_new_hvs = new HarvestableData();
-		v_new_hvs->m_uuid = v_hvs_uuid;
-		v_new_hvs->m_mesh = std::move(v_tMesh);
-		v_new_hvs->m_textures = v_tData;
-		v_new_hvs->m_mod = mod;
+		HarvestableData* v_new_hvs = new HarvestableData(
+			v_hvs_uuid,
+			std::move(v_tMesh),
+			v_tData,
+			mod
+		);
 
 		(mod->m_Harvestables.*v_adder_func)(v_new_hvs);
 		ProgCounter::ProgressValue++;

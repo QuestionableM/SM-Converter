@@ -59,11 +59,12 @@ void DecalsetReader::LoadFromFile(const std::wstring& path, SMMod* mod, bool add
 
 		v_texList.material.assign(v_material.get_string().value());
 
-		DecalData* v_new_decal = new DecalData();
-		v_new_decal->m_name = std::string(v_decal.key.data(), v_decal.key.size());
-		v_new_decal->m_uuid = v_decal_uuid;
-		v_new_decal->m_textures = v_texList;
-		v_new_decal->m_mod = mod;
+		DecalData* v_new_decal = new DecalData(
+			v_decal_uuid,
+			v_decal.key,
+			v_texList,
+			mod
+		);
 
 		for (std::size_t a = 0; a < 4; a++)
 			v_new_decal->m_ranges[a] = JsonReader::GetNumber<int>(v_decal_reg_array.at(a));

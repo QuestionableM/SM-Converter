@@ -67,25 +67,26 @@ void BlockListLoader::Load(const simdjson::dom::element& fBlocks, SMMod* mod, bo
 
 		if (!v_uuid.is_string()) continue;
 
-		const SMUuid v_blk_uuid = v_uuid.get_c_str().value();
-		if (mod->m_Blocks.ObjectExists(v_cur_db, v_blk_uuid))
+		const SMUuid v_blkUuid = v_uuid.get_c_str().value();
+		if (mod->m_Blocks.ObjectExists(v_cur_db, v_blkUuid))
 			continue;
 
 		SMTextureList v_tList;
 		if (!BlockListLoader::GetBlockTextures(v_blk, v_tList)) continue;
 		BlockListLoader::GetBlockMaterial(v_blk, v_tList);
 
-		int v_blk_tiling = (v_tiling.is_number() ? JsonReader::GetNumber<int>(v_tiling) : 4);
-		if (v_blk_tiling > 16 || v_blk_tiling <= 0) v_blk_tiling = 4;
+		int v_blkTiling = (v_tiling.is_number() ? JsonReader::GetNumber<int>(v_tiling) : 4);
+		if (v_blkTiling > 16 || v_blkTiling <= 0) v_blkTiling = 4;
 
-		BlockData* v_new_blk = new BlockData();
-		v_new_blk->m_uuid = v_blk_uuid;
-		v_new_blk->m_textures = std::move(v_tList);
-		v_new_blk->m_tiling = v_blk_tiling;
-		v_new_blk->m_defaultColor = (v_color.is_string() ? v_color.get_c_str().value() : "375000");
-		v_new_blk->m_mod = mod;
+		BlockData* v_pNewBlk = new BlockData(
+			v_blkUuid,
+			std::move(v_tList),
+			v_color.is_string() ? v_color.get_c_str().value() : "375000",
+			v_blkTiling,
+			mod
+		);
 
-		(mod->m_Blocks.*v_adder_func)(v_new_blk);
+		(mod->m_Blocks.*v_adder_func)(v_pNewBlk);
 		ProgCounter::ProgressValue++;
 	}
 }

@@ -67,12 +67,13 @@ void GarmentListLoader::LoadGarmentCategory(const simdjson::dom::element& v_cate
 			continue;
 		}
 
-		GarmentData* v_new_garment = new GarmentData();
-		v_new_garment->m_female_data = v_female_rend;
-		v_new_garment->m_female_mesh = std::move(v_female_obj);
-		v_new_garment->m_male_data = v_male_rend;
-		v_new_garment->m_male_mesh = std::move(v_male_obj);
-		v_new_garment->m_uuid = v_garment_uuid;
+		GarmentData* v_new_garment = new GarmentData(
+			v_garment_uuid,
+			std::move(v_male_obj),
+			std::move(v_female_obj),
+			v_male_rend,
+			v_female_rend
+		);
 
 		v_category_data.emplace(v_new_garment->m_uuid, v_new_garment);
 	}

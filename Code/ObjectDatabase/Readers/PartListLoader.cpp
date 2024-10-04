@@ -111,13 +111,14 @@ void PartListLoader::Load(const simdjson::dom::element& fParts, SMMod* mod, bool
 		if (!DefaultLoader::LoadRenderable(v_prt, &v_tex_data, v_mesh_path))
 			continue;
 
-		PartData* v_new_part = new PartData();
-		v_new_part->m_mesh = std::move(v_mesh_path);
-		v_new_part->m_textures = v_tex_data;
-		v_new_part->m_uuid = v_prt_uuid;
-		v_new_part->m_mod = mod;
-		v_new_part->m_defaultColor = (v_color.is_string() ? v_color.get_c_str().value() : "375000");
-		v_new_part->m_bounds = PartListLoader::LoadPartCollision(v_prt);
+		PartData* v_new_part = new PartData(
+			v_prt_uuid,
+			std::move(v_mesh_path),
+			v_tex_data,
+			v_color.is_string() ? v_color.get_c_str().value() : "375000",
+			PartListLoader::LoadPartCollision(v_prt),
+			mod
+		);
 
 		(mod->m_Parts.*v_adder_func)(v_new_part);
 		ProgCounter::ProgressValue++;

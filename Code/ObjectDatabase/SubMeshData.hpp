@@ -69,10 +69,10 @@ public:
 class SMSubMeshBase
 {
 public:
-	inline virtual const SMTextureList* GetTexList(const std::string& key, std::size_t key_idx) const = 0;
-	inline virtual void AddTexList(const std::string& key, std::size_t key_idx, SMTextureList* sub_data) = 0;
+	virtual const SMTextureList* GetTexList(const std::string& key, std::size_t key_idx) const = 0;
+	virtual void AddTexList(const std::string& key, std::size_t key_idx, SMTextureList* sub_data) = 0;
 
-	inline virtual SMSubMeshType Type() const noexcept = 0;
+	virtual SMSubMeshType Type() const noexcept = 0;
 
 	SMSubMeshBase() = default;
 	SMSubMeshBase(const SMSubMeshBase&) = delete;
@@ -88,13 +88,13 @@ public:
 	SMSubMeshList(const SMSubMeshList&) = delete;
 	SMSubMeshList(SMSubMeshList&&) = delete;
 
-	inline ~SMSubMeshList()
+	~SMSubMeshList()
 	{
 		for (std::size_t a = 0; a < m_Storage.size(); a++)
 			delete m_Storage[a];
 	}
 
-	inline const SMTextureList* GetTexList(const std::string& key, std::size_t key_idx) const override
+	const SMTextureList* GetTexList(const std::string& key, std::size_t key_idx) const override
 	{
 		if (key_idx >= m_Storage.size())
 			return nullptr;
@@ -102,7 +102,7 @@ public:
 		return m_Storage[key_idx];
 	}
 
-	inline void AddTexList(const std::string& key, std::size_t key_idx, SMTextureList* sub_data) override
+	void AddTexList(const std::string& key, std::size_t key_idx, SMTextureList* sub_data) override
 	{
 		if (m_Storage.size() <= key_idx)
 			m_Storage.resize(key_idx + 1, nullptr);
@@ -110,7 +110,7 @@ public:
 		m_Storage[key_idx] = sub_data;
 	}
 
-	inline SMSubMeshType Type() const noexcept override
+	SMSubMeshType Type() const noexcept override
 	{
 		return SMSubMeshType::SubMeshList;
 	}
@@ -129,13 +129,13 @@ public:
 	SMSubMeshMap(const SMSubMeshMap&) = delete;
 	SMSubMeshMap(SMSubMeshMap&&) = delete;
 
-	inline ~SMSubMeshMap()
+	~SMSubMeshMap()
 	{
 		for (const auto& v_obj : m_Storage)
 			delete v_obj.second;
 	}
 
-	inline const SMTextureList* GetTexList(const std::string& key, std::size_t key_idx) const override
+	const SMTextureList* GetTexList(const std::string& key, std::size_t key_idx) const override
 	{
 		const StorageMap::const_iterator v_iter = m_Storage.find(key);
 		if (v_iter == m_Storage.end())
@@ -144,7 +144,7 @@ public:
 		return v_iter->second;
 	}
 
-	inline void AddTexList(const std::string& key, std::size_t key_idx, SMTextureList* sub_data) override
+	void AddTexList(const std::string& key, std::size_t key_idx, SMTextureList* sub_data) override
 	{
 		if (m_Storage.find(key) != m_Storage.end())
 			return;
@@ -152,7 +152,7 @@ public:
 		m_Storage.insert(std::make_pair(key, sub_data));
 	}
 
-	inline SMSubMeshType Type() const noexcept override
+	SMSubMeshType Type() const noexcept override
 	{
 		return SMSubMeshType::SubMeshMap;
 	}

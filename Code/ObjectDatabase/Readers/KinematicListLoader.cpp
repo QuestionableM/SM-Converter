@@ -32,11 +32,12 @@ void KinematicListLoader::Load(const simdjson::dom::element& v_kinematics, SMMod
 		if (!DefaultLoader::LoadRenderable(v_kinematic, &v_km_subMeshes, v_km_mesh))
 			continue;
 
-		KinematicData* v_new_kinematic = new KinematicData();
-		v_new_kinematic->m_uuid = v_km_uuid;
-		v_new_kinematic->m_mesh = std::move(v_km_mesh);
-		v_new_kinematic->m_textures = v_km_subMeshes;
-		v_new_kinematic->m_mod = mod;
+		KinematicData* v_new_kinematic = new KinematicData(
+			v_km_uuid,
+			std::move(v_km_mesh),
+			v_km_subMeshes,
+			mod
+		);
 
 		(mod->m_Kinematics.*v_adder_func)(v_new_kinematic);
 		ProgCounter::ProgressValue++;

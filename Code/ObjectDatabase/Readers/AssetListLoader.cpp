@@ -49,23 +49,19 @@ void AssetListLoader::Load(const simdjson::dom::element& fAssets, SMMod* mod, bo
 		const auto v_uuid = v_cur_asset["uuid"];
 		if (!v_uuid.is_string()) continue;
 
-		const SMUuid v_asset_uuid = v_uuid.get_c_str().value();
-		if (mod->m_Assets.ObjectExists(v_cur_db, v_asset_uuid))
+		const SMUuid v_assetUuid = v_uuid.get_c_str().value();
+		if (mod->m_Assets.ObjectExists(v_cur_db, v_assetUuid))
 			continue;
 
-		std::wstring v_tMesh;
-		SMSubMeshBase* v_tData;
-		if (!DefaultLoader::LoadRenderable(v_cur_asset, &v_tData, v_tMesh))
+		std::wstring v_meshPath;
+		SMSubMeshBase* v_subMeshData;
+		if (!DefaultLoader::LoadRenderable(v_cur_asset, &v_subMeshData, v_meshPath))
 			continue;
 
-		AssetData* v_new_asset = new AssetData();
-		v_new_asset->m_uuid = v_asset_uuid;
-		v_new_asset->m_mesh = std::move(v_tMesh);
-		AssetListLoader::LoadDefaultColors(v_cur_asset, v_new_asset->m_defaultColors);
-		v_new_asset->m_textures = v_tData;
-		v_new_asset->m_mod = mod;
+		AssetData* v_pNewAsset = new AssetData(v_assetUuid, std::move(v_meshPath), v_subMeshData, mod);
+		AssetListLoader::LoadDefaultColors(v_cur_asset, v_pNewAsset->m_defaultColors);
 
-		(mod->m_Assets.*v_adder_func)(v_new_asset);
+		(mod->m_Assets.*v_adder_func)(v_pNewAsset);
 		ProgCounter::ProgressValue++;
 	}
 }

@@ -17,21 +17,16 @@ public:
 	inline SMColor(const std::wstring& color) { this->FromString<std::wstring>(color); }
 	inline SMColor(const char* color) { this->FromCString(color); }
 
-	inline SMColor(Byte r, Byte g, Byte b)
-	{
-		m_bytes[0] = r;
-		m_bytes[1] = g;
-		m_bytes[2] = b;
-		m_bytes[3] = 255;
-	}
+	inline SMColor(Byte r, Byte g, Byte b) :
+		m_bytes{ r, g, b, 255 }
+	{}
 
-	inline SMColor(Byte r, Byte g, Byte b, Byte a)
-	{
-		this->r = r;
-		this->g = g;
-		this->b = b;
-		this->a = a;
-	}
+	inline SMColor(Byte r_val, Byte g_val, Byte b_val, Byte a_val) :
+		r(r_val),
+		g(g_val),
+		b(b_val),
+		a(a_val)
+	{}
 
 	inline SMColor(unsigned int color)
 	{
