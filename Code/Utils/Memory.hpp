@@ -203,6 +203,11 @@ public:
 		return v_string;
 	}
 
+	inline bool hasEnoughSpace(std::size_t offset, std::size_t size) const noexcept
+	{
+		return (offset + size) <= this->bytes->size();
+	}
+
 	const Byte* getPointer(std::size_t offset) const noexcept
 	{
 		return this->bytes->data() + offset;

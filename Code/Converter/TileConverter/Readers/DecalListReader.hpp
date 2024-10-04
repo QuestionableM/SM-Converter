@@ -32,11 +32,18 @@ public:
 
 		DebugOutL("Decal: ", header->decalSize, " / ", header->decalCompressedSize);
 
-		const std::vector<Byte> compressed = reader.Objects<Byte>(header->decalIndex, header->decalCompressedSize);
-		std::vector<Byte> bytes(header->decalSize);
+		if (!reader.hasEnoughSpace(header->decalIndex, header->decalCompressedSize))
+		{
+			DebugErrorL("Not enough space!");
+			return;
+		}
+		
+		std::vector<Byte> v_bytes(header->decalSize);
+		int debugSize = Lz4::DecompressFast(
+			reinterpret_cast<const char*>(reader.getPointer(header->decalIndex)),
+			reinterpret_cast<char*>(v_bytes.data()),
+			header->decalSize);
 
-		int debugSize = Lz4::DecompressFast(reinterpret_cast<const char*>(compressed.data()),
-			reinterpret_cast<char*>(bytes.data()), header->decalSize);
 		if (debugSize != header->decalCompressedSize)
 		{
 			DebugErrorL("Debug Size: ", debugSize, ", header->decalCompressedSize: ", header->decalCompressedSize);
@@ -44,7 +51,7 @@ public:
 			return;
 		}
 
-		debugSize = DecalListReader::Read<t_mod_counter>(bytes, header->decalCount, version, part);
+		debugSize = DecalListReader::Read<t_mod_counter>(v_bytes, header->decalCount, version, part);
 		if (debugSize != header->decalSize)
 		{
 			DebugErrorL("Debug Size: ", debugSize, ", header->decalSize: ", header->decalSize);

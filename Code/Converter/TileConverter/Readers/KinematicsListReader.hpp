@@ -40,11 +40,18 @@ public:
 
 			DebugOutL("Kinematics[", a, "]: ", kinematicsListSize, ", ", kinematicsListCompressedSize);
 
-			const std::vector<Byte> compressed = reader.Objects<Byte>(header->kinematicsListIndex[a], kinematicsListCompressedSize);
-			std::vector<Byte> v_bytes(kinematicsListSize);
+			if (!reader.hasEnoughSpace(header->kinematicsListIndex[a], kinematicsListCompressedSize))
+			{
+				DebugErrorL("Not enough space!");
+				continue;
+			}
 
-			int debugSize = Lz4::DecompressFast(reinterpret_cast<const char*>(compressed.data()),
-				reinterpret_cast<char*>(v_bytes.data()), kinematicsListSize);
+			std::vector<Byte> v_bytes(kinematicsListSize);
+			int debugSize = Lz4::DecompressFast(
+				reinterpret_cast<const char*>(reader.getPointer(header->kinematicsListIndex[a])),
+				reinterpret_cast<char*>(v_bytes.data()),
+				kinematicsListSize);
+
 			if (debugSize != kinematicsListCompressedSize)
 			{
 				DebugErrorL("Debug Size: ", debugSize, ", kinematicsListCompressedSize: ", kinematicsListCompressedSize);

@@ -93,7 +93,6 @@ public:
 		if (!TileHeader::ReadTile(&header, tile_data, v_error))
 			return nullptr;
 
-	#if defined(DEBUG) || defined(_DEBUG)
 		DebugOutL("TileFileVersion: ", header.m_data.version);
 		DebugOutL("TileUuid: ", header.m_data.uuid.ToString());
 		DebugOutL("CreatorId: ", header.m_data.creator_id);
@@ -102,7 +101,6 @@ public:
 		DebugOutL("Header info:");
 		DebugOutL("CellHeaderOffset: ", header.m_data.cell_header_offset);
 		DebugOutL("CellHeadersSize: ", header.m_data.cell_header_size, "\n");
-	#endif
 
 		const int v_tileVersion = header.m_data.version;
 		if (v_tileVersion < 0 || v_tileVersion > 13)

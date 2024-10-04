@@ -33,17 +33,25 @@ public:
 			const int assetListCompressedSize = header->assetListCompressedSize[a];
 			const int assetListSize = header->assetListSize[a];
 			const int assetListCount = header->assetListCount[a];
+			const int assetListIndex = header->assetListIndex[a];
 
 			if (assetListCount == 0)
 				continue;
 			
 			DebugOutL("Asset[", a, "]: ", header->assetListSize[a], ", ", header->assetListCompressedSize[a]);
 
-			const std::vector<Byte> compressed = reader.Objects<Byte>(header->assetListIndex[a], assetListCompressedSize);
-			std::vector<Byte> bytes(assetListSize);
+			if (!reader.hasEnoughSpace(assetListIndex, assetListCompressedSize))
+			{
+				DebugErrorL("Not enough space!");
+				continue;
+			}
 
-			int debugSize = Lz4::DecompressFast(reinterpret_cast<const char*>(compressed.data()),
-				reinterpret_cast<char*>(bytes.data()), assetListSize);
+			std::vector<Byte> v_bytes(assetListSize);
+			int debugSize = Lz4::DecompressFast(
+				reinterpret_cast<const char*>(reader.getPointer(header->assetListIndex[a])),
+				reinterpret_cast<char*>(v_bytes.data()),
+				assetListSize);
+
 			if (debugSize != assetListCompressedSize)
 			{
 				DebugErrorL("Debug Size:", debugSize, ", assetListCompressedSize: ", assetListCompressedSize);
@@ -51,7 +59,7 @@ public:
 				return;
 			}
 
-			debugSize = AssetListReader::Read<t_mod_counter>(bytes, a, assetListCount, version, part);
+			debugSize = AssetListReader::Read<t_mod_counter>(v_bytes, a, assetListCount, version, part);
 			if (debugSize != assetListSize)
 			{
 				DebugErrorL("Debug Size: ", debugSize, ", assetListSize: ", assetListSize);

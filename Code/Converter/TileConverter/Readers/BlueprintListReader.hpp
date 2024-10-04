@@ -28,11 +28,19 @@ public:
 
 		DebugOutL("BlueprintList: ", header->blueprintListSize, " / ", header->blueprintListCompressedSize);
 
-		std::vector<Byte> compressed = reader.Objects<Byte>(header->blueprintListIndex, header->blueprintListCompressedSize);
-		std::vector<Byte> bytes(header->blueprintListSize);
+		if (!reader.hasEnoughSpace(header->blueprintListIndex, header->blueprintListCompressedSize))
+		{
+			DebugErrorL("Not enough space!");
+			return;
+		}
+		
+		std::vector<Byte> v_bytes(header->blueprintListSize);
 
-		int debugSize = Lz4::DecompressFast(reinterpret_cast<const char*>(compressed.data()),
-			reinterpret_cast<char*>(bytes.data()), header->blueprintListSize);
+		int debugSize = Lz4::DecompressFast(
+			reinterpret_cast<const char*>(reader.getPointer(header->blueprintListIndex)),
+			reinterpret_cast<char*>(v_bytes.data()),
+			header->blueprintListSize);
+
 		if (debugSize != header->blueprintListCompressedSize)
 		{
 			DebugErrorL("DebugSize: ", debugSize, ", header->blueprintListCompressedSize: ", header->blueprintListCompressedSize);
@@ -40,7 +48,7 @@ public:
 			return;
 		}
 
-		debugSize = BlueprintListReader::Read<t_mod_counter>(bytes, header->blueprintListCount, version, part);
+		debugSize = BlueprintListReader::Read<t_mod_counter>(v_bytes, header->blueprintListCount, version, part);
 		if (debugSize != header->blueprintListSize)
 		{
 			DebugErrorL("DebugSize: ", debugSize, ", header->blueprintListSize: ", header->blueprintListSize);

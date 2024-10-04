@@ -21,32 +21,41 @@ public:
 	{
 		if (cError || !TileConverterSettings::ExportClutter) return;
 
-		const std::vector<Byte> bytes = ClutterReader::Read(header, memory, cError);
-		if (bytes.empty()) return;
+		std::vector<Byte> v_bytes;
+		if (!ClutterReader::Read(header, memory, cError, v_bytes)) return;
 
-		ClutterReader::Read(bytes, part);
+		ClutterReader::Read(v_bytes, part);
 	}
 
-	inline static std::vector<Byte> Read(CellHeader* header, MemoryWrapper& memory, ConvertError& cError)
+	inline static bool Read(
+		CellHeader* header,
+		MemoryWrapper& memory,
+		ConvertError& cError,
+		std::vector<Byte>& out_bytes)
 	{
 		DebugOutL("Clutter: ", header->clutterCompressedSize, " ", header->clutterSize);
 
-		const std::vector<Byte> compressed = memory.Objects<Byte>(header->clutterIndex, header->clutterCompressedSize);
-		if (compressed.empty())
-			return {};
+		if (!memory.hasEnoughSpace(header->clutterIndex, header->clutterCompressedSize))
+		{
+			DebugErrorL("Not enough space!");
+			return false;
+		}
 
-		std::vector<Byte> bytes(header->clutterSize);
+		std::vector<Byte> v_bytes(header->clutterSize);
+		const int debugSize = Lz4::DecompressFast(
+			reinterpret_cast<const char*>(memory.getPointer(header->clutterIndex)),
+			reinterpret_cast<char*>(v_bytes.data()),
+			header->clutterSize);
 
-		const int debugSize = Lz4::DecompressFast(reinterpret_cast<const char*>(compressed.data()),
-			reinterpret_cast<char*>(bytes.data()), header->clutterSize);
 		if (debugSize != header->clutterCompressedSize)
 		{
 			DebugErrorL("DebugSize: ", debugSize, ", header->clutterCompressedSize: ", header->clutterCompressedSize);
 			cError = ConvertError(1, L"ClutterReader::Read -> debugSize != header->clutterCompressedSize");
-			return {};
+			return false;
 		}
 
-		return bytes;
+		out_bytes = std::move(v_bytes);
+		return true;
 	}
 
 	inline static void Read(const std::vector<Byte>& bytes, TilePart* part)

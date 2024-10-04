@@ -43,11 +43,18 @@ public:
 
 			DebugOutL("Harvestable[", a, "]: ", v_hvs_list_sz, ", ", v_hvs_list_compressed_sz);
 
-			const std::vector<Byte> compressed = reader.Objects<Byte>(header->harvestableListIndex[a], v_hvs_list_compressed_sz);
-			std::vector<Byte> bytes(v_hvs_list_sz);
+			if (!reader.hasEnoughSpace(header->harvestableListIndex[a], v_hvs_list_compressed_sz))
+			{
+				DebugErrorL("Not enough space!");
+				continue;
+			}
 
-			int debugSize = Lz4::DecompressFast(reinterpret_cast<const char*>(compressed.data()),
-				reinterpret_cast<char*>(bytes.data()), v_hvs_list_sz);
+			std::vector<Byte> v_bytes(v_hvs_list_sz);
+			int debugSize = Lz4::DecompressFast(
+				reinterpret_cast<const char*>(reader.getPointer(header->harvestableListIndex[a])),
+				reinterpret_cast<char*>(v_bytes.data()),
+				v_hvs_list_sz);
+
 			if (debugSize != v_hvs_list_compressed_sz)
 			{
 				DebugErrorL("debugSize: ", debugSize, ", v_hvs_list_compressed_sz: ", v_hvs_list_compressed_sz);
@@ -55,7 +62,7 @@ public:
 				return;
 			}
 
-			debugSize = HarvestableListReader::Read<t_mod_counter>(bytes, a, v_hvs_list_count, version, part);
+			debugSize = HarvestableListReader::Read<t_mod_counter>(v_bytes, a, v_hvs_list_count, version, part);
 			if (debugSize != v_hvs_list_sz)
 			{
 				DebugErrorL("debugSize: ", debugSize, ", v_hvs_list_sz: ", v_hvs_list_sz);

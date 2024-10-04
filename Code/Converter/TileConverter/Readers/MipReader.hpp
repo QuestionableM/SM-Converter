@@ -22,31 +22,42 @@ public:
 	{
 		if (cError) return;
 
-		const std::vector<Byte> bytes = MipReader::Read(header, 0, reader, cError);
-		if (bytes.empty()) return;
+		std::vector<Byte> v_bytes;
+		if (!MipReader::Read(header, 0, reader, cError, v_bytes)) return;
 
-		MipReader::Read(bytes, part);
+		MipReader::Read(v_bytes, part);
 	}
 
-	inline static std::vector<Byte> Read(CellHeader* header, int mipOrLevel, MemoryWrapper& reader, ConvertError& cError)
+	inline static bool Read(
+		CellHeader* header,
+		int mipOrLevel,
+		MemoryWrapper& reader,
+		ConvertError& cError,
+		std::vector<Byte>& out_bytes)
 	{
 		DebugOutL("MipIndex: ", header->mipIndex[mipOrLevel], ", MipCompressedSize: ", header->mipCompressedSize[mipOrLevel]);
-		const std::vector<Byte> compressed = reader.Objects<Byte>(header->mipIndex[mipOrLevel], header->mipCompressedSize[mipOrLevel]);
-		if (compressed.empty())
-			return {};
 
-		std::vector<Byte> decompressed_bytes(header->mipSize[mipOrLevel]);
+		if (!reader.hasEnoughSpace(header->mipIndex[mipOrLevel], header->mipCompressedSize[mipOrLevel]))
+		{
+			DebugErrorL("Not enough space!");
+			return false;
+		}
 
-		const int debugSize = Lz4::DecompressFast(reinterpret_cast<const char*>(compressed.data()),
-			reinterpret_cast<char*>(decompressed_bytes.data()), header->mipSize[mipOrLevel]);
+		std::vector<Byte> v_bytes(header->mipSize[mipOrLevel]);
+		const int debugSize = Lz4::DecompressFast(
+			reinterpret_cast<const char*>(reader.getPointer(header->mipIndex[mipOrLevel])),
+			reinterpret_cast<char*>(v_bytes.data()),
+			header->mipSize[mipOrLevel]);
+
 		if (debugSize != header->mipCompressedSize[mipOrLevel])
 		{
 			DebugErrorL("Debug Size: ", debugSize, ", header->mipCompressedSize[mipOrLevel]: ", header->mipCompressedSize[mipOrLevel]);
 			cError = ConvertError(1, L"MipReader::Read -> debugSize != header->mipCompressedSize[mipOrLevel]");
-			return {};
+			return false;
 		}
 
-		return decompressed_bytes;
+		out_bytes = std::move(v_bytes);
+		return true;
 	}
 
 	inline static void Read(const std::vector<Byte>& bytes, TilePart* part)

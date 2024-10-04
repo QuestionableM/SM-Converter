@@ -32,11 +32,18 @@ public:
 
 		DebugOutL("Prefab: ", header->prefabSize, " / ", header->prefabCompressedSize);
 
-		std::vector<Byte> compressed = reader.Objects<Byte>(header->prefabIndex, header->prefabCompressedSize);
-		std::vector<Byte> bytes(header->prefabSize);
+		if (!reader.hasEnoughSpace(header->prefabIndex, header->prefabCompressedSize))
+		{
+			DebugErrorL("Not enough space!");
+			return;
+		}
 
-		int debugSize = Lz4::DecompressFast(reinterpret_cast<const char*>(compressed.data()),
-			reinterpret_cast<char*>(bytes.data()), header->prefabSize);
+		std::vector<Byte> v_bytes(header->prefabSize);
+		int debugSize = Lz4::DecompressFast(
+			reinterpret_cast<const char*>(reader.getPointer(header->prefabIndex)),
+			reinterpret_cast<char*>(v_bytes.data()),
+			header->prefabSize);
+
 		if (debugSize != header->prefabCompressedSize)
 		{
 			DebugErrorL("DebugSize: ", debugSize, ", header->prefabCompressedSize: ", header->prefabCompressedSize);
@@ -44,7 +51,7 @@ public:
 			return;
 		}
 
-		debugSize = PrefabReader::Read<t_mod_counter>(bytes, header->prefabCount, part, version, v_error);
+		debugSize = PrefabReader::Read<t_mod_counter>(v_bytes, header->prefabCount, part, version, v_error);
 		if (debugSize != header->prefabSize)
 		{
 			//If the error happened in the PrefabReader::Read, then don't overwrite it with the one below
