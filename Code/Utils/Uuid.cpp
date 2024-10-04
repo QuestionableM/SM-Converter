@@ -7,19 +7,9 @@ SMUuid::SMUuid()
 	std::memset(m_Data8, 0, 16);
 }
 
-SMUuid::SMUuid(const std::string& uuid)
+SMUuid::SMUuid(const std::string_view& uuid)
 {
-	this->FromString<std::string>(uuid);
-}
-
-SMUuid::SMUuid(const std::wstring& uuid)
-{
-	this->FromString<std::wstring>(uuid);
-}
-
-SMUuid::SMUuid(const char* uuid)
-{
-	this->FromCString(uuid);
+	this->fromStringView(uuid);
 }
 
 SMUuid::SMUuid(const std::vector<long long>& longs)
@@ -165,38 +155,4 @@ std::wstring SMUuid::ToWstring() const
 	this->ToCStringW(v_buffer);
 
 	return std::wstring(v_buffer, 36);
-}
-
-void SMUuid::FromCString(const char* v_str)
-{
-	if (strlen(v_str) != 36)
-	{
-		std::memset(m_Data8, 0, 16);
-		return;
-	}
-
-	char v_str_cpy[37];
-	v_str_cpy[36] = 0;
-	std::memcpy(v_str_cpy, v_str, 36);
-
-	m_Data8[15] = String::HexStrtolSafe(v_str_cpy + 34);
-	m_Data8[14] = String::HexStrtolSafe(v_str_cpy + 32);
-	m_Data8[13] = String::HexStrtolSafe(v_str_cpy + 30);
-	m_Data8[12] = String::HexStrtolSafe(v_str_cpy + 28);
-	m_Data8[11] = String::HexStrtolSafe(v_str_cpy + 26);
-	m_Data8[10] = String::HexStrtolSafe(v_str_cpy + 24);
-
-	m_Data8[9] = String::HexStrtolSafe(v_str_cpy + 21);
-	m_Data8[8] = String::HexStrtolSafe(v_str_cpy + 19);
-
-	m_Data8[7] = String::HexStrtolSafe(v_str_cpy + 16);
-	m_Data8[6] = String::HexStrtolSafe(v_str_cpy + 14);
-
-	m_Data8[5] = String::HexStrtolSafe(v_str_cpy + 11);
-	m_Data8[4] = String::HexStrtolSafe(v_str_cpy + 9);
-
-	m_Data8[3] = String::HexStrtolSafe(v_str_cpy + 6);
-	m_Data8[2] = String::HexStrtolSafe(v_str_cpy + 4);
-	m_Data8[1] = String::HexStrtolSafe(v_str_cpy + 2);
-	m_Data8[0] = String::HexStrtolSafe(v_str_cpy);
 }

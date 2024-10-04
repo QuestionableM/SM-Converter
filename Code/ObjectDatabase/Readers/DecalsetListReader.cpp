@@ -12,14 +12,14 @@ void DecalsetListReader::Load(const simdjson::dom::element& j_data, SMMod* mod, 
 {
 	if (!j_data.is_array()) return;
 
-	for (const auto v_decal_set : j_data.get_array())
+	for (const auto v_decal_set : j_data.get_array().value_unsafe())
 	{
 		if (!v_decal_set.is_object()) continue;
 
 		const auto v_set_path = v_decal_set["set"];
 		if (!v_set_path.is_string()) continue;
 
-		std::wstring v_set_path_str = String::ToWide(v_set_path.get_string());
+		std::wstring v_set_path_str = String::ToWide(v_set_path.get_string().value_unsafe());
 		KeywordReplacer::ReplaceKeyR(v_set_path_str);
 
 		DecalsetReader::LoadFromFile(v_set_path_str, mod, add_to_global_db);

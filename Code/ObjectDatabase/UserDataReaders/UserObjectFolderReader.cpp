@@ -21,11 +21,13 @@ void UserObjectFolderReader::ReadItemFromDirectory(const std::wstring& path)
 
 	if (v_desc_type.is_string())
 	{
-		if (strcmp(v_desc_type.get_c_str(), "Tile") == 0)
+		const std::string_view v_descTypeView = v_desc_type.get_string().value_unsafe();
+
+		if (v_descTypeView == "Tile")
 			TileFolderReader::LoadFromFolder(path, v_doc_root);
-		else if (strcmp(v_desc_type.get_c_str(), "Blueprint") == 0)
+		else if (v_descTypeView == "Blueprint")
 			BlueprintFolderReader::LoadFromFolder(path, v_doc_root);
-		else if (strcmp(v_desc_type.get_c_str(), "World") == 0)
+		else if (v_descTypeView == "World")
 			WorldFolderReader::LoadFromFolder(path, v_doc_root);
 	}
 	else

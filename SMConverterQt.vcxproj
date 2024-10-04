@@ -97,6 +97,8 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\FreeImage\Include;$(SolutionDir)Dependencies\ValveVDF\include;$(SolutionDir)Dependencies\Assimp\Include;$(SolutionDir)Dependencies\nlohmann_json;$(SolutionDIr)Dependencies\PerlinNoise;$(SolutionDir)Dependencies\lz4\Include;$(SolutionDir)Dependencies\simdjson;$(SolutionDir)Dependencies\glm;$(SolutionDir)Code;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PreprocessorDefinitions>$(Qt_DEFINES_);%(PreprocessorDefinitions);_HAS_STATIC_RTTI=0</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\FreeImage\Lib\$(PlatformShortName);$(SolutionDIr)Dependencies\Assimp\Lib;$(SolutionDir)Build\libs-$(Configuration);$(SolutionDir)Dependencies\lz4\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

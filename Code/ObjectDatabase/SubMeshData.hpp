@@ -149,7 +149,7 @@ public:
 		if (m_Storage.find(key) != m_Storage.end())
 			return;
 
-		m_Storage.insert(std::make_pair(key, sub_data));
+		m_Storage.emplace(key, sub_data);
 	}
 
 	SMSubMeshType Type() const noexcept override

@@ -17,13 +17,13 @@ bool ClutterListLoader::LoadTextureData(const simdjson::dom::element& fClutter, 
 	const auto v_cl_mesh = fClutter["mesh"];
 	if (!v_cl_mesh.is_string()) return false;
 
-	const std::wstring v_cl_dif_wstr = String::ToWide(v_cl_dif.get_string());
+	const std::wstring v_cl_dif_wstr = String::ToWide(v_cl_dif.get_string().value_unsafe());
 	tList.dif = KeywordReplacer::ReplaceKey(v_cl_dif_wstr);
 
 	const auto v_cl_material = fClutter["material"];
-	tList.material = (v_cl_material.is_string() ? v_cl_material.get_c_str().value() : "GroundVegetation");
+	tList.material.assign(v_cl_material.is_string() ? v_cl_material.get_string().value_unsafe() : "GroundVegetation");
 
-	const std::wstring v_cl_mesh_wstr = String::ToWide(v_cl_mesh.get_string());
+	const std::wstring v_cl_mesh_wstr = String::ToWide(v_cl_mesh.get_string().value_unsafe());
 	mesh = KeywordReplacer::ReplaceKey(v_cl_mesh_wstr);
 
 	return true;
@@ -36,9 +36,9 @@ ClutterDataParams ClutterListLoader::LoadClutterData(const simdjson::dom::elemen
 	const auto v_cl_ground_normal = fClutter["groundNormal"];
 
 	ClutterDataParams v_output;
-	v_output.m_height = (v_cl_height.is_number() ? JsonReader::GetNumber<float>(v_cl_height) : 1.0f);
-	v_output.m_scaleVariance = (v_cl_scale_variance.is_number() ? JsonReader::GetNumber<float>(v_cl_scale_variance) : 0.0f);
-	v_output.m_groundNormal = (v_cl_ground_normal.is_bool() ? v_cl_ground_normal.get_bool().value() : false);
+	v_output.m_height = (v_cl_height.is_number() ? JsonReader::GetNumber<float>(v_cl_height.value_unsafe()) : 1.0f);
+	v_output.m_scaleVariance = (v_cl_scale_variance.is_number() ? JsonReader::GetNumber<float>(v_cl_scale_variance.value_unsafe()) : 0.0f);
+	v_output.m_groundNormal = (v_cl_ground_normal.is_bool() ? v_cl_ground_normal.get_bool().value_unsafe() : false);
 
 	return v_output;
 }
@@ -47,7 +47,7 @@ void ClutterListLoader::Load(const simdjson::dom::element& fClutter, SMMod* mod,
 {
 	if (!fClutter.is_array()) return;
 
-	const auto v_clutter_array = fClutter.get_array();
+	const auto v_clutter_array = fClutter.get_array().value_unsafe();
 	ProgCounter::ProgressMax += v_clutter_array.size();
 
 	for (const auto v_clutter : v_clutter_array)
@@ -57,7 +57,7 @@ void ClutterListLoader::Load(const simdjson::dom::element& fClutter, SMMod* mod,
 		const auto v_uuid = v_clutter["uuid"];
 		if (!v_uuid.is_string()) continue;
 
-		const SMUuid v_clutter_uuid = v_uuid.get_c_str().value();
+		const SMUuid v_clutter_uuid = v_uuid.get_string().value_unsafe();
 		if (mod->m_Clutter.ObjectExists(v_clutter_uuid, false))
 		{
 			DebugErrorL("Clutter with the specified uuid already exists! (", v_clutter_uuid.ToString(), ")");

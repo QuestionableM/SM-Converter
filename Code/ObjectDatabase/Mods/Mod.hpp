@@ -138,11 +138,11 @@ public:
 	virtual void LoadObjectDatabase() = 0;
 
 	SMMod(
-		const std::wstring& v_name,
-		const std::wstring& v_directory,
-		const SMUuid& v_uuid,
-		unsigned long long v_workshop_id,
-		bool v_isLocal);
+		const std::wstring& name,
+		const std::wstring& directory,
+		const SMUuid& uuid,
+		std::uint64_t workshop_id,
+		bool isLocal);
 
 	SMMod(const SMMod&) = delete;
 	SMMod(SMMod&&) = delete;

@@ -103,8 +103,8 @@ void TileFolderReader::LoadFromFolder(const std::wstring& path, const simdjson::
 	if (!(v_name.is_string() && v_uuid.is_string()))
 		return;
 
-	const std::wstring v_tile_filename = String::ToWide(v_name.get_string());
-	const SMUuid v_content_uuid = v_uuid.get_c_str().value();
+	const std::wstring v_tile_filename = String::ToWide(v_name.get_string().value_unsafe());
+	const SMUuid v_content_uuid = v_uuid.get_string().value_unsafe();
 
 	std::wstring v_tile_path_str = path + L"/" + v_tile_filename;
 	if (!File::Exists(v_tile_path_str))
@@ -141,8 +141,8 @@ void TileFolderReader::LoadFromFolder(const std::wstring& path, const simdjson::
 	if (File::Exists(v_preview_img))
 		v_new_tile->preview_image = v_preview_img;
 
-	const auto v_workshop_id = v_cur_elem["fileId"];
-	v_new_tile->workshop_id = (v_workshop_id.is_number() ? JsonReader::GetNumber<unsigned long long>(v_workshop_id) : 0ull);
+	const auto v_workshopId = v_cur_elem["fileId"];
+	v_new_tile->workshop_id = (v_workshopId.is_number() ? JsonReader::GetNumber<unsigned long long>(v_workshopId.value_unsafe()) : 0ull);
 	v_new_tile->creator_id = v_tile_info.creator_id;
 
 	v_new_tile->v_size_filter = TileFolderReader::GetTileSize(v_tile_info.width);

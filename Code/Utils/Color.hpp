@@ -11,11 +11,9 @@ SM_UNMANAGED_CODE
 class SMColor
 {
 public:
-	inline SMColor() { m_color = 0x000000ff; }
+	inline SMColor() noexcept : m_color(0x000000ff) {}
 
-	inline SMColor(const std::string& color) { this->FromString<std::string>(color); }
-	inline SMColor(const std::wstring& color) { this->FromString<std::wstring>(color); }
-	inline SMColor(const char* color) { this->FromCString(color); }
+	inline SMColor(const std::string_view& color) { this->fromStringView(color); }
 
 	inline SMColor(Byte r, Byte g, Byte b) :
 		m_bytes{ r, g, b, 255 }
@@ -33,10 +31,7 @@ public:
 		this->SetIntLittleEndian(color);
 	}
 
-
-	inline void operator=(const std::string& color) { this->FromString<std::string>(color); }
-	inline void operator=(const std::wstring& color) { this->FromString<std::wstring>(color); }
-	inline void operator=(const char* color) { this->FromCString(color); }
+	inline void operator=(const std::string_view& color) { this->fromStringView(color); }
 
 	inline void SetIntLittleEndian(unsigned int color)
 	{
@@ -149,89 +144,31 @@ public:
 		m_bytes[idx] = static_cast<Byte>(std::max(static_cast<T>(0.0), std::min(fp_val, static_cast<T>(1.0))) * static_cast<T>(255.0));
 	}
 
-	inline void FromCString(const char* color)
+	inline void fromStringView(const std::string_view& color)
 	{
-		const std::size_t v_str_len = strlen(color);
-		if (v_str_len == 0)
-		{
-			m_color = 0x000000ff;
-			return;
-		}
-
-		char v_str_cpy[9] = { 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 'f', 'f', 0x0};
-
-		if (color[0] == '#')
-		{
-			if (v_str_len < 7)
-			{
-				m_color = 0x000000ff;
-				return;
-			}
-			
-			std::memcpy(v_str_cpy, color + 1, (v_str_len >= 9) ? 8 : 6);
-		}
-		else
-		{
-			if (v_str_len < 6)
-			{
-				m_color = 0x000000ff;
-				return;
-			}
-
-			std::memcpy(v_str_cpy, color, (v_str_len >= 8) ? 8 : 6);
-		}
-
-		this->a = String::HexStrtolSafe(v_str_cpy + 6);
-		this->b = String::HexStrtolSafe(v_str_cpy + 4);
-		this->g = String::HexStrtolSafe(v_str_cpy + 2);
-		this->r = String::HexStrtolSafe(v_str_cpy);
-	}
-
-	template<typename T>
-	inline void FromString(const T& color)
-	{
-		static_assert(std::is_same_v<T, std::string> || std::is_same_v<T, std::wstring>, "Color::FromString can only be used with std::string, std::wstring");
-
 		if (color.empty())
 		{
 			m_color = 0x000000ff;
 			return;
 		}
 
-		if (color[0] == '#')
+		const std::size_t v_ptrAdder(color[0] == '#');
+		const std::size_t v_lessCheck = 6 + v_ptrAdder;
+		const std::size_t v_moreCheck = 8 + v_ptrAdder;
+
+		if (color.size() < v_lessCheck)
 		{
-			if (color.size() < 7)
-			{
-				m_color = 0x000000ff;
-				return;
-			}
-
-			this->r = static_cast<Byte>(std::stoi(color.substr(1, 2), nullptr, 16));
-			this->g = static_cast<Byte>(std::stoi(color.substr(3, 2), nullptr, 16));
-			this->b = static_cast<Byte>(std::stoi(color.substr(5, 2), nullptr, 16));
-
-			if (color.size() >= 9)
-				this->a = static_cast<Byte>(std::stoi(color.substr(7, 2), nullptr, 16));
-			else
-				this->a = 255;
+			m_color = 0x000000ff;
+			return;
 		}
-		else
-		{
-			if (color.size() < 6)
-			{
-				m_color = 0x000000ff;
-				return;
-			}
 
-			this->r = static_cast<Byte>(std::stoi(color.substr(0, 2), nullptr, 16));
-			this->g = static_cast<Byte>(std::stoi(color.substr(2, 2), nullptr, 16));
-			this->b = static_cast<Byte>(std::stoi(color.substr(4, 2), nullptr, 16));
+		char v_strCpy[9] = { 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 'f', 'f', 0x0 };
+		std::memcpy(v_strCpy, color.data() + v_ptrAdder, (color.size() >= v_moreCheck) ? 8 : 6);
 
-			if (color.size() >= 8)
-				this->a = static_cast<Byte>(std::stoi(color.substr(6, 2), nullptr, 16));
-			else
-				this->a = 255;
-		}
+		this->r = String::HexStringToByte(v_strCpy);
+		this->g = String::HexStringToByte(v_strCpy + 2);
+		this->b = String::HexStringToByte(v_strCpy + 4);
+		this->a = String::HexStringToByte(v_strCpy + 6);
 	}
 
 	union

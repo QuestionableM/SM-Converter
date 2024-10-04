@@ -59,37 +59,31 @@ public:
 
 
 	//Should be used to get numbers from simdjson elements
-	template<typename T, typename V>
-	inline constexpr static T GetNumber(const V& v_elem)
+	template<typename T>
+	inline constexpr static T GetNumber(const simdjson::dom::element& v_elem)
 	{
-		static_assert(std::is_arithmetic_v<T>, "Json::GetNumber -> Template argument must be of arithmetic type!");
-		static_assert(
-			std::is_same_v<V, simdjson::dom::element> ||
-			std::is_same_v<V, simdjson::simdjson_result<simdjson::dom::element>>,
-			"Json::GetNumber -> Template can only be used with simdjson::dom::element");
-
 		switch (v_elem.type())
 		{
 		case simdjson::dom::element_type::DOUBLE:
 			{
 				if constexpr (std::is_same_v<T, double>)
-					return v_elem.get_double();
+					return v_elem.get_double().value_unsafe();
 				else
-					return static_cast<T>(v_elem.get_double());
+					return static_cast<T>(v_elem.get_double().value_unsafe());
 			}
 		case simdjson::dom::element_type::INT64:
 			{
 				if constexpr (std::is_same_v<T, long long>)
-					return v_elem.get_int64();
+					return v_elem.get_int64().value_unsafe();
 				else
-					return static_cast<T>(v_elem.get_int64());
+					return static_cast<T>(v_elem.get_int64().value_unsafe());
 			}
 		case simdjson::dom::element_type::UINT64:
 			{
 				if constexpr (std::is_same_v<T, unsigned long long>)
-					return v_elem.get_uint64();
+					return v_elem.get_uint64().value_unsafe();
 				else
-					return static_cast<T>(v_elem.get_uint64());
+					return static_cast<T>(v_elem.get_uint64().value_unsafe());
 			}
 		}
 

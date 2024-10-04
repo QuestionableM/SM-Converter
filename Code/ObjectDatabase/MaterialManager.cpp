@@ -16,11 +16,11 @@ void MaterialManager::Initialize()
 	if (!JsonReader::LoadParseSimdjsonCommentsC(DatabaseConfig::MaterialMapPath.data(), v_doc, simdjson::dom::element_type::OBJECT))
 		return;
 
-	for (const auto& v_object : v_doc.root().get_object())
+	for (const auto& v_object : v_doc.root().get_object().value_unsafe())
 	{
 		if (!v_object.value.is_number()) continue;
 
-		std::string v_key(v_object.key.data(), v_object.key.size());
+		std::string v_key(v_object.key);
 		const std::size_t v_value = JsonReader::GetNumber<std::size_t>(v_object.value);
 
 		if (m_materialStorage.find(v_key) != m_materialStorage.end())

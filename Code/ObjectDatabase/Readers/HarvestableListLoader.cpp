@@ -12,7 +12,7 @@ void HarvestableListLoader::Load(const simdjson::dom::element& fHarvestables, SM
 {
 	if (!fHarvestables.is_array()) return;
 	
-	const auto v_hvs_array = fHarvestables.get_array();
+	const auto v_hvs_array = fHarvestables.get_array().value_unsafe();
 	ProgCounter::ProgressMax += v_hvs_array.size();
 
 	auto& v_cur_db = mod->m_Harvestables.GetStorage(add_to_global_db);
@@ -25,7 +25,7 @@ void HarvestableListLoader::Load(const simdjson::dom::element& fHarvestables, SM
 		const auto v_uuid_obj = v_hvs["uuid"];
 		if (!v_uuid_obj.is_string()) continue;
 
-		const SMUuid v_hvs_uuid = v_uuid_obj.get_c_str().value();
+		const SMUuid v_hvs_uuid = v_uuid_obj.get_string().value_unsafe();
 		if (mod->m_Harvestables.ObjectExists(v_cur_db, v_hvs_uuid))
 			continue;
 

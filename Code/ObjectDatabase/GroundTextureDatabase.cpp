@@ -136,7 +136,7 @@ void GroundTextureDatabase::LoadTextureData(const simdjson::dom::element& tObj, 
 	{
 		const auto v_tex_obj = tObj[objKeyVec[a]];
 
-		const std::wstring v_wstr_tex = v_tex_obj.is_string() ? String::ToWide(v_tex_obj.get_string()) : L"";
+		const std::wstring v_wstr_tex = v_tex_obj.is_string() ? String::ToWide(v_tex_obj.get_string().value_unsafe()) : L"";
 		tBundle[a] = new GroundTexture(v_wstr_tex);
 	}
 }
@@ -159,7 +159,7 @@ void GroundTextureDatabase::Initialize()
 	{
 		std::size_t v_tex_data_idx = 0;
 
-		for (const auto v_tex_obj : v_texture_list.get_array())
+		for (const auto v_tex_obj : v_texture_list.get_array().value_unsafe())
 		{
 			if (!v_tex_obj.is_object()) continue;
 

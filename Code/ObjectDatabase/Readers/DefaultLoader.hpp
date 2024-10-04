@@ -15,7 +15,7 @@ public:
 	static bool TryLoadSubMeshList(const simdjson::dom::element& lod_item, SMSubMeshBase** v_sub_mesh);
 	static bool TryLoadSubMeshMap(const simdjson::dom::element& lod_item, SMSubMeshBase** v_sub_mesh);
 	static bool LoadRenderableData(const simdjson::dom::element& jRenderable, SMSubMeshBase** tData, std::wstring& mesh);
-	static bool LoadRenderableFromPath(const simdjson::dom::element& v_path, SMSubMeshBase** tData, std::wstring& mesh);
+	static bool LoadRenderableFromPath(const std::string_view& path, SMSubMeshBase** tData, std::wstring& mesh);
 	static bool LoadRenderable(const simdjson::dom::element& jAsset, SMSubMeshBase** tData, std::wstring& mesh);
 };
 

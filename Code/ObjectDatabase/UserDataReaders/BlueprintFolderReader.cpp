@@ -52,11 +52,11 @@ void BlueprintFolderReader::LoadFromFolder(const std::wstring& folder, const sim
 		return;
 
 	BlueprintInstance* v_new_bp = new BlueprintInstance();
-	v_new_bp->name = String::ToWide(v_bp_name.get_string());
+	v_new_bp->name = String::ToWide(v_bp_name.get_string().value_unsafe());
 	v_new_bp->lower_name = String::ToLower(v_new_bp->name);
 	v_new_bp->path = v_blueprint_path;
 	v_new_bp->directory = folder;
-	v_new_bp->uuid = v_bp_uuid.get_c_str().value_unsafe();
+	v_new_bp->uuid = v_bp_uuid.get_string().value_unsafe();
 
 	v_new_bp->v_filter = FilterSettingsData::GetUserDataFilter(v_new_bp->path);
 
@@ -64,8 +64,8 @@ void BlueprintFolderReader::LoadFromFolder(const std::wstring& folder, const sim
 	if (File::Exists(v_preview_img))
 		v_new_bp->preview_image = v_preview_img;
 
-	const auto v_bp_workshop_id = v_cur_elem["fileId"];
-	v_new_bp->workshop_id = (v_bp_workshop_id.is_number() ? JsonReader::GetNumber<unsigned long long>(v_bp_workshop_id) : 0ull);
+	const auto v_workshopId = v_cur_elem["fileId"];
+	v_new_bp->workshop_id = (v_workshopId.is_number() ? JsonReader::GetNumber<unsigned long long>(v_workshopId.value_unsafe()) : 0ull);
 
 	BlueprintFolderReader::PushToStorage(v_new_bp);
 }

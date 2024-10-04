@@ -15,6 +15,45 @@ SM_UNMANAGED_CODE
 
 namespace String
 {
+	struct HexAsciiToByte
+	{
+		inline static constexpr std::uint8_t GetValue(std::size_t val)
+		{
+			if (val >= std::size_t('0') && val <= std::size_t('9'))
+				return std::uint8_t(val - '0');
+			else if (val >= std::size_t('A') && val <= std::size_t('F'))
+				return std::uint8_t(val - 'A' + 10);
+			else if (val >= std::size_t('a') && val <= std::size_t('f'))
+				return std::uint8_t(val - 'a' + 10);
+			else
+				return 0;
+		}
+
+		inline constexpr HexAsciiToByte() : m_table()
+		{
+			for (std::size_t a = 0; a < sizeof(m_table); a++)
+				m_table[a] = GetValue(a);
+		}
+
+		inline std::uint8_t operator[](std::size_t idx) const noexcept
+		{
+			return m_table[idx];
+		}
+
+		std::uint8_t m_table[0xff];
+	};
+
+	inline constexpr static HexAsciiToByte g_hexLookupTable{};
+
+	// Reads 2 characters from the byte_pair and converts them into a byte
+	inline std::uint8_t HexStringToByte(const char* byte_pair) noexcept
+	{
+		const std::uint8_t v_partOne = g_hexLookupTable[byte_pair[0]];
+		const std::uint8_t v_partTwo = g_hexLookupTable[byte_pair[1]];
+
+		return v_partTwo | v_partOne << 4;
+	}
+
 	inline unsigned char HexStrtolSafe(char* v_ptr)
 	{
 		char* v_end_ptr;

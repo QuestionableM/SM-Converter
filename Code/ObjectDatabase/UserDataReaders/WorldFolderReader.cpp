@@ -45,7 +45,7 @@ void WorldFolderReader::LoadFromFolder(const std::wstring& path, const simdjson:
 	if (!(v_name.is_string() && v_uuid.is_string()))
 		return;
 
-	const std::wstring v_world_filename = String::ToWide(v_name.get_string());
+	const std::wstring v_world_filename = String::ToWide(v_name.get_string().value_unsafe());
 	std::wstring v_world_path_str = path + L"/" + v_world_filename;
 
 	const std::wstring v_wrld_path_world_ext = v_world_path_str + L".world";
@@ -65,7 +65,7 @@ void WorldFolderReader::LoadFromFolder(const std::wstring& path, const simdjson:
 	WorldInstance* v_new_world = new WorldInstance();
 	v_new_world->name = v_world_filename;
 	v_new_world->lower_name = String::ToLower(v_new_world->name);
-	v_new_world->uuid = v_uuid.get_c_str().value_unsafe();
+	v_new_world->uuid = v_uuid.get_string().value_unsafe();
 
 	v_new_world->path = v_world_path_str;
 	v_new_world->directory = path;
@@ -74,8 +74,8 @@ void WorldFolderReader::LoadFromFolder(const std::wstring& path, const simdjson:
 	if (File::Exists(v_preview_img))
 		v_new_world->preview_image = v_preview_img;
 
-	const auto v_workshop_id = v_cur_elem["fileId"];
-	v_new_world->workshop_id = (v_workshop_id.is_number() ? JsonReader::GetNumber<unsigned long long>(v_workshop_id) : 0ull);
+	const auto v_workshopId = v_cur_elem["fileId"];
+	v_new_world->workshop_id = (v_workshopId.is_number() ? JsonReader::GetNumber<unsigned long long>(v_workshopId.value_unsafe()) : 0ull);
 
 	v_new_world->v_filter = FilterSettingsData::GetUserDataFilter(v_new_world->path);
 

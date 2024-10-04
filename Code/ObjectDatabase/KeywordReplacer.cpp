@@ -58,23 +58,23 @@ void KeywordReplacer::LoadResourceUpgrades(const std::wstring& path)
 	if (!v_upgrade_array.is_array())
 		return;
 
-	for (const auto v_upgrade_list : v_upgrade_array.get_array())
+	for (const auto v_upgrade_list : v_upgrade_array.get_array().value_unsafe())
 	{
 		if (!v_upgrade_list.is_array()) continue;
 
-		for (const auto v_upgrade_obj : v_upgrade_list.get_array())
+		for (const auto v_upgrade_obj : v_upgrade_list.get_array().value_unsafe())
 		{
 			if (!v_upgrade_obj.is_array()) continue;
 
-			const auto v_upgrade_obj_arr = v_upgrade_obj.get_array();
+			const auto v_upgrade_obj_arr = v_upgrade_obj.get_array().value_unsafe();
 
 			const auto v_upgrade_key = v_upgrade_obj_arr.at(0);
 			const auto v_upgrade_val = v_upgrade_obj_arr.at(1);
 
 			if (!(v_upgrade_key.is_string() && v_upgrade_val.is_string())) continue;
 
-			std::wstring v_key_wstr = String::ToWide(v_upgrade_key.get_string());
-			std::wstring v_val_wstr = String::ToWide(v_upgrade_val.get_string());
+			std::wstring v_key_wstr = String::ToWide(v_upgrade_key.get_string().value_unsafe());
+			std::wstring v_val_wstr = String::ToWide(v_upgrade_val.get_string().value_unsafe());
 
 			KeywordReplacer::CreateKey(v_key_wstr, v_val_wstr);
 

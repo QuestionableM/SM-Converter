@@ -58,19 +58,19 @@ void SMBlueprint::CountFromJsonString(const std::string& str)
 	const auto v_bodies_obj = v_root["bodies"];
 	if (v_bodies_obj.is_array())
 	{
-		for (const auto v_body : v_bodies_obj.get_array())
+		for (const auto v_body : v_bodies_obj.get_array().value_unsafe())
 		{
 			const auto v_childs_obj = v_body["childs"];
 			if (!v_childs_obj.is_array()) continue;
 
-			for (const auto v_child : v_childs_obj.get_array())
+			for (const auto v_child : v_childs_obj.get_array().value_unsafe())
 			{
 				if (!v_child.is_object()) continue;
 
 				const auto v_uuid_obj = v_child["shapeId"];
 				if (!v_uuid_obj.is_string()) continue;
 
-				const SMUuid v_uuid = v_uuid_obj.get_c_str().value_unsafe();
+				const SMUuid v_uuid = v_uuid_obj.get_string().value_unsafe();
 				SMMod* v_cur_mod = SMMod::GetModFromBlocksAndParts(v_uuid);
 				ItemModStats::IncrementModPart(v_cur_mod);
 			}
@@ -80,14 +80,14 @@ void SMBlueprint::CountFromJsonString(const std::string& str)
 	const auto v_joints_obj = v_root["joints"];
 	if (v_joints_obj.is_array())
 	{
-		for (const auto v_joint : v_joints_obj.get_array())
+		for (const auto v_joint : v_joints_obj.get_array().value_unsafe())
 		{
 			if (!v_joint.is_object()) continue;
 
 			const auto v_uuid_obj = v_joint["shapeId"];
 			if (!v_uuid_obj.is_string()) continue;
 
-			const SMUuid v_uuid = v_uuid_obj.get_c_str().value_unsafe();
+			const SMUuid v_uuid = v_uuid_obj.get_string().value_unsafe();
 			SMMod* v_cur_mod = SMMod::GetModFromBlocksAndParts<false>(v_uuid);
 			ItemModStats::IncrementModPart(v_cur_mod);
 		}
@@ -222,7 +222,13 @@ glm::vec3 SMBlueprint::JsonToVector(const simdjson::simdjson_result<simdjson::do
 		const auto v_z = vec_json["z"];
 
 		if (v_x.is_number() && v_y.is_number() && v_z.is_number())
-			return glm::vec3(JsonReader::GetNumber<float>(v_x), JsonReader::GetNumber<float>(v_y), JsonReader::GetNumber<float>(v_z));
+		{
+			return glm::vec3(
+				JsonReader::GetNumber<float>(v_x.value_unsafe()),
+				JsonReader::GetNumber<float>(v_y.value_unsafe()),
+				JsonReader::GetNumber<float>(v_z.value_unsafe())
+			);
+		}
 	}
 
 	return glm::vec3(0.0f, 0.0f, 0.0f);
@@ -241,13 +247,13 @@ void SMBlueprint::LoadChild(const simdjson::dom::element& v_child)
 
 	if (!(v_uuid.is_string() && v_color.is_string())) return;
 
-	const int v_xAxisInt = (v_x_axis.is_number() ? JsonReader::GetNumber<int>(v_x_axis) : 1);
-	const int v_zAxisInt = (v_z_axis.is_number() ? JsonReader::GetNumber<int>(v_z_axis) : 3);
+	const int v_xAxisInt = (v_x_axis.is_number() ? JsonReader::GetNumber<int>(v_x_axis.value_unsafe()) : 1);
+	const int v_zAxisInt = (v_z_axis.is_number() ? JsonReader::GetNumber<int>(v_z_axis.value_unsafe()) : 3);
 	const unsigned char v_xzRotation = Rotations::CompressRotation(v_xAxisInt, v_zAxisInt);
 
 	const glm::vec3 v_obj_pos = SMBlueprint::JsonToVector(v_position);
-	const SMUuid v_obj_uuid = v_uuid.get_c_str().value();
-	const SMColor v_obj_color = v_color.get_c_str().value();
+	const SMUuid v_obj_uuid = v_uuid.get_string().value_unsafe();
+	const SMColor v_obj_color = v_color.get_string().value_unsafe();
 
 	if (v_bounds.is_object())
 	{
@@ -259,9 +265,17 @@ void SMBlueprint::LoadChild(const simdjson::dom::element& v_child)
 		const BlockData* v_blk_data = SMMod::GetGlobalObject<BlockData>(v_obj_uuid);
 		if (!v_blk_data) return;
 
-		SMBlock* v_new_blk = new SMBlock(v_blk_data, v_obj_pos,
-			v_blk_bounds, v_obj_color, v_xzRotation, m_object_index);
-		this->m_addObjectFunction(this, v_new_blk);
+		this->m_addObjectFunction(
+			this,
+			new SMBlock(
+				v_blk_data,
+				v_obj_pos,
+				v_blk_bounds,
+				v_obj_color,
+				v_xzRotation,
+				m_object_index
+			)
+		);
 	}
 	else
 	{
@@ -271,9 +285,17 @@ void SMBlueprint::LoadChild(const simdjson::dom::element& v_child)
 		Model* v_prt_model = ModelStorage::LoadModel(v_prt_data->m_mesh);
 		if (!v_prt_model) return;
 
-		SMPart* v_new_prt = new SMPart(v_prt_data, v_obj_pos,
-			v_prt_model, v_obj_color, v_xzRotation, m_object_index);
-		this->m_addObjectFunction(this, v_new_prt);
+		this->m_addObjectFunction(
+			this,
+			new SMPart(
+				v_prt_data,
+				v_obj_pos,
+				v_prt_model,
+				v_obj_color,
+				v_xzRotation,
+				m_object_index
+			)
+		);
 	}
 }
 
@@ -289,15 +311,15 @@ void SMBlueprint::LoadJoint(const simdjson::dom::element& v_jnt)
 	if (!(v_uuid.is_string() && v_color.is_string() && v_child.is_number()))
 		return;
 
-	const int v_xAxisInt = (v_x_axis.is_number() ? JsonReader::GetNumber<int>(v_x_axis) : 1);
-	const int v_zAxisInt = (v_z_axis.is_number() ? JsonReader::GetNumber<int>(v_z_axis) : 3);
+	const int v_xAxisInt = (v_x_axis.is_number() ? JsonReader::GetNumber<int>(v_x_axis.value_unsafe()) : 1);
+	const int v_zAxisInt = (v_z_axis.is_number() ? JsonReader::GetNumber<int>(v_z_axis.value_unsafe()) : 3);
 	const unsigned char v_xzRotation = Rotations::CompressRotation(v_xAxisInt, v_zAxisInt);
 
 	const glm::vec3 v_pos_vec = SMBlueprint::JsonToVector(v_position);
 
-	const SMUuid v_jnt_uuid = v_uuid.get_c_str().value();
-	const SMColor v_jnt_color = v_color.get_c_str().value();
-	const std::size_t v_child_idx = JsonReader::GetNumber<std::size_t>(v_child);
+	const SMUuid v_jnt_uuid = v_uuid.get_string().value_unsafe();
+	const SMColor v_jnt_color = v_color.get_string().value_unsafe();
+	const std::size_t v_child_idx = JsonReader::GetNumber<std::size_t>(v_child.value_unsafe());
 
 	const PartData* v_jnt_data = SMMod::GetGlobalObject<PartData>(v_jnt_uuid);
 	if (!v_jnt_data) return;
@@ -305,9 +327,17 @@ void SMBlueprint::LoadJoint(const simdjson::dom::element& v_jnt)
 	Model* v_jnt_model = ModelStorage::LoadModel(v_jnt_data->m_mesh);
 	if (!v_jnt_model) return;
 
-	SMJoint* v_new_jnt = new SMJoint(v_jnt_data, v_pos_vec,
-		v_jnt_model, v_jnt_color, v_xzRotation, v_child_idx);
-	this->m_addObjectFunction(this, v_new_jnt);
+	this->m_addObjectFunction(
+		this,
+		new SMJoint(
+			v_jnt_data,
+			v_pos_vec,
+			v_jnt_model,
+			v_jnt_color,
+			v_xzRotation,
+			v_child_idx
+		)
+	);
 }
 
 void SMBlueprint::LoadBodiesWithCounter(const simdjson::dom::element& v_blueprint)
@@ -317,12 +347,12 @@ void SMBlueprint::LoadBodiesWithCounter(const simdjson::dom::element& v_blueprin
 
 	ProgCounter::SetState(ProgState::ReadingBlueprintParts, 0);
 
-	for (const auto v_body : v_body_array.get_array())
+	for (const auto v_body : v_body_array.get_array().value_unsafe())
 	{
 		const auto v_childs_obj = v_body["childs"];
 		if (!v_childs_obj.is_array()) continue;
 
-		const auto v_childs_array = v_childs_obj.get_array();
+		const auto v_childs_array = v_childs_obj.get_array().value_unsafe();
 		ProgCounter::ProgressMax += v_childs_array.size();
 
 		for (const auto v_child : v_childs_array)
@@ -340,10 +370,9 @@ void SMBlueprint::LoadBodiesWithCounter(const simdjson::dom::element& v_blueprin
 void SMBlueprint::LoadJointsWithCounter(const simdjson::dom::element& v_blueprint)
 {
 	const auto v_jnt_obj = v_blueprint["joints"];
-	if (!v_jnt_obj.is_array())
-		return;
+	if (!v_jnt_obj.is_array()) return;
 
-	const auto v_jnt_array = v_jnt_obj.get_array();
+	const auto v_jnt_array = v_jnt_obj.get_array().value_unsafe();
 	ProgCounter::SetState(ProgState::ReadingBlueprintJoints, v_jnt_array.size());
 
 	for (const auto v_jnt : v_jnt_array)
@@ -360,12 +389,12 @@ void SMBlueprint::LoadBodies(const simdjson::dom::element& pJson)
 	const auto v_body_array = pJson["bodies"];
 	if (!v_body_array.is_array()) return;
 
-	for (const auto v_body : v_body_array.get_array())
+	for (const auto v_body : v_body_array.get_array().value_unsafe())
 	{
 		const auto v_childs_array = v_body["childs"];
 		if (!v_childs_array.is_array()) continue;
 
-		for (const auto v_child : v_childs_array)
+		for (const auto v_child : v_childs_array.get_array().value_unsafe())
 		{
 			this->LoadChild(v_child);
 			m_object_index++;
@@ -378,10 +407,9 @@ void SMBlueprint::LoadBodies(const simdjson::dom::element& pJson)
 void SMBlueprint::LoadJoints(const simdjson::dom::element& pJson)
 {
 	const auto v_jnt_array = pJson["joints"];
-	if (!v_jnt_array.is_array())
-		return;
+	if (!v_jnt_array.is_array()) return;
 
-	for (const auto v_jnt : v_jnt_array)
+	for (const auto v_jnt : v_jnt_array.get_array().value_unsafe())
 	{
 		this->LoadJoint(v_jnt);
 		m_object_index++;

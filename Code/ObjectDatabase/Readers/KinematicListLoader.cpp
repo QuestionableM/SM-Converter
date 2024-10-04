@@ -10,20 +10,20 @@ void KinematicListLoader::Load(const simdjson::dom::element& v_kinematics, SMMod
 {
 	if (!v_kinematics.is_array()) return;
 
-	const auto v_kinematics_array = v_kinematics.get_array();
+	const auto v_kinematics_array = v_kinematics.get_array().value_unsafe();
 	ProgCounter::ProgressMax += v_kinematics_array.size();
 
 	auto& v_cur_db = mod->m_Kinematics.GetStorage(add_to_global_db);
 	auto v_adder_func = mod->m_Kinematics.GetAdderFunction(add_to_global_db);
 
-	for (const auto v_kinematic : v_kinematics.get_array())
+	for (const auto v_kinematic : v_kinematics.get_array().value_unsafe())
 	{
 		if (!v_kinematic.is_object()) continue;
 
 		const auto v_uuid = v_kinematic["uuid"];
 		if (!v_uuid.is_string()) continue;
 
-		const SMUuid v_km_uuid = v_uuid.get_c_str().value();
+		const SMUuid v_km_uuid = v_uuid.get_string().value_unsafe();
 		if (mod->m_Kinematics.ObjectExists(v_cur_db, v_km_uuid))
 			continue;
 

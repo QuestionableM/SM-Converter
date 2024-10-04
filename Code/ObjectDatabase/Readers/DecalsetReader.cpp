@@ -13,7 +13,7 @@ inline void GetWstringFromDecalset(const simdjson::dom::element& obj, const std:
 	const auto v_json_str = obj[key];
 	if (v_json_str.is_string())
 	{
-		r_output = String::ToWide(v_json_str.get_string());
+		r_output = String::ToWide(v_json_str.get_string().value_unsafe());
 		KeywordReplacer::ReplaceKeyR(r_output);
 	}
 }
@@ -35,7 +35,7 @@ void DecalsetReader::LoadFromFile(const std::wstring& path, SMMod* mod, bool add
 	GetWstringFromDecalset(v_root, "asgSheet", v_texList.asg);
 	GetWstringFromDecalset(v_root, "norSheet", v_texList.nor);
 
-	for (const auto v_decal : v_decal_list.get_object())
+	for (const auto v_decal : v_decal_list.get_object().value_unsafe())
 	{
 		if (!v_decal.value.is_object()) continue;
 
@@ -49,15 +49,15 @@ void DecalsetReader::LoadFromFile(const std::wstring& path, SMMod* mod, bool add
 		if (!v_decal_region.is_array())
 			continue;
 
-		const auto v_decal_reg_array = v_decal_region.get_array();
+		const auto v_decal_reg_array = v_decal_region.get_array().value_unsafe();
 		if (v_decal_reg_array.size() != 4)
 			continue;
 
-		const SMUuid v_decal_uuid = v_uuid.get_c_str().value();
+		const SMUuid v_decal_uuid = v_uuid.get_string().value_unsafe();
 		if (mod->m_Decals.ObjectExists(v_decal_uuid, add_to_global_db))
 			continue;
 
-		v_texList.material.assign(v_material.get_string().value());
+		v_texList.material.assign(v_material.get_string().value_unsafe());
 
 		DecalData* v_new_decal = new DecalData(
 			v_decal_uuid,
@@ -66,8 +66,11 @@ void DecalsetReader::LoadFromFile(const std::wstring& path, SMMod* mod, bool add
 			mod
 		);
 
-		for (std::size_t a = 0; a < 4; a++)
-			v_new_decal->m_ranges[a] = JsonReader::GetNumber<int>(v_decal_reg_array.at(a));
+		if (v_decal_reg_array.size() >= 4)
+		{
+			for (std::size_t a = 0; a < 4; a++)
+				v_new_decal->m_ranges[a] = JsonReader::GetNumber<int>(v_decal_reg_array.at(a).value_unsafe());
+		}
 
 		mod->m_Decals.AddObject(v_new_decal, add_to_global_db);
 	}

@@ -67,7 +67,7 @@ public:
 			return nullptr;
 		}
 
-		m_tileMap.insert(std::make_pair(v_full_path, v_new_tile));
+		m_tileMap.emplace(std::move(v_full_path), v_new_tile);
 		DebugOutL("Reading a new tile: ", v_full_path);
 		return v_new_tile;
 	}
@@ -109,7 +109,7 @@ public:
 		if (!(v_pos_x.is_number() && v_pos_y.is_number()))
 			return;
 
-		std::wstring v_tile_path = String::ToWide(v_path.get_string());
+		std::wstring v_tile_path = String::ToWide(v_path.get_string().value_unsafe());
 		KeywordReplacer::ReplaceKeyR(v_tile_path);
 
 		Tile* v_tile = this->ReadTile<t_mod_counter>(v_tile_path);
@@ -117,14 +117,14 @@ public:
 
 		if constexpr (!t_mod_counter)
 		{
-			const int v_cell_x = JsonReader::GetNumber<int>(v_offset_x);
-			const int v_cell_y = JsonReader::GetNumber<int>(v_offset_y);
+			const int v_cell_x = JsonReader::GetNumber<int>(v_offset_x.value_unsafe());
+			const int v_cell_y = JsonReader::GetNumber<int>(v_offset_y.value_unsafe());
 			TilePart* v_cur_cell = v_tile->GetPartSafe(v_cell_x, v_cell_y);
 
 			const int v_half_width = static_cast<int>(m_width) / 2;
-			const int v_world_pos_x = JsonReader::GetNumber<int>(v_pos_x) + v_half_width;
-			const int v_world_pos_y = JsonReader::GetNumber<int>(v_pos_y) + v_half_width;
-			const char v_rotation_idx = JsonReader::GetNumber<char>(v_rotation);
+			const int v_world_pos_x = JsonReader::GetNumber<int>(v_pos_x.value_unsafe()) + v_half_width;
+			const int v_world_pos_y = JsonReader::GetNumber<int>(v_pos_y.value_unsafe()) + v_half_width;
+			const char v_rotation_idx = JsonReader::GetNumber<char>(v_rotation.value_unsafe());
 			this->SetCell(v_world_pos_x, v_world_pos_y, v_cur_cell, v_rotation_idx);
 		}
 	}
@@ -148,7 +148,7 @@ public:
 			return nullptr;
 		}
 
-		const auto v_cell_data_array = v_cell_data.get_array();
+		const auto v_cell_data_array = v_cell_data.get_array().value_unsafe();
 
 		//New worlds have `version` property
 		const auto v_world_version = v_doc_root["version"];

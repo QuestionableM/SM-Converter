@@ -7,10 +7,9 @@
 
 void GarmentListLoader::Load(const simdjson::dom::element& v_garments, SMMod* mod, bool add_to_global_db)
 {
-	if (!v_garments.is_array())
-		return;
+	if (!v_garments.is_array()) return;
 
-	for (const auto& v_garment_category : v_garments.get_array())
+	for (const auto& v_garment_category : v_garments.get_array().value_unsafe())
 		GarmentListLoader::LoadGarmentCategory(v_garment_category);
 }
 
@@ -25,7 +24,7 @@ void GarmentListLoader::LoadGarmentCategory(const simdjson::dom::element& v_cate
 	if (!(v_category_name_obj.is_string() && v_category_options.is_array()))
 		return;
 
-	const std::string v_category_name = v_category_name_obj.get_c_str().value();
+	const std::string v_category_name(v_category_name_obj.get_string().value_unsafe());
 	if (SMMod::GarmentStorage.find(v_category_name) != SMMod::GarmentStorage.end())
 	{
 		DebugWarningL("The specified garment category already exists: ", v_category_name);
@@ -33,8 +32,10 @@ void GarmentListLoader::LoadGarmentCategory(const simdjson::dom::element& v_cate
 	}
 
 	std::unordered_map<SMUuid, GarmentData*> v_category_data = {};
+	std::wstring v_male_obj;
+	std::wstring v_female_obj;
 
-	for (const auto& v_garment : v_category_options.get_array())
+	for (const auto& v_garment : v_category_options.get_array().value_unsafe())
 	{
 		if (!v_garment.is_object()) continue;
 
@@ -47,20 +48,18 @@ void GarmentListLoader::LoadGarmentCategory(const simdjson::dom::element& v_cate
 		if (!(v_male_rend_path.is_string() && v_female_rend_path.is_string()))
 			continue;
 
-		std::wstring v_male_obj;
 		SMSubMeshBase* v_male_rend;
-		if (!DefaultLoader::LoadRenderableFromPath(v_male_rend_path.value_unsafe(), &v_male_rend, v_male_obj))
+		if (!DefaultLoader::LoadRenderableFromPath(v_male_rend_path.get_string().value_unsafe(), &v_male_rend, v_male_obj))
 			continue;
 
-		std::wstring v_female_obj;
 		SMSubMeshBase* v_female_rend;
-		if (!DefaultLoader::LoadRenderableFromPath(v_female_rend_path.value_unsafe(), &v_female_rend, v_female_obj))
+		if (!DefaultLoader::LoadRenderableFromPath(v_female_rend_path.get_string().value_unsafe(), &v_female_rend, v_female_obj))
 		{
 			delete v_male_rend;
 			continue;
 		}
 
-		const SMUuid v_garment_uuid = v_garment_uuid_obj.get_c_str().value();
+		const SMUuid v_garment_uuid = v_garment_uuid_obj.get_string().value_unsafe();
 		if (v_category_data.find(v_garment_uuid) != v_category_data.end())
 		{
 			DebugWarningL("The specified garment already exists (Uuid: ", v_garment_uuid.ToString(), ")");

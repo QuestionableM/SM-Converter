@@ -115,7 +115,7 @@ public:
 	BlockData(
 		const SMUuid& uuid,
 		SMTextureList&& texList,
-		SMColor defaultColor,
+		const std::string_view& defaultColor,
 		int tiling,
 		SMMod* pMod
 	) :
@@ -147,7 +147,7 @@ public:
 		const SMUuid& uuid,
 		std::wstring&& mesh,
 		SMSubMeshBase* pTextures,
-		SMColor defaultColor,
+		const std::string_view& defaultColor,
 		glm::vec3 bounds,
 		SMMod* pMod
 	) :

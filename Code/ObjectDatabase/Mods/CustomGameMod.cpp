@@ -16,10 +16,9 @@ bool CustomGame::CheckSurvivalContent()
 	const auto v_base_game_content = v_doc.root()["baseGameContent"];
 	if (!v_base_game_content.is_string()) return false;
 
-	bool v_use_game_content = (strcmp(v_base_game_content.get_c_str(), "Survival") == 0);
-	v_use_game_content |= (strcmp(v_base_game_content.get_c_str(), "Creative") == 0);
+	const std::string_view v_baseGameContentView = v_base_game_content.get_string().value_unsafe();
 
-	return v_use_game_content;
+	return v_baseGameContentView == "Survival" || v_baseGameContentView == "Creative";
 }
 
 void CustomGame::LoadObjectDatabase()
