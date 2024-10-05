@@ -54,7 +54,7 @@ public:
 		}
 	}
 
-	inline static void PushToStorage(TObjectType& new_object)
+	inline static void PushToStorage(const TObjectType& new_object)
 	{
 		UserDataBase<T, TObjectType>::ObjectCounter++;
 		UserDataBase<T, TObjectType>::Storage.push_back(new_object);

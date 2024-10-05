@@ -13,19 +13,25 @@ SM_UNMANAGED_CODE
 
 struct UserCharacterInstance
 {
-	std::wstring name;
-	std::wstring lower_name;
-	
-	std::wstring path;
-	std::wstring directory;
+	UserCharacterInstance(
+		const std::wstring_view& char_name,
+		std::wstring&& char_path,
+		const std::wstring_view& char_directory,
+		const UserCharacterData& char_data
+	);
 
-	unsigned char v_filter;
-	UserCharacterData character_data;
-
-	UserCharacterInstance() = default;
 	UserCharacterInstance(const UserCharacterInstance&) = delete;
 	UserCharacterInstance(UserCharacterInstance&&) = delete;
 	~UserCharacterInstance() = default;
+
+	std::wstring name;
+	std::wstring lower_name;
+
+	std::wstring path;
+	std::wstring directory;
+
+	std::uint8_t filter;
+	UserCharacterData character_data;
 };
 
 class UserCharacterReader

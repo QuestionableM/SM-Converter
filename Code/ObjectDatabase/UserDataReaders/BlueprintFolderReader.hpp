@@ -16,22 +16,37 @@ SM_UNMANAGED_CODE
 
 struct BlueprintInstance
 {
+	BlueprintInstance(
+		SMUuid bp_uuid,
+		const std::wstring_view& bp_name,
+		const std::wstring_view& bp_path,
+		const std::wstring_view& bp_directory,
+		const std::wstring_view& bp_image,
+		std::uint64_t bp_workshop_id
+	);
+
+	BlueprintInstance(
+		const std::wstring_view& bp_name,
+		const std::wstring_view& bp_path,
+		const std::wstring_view& bp_directory,
+		std::uint64_t bp_workshop_id
+	);
+
+	BlueprintInstance(const BlueprintInstance&) = delete;
+	BlueprintInstance(BlueprintInstance&&) = delete;
+	~BlueprintInstance() = default;
+
+	SMUuid uuid;
 	std::wstring name;
 	//Used for more optimized search
 	std::wstring lower_name;
-	SMUuid uuid;
 
 	std::wstring path;
 	std::wstring directory;
 	std::wstring preview_image;
 
 	std::uint64_t workshop_id;
-	std::uint8_t v_filter;
-
-	BlueprintInstance() = default;
-	BlueprintInstance(const BlueprintInstance&) = delete;
-	BlueprintInstance(BlueprintInstance&&) = delete;
-	~BlueprintInstance() = default;
+	std::uint8_t filter;
 };
 
 class BlueprintFolderReader :

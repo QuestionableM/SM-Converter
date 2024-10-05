@@ -243,7 +243,7 @@ ObjectInfoGui::ObjectInfoGui(TileInstance* tile, QWidget* parent)
 	this->appendMainObjectInfo<TileInstance>(tile);
 
 	const QString v_tile_sz = QString("Tile Size: %1")
-		.arg(FilterSettingsData::GetTileSizeName(tile->v_size_filter));
+		.arg(FilterSettingsData::GetTileSizeName(tile->size_filter));
 	m_infoLayout->addWidget(new QLabel(v_tile_sz, this));
 
 	this->appendPartsStats();

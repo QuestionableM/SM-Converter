@@ -13,21 +13,29 @@ SM_UNMANAGED_CODE
 
 struct WorldInstance
 {
+	WorldInstance(
+		const SMUuid& wld_uuid,
+		const std::wstring_view& wld_name,
+		const std::wstring_view& wld_path,
+		const std::wstring_view& wld_directory,
+		const std::wstring_view& wld_image,
+		std::uint64_t wld_workshop_id
+	);
+
+	WorldInstance(const WorldInstance&) = delete;
+	WorldInstance(WorldInstance&) = delete;
+	~WorldInstance() = default;
+
+	SMUuid uuid;
 	std::wstring name;
 	std::wstring lower_name;
-	SMUuid uuid;
 
 	std::wstring path;
 	std::wstring directory;
 	std::wstring preview_image;
 
-	unsigned long long workshop_id;
-	unsigned char v_filter;
-
-	WorldInstance() = default;
-	WorldInstance(const WorldInstance&) = delete;
-	WorldInstance(WorldInstance&) = delete;
-	~WorldInstance() = default;
+	std::uint64_t workshop_id;
+	std::uint8_t filter;
 };
 
 class WorldFolderReader :

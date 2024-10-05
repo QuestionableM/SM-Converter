@@ -27,39 +27,48 @@ class TileReader
 	TileReader() = default;
 
 public:
-	static bool ReadTileHeader(const std::wstring& path, TileHeaderBaseInfo& v_header, ConvertError& cError)
+	static bool ReadTileHeader(const std::wstring& path, TileHeaderBaseInfo& out_header, ConvertError& cError)
 	{
-		std::vector<Byte> v_file_bytes;
-		if (!File::ReadFileBytes(path, v_file_bytes))
+		std::ifstream v_tileFile(path, std::ios::binary);
+		if (!v_tileFile.is_open())
+		{
+			cError = ConvertError(1, L"TileReader::ReadTile -> Couldn't open the file");
+			return false;
+		}
+
+		struct
+		{
+			std::uint32_t secret;
+			TileHeaderBaseInfo info;
+		} v_tileHeader;
+
+		if (!v_tileFile.read(reinterpret_cast<char*>(&v_tileHeader), sizeof(v_tileHeader)).good())
 		{
 			cError = ConvertError(1, L"TileReader::ReadTile -> Couldn't read the file");
 			return false;
 		}
 
-		MemoryWrapper v_memory = v_file_bytes;
-
-		const int v_tile_key = v_memory.NextObject<int>();
-		if (v_tile_key != 0x454C4954) //TILE - magic keyword
+		if (v_tileHeader.secret != 0x454C4954) //TILE - magic keyword
 		{
 			DebugOutL("Invalid File");
 			cError = ConvertError(1, L"TileHeader::ReadTile -> Invalid File");
 			return false;
 		}
 
-		v_memory.NextObjectRef<TileHeaderBaseInfo>(&v_header);
-		if (v_header.version > 1000000)
+		if (v_tileHeader.info.version > 1000000)
 		{
 			DebugErrorL("Invalid Version");
 			cError = ConvertError(1, L"TileHeader::ReadTile -> Invalid Tile Version");
 			return false;
 		}
 
-		if (v_memory.Index() != v_header.cell_header_offset)
+		if (v_tileHeader.info.cell_header_offset != sizeof(v_tileHeader))
 		{
 			cError = ConvertError(1, L"TileHeader::ReadTile -> Index doesn't match the cell header offset!");
 			return false;
 		}
 
+		out_header = v_tileHeader.info;
 		return true;
 	}
 

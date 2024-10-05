@@ -7,6 +7,22 @@
 
 #pragma unmanaged
 
+UserCharacterInstance::UserCharacterInstance(
+	const std::wstring_view& char_name,
+	std::wstring&& char_path,
+	const std::wstring_view& char_directory,
+	const UserCharacterData& char_data
+) :
+	name(char_name),
+	lower_name(char_name),
+	path(std::move(char_path)),
+	directory(char_directory),
+	filter(FilterSettingsData::GetUserDataFilter(path)),
+	character_data(char_data)
+{}
+
+////////////// USER CHARACTER READER ///////////////
+
 bool UserCharacterReader::ShouldUseFilteredStorage()
 {
 	return (FilterSettingsData::UserDataFilter != UserDataFilter_Any);
@@ -17,30 +33,27 @@ void UserCharacterReader::FilterStorage()
 	UserCharacterReader::FilteredStorage.clear();
 
 	for (UserCharacterInstance* v_char_instance : UserCharacterReader::Storage)
-		if ((v_char_instance->v_filter & FilterSettingsData::UserDataFilter) != 0)
+		if ((v_char_instance->filter & FilterSettingsData::UserDataFilter) != 0)
 			UserCharacterReader::FilteredStorage.push_back(v_char_instance);
 }
 
 void UserCharacterReader::LoadFromFile(const std::filesystem::path& path)
 {
-	if (!path.has_filename())
-		return;
+	if (!path.has_filename()) return;
 
 	std::wstring v_char_file = path.wstring() + L"\\character";
 
 	UserCharacterData v_char_data{};
-	if (!v_char_data.from_file(v_char_file))
-		return;
+	if (!v_char_data.from_file(v_char_file)) return;
 
-	UserCharacterInstance* v_new_instance = new UserCharacterInstance();
-	v_new_instance->character_data = v_char_data;
-	v_new_instance->path = std::move(v_char_file);
-	v_new_instance->name = path.filename().wstring();
-	v_new_instance->lower_name = String::ToLower(v_new_instance->name);
-	v_new_instance->directory = path.wstring();
-	v_new_instance->v_filter = FilterSettingsData::GetUserDataFilter(v_new_instance->path);
-
-	UserCharacterReader::PushToStorage(v_new_instance);
+	UserCharacterReader::PushToStorage(
+		new UserCharacterInstance(
+			path.filename().wstring(),
+			std::move(v_char_file),
+			path.wstring(),
+			v_char_data
+		)
+	);
 }
 
 void UserCharacterReader::LoadCharacters()

@@ -28,7 +28,7 @@ struct ItemModStats
 		{
 			ItemModInstance* v_new_instance = new ItemModInstance{ v_mod, 1 };
 
-			ItemModStats::ModStorage.insert(std::make_pair(v_cur_uuid, v_new_instance));
+			ItemModStats::ModStorage.emplace(v_cur_uuid, v_new_instance);
 			ItemModStats::ModVector.push_back(v_new_instance);
 		}
 		else

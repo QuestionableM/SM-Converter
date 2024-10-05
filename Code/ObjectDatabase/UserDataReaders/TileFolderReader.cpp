@@ -12,6 +12,32 @@
 
 #pragma unmanaged
 
+TileInstance::TileInstance(
+	const SMUuid& tile_uuid,
+	const std::wstring_view& tile_name,
+	const std::wstring_view& tile_path,
+	const std::wstring_view& tile_directory,
+	const std::wstring_view& tile_image,
+	std::uint64_t tile_workshop_id,
+	std::uint64_t tile_creator_id,
+	std::uint8_t size
+) :
+	uuid(tile_uuid),
+	name(tile_name),
+	lower_name(tile_name),
+	path(tile_path),
+	directory(tile_directory),
+	preview_image(tile_image),
+	workshop_id(tile_workshop_id),
+	creator_id(tile_creator_id),
+	filter(FilterSettingsData::GetUserDataFilter(path)),
+	size_filter(size)
+{
+	String::ToLowerR(lower_name);
+}
+
+//////////////// TILE FOLDER READER ///////////////
+
 bool TileFolderReader::ShouldUseFilteredStorage()
 {
 	return (FilterSettingsData::TileSizeFilter != TileSizeFilter_Any || FilterSettingsData::UserDataFilter != UserDataFilter_Any);
@@ -22,8 +48,8 @@ void TileFolderReader::FilterStorage()
 	TileFolderReader::FilteredStorage.clear();
 
 	for (TileInstance* v_tile_instance : TileFolderReader::Storage)
-		if ((v_tile_instance->v_filter & FilterSettingsData::UserDataFilter) != 0 &&
-			(v_tile_instance->v_size_filter & FilterSettingsData::TileSizeFilter) != 0)
+		if ((v_tile_instance->filter & FilterSettingsData::UserDataFilter) != 0 &&
+			(v_tile_instance->size_filter & FilterSettingsData::TileSizeFilter) != 0)
 			TileFolderReader::FilteredStorage.push_back(v_tile_instance);
 }
 
@@ -51,7 +77,7 @@ void TileFolderReader::GetTileData(const std::wstring& path, ConvertError& v_err
 void TileFolderReader::InitializeTileKeys()
 {
 	for (TileInstance* v_tile_instance : TileFolderReader::Storage)
-		if ((v_tile_instance->v_filter & UserDataFilter_GameItems) == 0)
+		if ((v_tile_instance->filter & UserDataFilter_GameItems) == 0)
 			KeywordReplacer::CreateContentKey(v_tile_instance->uuid, v_tile_instance->directory);
 }
 
@@ -71,26 +97,21 @@ void TileFolderReader::LoadFromFile(const std::filesystem::path& path)
 		return;
 	}
 
-	TileInstance* v_new_tile = new TileInstance();
-	v_new_tile->name = path.stem().wstring();
-	v_new_tile->lower_name = String::ToLower(v_new_tile->name);
-	v_new_tile->uuid = v_tile_info.uuid;
+	const std::wstring v_previewImg = path.parent_path().wstring() + L"/" + v_tile_info.uuid.ToWstring() + L".png";
 
-	v_new_tile->path = path.wstring();
-	v_new_tile->directory = path.parent_path().wstring();
+	TileInstance* v_pNewTile = new TileInstance(
+		v_tile_info.uuid,
+		path.stem().wstring(),
+		path.wstring(),
+		path.parent_path().wstring(),
+		File::Exists(v_previewImg) ? v_previewImg : L"",
+		0ULL,
+		v_tile_info.creator_id,
+		TileFolderReader::GetTileSize(v_tile_info.width)
+	);
 
-	v_new_tile->creator_id = v_tile_info.creator_id;
-	v_new_tile->workshop_id = 0ull;
-
-	v_new_tile->v_size_filter = TileFolderReader::GetTileSize(v_tile_info.width);
-	v_new_tile->v_filter = FilterSettingsData::GetUserDataFilter(v_new_tile->path);
-
-	const std::wstring v_preview_img = path.parent_path().wstring() + L"/" + v_tile_info.uuid.ToWstring() + L".png";
-	if (File::Exists(v_preview_img))
-		v_new_tile->preview_image = v_preview_img;
-
-	TileFolderReader::PushToStorage(v_new_tile);
-	TileFolderReader::TileMap.insert(std::make_pair(v_new_tile->uuid, v_new_tile));
+	TileFolderReader::PushToStorage(v_pNewTile);
+	TileFolderReader::TileMap.emplace(v_pNewTile->uuid, v_pNewTile);
 }
 
 void TileFolderReader::LoadFromFolder(const std::wstring& path, const simdjson::dom::element& v_cur_elem)
@@ -129,27 +150,22 @@ void TileFolderReader::LoadFromFolder(const std::wstring& path, const simdjson::
 		return;
 	}
 
-	TileInstance* v_new_tile = new TileInstance();
-	v_new_tile->name = v_tile_path.stem().wstring();
-	v_new_tile->lower_name = String::ToLower(v_new_tile->name);
-	v_new_tile->uuid = v_content_uuid;
-
-	v_new_tile->path = v_tile_path.wstring();
-	v_new_tile->directory = path;
-
-	const std::wstring v_preview_img = path + L"/" + v_tile_info.uuid.ToWstring() + L".png";
-	if (File::Exists(v_preview_img))
-		v_new_tile->preview_image = v_preview_img;
-
+	const std::wstring v_previewImg = path + L"/" + v_tile_info.uuid.ToWstring() + L".png";
 	const auto v_workshopId = v_cur_elem["fileId"];
-	v_new_tile->workshop_id = (v_workshopId.is_number() ? JsonReader::GetNumber<unsigned long long>(v_workshopId.value_unsafe()) : 0ull);
-	v_new_tile->creator_id = v_tile_info.creator_id;
 
-	v_new_tile->v_size_filter = TileFolderReader::GetTileSize(v_tile_info.width);
-	v_new_tile->v_filter = FilterSettingsData::GetUserDataFilter(v_new_tile->path);
+	TileInstance* v_pNewTile = new TileInstance(
+		v_content_uuid,
+		v_tile_path.stem().wstring(),
+		v_tile_path.wstring(),
+		path,
+		File::Exists(v_previewImg) ? v_previewImg : L"",
+		v_workshopId.is_number() ? JsonReader::GetNumber<std::uint64_t>(v_workshopId.value_unsafe()) : 0ULL,
+		v_tile_info.creator_id,
+		TileFolderReader::GetTileSize(v_tile_info.width)
+	);
 
-	TileFolderReader::PushToStorage(v_new_tile);
-	TileFolderReader::TileMap.insert(std::make_pair(v_new_tile->uuid, v_new_tile));
+	TileFolderReader::PushToStorage(v_pNewTile);
+	TileFolderReader::TileMap.emplace(v_pNewTile->uuid, v_pNewTile);
 }
 
 void TileFolderReader::ClearStorage()

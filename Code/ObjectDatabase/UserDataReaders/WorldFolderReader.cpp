@@ -6,6 +6,28 @@
 
 #pragma unmanaged
 
+WorldInstance::WorldInstance(
+	const SMUuid& wld_uuid,
+	const std::wstring_view& wld_name,
+	const std::wstring_view& wld_path,
+	const std::wstring_view& wld_directory,
+	const std::wstring_view& wld_image,
+	std::uint64_t wld_workshop_id
+) :
+	uuid(wld_uuid),
+	name(wld_name),
+	lower_name(wld_name),
+	path(wld_path),
+	directory(wld_directory),
+	preview_image(wld_image),
+	workshop_id(wld_workshop_id),
+	filter(FilterSettingsData::GetUserDataFilter(path))
+{
+	String::ToLower(lower_name);
+}
+
+/////////////// WORLD FOLDER READER ////////////////
+
 bool WorldFolderReader::ShouldUseFilteredStorage()
 {
 	return (FilterSettingsData::UserDataFilter != UserDataFilter_Any);
@@ -16,24 +38,24 @@ void WorldFolderReader::FilterStorage()
 	WorldFolderReader::FilteredStorage.clear();
 
 	for (WorldInstance* v_world_instance : WorldFolderReader::Storage)
-		if ((v_world_instance->v_filter & FilterSettingsData::UserDataFilter) != 0)
+		if ((v_world_instance->filter & FilterSettingsData::UserDataFilter) != 0)
 			WorldFolderReader::FilteredStorage.push_back(v_world_instance);
 }
 
 void WorldFolderReader::LoadFromFile(const std::filesystem::path& path)
 {
-	if (!(path.has_stem() && path.has_parent_path()))
-		return;
+	if (!(path.has_stem() && path.has_parent_path())) return;
 
-	WorldInstance* v_new_world = new WorldInstance();
-	v_new_world->name = path.stem().wstring();
-	v_new_world->lower_name = String::ToLower(v_new_world->name);
-	v_new_world->path = path.wstring();
-	v_new_world->directory = path.parent_path().wstring();
-	v_new_world->workshop_id = 0ull;
-	v_new_world->v_filter = FilterSettingsData::GetUserDataFilter(v_new_world->path);
-
-	WorldFolderReader::PushToStorage(v_new_world);
+	WorldFolderReader::PushToStorage(
+		new WorldInstance(
+			SMUuid::Null,
+			path.stem().wstring(),
+			path.wstring(),
+			path.parent_path().wstring(),
+			L"",
+			0ULL
+		)
+	);
 }
 
 void WorldFolderReader::LoadFromFolder(const std::wstring& path, const simdjson::dom::element& v_cur_elem)
@@ -45,41 +67,35 @@ void WorldFolderReader::LoadFromFolder(const std::wstring& path, const simdjson:
 	if (!(v_name.is_string() && v_uuid.is_string()))
 		return;
 
-	const std::wstring v_world_filename = String::ToWide(v_name.get_string().value_unsafe());
-	std::wstring v_world_path_str = path + L"/" + v_world_filename;
+	std::wstring v_worldFilename = String::ToWide(v_name.get_string().value_unsafe());
+	std::wstring v_worldPathStr = path + L"/" + v_worldFilename;
 
-	const std::wstring v_wrld_path_world_ext = v_world_path_str + L".world";
-	if (!File::Exists(v_wrld_path_world_ext))
+	const std::wstring v_wldPathWorldExt = v_worldPathStr + L".world";
+	if (!File::Exists(v_wldPathWorldExt))
 	{
-		const std::wstring v_wrld_path_json_ext = v_world_path_str + L".json";
-		if (!File::Exists(v_wrld_path_json_ext))
-			return;
-		else
-			v_world_path_str = v_wrld_path_json_ext;
+		const std::wstring v_wldPathJsonExt = v_worldPathStr + L".json";
+		if (!File::Exists(v_wldPathJsonExt)) return;
+
+		v_worldPathStr = v_wldPathJsonExt;
 	}
 	else
 	{
-		v_world_path_str = v_wrld_path_world_ext;
+		v_worldPathStr = v_wldPathWorldExt;
 	}
 
-	WorldInstance* v_new_world = new WorldInstance();
-	v_new_world->name = v_world_filename;
-	v_new_world->lower_name = String::ToLower(v_new_world->name);
-	v_new_world->uuid = v_uuid.get_string().value_unsafe();
-
-	v_new_world->path = v_world_path_str;
-	v_new_world->directory = path;
-
-	const std::wstring v_preview_img = path + L"/" + v_new_world->name + L".png";
-	if (File::Exists(v_preview_img))
-		v_new_world->preview_image = v_preview_img;
-
+	const std::wstring v_previewImg = path + L"/" + v_worldFilename + L".png";
 	const auto v_workshopId = v_cur_elem["fileId"];
-	v_new_world->workshop_id = (v_workshopId.is_number() ? JsonReader::GetNumber<unsigned long long>(v_workshopId.value_unsafe()) : 0ull);
-
-	v_new_world->v_filter = FilterSettingsData::GetUserDataFilter(v_new_world->path);
-
-	WorldFolderReader::PushToStorage(v_new_world);
+	
+	WorldFolderReader::PushToStorage(
+		new WorldInstance(
+			v_uuid.get_string().value_unsafe(),
+			v_worldFilename,
+			v_worldPathStr,
+			path,
+			File::Exists(v_previewImg) ? v_previewImg : L"",
+			v_workshopId.is_number() ? JsonReader::GetNumber<std::uint64_t>(v_workshopId.value_unsafe()) : 0ULL
+		)
+	);
 }
 
 void WorldFolderReader::ClearStorage()
