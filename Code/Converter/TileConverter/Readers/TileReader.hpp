@@ -27,12 +27,12 @@ class TileReader
 	TileReader() = default;
 
 public:
-	static bool ReadTileHeader(const std::wstring& path, TileHeaderBaseInfo& out_header, ConvertError& cError)
+	static bool ReadTileHeader(const std::wstring& path, TileHeaderBaseInfo& out_header, ConvertError& error)
 	{
 		std::ifstream v_tileFile(path, std::ios::binary);
 		if (!v_tileFile.is_open())
 		{
-			cError = ConvertError(1, L"TileReader::ReadTile -> Couldn't open the file");
+			error.setError(1, L"TileReader::ReadTile -> Couldn't open the file");
 			return false;
 		}
 
@@ -44,27 +44,27 @@ public:
 
 		if (!v_tileFile.read(reinterpret_cast<char*>(&v_tileHeader), sizeof(v_tileHeader)).good())
 		{
-			cError = ConvertError(1, L"TileReader::ReadTile -> Couldn't read the file");
+			error.setError(1, L"TileReader::ReadTile -> Couldn't read the file");
 			return false;
 		}
 
 		if (v_tileHeader.secret != 0x454C4954) //TILE - magic keyword
 		{
 			DebugOutL("Invalid File");
-			cError = ConvertError(1, L"TileHeader::ReadTile -> Invalid File");
+			error.setError(1, L"TileHeader::ReadTile -> Invalid File");
 			return false;
 		}
 
 		if (v_tileHeader.info.version > 1000000)
 		{
 			DebugErrorL("Invalid Version");
-			cError = ConvertError(1, L"TileHeader::ReadTile -> Invalid Tile Version");
+			error.setError(1, L"TileHeader::ReadTile -> Invalid Tile Version");
 			return false;
 		}
 
 		if (v_tileHeader.info.cell_header_offset != sizeof(v_tileHeader))
 		{
-			cError = ConvertError(1, L"TileHeader::ReadTile -> Index doesn't match the cell header offset!");
+			error.setError(1, L"TileHeader::ReadTile -> Index doesn't match the cell header offset!");
 			return false;
 		}
 
@@ -73,95 +73,95 @@ public:
 	}
 
 	template<bool t_mod_counter>
-	static Tile* ReadTile(const std::wstring& path, ConvertError& cError)
+	static bool ReadTile(const std::wstring& path, ConvertError& error, Tile& out_tile)
 	{
-		std::vector<Byte> v_file_bytes;
-		if (!File::ReadFileBytes(path, v_file_bytes))
-			return nullptr;
+		std::vector<Byte> v_fileBytes;
+		if (!File::ReadFileBytes(path, v_fileBytes))
+			return false;
 
-		return TileReader::ReadTile<t_mod_counter>(v_file_bytes, cError);
+		return TileReader::ReadTile<t_mod_counter>(v_fileBytes, error, out_tile);
 	}
 
 	template<bool t_mod_counter>
-	inline static void ReadTileData(CellHeader* v_header, MemoryWrapper& v_reader, TilePart* v_part, int version, ConvertError& v_error)
+	inline static void ReadTileData(
+		const CellHeader& header,
+		MemoryWrapper& reader,
+		TilePart* pPart,
+		int version,
+		ConvertError& error)
 	{
-		AssetListReader::Read<t_mod_counter>      (v_header, v_reader, v_part, version, v_error);
-		PrefabReader::Read<t_mod_counter>         (v_header, v_reader, v_part, version, v_error);
-		BlueprintListReader::Read<t_mod_counter>  (v_header, v_reader, v_part, version, v_error);
-		HarvestableListReader::Read<t_mod_counter>(v_header, v_reader, v_part, version, v_error);
-		DecalListReader::Read<t_mod_counter>      (v_header, v_reader, v_part, version, v_error);
+		AssetListReader::Read<t_mod_counter>      (header, reader, pPart, version, error);
+		PrefabReader::Read<t_mod_counter>         (header, reader, pPart, version, error);
+		BlueprintListReader::Read<t_mod_counter>  (header, reader, pPart, version, error);
+		HarvestableListReader::Read<t_mod_counter>(header, reader, pPart, version, error);
+		DecalListReader::Read<t_mod_counter>      (header, reader, pPart, version, error);
 
 		if (version >= 11)
-			KinematicsListReader::Read<t_mod_counter> (v_header, v_reader, v_part, version, v_error);
+			KinematicsListReader::Read<t_mod_counter>(header, reader, pPart, version, error);
 	}
 
 	template<bool t_mod_counter>
-	static Tile* ReadTile(const std::vector<Byte>& tile_data, ConvertError& v_error)
+	static bool ReadTile(const std::vector<Byte>& tileData, ConvertError& error, Tile& out_tile)
 	{
-		TileHeader header;
-		if (!TileHeader::ReadTile(&header, tile_data, v_error))
-			return nullptr;
+		TileHeader v_header;
+		if (!TileHeader::ReadTile(&v_header, tileData, error))
+			return false;
 
-		DebugOutL("TileFileVersion: ", header.m_data.version);
-		DebugOutL("TileUuid: ", header.m_data.uuid.ToString());
-		DebugOutL("CreatorId: ", header.m_data.creator_id);
-		DebugOutL("Size: ", header.m_data.width, ", ", header.m_data.height);
-		DebugOutL("Type: ", header.m_data.type, "\n");
+		DebugOutL("TileFileVersion: ", v_header.m_data.version);
+		DebugOutL("TileUuid: ", v_header.m_data.uuid.ToString());
+		DebugOutL("CreatorId: ", v_header.m_data.creator_id);
+		DebugOutL("Size: ", v_header.m_data.width, ", ", v_header.m_data.height);
+		DebugOutL("Type: ", v_header.m_data.type, "\n");
 		DebugOutL("Header info:");
-		DebugOutL("CellHeaderOffset: ", header.m_data.cell_header_offset);
-		DebugOutL("CellHeadersSize: ", header.m_data.cell_header_size, "\n");
+		DebugOutL("CellHeaderOffset: ", v_header.m_data.cell_header_offset);
+		DebugOutL("CellHeadersSize: ", v_header.m_data.cell_header_size, "\n");
 
-		const int v_tileVersion = header.m_data.version;
+		const int v_tileVersion = v_header.m_data.version;
 		if (v_tileVersion < 0 || v_tileVersion > 13)
 		{
-			v_error = ConvertError(1, L"Unsupported Tile Version: " + std::to_wstring(v_tileVersion));
-			return nullptr;
+			error.setError(1, L"Unsupported Tile Version: " + std::to_wstring(v_tileVersion));
+			return false;
 		}
 
-		if (header.m_data.width != header.m_data.height)
+		if (v_header.m_data.width != v_header.m_data.height)
 		{
-			v_error = ConvertError(1, L"Weird tile dimensions: " + std::to_wstring(header.m_data.width) + L", " + std::to_wstring(header.m_data.height));
-			return nullptr;
+			error.setError(1, L"Weird tile dimensions: " + std::to_wstring(v_header.m_data.width) + L", " + std::to_wstring(v_header.m_data.height));
+			return false;
 		}
 
-		MemoryWrapper reader(tile_data);
+		MemoryWrapper v_reader(tileData);
+		Tile v_newTile(v_header);
 
-		const int tileXSize = header.m_data.width;
-		const int tileYSize = header.m_data.height;
-
-		Tile* tile = new Tile(header);
-		if (tileYSize > 0)
+		for (int y = 0; y < v_header.m_data.height; y++)
 		{
-			for (int y = 0; y < tileYSize; y++)
+			for (int x = 0; x < v_header.m_data.width; x++)
 			{
-				if (v_error) break;
+				const CellHeader& v_cellHeader = v_header.GetCellHeader(x, y);
+				TilePart* v_pPart = v_newTile.GetPart(x, y);
 
-				for (int x = 0; x < tileXSize; x++)
+				if constexpr (!t_mod_counter) //mod counter doesn't need any information about the clutter, so it is skipped to improve performance
 				{
-					CellHeader* h  = header.GetCellHeader(x, y);
-					TilePart* part = tile->GetPart(x, y);
-
-					if constexpr (!t_mod_counter) //mod counter doesn't need any information about the clutter, so it is skipped to improve performance
+					if (v_newTile.m_hasTerrain)
 					{
-						if (tile->m_hasTerrain)
-						{
-							MipReader::Read(h, reader, part, v_error);
-							ClutterReader::Read(h, reader, part, v_error);
-						}
-					}
+						MipReader::Read(v_cellHeader, v_reader, v_pPart, error);
+						if (error) goto escape_loop;
 
-					TileReader::ReadTileData<t_mod_counter>(h, reader, part, v_tileVersion, v_error);
+						ClutterReader::Read(v_cellHeader, v_reader, v_pPart, error);
+						if (error) goto escape_loop;
+					}
 				}
+
+				TileReader::ReadTileData<t_mod_counter>(v_cellHeader, v_reader, v_pPart, v_tileVersion, error);
+				if (error) goto escape_loop;
 			}
 		}
 
-		if (v_error)
-		{
-			delete tile;
-			return nullptr;
-		}
+	escape_loop:
+		if (error)
+			return false;
 
-		return tile;
+		out_tile = std::move(v_newTile);
+		return true;
 	}
 };
 

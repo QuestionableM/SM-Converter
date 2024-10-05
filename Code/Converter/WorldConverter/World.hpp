@@ -16,17 +16,11 @@ struct WorldCellData
 class SMWorld
 {
 public:
-	inline SMWorld(std::size_t v_cell_count, std::size_t v_width)
-	{
-		m_cellMap.resize(v_cell_count);
-		m_width = v_width;
-	}
-
-	inline ~SMWorld()
-	{
-		for (auto& v_cur_tile : m_tileMap)
-			delete v_cur_tile.second;
-	}
+	inline SMWorld(std::size_t v_cell_count, std::size_t v_width) :
+		m_width(v_width),
+		m_tileMap(),
+		m_cellMap(v_cell_count)
+	{}
 
 	template<bool t_mod_counter>
 	Tile* ReadTile(const std::wstring& path)
@@ -40,36 +34,34 @@ public:
 			return nullptr;
 		}
 
-		std::wstring v_full_path;
-		if (!File::GetFullFilePath(path, v_full_path))
+		std::wstring v_fullPath;
+		if (!File::GetFullFilePath(path, v_fullPath))
 		{
 			DebugErrorL("Couldn't get the full path from the specified path: ", path);
 			return nullptr;
 		}
 
-		const auto v_iter = m_tileMap.find(v_full_path);
+		const auto v_iter = m_tileMap.find(v_fullPath);
 		if (v_iter != m_tileMap.end())
-			return v_iter->second;
+			return &v_iter->second;
 
 		ConvertError v_error;
-		Tile* v_new_tile = TileReader::ReadTile<t_mod_counter>(v_full_path, v_error);
-		if (!v_new_tile)
+		Tile v_newTile;
+		if (!TileReader::ReadTile<t_mod_counter>(v_fullPath, v_error, v_newTile))
 		{
-			DebugErrorL("Couldn't read the specified tile: ", v_full_path, "\nError: UNKNOWN");
+			DebugErrorL("Couldn't read the specified tile: ", v_fullPath, "\nError: UNKNOWN");
 			return nullptr;
 		}
 
 		if (v_error)
 		{
-			if (v_new_tile) delete v_new_tile;
-
-			DebugErrorL("Couldn't read the specified tile: ", v_full_path, "\nError: ", v_error.getErrorMsg());
+			DebugErrorL("Couldn't read the specified tile: ", v_fullPath, "\nError: ", v_error.getErrorMsg());
 			return nullptr;
 		}
 
-		m_tileMap.emplace(std::move(v_full_path), v_new_tile);
-		DebugOutL("Reading a new tile: ", v_full_path);
-		return v_new_tile;
+		DebugOutL("Reading a new tile: ", v_fullPath);
+
+		return &m_tileMap.emplace(std::move(v_fullPath), std::move(v_newTile)).first->second;
 	}
 
 	inline void SetCell(std::size_t x, std::size_t y, TilePart* v_cell, char v_rotation)
@@ -109,33 +101,33 @@ public:
 		if (!(v_pos_x.is_number() && v_pos_y.is_number()))
 			return;
 
-		std::wstring v_tile_path = String::ToWide(v_path.get_string().value_unsafe());
-		KeywordReplacer::ReplaceKeyR(v_tile_path);
+		std::wstring v_tilePath = String::ToWide(v_path.get_string().value_unsafe());
+		KeywordReplacer::ReplaceKeyR(v_tilePath);
 
-		Tile* v_tile = this->ReadTile<t_mod_counter>(v_tile_path);
-		if (!v_tile) return;
+		Tile* v_pTile = this->ReadTile<t_mod_counter>(v_tilePath);
+		if (!v_pTile) return;
 
 		if constexpr (!t_mod_counter)
 		{
-			const int v_cell_x = JsonReader::GetNumber<int>(v_offset_x.value_unsafe());
-			const int v_cell_y = JsonReader::GetNumber<int>(v_offset_y.value_unsafe());
-			TilePart* v_cur_cell = v_tile->GetPartSafe(v_cell_x, v_cell_y);
+			const int v_cellX = JsonReader::GetNumber<int>(v_offset_x.value_unsafe());
+			const int v_cellY = JsonReader::GetNumber<int>(v_offset_y.value_unsafe());
+			TilePart* v_pCurCell = v_pTile->GetPartSafe(v_cellX, v_cellY);
 
-			const int v_half_width = static_cast<int>(m_width) / 2;
-			const int v_world_pos_x = JsonReader::GetNumber<int>(v_pos_x.value_unsafe()) + v_half_width;
-			const int v_world_pos_y = JsonReader::GetNumber<int>(v_pos_y.value_unsafe()) + v_half_width;
-			const char v_rotation_idx = JsonReader::GetNumber<char>(v_rotation.value_unsafe());
-			this->SetCell(v_world_pos_x, v_world_pos_y, v_cur_cell, v_rotation_idx);
+			const int v_halfWidth = static_cast<int>(m_width) / 2;
+			const int v_worldPosX = JsonReader::GetNumber<int>(v_pos_x.value_unsafe()) + v_halfWidth;
+			const int v_worldPosY = JsonReader::GetNumber<int>(v_pos_y.value_unsafe()) + v_halfWidth;
+			const char v_rotationIdx = JsonReader::GetNumber<char>(v_rotation.value_unsafe());
+			this->SetCell(v_worldPosX, v_worldPosY, v_pCurCell, v_rotationIdx);
 		}
 	}
 
 	template<bool t_mod_counter>
-	inline static SMWorld* LoadFromFile(const std::wstring& path, ConvertError& v_error)
+	inline static SMWorld* LoadFromFile(const std::wstring& path, ConvertError& error)
 	{
 		simdjson::dom::document v_doc;
 		if (!JsonReader::LoadParseSimdjsonCommentsC(path, v_doc, simdjson::dom::element_type::OBJECT))
 		{
-			v_error = ConvertError(1, L"Couldn't read the specified file. Possible reasons: Invalid Json File, Invalid Path, Syntax Error");
+			error.setError(1, L"Couldn't read the specified file. Possible reasons: Invalid Json File, Invalid Path, Syntax Error");
 			return nullptr;
 		}
 
@@ -144,7 +136,7 @@ public:
 		const auto v_cell_data = v_doc_root["cellData"];
 		if (!v_cell_data.is_array())
 		{
-			v_error = ConvertError(1, L"Couldn't find a cell data inside the world file");
+			error.setError(1, L"Couldn't find a cell data inside the world file");
 			return nullptr;
 		}
 
@@ -201,7 +193,7 @@ private:
 	std::size_t m_width;
 
 	//Stores unique tiles
-	std::unordered_map<std::wstring, Tile*> m_tileMap = {};
+	std::unordered_map<std::wstring, Tile> m_tileMap = {};
 
 	//A vector that stores the positions of cells in the world
 	std::vector<WorldCellData> m_cellMap = {};

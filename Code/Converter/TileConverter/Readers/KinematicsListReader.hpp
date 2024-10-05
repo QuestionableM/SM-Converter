@@ -21,9 +21,9 @@ class KinematicsListReader
 
 public:
 	template<bool t_mod_counter>
-	static void Read(CellHeader* header, MemoryWrapper& reader, TilePart* part, int version, ConvertError& v_error)
+	static void Read(const CellHeader& header, MemoryWrapper& reader, TilePart* pPart, int version, ConvertError& error)
 	{
-		if (v_error) return;
+		if (error) return;
 
 		if constexpr (!t_mod_counter) {
 			if (!TileConverterSettings::ExportKinematics) return;
@@ -31,16 +31,16 @@ public:
 
 		for (int a = 0; a < 4; a++)
 		{
-			const int kinematicsListCompressedSize = header->kinematicsListCompressedSize[a];
-			const int kinematicsListSize = header->kinematicsListSize[a];
-			const int kinematicsListCount = header->kinematicsListCount[a];
+			const int kinematicsListCompressedSize = header.kinematicsListCompressedSize[a];
+			const int kinematicsListSize = header.kinematicsListSize[a];
+			const int kinematicsListCount = header.kinematicsListCount[a];
 
 			if (kinematicsListCount == 0)
 				continue;
 
 			DebugOutL("Kinematics[", a, "]: ", kinematicsListSize, ", ", kinematicsListCompressedSize);
 
-			if (!reader.hasEnoughSpace(header->kinematicsListIndex[a], kinematicsListCompressedSize))
+			if (!reader.hasEnoughSpace(header.kinematicsListIndex[a], kinematicsListCompressedSize))
 			{
 				DebugErrorL("Not enough space!");
 				continue;
@@ -48,29 +48,29 @@ public:
 
 			std::vector<Byte> v_bytes(kinematicsListSize);
 			int debugSize = Lz4::DecompressFast(
-				reinterpret_cast<const char*>(reader.getPointer(header->kinematicsListIndex[a])),
+				reinterpret_cast<const char*>(reader.getPointer(header.kinematicsListIndex[a])),
 				reinterpret_cast<char*>(v_bytes.data()),
 				kinematicsListSize);
 
 			if (debugSize != kinematicsListCompressedSize)
 			{
 				DebugErrorL("Debug Size: ", debugSize, ", kinematicsListCompressedSize: ", kinematicsListCompressedSize);
-				v_error = ConvertError(1, L"KinematicsListReader::Read -> debugSize != kinematicsListCompressedSize\nTile Version: " + std::to_wstring(version));
+				error.setError(1, L"KinematicsListReader::Read -> debugSize != kinematicsListCompressedSize\nTile Version: " + std::to_wstring(version));
 				return;
 			}
 
-			debugSize = KinematicsListReader::Read<t_mod_counter>(v_bytes, a, kinematicsListCount, version, part);
+			debugSize = KinematicsListReader::Read<t_mod_counter>(v_bytes, a, kinematicsListCount, version, pPart);
 			if (debugSize != kinematicsListSize)
 			{
 				DebugErrorL("Debug Size: ", debugSize, ", kinematicsListSize: ", kinematicsListSize);
-				v_error = ConvertError(1, L"KinematicsListReader::Read -> debugSize != kinematicsListSize\nTile Version: " + std::to_wstring(version));
+				error.setError(1, L"KinematicsListReader::Read -> debugSize != kinematicsListSize\nTile Version: " + std::to_wstring(version));
 				return;
 			}
 		}
 	}
 
 	template<bool t_mod_counter>
-	static int Read(const std::vector<Byte>& bytes, int kinematic_idx, int len, int version, TilePart* part)
+	static int Read(const std::vector<Byte>& bytes, int kinematic_idx, int len, int version, TilePart* pPart)
 	{
 		SMEntityTransform v_transform;
 		MemoryWrapper v_memory(bytes);
@@ -117,7 +117,7 @@ public:
 				if (!v_km_model) continue;
 
 				SMKinematic* v_new_kinematic = new SMKinematic(v_km_data, v_transform, v_km_model, v_color);
-				part->AddObject(v_new_kinematic, kinematic_idx);
+				pPart->AddObject(v_new_kinematic, kinematic_idx);
 			}
 		}
 

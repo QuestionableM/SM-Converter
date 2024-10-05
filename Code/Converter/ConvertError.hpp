@@ -23,6 +23,14 @@ public:
 		m_errorMessage(func_string + L" -> " + error_msg)
 	{}
 
+	void operator=(const ConvertError& other) = delete;
+
+	inline void setError(const std::uint16_t ec, const std::wstring_view& error_msg)
+	{
+		m_errorCode = ec;
+		m_errorMessage.assign(error_msg);
+	}
+
 	inline explicit operator bool() const noexcept
 	{
 		return (m_errorCode != 0);

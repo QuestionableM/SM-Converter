@@ -54,7 +54,7 @@ public:
 	//Parse simdjson with comments and root node type checking
 	static bool LoadParseSimdjsonCommentsC(const std::wstring& path, simdjson::dom::document& v_doc, const simdjson::dom::element_type& type_check);
 	//Parse simdjson from string
-	static bool ParseSimdjsonString(const std::string& json_str, simdjson::dom::document& v_doc);
+	static bool ParseSimdjsonString(const std::string_view& json_str, simdjson::dom::document& v_doc);
 
 
 

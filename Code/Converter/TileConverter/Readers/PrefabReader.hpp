@@ -20,51 +20,50 @@ class PrefabReader
 
 public:
 	template<bool t_mod_counter>
-	static void Read(CellHeader* header, MemoryWrapper& reader, TilePart* part, int version, ConvertError& v_error)
+	static void Read(const CellHeader& header, MemoryWrapper& reader, TilePart* pPart, int version, ConvertError& error)
 	{
-		if (v_error) return;
+		if (error) return;
 
 		if constexpr (!t_mod_counter) {
 			if (!TileConverterSettings::ExportPrefabs) return;
 		}
 
-		if (header->prefabCount == 0 || header->prefabIndex == 0) return;
+		if (header.prefabCount == 0 || header.prefabIndex == 0) return;
 
-		DebugOutL("Prefab: ", header->prefabSize, " / ", header->prefabCompressedSize);
+		DebugOutL("Prefab: ", header.prefabSize, " / ", header.prefabCompressedSize);
 
-		if (!reader.hasEnoughSpace(header->prefabIndex, header->prefabCompressedSize))
+		if (!reader.hasEnoughSpace(header.prefabIndex, header.prefabCompressedSize))
 		{
 			DebugErrorL("Not enough space!");
 			return;
 		}
 
-		std::vector<Byte> v_bytes(header->prefabSize);
+		std::vector<Byte> v_bytes(header.prefabSize);
 		int debugSize = Lz4::DecompressFast(
-			reinterpret_cast<const char*>(reader.getPointer(header->prefabIndex)),
+			reinterpret_cast<const char*>(reader.getPointer(header.prefabIndex)),
 			reinterpret_cast<char*>(v_bytes.data()),
-			header->prefabSize);
+			header.prefabSize);
 
-		if (debugSize != header->prefabCompressedSize)
+		if (debugSize != header.prefabCompressedSize)
 		{
-			DebugErrorL("DebugSize: ", debugSize, ", header->prefabCompressedSize: ", header->prefabCompressedSize);
-			v_error = ConvertError(1, L"PrefabReader::Read -> debugSize != header->prefabCompressedSize\nTile Version: " + std::to_wstring(version));
+			DebugErrorL("DebugSize: ", debugSize, ", header->prefabCompressedSize: ", header.prefabCompressedSize);
+			error.setError(1, L"PrefabReader::Read -> debugSize != header->prefabCompressedSize\nTile Version: " + std::to_wstring(version));
 			return;
 		}
 
-		debugSize = PrefabReader::Read<t_mod_counter>(v_bytes, header->prefabCount, part, version, v_error);
-		if (debugSize != header->prefabSize)
+		debugSize = PrefabReader::Read<t_mod_counter>(v_bytes, header.prefabCount, pPart, version, error);
+		if (debugSize != header.prefabSize)
 		{
-			//If the error happened in the PrefabReader::Read, then don't overwrite it with the one below
-			if (v_error) return;
+			if (error) return;
 
-			DebugErrorL("DebugSize: ", debugSize, ", header->prefabSize: ", header->prefabSize);
-			v_error = ConvertError(1, L"PrefabReader::Read -> debugSize != header->prefabSize\nTile Version: " + std::to_wstring(version));
+			DebugErrorL("DebugSize: ", debugSize, ", header->prefabSize: ", header.prefabSize);
+			error.setError(1, L"PrefabReader::Read -> debugSize != header->prefabSize\nTile Version: " + std::to_wstring(version));
 			return;
 		}
 	}
 
 	template<bool t_mod_counter>
-	static int Read(const std::vector<Byte>& bytes, int prefabCount, TilePart* part, int version, ConvertError& v_error)
+	static int Read(const std::vector<Byte>& bytes, int prefabCount, TilePart* pPart, int version, ConvertError& error)
 	{
 		SMEntityTransform v_transform;
 		MemoryWrapper memory(bytes);
@@ -103,14 +102,14 @@ public:
 			const std::wstring v_pref_flag = String::ToWide(v_flag);
 			DebugOutL("Prefab Path: ", v_pref_path);
 
-			SMPrefab* v_new_prefab = PrefabFileReader::Read<t_mod_counter>(v_pref_path, v_pref_flag, v_transform, v_error);
-			if (v_error) return 0;
+			SMPrefab* v_new_prefab = PrefabFileReader::Read<t_mod_counter>(v_pref_path, v_pref_flag, v_transform, error);
+			if (error) return 0;
 
 			if constexpr (!t_mod_counter)
 			{
 				if (!v_new_prefab) continue;
 
-				part->AddObject(v_new_prefab);
+				pPart->AddObject(v_new_prefab);
 			}
 		}
 

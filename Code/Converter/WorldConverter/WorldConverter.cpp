@@ -9,55 +9,62 @@
 
 #pragma unmanaged
 
-void WorldConverter::WriteToFile(class SMWorld* v_world, const std::wstring& world_name, ConvertError& v_error)
+void WorldConverter::WriteToFile(
+	class SMWorld* pWorld,
+	const std::wstring& world_name,
+	ConvertError& error)
 {
-	if (v_error) return; //Error check
+	if (error) return; //Error check
 
 	const std::wstring v_world_out_dir = std::wstring(DatabaseConfig::WorldOutputFolder.data());
 	if (!File::CreateDirectorySafe(v_world_out_dir))
 	{
-		v_error = ConvertError(1, L"Couldn't create the main output directory");
+		error.setError(1, L"Couldn't create the main output directory");
 		return;
 	}
 
 	const std::wstring v_world_dir_path = v_world_out_dir + L"/" + world_name;
 	if (!File::CreateDirectorySafe(v_world_dir_path))
 	{
-		v_error = ConvertError(1, L"Couldn't create the tile output directory");
+		error.setError(1, L"Couldn't create the tile output directory");
 		return;
 	}
 
-	v_world->WriteToFile(v_world_dir_path + L"/", world_name);
+	pWorld->WriteToFile(v_world_dir_path + L"/", world_name);
 }
 
-void WorldConverter::ConvertToModel(const std::wstring& path, const std::wstring& name, ConvertError& v_error, CustomGame* v_custom_game)
+void WorldConverter::ConvertToModel(
+	const std::wstring& path,
+	const std::wstring& name,
+	ConvertError& error,
+	CustomGame* pCustomGame)
 {
 	if (!File::IsRegularFile(path))
 	{
-		v_error = ConvertError(1, L"The specified path leads to a directory");
+		error.setError(1, L"The specified path leads to a directory");
 		return;
 	}
 
 	TileFolderReader::InitializeTileKeys();
 
-	SMWorld* v_output_world = nullptr;
-	if (v_custom_game)
+	SMWorld* v_outputWorld = nullptr;
+	if (pCustomGame)
 	{
 		//The original content will be set back automatically by the SMModCustomGameSwitch destructor
-		SMModCustomGameSwitch<false, true> v_content_switch;
-		v_content_switch.MergeContent(v_custom_game);
+		SMModCustomGameSwitch<false, true> v_contentSwitch;
+		v_contentSwitch.MergeContent(pCustomGame);
 		
-		v_output_world = SMWorld::LoadFromFile<false>(path, v_error);
+		v_outputWorld = SMWorld::LoadFromFile<false>(path, error);
 	}
 	else
 	{
-		v_output_world = SMWorld::LoadFromFile<false>(path, v_error);
+		v_outputWorld = SMWorld::LoadFromFile<false>(path, error);
 	}
 
-	if (v_output_world)
+	if (v_outputWorld)
 	{
-		WorldConverter::WriteToFile(v_output_world, name, v_error);
-		delete v_output_world;
+		WorldConverter::WriteToFile(v_outputWorld, name, error);
+		delete v_outputWorld;
 	}
 
 	ModelStorage::ClearStorage();

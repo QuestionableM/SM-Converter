@@ -17,40 +17,40 @@ class ClutterReader
 	ClutterReader() = default;
 
 public:
-	inline static void Read(CellHeader* header, MemoryWrapper& memory, TilePart* part, ConvertError& cError)
+	inline static void Read(const CellHeader& header, MemoryWrapper& memory, TilePart* pPart, ConvertError& error)
 	{
-		if (cError || !TileConverterSettings::ExportClutter) return;
+		if (error || !TileConverterSettings::ExportClutter) return;
 
 		std::vector<Byte> v_bytes;
-		if (!ClutterReader::Read(header, memory, cError, v_bytes)) return;
+		if (!ClutterReader::Read(header, memory, error, v_bytes)) return;
 
-		ClutterReader::Read(v_bytes, part);
+		ClutterReader::Read(v_bytes, pPart);
 	}
 
 	inline static bool Read(
-		CellHeader* header,
+		const CellHeader& header,
 		MemoryWrapper& memory,
-		ConvertError& cError,
+		ConvertError& error,
 		std::vector<Byte>& out_bytes)
 	{
-		DebugOutL("Clutter: ", header->clutterCompressedSize, " ", header->clutterSize);
+		DebugOutL("Clutter: ", header.clutterCompressedSize, " ", header.clutterSize);
 
-		if (!memory.hasEnoughSpace(header->clutterIndex, header->clutterCompressedSize))
+		if (!memory.hasEnoughSpace(header.clutterIndex, header.clutterCompressedSize))
 		{
 			DebugErrorL("Not enough space!");
 			return false;
 		}
 
-		std::vector<Byte> v_bytes(header->clutterSize);
+		std::vector<Byte> v_bytes(header.clutterSize);
 		const int debugSize = Lz4::DecompressFast(
-			reinterpret_cast<const char*>(memory.getPointer(header->clutterIndex)),
+			reinterpret_cast<const char*>(memory.getPointer(header.clutterIndex)),
 			reinterpret_cast<char*>(v_bytes.data()),
-			header->clutterSize);
+			header.clutterSize);
 
-		if (debugSize != header->clutterCompressedSize)
+		if (debugSize != header.clutterCompressedSize)
 		{
-			DebugErrorL("DebugSize: ", debugSize, ", header->clutterCompressedSize: ", header->clutterCompressedSize);
-			cError = ConvertError(1, L"ClutterReader::Read -> debugSize != header->clutterCompressedSize");
+			DebugErrorL("DebugSize: ", debugSize, ", header->clutterCompressedSize: ", header.clutterCompressedSize);
+			error.setError(1, L"ClutterReader::Read -> debugSize != header->clutterCompressedSize");
 			return false;
 		}
 
@@ -58,7 +58,7 @@ public:
 		return true;
 	}
 
-	inline static void Read(const std::vector<Byte>& bytes, TilePart* part)
+	inline static void Read(const std::vector<Byte>& bytes, TilePart* pPart)
 	{
 		MemoryWrapper memory(bytes);
 
@@ -115,7 +115,7 @@ public:
 		for (std::size_t a = 0; a < 0x4000; a++)
 		{
 			const SignedByte v_clutter_byte = memory.Object<SignedByte>(1 + a + offset);
-			part->m_Clutter[a] = v_clutter_byte;
+			pPart->m_clutter[a] = v_clutter_byte;
 
 			if (v_clutter_byte < 0) continue;
 
@@ -125,7 +125,7 @@ public:
 			Model* v_clutter_model = ModelStorage::LoadModel(v_clutter_data->m_mesh);
 			if (!v_clutter_model) continue;
 
-			part->m_ClutterMap[a] = new SMTileClutter(v_clutter_data, v_clutter_model);
+			pPart->m_clutterMap[a] = new SMTileClutter(v_clutter_data, v_clutter_model);
 		}
 	}
 };

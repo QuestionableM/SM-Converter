@@ -151,8 +151,10 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 
 		v_translatedVertices[a] = v_vertex;
 
-		if (offset.VertexMap.emplace(v_vertex, ++offset.Vertex).second)
+		if (offset.VertexMap.emplace(v_vertex, offset.Vertex).second)
 		{
+			offset.Vertex++;
+
 			//This is actually faster than sprintf("%g %g %g")
 			g_modelWriterPtr = String::FromFloat(v_vertex.x, v_writer_off_two);
 			*g_modelWriterPtr++ = ' ';
@@ -162,10 +164,6 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 			*g_modelWriterPtr++ = '\n';
 
 			file.write(g_modelWriterBuf, g_modelWriterPtr - g_modelWriterBuf);
-		}
-		else
-		{
-			offset.Vertex--;
 		}
 	}
 
@@ -182,18 +180,16 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 		{
 			const glm::vec2& v_uv = m_uvs[a];
 
-			if (offset.UvMap.emplace(v_uv, ++offset.Uv).second)
+			if (offset.UvMap.emplace(v_uv, offset.Uv).second)
 			{
+				offset.Uv++;
+
 				g_modelWriterPtr = String::FromFloat(v_uv.x, v_writer_off_three);
 				*g_modelWriterPtr++ = ' ';
 				g_modelWriterPtr = String::FromFloat(v_uv.y, g_modelWriterPtr);
 				*g_modelWriterPtr++ = '\n';
 
 				file.write(g_modelWriterBuf, g_modelWriterPtr - g_modelWriterBuf);
-			}
-			else
-			{
-				offset.Uv--;
 			}
 		}
 
@@ -235,8 +231,10 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 
 			v_translatedNormals[a] = v_normal;
 
-			if (offset.NormalMap.emplace(v_normal, ++offset.Normal).second)
+			if (offset.NormalMap.emplace(v_normal, offset.Normal).second)
 			{
+				offset.Normal++;
+
 				g_modelWriterPtr = String::FromFloat(v_normal.x, v_writer_off_three);
 				*g_modelWriterPtr++ = ' ';
 				g_modelWriterPtr = String::FromFloat(v_normal.y, g_modelWriterPtr);
@@ -245,10 +243,6 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 				*g_modelWriterPtr++ = '\n';
 
 				file.write(g_modelWriterBuf, g_modelWriterPtr - g_modelWriterBuf);
-			}
-			else
-			{
-				offset.Normal--;
 			}
 		}
 	}
@@ -389,21 +383,19 @@ void ModelStorage::LoadIndices(const aiMesh* pMesh, Model* pModel, SubMeshData& 
 	for (std::uint32_t a = 0; a < pMesh->mNumFaces; a++)
 	{
 		const aiFace& v_curFace = pMesh->mFaces[a];
-		std::vector<VertexData> v_vecVerts;
-
+		
+		std::vector<VertexData>& v_vecVerts = subMesh.m_dataIdx.emplace_back();
 		v_vecVerts.reserve(v_curFace.mNumIndices);
+
 		for (std::uint32_t b = 0; b < v_curFace.mNumIndices; b++)
 		{
 			const std::size_t v_indIdx = (std::size_t)v_curFace.mIndices[b];
-
 			v_vecVerts.emplace_back(
 				v_indIdx + v_vertOffset,
 				subMesh.m_hasUvs     ? (v_indIdx + v_uvOffset    ) : 0,
 				subMesh.m_hasNormals ? (v_indIdx + v_normalOffset) : 0
 			);
 		}
-
-		subMesh.m_dataIdx.emplace_back(std::move(v_vecVerts));
 	}
 }
 
@@ -414,7 +406,7 @@ void ModelStorage::LoadSubMeshes(const aiScene* pScene, Model* pModel)
 	{
 		const aiMesh* v_pCurMesh = pScene->mMeshes[a];
 
-		SubMeshData v_newSubMesh(
+		SubMeshData& v_newSubMesh = pModel->m_subMeshData.emplace_back(
 			a,
 			SharedConverterSettings::ExportNormals && v_pCurMesh->HasNormals(),
 			SharedConverterSettings::ExportUvs && v_pCurMesh->HasTextureCoords(0)
@@ -423,8 +415,6 @@ void ModelStorage::LoadSubMeshes(const aiScene* pScene, Model* pModel)
 		ModelStorage::LoadIndices(v_pCurMesh, pModel, v_newSubMesh);
 		ModelStorage::LoadVertices(v_pCurMesh, pModel);
 		ModelStorage::LoadMaterialName(pScene, v_pCurMesh, v_newSubMesh);
-
-		pModel->m_subMeshData.emplace_back(std::move(v_newSubMesh));
 	}
 }
 

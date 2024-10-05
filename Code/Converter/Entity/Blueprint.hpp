@@ -24,14 +24,14 @@ public:
 	//For object counter
 	static void LoadAndCountAutomatic(const std::string& str);
 	static void CountFromFile(const std::wstring& path);
-	static void CountFromJsonString(const std::string& str);
+	static void CountFromJsonString(const std::string_view& str);
 
 	//For object loader
 	static SMBlueprint* LoadAutomatic(const std::string& str, const glm::vec3& pos, const glm::quat& rot);
 	static SMBlueprint* FromFile(const std::wstring& path, const glm::vec3& pos, const glm::quat& rot);
 	//Used by blueprint converter as it reports the conversion status
 	static SMBlueprint* FromFileWithStatus(const std::wstring& path, AddObjectFunction v_addObjFunc, ConvertError& v_error);
-	static SMBlueprint* FromJsonString(const std::string& json_str, const glm::vec3& pos, const glm::quat& rot);
+	static SMBlueprint* FromJsonString(const std::string_view& json_str, const glm::vec3& pos, const glm::quat& rot);
 
 	inline EntityType Type() const noexcept override { return EntityType::Blueprint; }
 	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const override;

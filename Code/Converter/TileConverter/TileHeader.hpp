@@ -14,15 +14,15 @@ SM_UNMANAGED_CODE
 #pragma pack(push, 1)
 struct TileHeaderBaseInfo
 {
-	int version;
+	std::uint32_t version;
 	SMUuid uuid;
-	long long creator_id;
+	std::uint64_t creator_id;
 
-	int width;
-	int height;
+	std::uint32_t width;
+	std::uint32_t height;
 
-	int cell_header_offset;
-	int cell_header_size;
+	std::uint32_t cell_header_offset;
+	std::uint32_t cell_header_size;
 
 	int some_val1;
 	int some_val2;
@@ -34,70 +34,64 @@ struct TileHeaderBaseInfo
 class TileHeader
 {
 public:
-	TileHeaderBaseInfo m_data;
-	std::vector<CellHeader*> m_CellHeaders = {};
+	inline TileHeader() :
+		m_data(),
+		m_cellHeaders()
+	{}
 
-	TileHeader() = default;
-	~TileHeader()
+	static bool ReadTile(TileHeader* pHeader, const std::vector<Byte>& bytes, ConvertError& error)
 	{
-		for (std::size_t a = 0; a < m_CellHeaders.size(); a++)
-			delete m_CellHeaders[a];
-	}
+		MemoryWrapper v_memory = bytes;
 
-	static bool ReadTile(TileHeader* tile_header, const std::vector<Byte>& bytes, ConvertError& cError)
-	{
-		MemoryWrapper mMemory = bytes;
-
-		const int v_tile_key = mMemory.NextObject<int>();
-		if (v_tile_key != 0x454C4954) //TILE - magic keyword
+		const int v_tileKey = v_memory.NextObject<int>();
+		if (v_tileKey != 0x454C4954) //TILE - magic keyword
 		{
 			DebugOutL("Invalid File");
-			cError = ConvertError(1, L"TileHeader::ReadTile -> Invalid File");
+			error.setError(1, L"TileHeader::ReadTile -> Invalid File");
 			return false;
 		}
 
-		mMemory.NextObjectRef<TileHeaderBaseInfo>(&tile_header->m_data);
-		if (tile_header->m_data.version > 1000000)
+		v_memory.NextObjectRef<TileHeaderBaseInfo>(&pHeader->m_data);
+		if (pHeader->m_data.version > 1000000)
 		{
 			DebugErrorL("Invalid version");
-			cError = ConvertError(1, L"TileHeader::ReadTile -> Invalid Tile Version");
+			error.setError(1, L"TileHeader::ReadTile -> Invalid Tile Version");
 			return false;
 		}
 
-		DebugOutL("Version: ", tile_header->m_data.version);
-		DebugOutL("CreatorId: ", tile_header->m_data.creator_id);
-		DebugOutL("Uuid: ", tile_header->m_data.uuid.ToString());
-		DebugOutL("Size: {w: ", tile_header->m_data.width, ", h: ", tile_header->m_data.height, "}");
-		DebugOutL("CellHeadersOffset: ", tile_header->m_data.cell_header_offset);
-		DebugOutL("CellHeadersSize: ", tile_header->m_data.cell_header_size);
-		DebugOutL("Type: ", tile_header->m_data.type);
+		DebugOutL("Version: ", pHeader->m_data.version);
+		DebugOutL("CreatorId: ", pHeader->m_data.creator_id);
+		DebugOutL("Uuid: ", pHeader->m_data.uuid.ToString());
+		DebugOutL("Size: {w: ", pHeader->m_data.width, ", h: ", pHeader->m_data.height, "}");
+		DebugOutL("CellHeadersOffset: ", pHeader->m_data.cell_header_offset);
+		DebugOutL("CellHeadersSize: ", pHeader->m_data.cell_header_size);
+		DebugOutL("Type: ", pHeader->m_data.type);
 
-		if (mMemory.Index() != tile_header->m_data.cell_header_offset)
+		if (v_memory.Index() != pHeader->m_data.cell_header_offset)
 		{
 			DebugOutL("Error: index doesn't match the cell header offset!");
-			cError = ConvertError(1, L"TileHeader::ReadTile -> Index doesn't match the cell header offset!");
+			error.setError(1, L"TileHeader::ReadTile -> Index doesn't match the cell header offset!");
 			return false;
 		}
 
-		const int wh_mul = tile_header->m_data.width * tile_header->m_data.height;
-		if (wh_mul != 0)
+		const std::uint32_t v_headerCount = pHeader->m_data.width * pHeader->m_data.height;
+		for (std::uint32_t a = 0; a < v_headerCount; a++)
 		{
-			tile_header->m_CellHeaders.resize(wh_mul);
-
-			for (int a = 0; a < wh_mul; a++)
-			{
-				tile_header->m_CellHeaders[a] = new CellHeader(mMemory.DataPtr(), tile_header->m_data.cell_header_size);
-				mMemory.Skip(tile_header->m_data.cell_header_size);
-			}
+			pHeader->m_cellHeaders.emplace_back(v_memory.DataPtr(), pHeader->m_data.cell_header_size);
+			v_memory.Skip(pHeader->m_data.cell_header_size);
 		}
 
 		return true;
 	}
 
-	CellHeader* GetCellHeader(int x, int y)
+	const CellHeader& GetCellHeader(int x, int y) const noexcept
 	{
-		return m_CellHeaders[(std::size_t)(x + y * m_data.width)];
+		return m_cellHeaders[std::size_t(x + y * m_data.width)];
 	}
+
+public:
+	TileHeaderBaseInfo m_data;
+	std::vector<CellHeader> m_cellHeaders;
 };
 
 SM_MANAGED_CODE

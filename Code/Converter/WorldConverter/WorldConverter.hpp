@@ -12,10 +12,17 @@ SM_UNMANAGED_CODE
 
 class WorldConverter
 {
-	static void WriteToFile(class SMWorld* v_world, const std::wstring& world_name, ConvertError& v_error);
+	static void WriteToFile(
+		class SMWorld* pWorld,
+		const std::wstring& world_name,
+		ConvertError& error);
 
 public:
-	static void ConvertToModel(const std::wstring& path, const std::wstring& name, ConvertError& v_error, CustomGame* v_custom_game);
+	static void ConvertToModel(
+		const std::wstring& path,
+		const std::wstring& name,
+		ConvertError& error,
+		CustomGame* pCustomGame);
 };
 
 SM_MANAGED_CODE

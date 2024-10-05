@@ -8,51 +8,53 @@
 
 #pragma unmanaged
 
-void TileConv::WriteToFileInternal(Tile* pTile, const std::wstring& tile_name, ConvertError& cError)
+void TileConv::WriteToFileInternal(const Tile& tile, const std::wstring& tile_name, ConvertError& error)
 {
-	if (cError) return; //Error check
+	if (error) return; //Error check
 
-	const std::wstring v_tile_out_dir = std::wstring(DatabaseConfig::TileOutputFolder.data());
-	if (!File::CreateDirectorySafe(v_tile_out_dir))
+	const std::wstring v_tileOutDir(DatabaseConfig::TileOutputFolder);
+	if (!File::CreateDirectorySafe(v_tileOutDir))
 	{
-		cError = ConvertError(1, L"Couldn't create the main output directory");
+		error.setError(1, L"Couldn't create the main output directory");
 		return;
 	}
 
-	const std::wstring tile_dir_path = v_tile_out_dir + L"/" + tile_name;
-	if (!File::CreateDirectorySafe(tile_dir_path))
+	const std::wstring v_tileDirPath = v_tileOutDir + L"/" + tile_name;
+	if (!File::CreateDirectorySafe(v_tileDirPath))
 	{
-		cError = ConvertError(1, L"Coudln't create the tile output directory");
+		error.setError(1, L"Coudln't create the tile output directory");
 		return;
 	}
 
-	pTile->WriteToFile(tile_dir_path + L"/", tile_name);
+	tile.WriteToFile(v_tileDirPath + L"/", tile_name);
 }
 
-void TileConv::ConvertToModel(const std::wstring& tile_path, const std::wstring& tile_name, ConvertError& cError, CustomGame* v_custom_game)
+void TileConv::ConvertToModel(
+	const std::wstring& tile_path,
+	const std::wstring& tile_name,
+	ConvertError& error,
+	CustomGame* pCustomGame)
 {
 	if (!File::IsRegularFile(tile_path))
 	{
-		cError = ConvertError(1, L"The specified path leads to a directory");
+		error.setError(1, L"The specified path leads to a directory");
 		return;
 	}
 
-	Tile* v_output_tile = nullptr;
-	if (v_custom_game)
+	Tile v_outputTile;
+	if (pCustomGame)
 	{
 		//The original content will be set back automatically by the SMModCustomGameSwitch destructor
 		SMModCustomGameSwitch<false, true> v_content_switch;
-		v_content_switch.MergeContent(v_custom_game);
+		v_content_switch.MergeContent(pCustomGame);
 
-		v_output_tile = TileReader::ReadTile<false>(tile_path, cError);
+		TileReader::ReadTile<false>(tile_path, error, v_outputTile);
 	}
 	else
 	{
-		v_output_tile = TileReader::ReadTile<false>(tile_path, cError);
+		TileReader::ReadTile<false>(tile_path, error, v_outputTile);
 	}
 
-	TileConv::WriteToFileInternal(v_output_tile, tile_name, cError);
-
-	delete v_output_tile;
+	TileConv::WriteToFileInternal(v_outputTile, tile_name, error);
 	ModelStorage::ClearStorage();
 }

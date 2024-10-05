@@ -337,7 +337,7 @@ bool JsonReader::LoadParseSimdjsonCommentsC(const std::wstring& path, simdjson::
 	return false;
 }
 
-bool JsonReader::ParseSimdjsonString(const std::string& json_str, simdjson::dom::document& v_doc)
+bool JsonReader::ParseSimdjsonString(const std::string_view& json_str, simdjson::dom::document& v_doc)
 {
 	try
 	{

@@ -14,38 +14,41 @@ class Tile
 {
 	friend class TileReader;
 
-	int m_Version;
+	int m_version;
 	bool m_hasTerrain;
-	long long m_CreatorId;
-	int m_Width;
-	int m_Height;
-	std::vector<TilePart*> m_Tiles;
+	std::uint64_t m_creatorId;
+	int m_width;
+	int m_height;
+	std::vector<TilePart*> m_tiles;
 
 public:
-	Tile(int width, int height);
+	Tile();
 	Tile(const TileHeader& header);
+	Tile(Tile&& other) noexcept;
 	~Tile();
 
-	inline int GetWidth() const noexcept { return m_Width; }
-	inline int GetHeight() const noexcept { return m_Height; }
+	void operator=(Tile&& other) noexcept;
+
+	inline int GetWidth() const noexcept { return m_width; }
+	inline int GetHeight() const noexcept { return m_height; }
 
 	inline void SetPart(int x, int y, TilePart* part)
 	{
 		assert(part == nullptr);
-		m_Tiles[x + y * m_Width] = part;
+		m_tiles[x + y * m_width] = part;
 	}
 
 	inline TilePart* GetPart(int x, int y) const
 	{
-		return m_Tiles[x + y * m_Width];
+		return m_tiles[x + y * m_width];
 	}
 
-	inline TilePart* GetPartSafe(int x, int y) const
+	inline TilePart* GetPartSafe(int x, int y) const noexcept
 	{
-		if (x >= m_Width || y >= m_Height)
+		if (x >= m_width || y >= m_height)
 			return nullptr;
 
-		return m_Tiles[x + y * m_Width];
+		return m_tiles[x + y * m_width];
 	}
 
 	void Resize(int width, int height);

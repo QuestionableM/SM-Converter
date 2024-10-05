@@ -70,8 +70,8 @@ TileSizeFilter TileFolderReader::GetTileSize(int v_sz)
 
 void TileFolderReader::GetTileData(const std::wstring& path, ConvertError& v_error)
 {
-	Tile* v_tile = TileReader::ReadTile<true>(path, v_error);
-	if (v_tile) delete v_tile;
+	Tile v_tileData;
+	TileReader::ReadTile<true>(path, v_error, v_tileData);
 }
 
 void TileFolderReader::InitializeTileKeys()

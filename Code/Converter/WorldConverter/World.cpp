@@ -34,7 +34,7 @@ void SMWorld::GetVertexHeight(std::vector<float>& v_vert_array) const
 					{
 						for (std::size_t a = 0; a < 33; a++)
 							for (std::size_t b = 0; b < 33; b++)
-								v_vert_array[v_idx + (32 - b) + a * v_world_sz] = v_part->m_VertexHeight[a + b * 33];
+								v_vert_array[v_idx + (32 - b) + a * v_world_sz] = v_part->m_vertexHeight[a + b * 33];
 
 						break;
 					}
@@ -42,7 +42,7 @@ void SMWorld::GetVertexHeight(std::vector<float>& v_vert_array) const
 					{
 						for (std::size_t a = 0; a < 33; a++)
 							for (std::size_t b = 0; b < 33; b++)
-								v_vert_array[v_idx + (32 - b) + (32 - a) * v_world_sz] = v_part->m_VertexHeight[b + a * 33];
+								v_vert_array[v_idx + (32 - b) + (32 - a) * v_world_sz] = v_part->m_vertexHeight[b + a * 33];
 
 						break;
 					}
@@ -50,14 +50,14 @@ void SMWorld::GetVertexHeight(std::vector<float>& v_vert_array) const
 					{
 						for (std::size_t a = 0; a < 33; a++)
 							for (std::size_t b = 0; b < 33; b++)
-								v_vert_array[v_idx + b + (32 - a) * v_world_sz] = v_part->m_VertexHeight[a + b * 33];
+								v_vert_array[v_idx + b + (32 - a) * v_world_sz] = v_part->m_vertexHeight[a + b * 33];
 
 						break;
 					}
 				default:
 					{
 						for (std::size_t a = 0; a < 33; a++)
-							std::memcpy(v_vert_array.data() + (v_idx + a * v_world_sz), v_part->m_VertexHeight.data() + (a * 33), 33 * sizeof(float));
+							std::memcpy(v_vert_array.data() + (v_idx + a * v_world_sz), v_part->m_vertexHeight.data() + (a * 33), 33 * sizeof(float));
 
 						break;
 					}
@@ -93,7 +93,7 @@ void SMWorld::GetClutterData(std::vector<SMTileClutter*>& v_clutter_array) const
 				{
 					for (std::size_t a = 0; a < 128; a++)
 						for (std::size_t b = 0; b < 128; b++)
-							v_clutter_array[v_idx + (127 - b) + a * v_world_sz] = v_part->m_ClutterMap[a + b * 128];
+							v_clutter_array[v_idx + (127 - b) + a * v_world_sz] = v_part->m_clutterMap[a + b * 128];
 					
 					break;
 				}
@@ -101,7 +101,7 @@ void SMWorld::GetClutterData(std::vector<SMTileClutter*>& v_clutter_array) const
 					{
 						for (std::size_t a = 0; a < 128; a++)
 							for (std::size_t b = 0; b < 128; b++)
-								v_clutter_array[v_idx + (127 - b) + (127 - a) * v_world_sz] = v_part->m_ClutterMap[b + a * 128];
+								v_clutter_array[v_idx + (127 - b) + (127 - a) * v_world_sz] = v_part->m_clutterMap[b + a * 128];
 
 						break;
 					}
@@ -109,14 +109,14 @@ void SMWorld::GetClutterData(std::vector<SMTileClutter*>& v_clutter_array) const
 					{
 						for (std::size_t a = 0; a < 128; a++)
 							for (std::size_t b = 0; b < 128; b++)
-								v_clutter_array[v_idx + b + (127 - a) * v_world_sz] = v_part->m_ClutterMap[a + b * 128];
+								v_clutter_array[v_idx + b + (127 - a) * v_world_sz] = v_part->m_clutterMap[a + b * 128];
 
 						break;
 					}
 				default:
 					{
 						for (std::size_t a = 0; a < 128; a++)
-							std::memcpy(v_clutter_array.data() + (v_idx + a * v_world_sz), v_part->m_ClutterMap.data() + (a * 128), 128 * sizeof(std::size_t));
+							std::memcpy(v_clutter_array.data() + (v_idx + a * v_world_sz), v_part->m_clutterMap.data() + (a * 128), 128 * sizeof(std::size_t));
 
 						break;
 					}
@@ -194,7 +194,7 @@ Model* SMWorld::GenerateTerrainMesh(const std::vector<float>& v_vert_array) cons
 		}
 	}
 
-	SubMeshData v_newSubMesh(
+	SubMeshData& v_newSubMesh = tMesh->m_subMeshData.emplace_back(
 		0,
 		SharedConverterSettings::ExportNormals,
 		SharedConverterSettings::ExportUvs
@@ -262,8 +262,6 @@ Model* SMWorld::GenerateTerrainMesh(const std::vector<float>& v_vert_array) cons
 		}
 	}
 
-	tMesh->m_subMeshData.emplace_back(std::move(v_newSubMesh));
-
 	return tMesh;
 }
 
@@ -273,15 +271,14 @@ void SMWorld::WriteTerrain(std::ofstream& model, WriterOffsetData& v_offset, con
 	ProgCounter::SetState(ProgState::WritingGroundMesh, 0);
 
 	//Used to generate the mamterial for ground terrain mesh
-	SMGroundTerrainData* v_tmp_terrain_data = new SMGroundTerrainData();
+	SMGroundTerrainData v_tmp_terrain_data;
 
 	Model* v_terrain = this->GenerateTerrainMesh(height_map);
 
 	const glm::mat4 v_rotation = glm::rotate(glm::mat4(1.0f), glm::pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f));
-	v_terrain->WriteToFile(v_rotation, v_offset, model, v_tmp_terrain_data);
+	v_terrain->WriteToFile(v_rotation, v_offset, model, &v_tmp_terrain_data);
 
 	delete v_terrain;
-	delete v_tmp_terrain_data;
 }
 
 void SMWorld::WriteClutter(std::ofstream& model, WriterOffsetData& v_offset, const std::vector<float>& height_map) const

@@ -20,48 +20,48 @@ class DecalListReader
 
 public:
 	template<bool t_mod_counter>
-	inline static void Read(CellHeader* header, MemoryWrapper& reader, TilePart* part, int version, ConvertError& cError)
+	inline static void Read(const CellHeader& header, MemoryWrapper& reader, TilePart* pPart, int version, ConvertError& error)
 	{
-		if (cError) return;
+		if (error) return;
 
 		if constexpr (!t_mod_counter) {
 			if (!TileConverterSettings::ExportDecals) return;
 		}
 
-		if (header->decalCount == 0) return;
+		if (header.decalCount == 0) return;
 
-		DebugOutL("Decal: ", header->decalSize, " / ", header->decalCompressedSize);
+		DebugOutL("Decal: ", header.decalSize, " / ", header.decalCompressedSize);
 
-		if (!reader.hasEnoughSpace(header->decalIndex, header->decalCompressedSize))
+		if (!reader.hasEnoughSpace(header.decalIndex, header.decalCompressedSize))
 		{
 			DebugErrorL("Not enough space!");
 			return;
 		}
 		
-		std::vector<Byte> v_bytes(header->decalSize);
+		std::vector<Byte> v_bytes(header.decalSize);
 		int debugSize = Lz4::DecompressFast(
-			reinterpret_cast<const char*>(reader.getPointer(header->decalIndex)),
+			reinterpret_cast<const char*>(reader.getPointer(header.decalIndex)),
 			reinterpret_cast<char*>(v_bytes.data()),
-			header->decalSize);
+			header.decalSize);
 
-		if (debugSize != header->decalCompressedSize)
+		if (debugSize != header.decalCompressedSize)
 		{
-			DebugErrorL("Debug Size: ", debugSize, ", header->decalCompressedSize: ", header->decalCompressedSize);
-			cError = ConvertError(1, L"DecalListReader::Read -> debugSize != header->decalCompressedSize\nTile Version: " + std::to_wstring(version));
+			DebugErrorL("Debug Size: ", debugSize, ", header->decalCompressedSize: ", header.decalCompressedSize);
+			error.setError(1, L"DecalListReader::Read -> debugSize != header->decalCompressedSize\nTile Version: " + std::to_wstring(version));
 			return;
 		}
 
-		debugSize = DecalListReader::Read<t_mod_counter>(v_bytes, header->decalCount, version, part);
-		if (debugSize != header->decalSize)
+		debugSize = DecalListReader::Read<t_mod_counter>(v_bytes, header.decalCount, version, pPart);
+		if (debugSize != header.decalSize)
 		{
-			DebugErrorL("Debug Size: ", debugSize, ", header->decalSize: ", header->decalSize);
-			cError = ConvertError(1, L"DecalListReader::Read -> debugSize != header->decalSize\nTile Version: " + std::to_wstring(version));
+			DebugErrorL("Debug Size: ", debugSize, ", header->decalSize: ", header.decalSize);
+			error.setError(1, L"DecalListReader::Read -> debugSize != header->decalSize\nTile Version: " + std::to_wstring(version));
 			return;
 		}
 	}
 
 	template<bool t_mod_counter>
-	inline static int Read(const std::vector<Byte>& bytes, int decal_count, int version, TilePart* part)
+	inline static int Read(const std::vector<Byte>& bytes, int decal_count, int version, TilePart* pPart)
 	{
 		SMEntityTransform v_transform;
 		MemoryWrapper memory(bytes);
@@ -96,7 +96,7 @@ public:
 				if (!v_decalData) continue;
 
 				SMDecal* v_newDecal = new SMDecal(v_decalData, v_transform, v_color);
-				part->AddObject(v_newDecal);
+				pPart->AddObject(v_newDecal);
 			}
 		}
 

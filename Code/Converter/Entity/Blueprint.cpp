@@ -15,14 +15,13 @@ SM_UNMANAGED_CODE
 
 void SMBlueprint::LoadAndCountAutomatic(const std::string& str)
 {
-	const std::size_t v_secret_idx = str.find("?JB:");
-	if (v_secret_idx != std::string::npos)
+	const std::size_t v_secretIdx = str.find("?JB:");
+	if (v_secretIdx != std::string::npos)
 	{
-		const std::string v_bp_str = str.substr(v_secret_idx + 4);
+		const std::string_view v_subStr(str.begin() + v_secretIdx + 4, str.end());
+		DebugOutL(0b0101_fg, "CountingBlueprintJsonString: ", v_subStr);
 
-		DebugOutL(0b0101_fg, "CountingBlueprintJsonString: ", v_bp_str);
-
-		SMBlueprint::CountFromJsonString(v_bp_str);
+		SMBlueprint::CountFromJsonString(v_subStr);
 		return;
 	}
 
@@ -36,17 +35,17 @@ void SMBlueprint::LoadAndCountAutomatic(const std::string& str)
 
 void SMBlueprint::CountFromFile(const std::wstring& path)
 {
-	std::string v_file_str;
-	if (!File::ReadToString(path, v_file_str))
+	std::string v_fileStr;
+	if (!File::ReadToString(path, v_fileStr))
 	{
 		DebugErrorL("Couldn't count the specified blueprint: ", path);
 		return;
 	}
 
-	return SMBlueprint::CountFromJsonString(v_file_str);
+	return SMBlueprint::CountFromJsonString(v_fileStr);
 }
 
-void SMBlueprint::CountFromJsonString(const std::string& str)
+void SMBlueprint::CountFromJsonString(const std::string_view& str)
 {
 	simdjson::dom::document v_bp_doc;
 	if (!JsonReader::ParseSimdjsonString(str, v_bp_doc))
@@ -96,22 +95,21 @@ void SMBlueprint::CountFromJsonString(const std::string& str)
 
 SMBlueprint* SMBlueprint::LoadAutomatic(const std::string& str, const glm::vec3& pos, const glm::quat& rot)
 {
-	const std::size_t secret_idx = str.find("?JB:");
-	if (secret_idx != std::string::npos)
+	const std::size_t v_secretIdx = str.find("?JB:");
+	if (v_secretIdx != std::string::npos)
 	{
-		const std::string bp_str = str.substr(secret_idx + 4);
+		const std::string_view v_bpStr(str.begin() + v_secretIdx + 4, str.end());
+		DebugOutL(0b0101_fg, "LoadingBlueprintJsonString: ", v_bpStr);
 
-		DebugOutL(0b0101_fg, "LoadingBlueprintJsonString: ", bp_str);
-
-		return SMBlueprint::FromJsonString(bp_str, pos, rot);
+		return SMBlueprint::FromJsonString(v_bpStr, pos, rot);
 	}
 
-	const std::wstring wide_str = String::ToWide(str);
-	const std::wstring bp_path = KeywordReplacer::ReplaceKey(wide_str);
+	const std::wstring v_wideStr = String::ToWide(str);
+	const std::wstring v_bpPath = KeywordReplacer::ReplaceKey(v_wideStr);
 
-	DebugOutL(0b0011_fg, "LoadingBlueprintPath: ", bp_path);
+	DebugOutL(0b0011_fg, "LoadingBlueprintPath: ", v_bpPath);
 
-	return SMBlueprint::FromFile(bp_path, pos, rot);
+	return SMBlueprint::FromFile(v_bpPath, pos, rot);
 }
 
 SMBlueprint* SMBlueprint::FromFile(const std::wstring& path, const glm::vec3& pos, const glm::quat& rot)
@@ -126,14 +124,17 @@ SMBlueprint* SMBlueprint::FromFile(const std::wstring& path, const glm::vec3& po
 	return SMBlueprint::FromJsonString(v_fileString, pos, rot);
 }
 
-SMBlueprint* SMBlueprint::FromFileWithStatus(const std::wstring& path, SMBlueprint::AddObjectFunction v_addObjFunc, ConvertError& v_error)
+SMBlueprint* SMBlueprint::FromFileWithStatus(
+	const std::wstring& path,
+	SMBlueprint::AddObjectFunction v_addObjFunc,
+	ConvertError& error)
 {
 	ProgCounter::SetState(ProgState::ParsingBlueprint, 0);
 
 	simdjson::dom::document v_bp_doc;
 	if (!JsonReader::LoadParseSimdjsonC(path, v_bp_doc, simdjson::dom::element_type::OBJECT))
 	{
-		v_error = ConvertError(1, L"Couldn't read the specified blueprint file. Possible reason: Invalid file, Parse error, Invalid path");
+		error.setError(1, L"Couldn't read the specified blueprint file. Possible reason: Invalid file, Parse error, Invalid path");
 		return nullptr;
 	}
 
@@ -144,7 +145,7 @@ SMBlueprint* SMBlueprint::FromFileWithStatus(const std::wstring& path, SMBluepri
 
 	if (!has_bodies && !has_joints)
 	{
-		v_error = ConvertError(1, L"The specified blueprint has no objects to convert");
+		error.setError(1, L"The specified blueprint has no objects to convert");
 		return nullptr;
 	}
 
@@ -160,18 +161,17 @@ SMBlueprint* SMBlueprint::FromFileWithStatus(const std::wstring& path, SMBluepri
 	return v_blueprint;
 }
 
-SMBlueprint* SMBlueprint::FromJsonString(const std::string& json_str, const glm::vec3& pos, const glm::quat& rot)
+SMBlueprint* SMBlueprint::FromJsonString(const std::string_view& json_str, const glm::vec3& pos, const glm::quat& rot)
 {
-	simdjson::dom::document v_bp_doc;
-	if (!JsonReader::ParseSimdjsonString(json_str, v_bp_doc))
+	simdjson::dom::document v_bpDoc;
+	if (!JsonReader::ParseSimdjsonString(json_str, v_bpDoc))
 		return nullptr;
 
-	const auto v_root = v_bp_doc.root();
+	const auto v_root = v_bpDoc.root();
 	if (!v_root.is_object())
 		return nullptr;
 
 	SMBlueprint* nBlueprint = new SMBlueprint(pos, rot);
-
 	nBlueprint->LoadBodies(v_root);
 	nBlueprint->LoadJoints(v_root);
 

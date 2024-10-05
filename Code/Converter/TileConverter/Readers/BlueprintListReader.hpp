@@ -16,49 +16,48 @@ class BlueprintListReader
 
 public:
 	template<bool t_mod_counter>
-	static void Read(CellHeader* header, MemoryWrapper& reader, TilePart* part, int version, ConvertError& cError)
+	static void Read(const CellHeader& header, MemoryWrapper& reader, TilePart* pPart, int version, ConvertError& error)
 	{
-		if (cError) return;
+		if (error) return;
 
 		if constexpr (!t_mod_counter) {
 			if (!TileConverterSettings::ExportBlueprints) return;
 		}
 
-		if (header->blueprintListCount == 0 || header->blueprintListIndex == 0) return;
+		if (header.blueprintListCount == 0 || header.blueprintListIndex == 0) return;
 
-		DebugOutL("BlueprintList: ", header->blueprintListSize, " / ", header->blueprintListCompressedSize);
+		DebugOutL("BlueprintList: ", header.blueprintListSize, " / ", header.blueprintListCompressedSize);
 
-		if (!reader.hasEnoughSpace(header->blueprintListIndex, header->blueprintListCompressedSize))
+		if (!reader.hasEnoughSpace(header.blueprintListIndex, header.blueprintListCompressedSize))
 		{
 			DebugErrorL("Not enough space!");
 			return;
 		}
 		
-		std::vector<Byte> v_bytes(header->blueprintListSize);
-
+		std::vector<Byte> v_bytes(header.blueprintListSize);
 		int debugSize = Lz4::DecompressFast(
-			reinterpret_cast<const char*>(reader.getPointer(header->blueprintListIndex)),
+			reinterpret_cast<const char*>(reader.getPointer(header.blueprintListIndex)),
 			reinterpret_cast<char*>(v_bytes.data()),
-			header->blueprintListSize);
+			header.blueprintListSize);
 
-		if (debugSize != header->blueprintListCompressedSize)
+		if (debugSize != header.blueprintListCompressedSize)
 		{
-			DebugErrorL("DebugSize: ", debugSize, ", header->blueprintListCompressedSize: ", header->blueprintListCompressedSize);
-			cError = ConvertError(1, L"BlueprintListReader::Read -> debugSize != header->blueprintListCompressedSize\nTile Version: " + std::to_wstring(version));
+			DebugErrorL("DebugSize: ", debugSize, ", header->blueprintListCompressedSize: ", header.blueprintListCompressedSize);
+			error.setError(1, L"BlueprintListReader::Read -> debugSize != header->blueprintListCompressedSize\nTile Version: " + std::to_wstring(version));
 			return;
 		}
 
-		debugSize = BlueprintListReader::Read<t_mod_counter>(v_bytes, header->blueprintListCount, version, part);
-		if (debugSize != header->blueprintListSize)
+		debugSize = BlueprintListReader::Read<t_mod_counter>(v_bytes, header.blueprintListCount, version, pPart);
+		if (debugSize != header.blueprintListSize)
 		{
-			DebugErrorL("DebugSize: ", debugSize, ", header->blueprintListSize: ", header->blueprintListSize);
-			cError = ConvertError(1, L"BlueprintListReader::Read -> debugSize != header->blueprintListSize\nTile Version: " + std::to_wstring(version));
+			DebugErrorL("DebugSize: ", debugSize, ", header->blueprintListSize: ", header.blueprintListSize);
+			error.setError(1, L"BlueprintListReader::Read -> debugSize != header->blueprintListSize\nTile Version: " + std::to_wstring(version));
 			return;
 		}
 	}
 
 	template<bool t_mod_counter>
-	static int Read(const std::vector<Byte>& bytes, int count, int version, TilePart* part)
+	static int Read(const std::vector<Byte>& bytes, int count, int version, TilePart* pPart)
 	{
 		MemoryWrapper memory(bytes);
 
@@ -102,7 +101,7 @@ public:
 				SMBlueprint* pNewBlueprint = SMBlueprint::LoadAutomatic(value, f_pos, f_quat);
 				if (!pNewBlueprint) continue;
 
-				part->AddObject(pNewBlueprint);
+				pPart->AddObject(pNewBlueprint);
 			}
 		}
 
