@@ -68,14 +68,13 @@ bool DatabaseConfig::AddToStrMap(PathChecker& v_map, const std::wstring& v_new_s
 		return false;
 	}
 
-	const auto v_iter = v_map.find(v_full_path);
-	if (v_iter != v_map.end())
+	if (v_map.find(v_full_path) != v_map.end())
 	{
 		DebugWarningL("The specified path already exists: ", v_full_path);
 		return false;
 	}
 
-	v_map.insert(v_full_path);
+	v_map.emplace(std::move(v_full_path));
 	return true;
 }
 

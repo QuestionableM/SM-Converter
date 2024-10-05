@@ -73,14 +73,11 @@ public:
 		return true;
 	}
 
-	inline void AddObject(T* v_object, bool add_to_global_db)
+	inline void AddObject(T* pObject, bool add_to_global_db)
 	{
-		const auto v_new_pair = std::make_pair(v_object->m_uuid, v_object);
-
-		DynamicStorage.insert(v_new_pair);
-
+		DynamicStorage.emplace(pObject->m_uuid, pObject);
 		if (add_to_global_db)
-			StaticStorage.insert(v_new_pair);
+			StaticStorage.emplace(pObject->m_uuid, pObject);
 	}
 
 	inline static void Clear()

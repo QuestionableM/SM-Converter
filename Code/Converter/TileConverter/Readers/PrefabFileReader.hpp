@@ -326,12 +326,12 @@ public:
 				for (int b = 0; b < materialCount; b++)
 				{
 					const int length = stream.ReadByte();
-					const std::string str = stream.ReadString(length);
+					std::string str = stream.ReadString(length);
 
 					const unsigned int color = stream.ReadInt();
 
 					if (color_map.find(str) == color_map.end())
-						color_map.insert(std::make_pair(str, color));
+						color_map.emplace(std::move(str), color);
 				}
 			}
 

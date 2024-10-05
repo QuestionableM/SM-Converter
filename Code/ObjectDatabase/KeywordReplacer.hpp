@@ -7,6 +7,21 @@
 
 SM_UNMANAGED_CODE
 
+struct WstringHasher
+{
+	using is_transparent = void;
+
+	inline std::size_t operator()(const std::wstring& wstr) const
+	{
+		return std::hash<std::wstring>{}(wstr);
+	}
+
+	inline std::size_t operator()(const std::wstring_view& wstr_view) const
+	{
+		return std::hash<std::wstring_view>{}(wstr_view);
+	}
+};
+
 class KeywordReplacer
 {
 	static void CreateKey(std::wstring& key, std::wstring& replacement);
@@ -35,7 +50,7 @@ public:
 	static void Clear();
 
 private:
-	using StringMap = std::unordered_map<std::wstring, std::wstring>;
+	using StringMap = std::unordered_map<std::wstring, std::wstring, WstringHasher, std::equal_to<>>;
 
 	inline static StringMap m_KeyReplacements  = {};
 	inline static StringMap m_ResourceUpgrades = {};

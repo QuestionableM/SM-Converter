@@ -78,7 +78,7 @@ public:
 			const auto v_iter = v_output.find(v_item.first);
 			if (v_iter == v_output.end())
 			{
-				v_output.insert(v_item);
+				v_output.emplace(v_item.first, v_item.second);
 				continue;
 			}
 

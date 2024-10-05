@@ -99,15 +99,11 @@ void KeywordReplacer::UpgradeResource(const std::wstring& mPath, std::wstring& m
 	std::wstring v_lowerPath = String::ToLower(mPath);
 	String::ReplaceAllR(v_lowerPath, L'\\', L'/');
 
-	const StringMap::const_iterator v_iter = m_ResourceUpgrades.find(v_lowerPath);
+	const auto v_iter = m_ResourceUpgrades.find(v_lowerPath);
 	if (v_iter != m_ResourceUpgrades.end())
-	{
 		mOutput = v_iter->second;
-	}
 	else
-	{
 		mOutput = std::move(v_lowerPath);
-	}
 }
 
 std::wstring KeywordReplacer::ReplaceKey(const std::wstring& path)
@@ -118,19 +114,17 @@ std::wstring KeywordReplacer::ReplaceKey(const std::wstring& path)
 	std::wstring v_output;
 	KeywordReplacer::UpgradeResource(path, v_output);
 
-	const wchar_t* v_key_beg = path.data();
-	const wchar_t* v_key_ptr = std::wcschr(v_key_beg, L'/');
-	if (v_key_ptr == nullptr)
-		return v_output;
+	const wchar_t* v_keyBeg = path.data();
+	const wchar_t* v_keyPtr = std::wcschr(v_keyBeg, L'/');
+	if (v_keyPtr == nullptr) return v_output;
 
-	const std::size_t v_key_idx = v_key_ptr - v_key_beg;
+	const std::size_t v_keyIdx = v_keyPtr - v_keyBeg;
+	const std::wstring_view v_keyChunk(v_output.begin(), v_output.begin() + v_keyIdx);
 
-	const std::wstring v_key_chunk = v_output.substr(0, v_key_idx);
-	const StringMap::const_iterator v_iter = m_KeyReplacements.find(v_key_chunk);
-	if (v_iter == m_KeyReplacements.end())
-		return v_output;
+	const auto v_iter = m_KeyReplacements.find(v_keyChunk);
+	if (v_iter == m_KeyReplacements.end()) return v_output;
 
-	return (v_iter->second + v_output.substr(v_key_idx));
+	return v_iter->second + v_output.substr(v_keyIdx);
 }
 
 void KeywordReplacer::ReplaceKeyR(std::wstring& path)
@@ -140,19 +134,22 @@ void KeywordReplacer::ReplaceKeyR(std::wstring& path)
 
 	KeywordReplacer::UpgradeResource(path, path);
 
-	const wchar_t* v_key_beg = path.data();
-	const wchar_t* v_key_ptr = std::wcschr(v_key_beg, L'/');
-	if (v_key_ptr == nullptr)
-		return;
+	const wchar_t* v_keyBeg = path.data();
+	const wchar_t* v_keyPtr = std::wcschr(v_keyBeg, L'/');
+	if (v_keyPtr == nullptr) return;
 
-	const std::size_t v_key_idx = v_key_ptr - v_key_beg;
+	const std::size_t v_keyIdx = v_keyPtr - v_keyBeg;
+	const std::wstring_view v_keyChunk(path.begin(), path.begin() + v_keyIdx);
 
-	const std::wstring v_key_chunk = path.substr(0, v_key_idx);
-	const StringMap::const_iterator v_iter = m_KeyReplacements.find(v_key_chunk);
-	if (v_iter == m_KeyReplacements.end())
-		return;
+	const auto v_iter = m_KeyReplacements.find(v_keyChunk);
+	if (v_iter == m_KeyReplacements.end()) return;
 
-	path = (v_iter->second + path.substr(v_key_idx));
+	path.replace(
+		path.begin(),
+		path.begin() + v_keyIdx,
+		v_iter->second.begin(),
+		v_iter->second.end()
+	);
 }
 
 bool KeywordReplacer::ReplaceKeyRLua(std::wstring& path)
@@ -162,24 +159,31 @@ bool KeywordReplacer::ReplaceKeyRLua(std::wstring& path)
 
 	KeywordReplacer::UpgradeResource(path, path);
 
-	const std::size_t v_key_idx = path.find(L'/');
-	if (v_key_idx == std::wstring::npos)
+	const std::size_t v_keyIdx = path.find(L'/');
+	if (v_keyIdx == std::wstring::npos)
 		return true;
 
-	const std::wstring v_key_chunk = path.substr(0, v_key_idx);
-	if (v_key_chunk == L"$content_data")
+	const std::wstring_view v_keyChunk(path.begin(), path.begin() + v_keyIdx);
+	if (v_keyChunk == L"$content_data")
 	{
 		//Throw key error if $CONTENT_DATA doesn't exist
-		if (m_KeyReplacements.find(L"$content_data") == m_KeyReplacements.end() &&
-			m_KeyReplacements.find(L"$mod_data") == m_KeyReplacements.end())
+		if (m_KeyReplacements.find(std::wstring_view(L"$content_data")) == m_KeyReplacements.end() &&
+			m_KeyReplacements.find(std::wstring_view(L"$mod_data")) == m_KeyReplacements.end())
+		{
 			return false;
+		}
 	}
 
-	const StringMap::const_iterator v_iter = m_KeyReplacements.find(v_key_chunk);
-	if (v_iter == m_KeyReplacements.end())
-		return true;
+	const auto v_iter = m_KeyReplacements.find(v_keyChunk);
+	if (v_iter == m_KeyReplacements.end()) return true;
 
-	path = (v_iter->second + path.substr(v_key_idx));
+	path.replace(
+		path.begin(),
+		path.begin() + v_keyIdx,
+		v_iter->second.begin(),
+		v_iter->second.end()
+	);
+
 	return true;
 }
 

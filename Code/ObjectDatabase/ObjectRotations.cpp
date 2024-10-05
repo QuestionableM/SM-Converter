@@ -78,7 +78,7 @@ void Rotations::InitializeRotations()
 				}
 			}
 
-			Rotations::RotationTable.insert(std::make_pair(v_rot_compressed, v_entry));
+			Rotations::RotationTable.emplace(v_rot_compressed, v_entry);
 		}
 	}
 
@@ -87,7 +87,7 @@ void Rotations::InitializeRotations()
 
 glm::mat4 Rotations::GetRotationMatrix(unsigned char v_rotation)
 {
-	const std::unordered_map<unsigned char, RotationEntry>::const_iterator v_iter = Rotations::RotationTable.find(v_rotation);
+	const auto v_iter = Rotations::RotationTable.find(v_rotation);
 	if (v_iter == Rotations::RotationTable.end())
 		return glm::mat4(1.0f);
 
@@ -96,7 +96,7 @@ glm::mat4 Rotations::GetRotationMatrix(unsigned char v_rotation)
 
 glm::vec3 Rotations::GetOffsetPosition(unsigned char v_rotation)
 {
-	const std::unordered_map<unsigned char, RotationEntry>::const_iterator v_iter = Rotations::RotationTable.find(v_rotation);
+	const auto v_iter = Rotations::RotationTable.find(v_rotation);
 	if (v_iter == Rotations::RotationTable.end())
 		return glm::vec3(0.0f);
 
