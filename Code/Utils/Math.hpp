@@ -56,12 +56,12 @@ namespace Math
 
 		const std::size_t gxi = static_cast<std::size_t>(gx);
 		const std::size_t gyi = static_cast<std::size_t>(gy);
-		const std::size_t v_grid_size_x = static_cast<std::size_t>(gridSzX) + 1;
+		const std::size_t v_gridSizeX = static_cast<std::size_t>(gridSzX) + 1;
 
-		const float& c00 = vec[(gxi    ) + (gyi    ) * v_grid_size_x];
-		const float& c10 = vec[(gxi + 1) + (gyi    ) * v_grid_size_x];
-		const float& c01 = vec[(gxi    ) + (gyi + 1) * v_grid_size_x];
-		const float& c11 = vec[(gxi + 1) + (gyi + 1) * v_grid_size_x];
+		const float c00 = vec[(gxi    ) + (gyi    ) * v_gridSizeX];
+		const float c10 = vec[(gxi + 1) + (gyi    ) * v_gridSizeX];
+		const float c01 = vec[(gxi    ) + (gyi + 1) * v_gridSizeX];
+		const float c11 = vec[(gxi + 1) + (gyi + 1) * v_gridSizeX];
 
 		return blerp(c00, c10, c01, c11, gx - static_cast<float>(gxi), gy - static_cast<float>(gyi));
 	}

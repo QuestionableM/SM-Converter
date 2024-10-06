@@ -175,7 +175,7 @@ public:
 	void GetVertexHeight(std::vector<float>& v_vert_array) const;
 	void GetClutterData(std::vector<SMTileClutter*>& v_clutter_array) const;
 
-	Model* GenerateTerrainMesh(const std::vector<float>& v_vert_array) const;
+	void GenerateTerrainMesh(Model& outModel, const std::vector<float>& vertArray) const;
 	void WriteTerrain(std::ofstream& model, WriterOffsetData& v_offset, const std::vector<float>& height_map) const;
 	void WriteClutter(std::ofstream& model, WriterOffsetData& v_offset, const std::vector<float>& height_map) const;
 

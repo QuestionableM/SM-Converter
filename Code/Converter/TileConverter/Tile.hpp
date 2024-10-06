@@ -32,24 +32,9 @@ public:
 	inline int GetWidth() const noexcept { return m_width; }
 	inline int GetHeight() const noexcept { return m_height; }
 
-	inline void SetPart(int x, int y, TilePart* part)
-	{
-		assert(part == nullptr);
-		m_tiles[x + y * m_width] = part;
-	}
-
-	inline TilePart* GetPart(int x, int y) const
-	{
-		return m_tiles[x + y * m_width];
-	}
-
-	inline TilePart* GetPartSafe(int x, int y) const noexcept
-	{
-		if (x >= m_width || y >= m_height)
-			return nullptr;
-
-		return m_tiles[x + y * m_width];
-	}
+	void SetPart(int x, int y, TilePart* part);
+	TilePart* GetPart(int x, int y) const;
+	TilePart* GetPartSafe(int x, int y) const noexcept;
 
 	void Resize(int width, int height);
 
@@ -59,7 +44,7 @@ public:
 	std::vector<long long> GetGround() const;
 
 private:
-	Model* GenerateTerrainMesh(const std::vector<float>& height_map) const;
+	void GenerateTerrainMesh(Model& outModel, const std::vector<float>& height_map) const;
 	void WriteTerrain(std::ofstream& model, WriterOffsetData& mOffset, const std::vector<float>& height_map) const;
 	void WriteClutter(std::ofstream& model, WriterOffsetData& mOffset, const std::vector<float>& height_map) const;
 	std::size_t GetAmountOfObjects() const;
@@ -73,6 +58,7 @@ private:
 	void WriteGroundTextures(const std::wstring& dir) const;
 
 public:
+	void WriteModel(const std::wstring& file_path, const std::wstring& mtl_name) const;
 	void WriteToFile(const std::wstring& dir_path, const std::wstring& file_name) const;
 	void WriteMtlFile(const std::wstring& path) const;
 };

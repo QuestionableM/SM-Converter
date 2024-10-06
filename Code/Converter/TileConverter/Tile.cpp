@@ -69,6 +69,25 @@ void Tile::operator=(Tile&& other) noexcept
 	m_tiles = std::move(other.m_tiles);
 }
 
+void Tile::SetPart(int x, int y, TilePart* part)
+{
+	assert(part == nullptr);
+	m_tiles[x + y * m_width] = part;
+}
+
+TilePart* Tile::GetPart(int x, int y) const
+{
+	return m_tiles[x + y * m_width];
+}
+
+TilePart* Tile::GetPartSafe(int x, int y) const noexcept
+{
+	if (x >= m_width || y >= m_height)
+		return nullptr;
+
+	return m_tiles[x + y * m_width];
+}
+
 void Tile::Resize(int width, int height)
 {
 	assert(width < 1 || height < 1);
@@ -235,11 +254,9 @@ inline glm::vec3 CalculateNormalVector(const glm::vec3& p1, const glm::vec3& p2,
 	return glm::normalize(glm::cross(a, b));
 }
 
-Model* Tile::GenerateTerrainMesh(const std::vector<float>& height_map) const
+void Tile::GenerateTerrainMesh(Model& outModel, const std::vector<float>& height_map) const
 {
 	DebugOutL("Generating terrain mesh...");
-
-	Model* tMesh = new Model();
 
 	const std::size_t tWidth  = static_cast<std::size_t>(m_width)  * 32 + 1;
 	const std::size_t tHeight = static_cast<std::size_t>(m_height) * 32 + 1;
@@ -250,14 +267,14 @@ Model* Tile::GenerateTerrainMesh(const std::vector<float>& height_map) const
 	const bool l_ExportNormals = SharedConverterSettings::ExportNormals;
 	const bool l_ExportUvs     = SharedConverterSettings::ExportUvs;
 
-	std::vector<std::size_t> normal_div = {};
+	std::vector<std::size_t> normal_div;
 	if (l_ExportNormals)
 	{
-		tMesh->m_normals.reserve(tWidth * tHeight);
+		outModel.m_normals.reserve(tWidth * tHeight);
 		normal_div.reserve(tWidth * tHeight);
 	}
 
-	tMesh->m_vertices.reserve(tWidth * tHeight);
+	outModel.m_vertices.reserve(tWidth * tHeight);
 	for (std::size_t y = 0; y < tHeight; y++)
 	{
 		for (std::size_t x = 0; x < tWidth; x++)
@@ -266,11 +283,11 @@ Model* Tile::GenerateTerrainMesh(const std::vector<float>& height_map) const
 			const float vert_x = -(static_cast<float>(x) * 2.0f) + hWidth;
 			const float vert_y = -(static_cast<float>(y) * 2.0f) + hHeight;
 
-			tMesh->m_vertices.emplace_back(vert_x, vert_y, height);
+			outModel.m_vertices.emplace_back(vert_x, vert_y, height);
 
 			if (l_ExportNormals)
 			{
-				tMesh->m_normals.emplace_back(0.0f);
+				outModel.m_normals.emplace_back(0.0f);
 				normal_div.push_back(1);
 			}
 		}
@@ -281,7 +298,7 @@ Model* Tile::GenerateTerrainMesh(const std::vector<float>& height_map) const
 		const float uvWidth = static_cast<float>(tWidth - 1);
 		const float uvHeight = static_cast<float>(tHeight - 1);
 
-		tMesh->m_uvs.reserve(tWidth * tHeight);
+		outModel.m_uvs.reserve(tWidth * tHeight);
 		for (std::size_t y = 0; y < tHeight; y++)
 		{
 			for (std::size_t x = 0; x < tWidth; x++)
@@ -289,12 +306,12 @@ Model* Tile::GenerateTerrainMesh(const std::vector<float>& height_map) const
 				const float u = static_cast<float>(x) / uvWidth;
 				const float v = static_cast<float>(y) / uvHeight;
 
-				tMesh->m_uvs.emplace_back(u, v);
+				outModel.m_uvs.emplace_back(u, v);
 			}
 		}
 	}
 
-	SubMeshData& v_newSubMesh = tMesh->m_subMeshData.emplace_back(
+	SubMeshData& v_newSubMesh = outModel.m_subMeshData.emplace_back(
 		0,
 		SharedConverterSettings::ExportNormals,
 		SharedConverterSettings::ExportUvs
@@ -313,18 +330,18 @@ Model* Tile::GenerateTerrainMesh(const std::vector<float>& height_map) const
 
 			if (l_ExportNormals)
 			{
-				const glm::vec3& p1 = tMesh->m_vertices[h00];
-				const glm::vec3& p2 = tMesh->m_vertices[h01];
-				const glm::vec3& p3 = tMesh->m_vertices[h10];
-				const glm::vec3& p4 = tMesh->m_vertices[h11];
+				const glm::vec3& p1 = outModel.m_vertices[h00];
+				const glm::vec3& p2 = outModel.m_vertices[h01];
+				const glm::vec3& p3 = outModel.m_vertices[h10];
+				const glm::vec3& p4 = outModel.m_vertices[h11];
 
 				const glm::vec3 t1_norm = CalculateNormalVector(p1, p3, p2); //first_triangle
 				const glm::vec3 t2_norm = CalculateNormalVector(p2, p3, p4); //second_triangle
 
-				tMesh->m_normals[h00] += t1_norm;
-				tMesh->m_normals[h01] += (t1_norm + t2_norm);
-				tMesh->m_normals[h10] += (t1_norm + t2_norm);
-				tMesh->m_normals[h11] += t2_norm;
+				outModel.m_normals[h00] += t1_norm;
+				outModel.m_normals[h01] += (t1_norm + t2_norm);
+				outModel.m_normals[h10] += (t1_norm + t2_norm);
+				outModel.m_normals[h11] += t2_norm;
 
 				normal_div[h00] += 1;
 				normal_div[h01] += 2;
@@ -354,15 +371,13 @@ Model* Tile::GenerateTerrainMesh(const std::vector<float>& height_map) const
 				const std::size_t h10 = (x + 1) + (y    ) * tWidth;
 				const std::size_t h11 = (x + 1) + (y + 1) * tWidth;
 
-				tMesh->m_normals[h00] = glm::normalize(tMesh->m_normals[h00] / static_cast<float>(normal_div[h00]));
-				tMesh->m_normals[h01] = glm::normalize(tMesh->m_normals[h01] / static_cast<float>(normal_div[h01]));
-				tMesh->m_normals[h10] = glm::normalize(tMesh->m_normals[h10] / static_cast<float>(normal_div[h10]));
-				tMesh->m_normals[h11] = glm::normalize(tMesh->m_normals[h11] / static_cast<float>(normal_div[h11]));
+				outModel.m_normals[h00] = glm::normalize(outModel.m_normals[h00] / static_cast<float>(normal_div[h00]));
+				outModel.m_normals[h01] = glm::normalize(outModel.m_normals[h01] / static_cast<float>(normal_div[h01]));
+				outModel.m_normals[h10] = glm::normalize(outModel.m_normals[h10] / static_cast<float>(normal_div[h10]));
+				outModel.m_normals[h11] = glm::normalize(outModel.m_normals[h11] / static_cast<float>(normal_div[h11]));
 			}
 		}
 	}
-
-	return tMesh;
 }
 
 void Tile::WriteTerrain(std::ofstream& model, WriterOffsetData& mOffset, const std::vector<float>& height_map) const
@@ -374,11 +389,10 @@ void Tile::WriteTerrain(std::ofstream& model, WriterOffsetData& mOffset, const s
 
 	// Used to generate the material for ground terrain mesh
 	SMGroundTerrainData v_tempTerrainData;
+	Model v_terrainSurface;
 
-	Model* terrain = this->GenerateTerrainMesh(height_map);
-	terrain->WriteToFile(glm::mat4(1.0f), mOffset, model, &v_tempTerrainData);
-
-	delete terrain;
+	this->GenerateTerrainMesh(v_terrainSurface, height_map);
+	v_terrainSurface.WriteToFile(glm::mat4(1.0f), mOffset, model, &v_tempTerrainData);
 }
 
 void Tile::WriteClutter(std::ofstream& model, WriterOffsetData& mOffset, const std::vector<float>& height_map) const
@@ -433,7 +447,6 @@ void Tile::WriteClutter(std::ofstream& model, WriterOffsetData& mOffset, const s
 			tClutter->SetPosition(tClutterPos);
 			tClutter->SetRotation(glm::rotate(glm::quat(), rot_angle, glm::vec3(0.0f, 0.0f, 1.0f)));
 			tClutter->SetSize(glm::vec3(0.25f - (rand_scale * 0.25f)));
-
 			tClutter->WriteObjectToFile(model, mOffset, glm::mat4(1.0f));
 
 			ProgCounter::ProgressValue++;
@@ -748,43 +761,39 @@ void Tile::WriteGroundTextures(const std::wstring& dir) const
 	}
 }
 
+void Tile::WriteModel(const std::wstring& file_path, const std::wstring& mtl_name) const
+{
+	std::ofstream v_outputModel(file_path);
+	if (!v_outputModel.is_open()) return;
+
+	if (SharedConverterSettings::ExportMaterials)
+	{
+		const std::string v_mtlHeader = "mtllib " + String::ToUtf8(mtl_name) + "\n";
+		v_outputModel.write(v_mtlHeader.c_str(), v_mtlHeader.size());
+	}
+
+	WriterOffsetData v_offsetData;
+
+	{
+		const std::vector<float> v_heightArray = this->GetVertexHeight();
+
+		this->WriteTerrain(v_outputModel, v_offsetData, v_heightArray);
+		this->WriteClutter(v_outputModel, v_offsetData, v_heightArray);
+	}
+
+	this->WriteAssets(v_outputModel, v_offsetData);
+}
+
 void Tile::WriteToFile(const std::wstring& dir_path, const std::wstring& file_name) const
 {
-	const std::wstring output_path = dir_path + file_name + L".obj";
+	const std::wstring v_mtlName = file_name + L".mtl";
 
-	std::ofstream output_model(output_path);
-	if (output_model.is_open())
-	{
-		const std::wstring mtl_name = file_name + L".mtl";
-		const std::wstring mtl_path = dir_path + mtl_name;
+	this->WriteModel(dir_path + file_name + L".obj", v_mtlName);
+	this->WriteMtlFile(dir_path + v_mtlName);
 
-		if (SharedConverterSettings::ExportMaterials)
-		{
-			const std::string mtl_header = "mtllib " + String::ToUtf8(mtl_name) + "\n";
-			output_model.write(mtl_header.c_str(), mtl_header.size());
-		}
-
-		{
-			WriterOffsetData offset_data;
-
-			{
-				const std::vector<float> pHeightArray = this->GetVertexHeight();
-
-				this->WriteTerrain(output_model, offset_data, pHeightArray);
-				this->WriteClutter(output_model, offset_data, pHeightArray);
-			}
-
-			this->WriteAssets(output_model, offset_data);
-
-			output_model.close();
-		}
-
-		this->WriteMtlFile(mtl_path);
-
-		this->WriteMaterials(dir_path);
-		this->WriteColorMap (dir_path);
-		this->WriteGroundTextures(dir_path);
-	}
+	this->WriteMaterials(dir_path);
+	this->WriteColorMap(dir_path);
+	this->WriteGroundTextures(dir_path);
 
 	DebugOutL("Finished!");
 }
@@ -796,12 +805,12 @@ void Tile::WriteMtlFile(const std::wstring& path) const
 	DebugOutL("Writing an mtl file...");
 	ProgCounter::SetState(ProgState::WritingMtlFile, 0);
 
-	std::unordered_map<std::string, ObjectTexData> tData = {};
+	std::unordered_map<std::string, ObjectTexData> v_texData = {};
 
-	for (const TilePart* tPart : m_tiles)
+	for (const TilePart* v_tPart : m_tiles)
 	{
-		tPart->FillTextureMap(tData);
-		ProgCounter::ProgressMax = tData.size();
+		v_tPart->FillTextureMap(v_texData);
+		ProgCounter::ProgressMax = v_texData.size();
 	}
 
 	{
@@ -814,8 +823,8 @@ void Tile::WriteMtlFile(const std::wstring& path) const
 			v_tileGroundTextureData.m_textures.nor = L"./GroundTexture_Nor.jpg";
 		}
 
-		tData["TileGroundTerrain"] = std::move(v_tileGroundTextureData);
+		v_texData["TileGroundTerrain"] = std::move(v_tileGroundTextureData);
 	}
 
-	MtlFileWriter::Write(path, tData);
+	MtlFileWriter::Write(path, v_texData);
 }

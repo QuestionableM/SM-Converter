@@ -1,20 +1,35 @@
 #include "File.hpp"
 
-#include "UStd\UnmanagedFilesystem.hpp"
-#include "UStd\UnmanagedFstream.hpp"
+#include "UStd/UnmanagedFilesystem.hpp"
+#include "UStd/UnmanagedFstream.hpp"
 
-#include "Utils\WinInclude.hpp"
-#include "Utils\Console.hpp"
-#include "Utils\String.hpp"
-
-#include <ShlObj.h>
+#include "Utils/clr_include.hpp"
+#include "Utils/WinInclude.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/String.hpp"
 
 namespace fs = std::filesystem;
 
-#pragma unmanaged
+// Uses extremely fast memory mapping instead of std::ifstream
+#define USE_MEM_MAPPED_FILES
+
+SM_UNMANAGED_CODE
+
+#if defined(USE_MEM_MAPPED_FILES)
+#	include "Utils/MemoryMapped.h"
+#endif
+
+#include <ShlObj.h>
 
 bool File::ReadFileBytes(const std::wstring& path, std::vector<Byte>& bytes)
 {
+#if defined(USE_MEM_MAPPED_FILES)
+	MemoryMapped v_inputFile(path, MemoryMapped::WholeFile, MemoryMapped::SequentialScan);
+	if (!v_inputFile.isValid()) return false;
+
+	bytes.resize(v_inputFile.size());
+	std::memcpy(bytes.data(), v_inputFile.getData(), bytes.size());
+#else
 	std::ifstream input_file(path, std::ios::binary | std::ios::ate);
 	if (!input_file.is_open()) return false;
 
@@ -22,13 +37,20 @@ bool File::ReadFileBytes(const std::wstring& path, std::vector<Byte>& bytes)
 	input_file.seekg(0, std::ios::beg);
 
 	input_file.read(reinterpret_cast<char*>(bytes.data()), bytes.size());
+#endif
 
-	input_file.close();
 	return !bytes.empty();
 }
 
 bool File::ReadToString(const std::wstring& path, std::string& r_output)
 {
+#if defined(USE_MEM_MAPPED_FILES)
+	MemoryMapped v_inputFile(path, MemoryMapped::WholeFile, MemoryMapped::SequentialScan);
+	if (!v_inputFile.isValid()) return false;
+
+	r_output.resize(v_inputFile.size());
+	std::memcpy(r_output.data(), v_inputFile.getData(), r_output.size());
+#else
 	std::ifstream input_file(path, std::ios::binary | std::ios::ate);
 	if (!input_file.is_open()) return false;
 
@@ -36,7 +58,7 @@ bool File::ReadToString(const std::wstring& path, std::string& r_output)
 	input_file.seekg(0, std::ios::beg);
 
 	input_file.read(r_output.data(), r_output.size());
-	input_file.close();
+#endif
 
 	return true;
 }
@@ -57,6 +79,18 @@ bool File::ReadToStringNormal(const std::wstring& path, std::string& r_output)
 
 bool File::ReadToStringED(const std::wstring& path, std::string& r_output)
 {
+#if defined(USE_MEM_MAPPED_FILES)
+	MemoryMapped v_inputFile(path, MemoryMapped::WholeFile, MemoryMapped::SequentialScan);
+	if (!v_inputFile.isValid() || v_inputFile.size() == 0) return false;
+
+	const char v_encodingBuffer = *reinterpret_cast<const char*>(v_inputFile.getData());
+	const std::size_t v_fileOffset = (v_encodingBuffer < 0) ? 3 : 0;
+
+	if (v_fileOffset >= v_inputFile.size()) return false;
+
+	r_output.resize(v_inputFile.size() - v_fileOffset);
+	std::memcpy(r_output.data(), v_inputFile.getData() + v_fileOffset, r_output.size() - v_fileOffset);
+#else
 	std::ifstream v_input_file(path, std::ios::binary | std::ios::ate);
 	if (!v_input_file.is_open()) return false;
 
@@ -72,7 +106,7 @@ bool File::ReadToStringED(const std::wstring& path, std::string& r_output)
 	char v_encoding_buffer;
 	v_input_file.read(&v_encoding_buffer, 1);
 
-	//Guess if the file has an encoding which we want to skip
+	// Guess if the file has an encoding which we want to skip
 	const std::size_t v_file_offset = (v_encoding_buffer < 0) ? 3 : 0;
 	if (v_file_size <= v_file_offset)
 	{
@@ -85,6 +119,7 @@ bool File::ReadToStringED(const std::wstring& path, std::string& r_output)
 
 	v_input_file.read(r_output.data(), r_output.size());
 	v_input_file.close();
+#endif
 
 	return true;
 }

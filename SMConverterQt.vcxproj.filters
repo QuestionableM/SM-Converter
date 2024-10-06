@@ -254,6 +254,9 @@
     <ClCompile Include="Code\ObjectDatabase\SubMeshData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Code\Utils\MemoryMapped.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\QtGui\MainGui.hpp">
@@ -575,6 +578,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Code\QtGui\DarkTheme\winDark.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Utils\MemoryMapped.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

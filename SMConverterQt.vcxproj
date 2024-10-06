@@ -214,6 +214,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClCompile Include="Code\Utils\File.cpp" />
     <ClCompile Include="Code\Utils\Json.cpp" />
     <ClCompile Include="Code\Utils\Lz4Lib.cpp" />
+    <ClCompile Include="Code\Utils\MemoryMapped.cpp" />
     <ClCompile Include="Code\Utils\Uuid.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -323,6 +324,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\Utils\Lz4Lib.hpp" />
     <ClInclude Include="Code\Utils\Math.hpp" />
     <ClInclude Include="Code\Utils\Memory.hpp" />
+    <ClInclude Include="Code\Utils\MemoryMapped.h" />
     <ClInclude Include="Code\Utils\MutexData.hpp" />
     <ClInclude Include="Code\Utils\String.hpp" />
     <ClInclude Include="Code\Utils\Uuid.hpp" />

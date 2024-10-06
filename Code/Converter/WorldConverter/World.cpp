@@ -140,11 +140,9 @@ inline glm::vec3 CalculateNormalVector(const glm::vec3& p1, const glm::vec3& p2,
 	return glm::normalize(glm::cross(a, b));
 }
 
-Model* SMWorld::GenerateTerrainMesh(const std::vector<float>& v_vert_array) const
+void SMWorld::GenerateTerrainMesh(Model& outModel, const std::vector<float>& vertArray) const
 {
 	DebugOutL("Generating terrain mesh...");
-
-	Model* tMesh = new Model();
 
 	const std::size_t v_world_size = m_width * 32 + 1;
 	const std::size_t v_world_size_sq = v_world_size * v_world_size;
@@ -154,24 +152,24 @@ Model* SMWorld::GenerateTerrainMesh(const std::vector<float>& v_vert_array) cons
 	std::vector<std::size_t> normal_div = {};
 	if (SharedConverterSettings::ExportNormals)
 	{
-		tMesh->m_normals.reserve(v_world_size_sq);
+		outModel.m_normals.reserve(v_world_size_sq);
 		normal_div.reserve(v_world_size_sq);
 	}
 
-	tMesh->m_vertices.reserve(v_world_size_sq);
+	outModel.m_vertices.reserve(v_world_size_sq);
 	for (std::size_t y = 0; y < v_world_size; y++)
 	{
 		for (std::size_t x = 0; x < v_world_size; x++)
 		{
-			const float& height = v_vert_array[x + y * v_world_size];
+			const float& height = vertArray[x + y * v_world_size];
 			const float vert_x = -(static_cast<float>(x) * 2.0f) + vf_world_size;
 			const float vert_y = -(static_cast<float>(y) * 2.0f) + vf_world_size;
 
-			tMesh->m_vertices.emplace_back(vert_x, vert_y, height);
+			outModel.m_vertices.emplace_back(vert_x, vert_y, height);
 
 			if (SharedConverterSettings::ExportNormals)
 			{
-				tMesh->m_normals.emplace_back(0.0f);
+				outModel.m_normals.emplace_back(0.0f);
 				normal_div.push_back(1);
 			}
 		}
@@ -181,7 +179,7 @@ Model* SMWorld::GenerateTerrainMesh(const std::vector<float>& v_vert_array) cons
 	{
 		const float v_uv_size = static_cast<float>(v_world_size - 1);
 
-		tMesh->m_uvs.reserve(v_world_size_sq);
+		outModel.m_uvs.reserve(v_world_size_sq);
 		for (std::size_t y = 0; y < v_world_size; y++)
 		{
 			for (std::size_t x = 0; x < v_world_size; x++)
@@ -189,12 +187,12 @@ Model* SMWorld::GenerateTerrainMesh(const std::vector<float>& v_vert_array) cons
 				const float u = static_cast<float>(x) / v_uv_size;
 				const float v = static_cast<float>(y) / v_uv_size;
 
-				tMesh->m_uvs.emplace_back(u, v);
+				outModel.m_uvs.emplace_back(u, v);
 			}
 		}
 	}
 
-	SubMeshData& v_newSubMesh = tMesh->m_subMeshData.emplace_back(
+	SubMeshData& v_newSubMesh = outModel.m_subMeshData.emplace_back(
 		0,
 		SharedConverterSettings::ExportNormals,
 		SharedConverterSettings::ExportUvs
@@ -213,18 +211,18 @@ Model* SMWorld::GenerateTerrainMesh(const std::vector<float>& v_vert_array) cons
 
 			if (SharedConverterSettings::ExportNormals)
 			{
-				const glm::vec3& p1 = tMesh->m_vertices[h00];
-				const glm::vec3& p2 = tMesh->m_vertices[h01];
-				const glm::vec3& p3 = tMesh->m_vertices[h10];
-				const glm::vec3& p4 = tMesh->m_vertices[h11];
+				const glm::vec3& p1 = outModel.m_vertices[h00];
+				const glm::vec3& p2 = outModel.m_vertices[h01];
+				const glm::vec3& p3 = outModel.m_vertices[h10];
+				const glm::vec3& p4 = outModel.m_vertices[h11];
 
 				const glm::vec3 t1_norm = CalculateNormalVector(p1, p3, p2); //first_triangle
 				const glm::vec3 t2_norm = CalculateNormalVector(p2, p3, p4); //second_triangle
 
-				tMesh->m_normals[h00] += t1_norm;
-				tMesh->m_normals[h01] += (t1_norm + t2_norm);
-				tMesh->m_normals[h10] += (t1_norm + t2_norm);
-				tMesh->m_normals[h11] += t2_norm;
+				outModel.m_normals[h00] += t1_norm;
+				outModel.m_normals[h01] += (t1_norm + t2_norm);
+				outModel.m_normals[h10] += (t1_norm + t2_norm);
+				outModel.m_normals[h11] += t2_norm;
 
 				normal_div[h00] += 1;
 				normal_div[h01] += 2;
@@ -254,15 +252,13 @@ Model* SMWorld::GenerateTerrainMesh(const std::vector<float>& v_vert_array) cons
 				const std::size_t h10 = (x + 1) + (y    ) * v_world_size;
 				const std::size_t h11 = (x + 1) + (y + 1) * v_world_size;
 
-				tMesh->m_normals[h00] = glm::normalize(tMesh->m_normals[h00] / static_cast<float>(normal_div[h00]));
-				tMesh->m_normals[h01] = glm::normalize(tMesh->m_normals[h01] / static_cast<float>(normal_div[h01]));
-				tMesh->m_normals[h10] = glm::normalize(tMesh->m_normals[h10] / static_cast<float>(normal_div[h10]));
-				tMesh->m_normals[h11] = glm::normalize(tMesh->m_normals[h11] / static_cast<float>(normal_div[h11]));
+				outModel.m_normals[h00] = glm::normalize(outModel.m_normals[h00] / static_cast<float>(normal_div[h00]));
+				outModel.m_normals[h01] = glm::normalize(outModel.m_normals[h01] / static_cast<float>(normal_div[h01]));
+				outModel.m_normals[h10] = glm::normalize(outModel.m_normals[h10] / static_cast<float>(normal_div[h10]));
+				outModel.m_normals[h11] = glm::normalize(outModel.m_normals[h11] / static_cast<float>(normal_div[h11]));
 			}
 		}
 	}
-
-	return tMesh;
 }
 
 void SMWorld::WriteTerrain(std::ofstream& model, WriterOffsetData& v_offset, const std::vector<float>& height_map) const
@@ -271,14 +267,12 @@ void SMWorld::WriteTerrain(std::ofstream& model, WriterOffsetData& v_offset, con
 	ProgCounter::SetState(ProgState::WritingGroundMesh, 0);
 
 	//Used to generate the mamterial for ground terrain mesh
-	SMGroundTerrainData v_tmp_terrain_data;
-
-	Model* v_terrain = this->GenerateTerrainMesh(height_map);
+	SMGroundTerrainData v_tmpTerrainData;
+	Model v_terrainSurface;
+	this->GenerateTerrainMesh(v_terrainSurface, height_map);
 
 	const glm::mat4 v_rotation = glm::rotate(glm::mat4(1.0f), glm::pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f));
-	v_terrain->WriteToFile(v_rotation, v_offset, model, &v_tmp_terrain_data);
-
-	delete v_terrain;
+	v_terrainSurface.WriteToFile(v_rotation, v_offset, model, &v_tmpTerrainData);
 }
 
 void SMWorld::WriteClutter(std::ofstream& model, WriterOffsetData& v_offset, const std::vector<float>& height_map) const
@@ -320,10 +314,11 @@ void SMWorld::WriteClutter(std::ofstream& model, WriterOffsetData& v_offset, con
 			const float v_x_clamp = std::clamp<float>((float)x + x_offset, 0.0f, v_world_sz_f);
 			const float v_y_clamp = std::clamp<float>((float)y + y_offset, 0.0f, v_world_sz_f);
 
-			glm::vec3 v_clutter_pos;
-			v_clutter_pos.x = -((float)(v_world_sz - x - 1) * 0.5f) + v_grid_sz_f + x_offset;
-			v_clutter_pos.y = -((float)(v_world_sz - y - 1) * 0.5f) + v_grid_sz_f + y_offset;
-			v_clutter_pos.z = Math::GetHeightPointBox(height_map, v_world_sz, v_grid_sz, v_x_clamp, v_y_clamp);
+			const glm::vec3 v_clutter_pos(
+				-((float)(v_world_sz - x - 1) * 0.5f) + v_grid_sz_f + x_offset,
+				-((float)(v_world_sz - y - 1) * 0.5f) + v_grid_sz_f + y_offset,
+				Math::GetHeightPointBox(height_map, v_world_sz, v_grid_sz, v_x_clamp, v_y_clamp)
+			);
 
 			const float rot_angle = (float)rotation_noise.octave2D_11((double)x * 15.0, (double)y * 17.14, 4) * glm::two_pi<float>();
 			const float rand_scale = (float)scale_noise.octave2D_11((double)x * 54.4f, (double)y * 24.54, 8) * v_cur_clutter->ScaleVariance();
@@ -331,8 +326,8 @@ void SMWorld::WriteClutter(std::ofstream& model, WriterOffsetData& v_offset, con
 			v_cur_clutter->SetPosition(v_clutter_pos);
 			v_cur_clutter->SetRotation(glm::rotate(glm::quat(), rot_angle, glm::vec3(0.0f, 0.0f, 1.0f)));
 			v_cur_clutter->SetSize(glm::vec3(0.25f - (rand_scale * 0.25f)));
-
 			v_cur_clutter->WriteObjectToFile(model, v_offset, glm::mat4(1.0f));
+
 			ProgCounter::ProgressValue++;
 		}
 	}
@@ -356,7 +351,6 @@ void SMWorld::WriteAssets(std::ofstream& model, WriterOffsetData& v_offset) cons
 	DebugOutL("Writing assets...");
 
 	ProgCounter::SetState(ProgState::WritingObjects, this->GetAmountOfObjects());
-	const int v_half_width = static_cast<int>(m_width / 2);
 	for (std::size_t y = 0; y < m_width; y++)
 	{
 		for (std::size_t x = 0; x < m_width; x++)
@@ -376,15 +370,15 @@ void SMWorld::WriteMtlFile(const std::wstring& path) const
 
 	ProgCounter::SetState(ProgState::WritingMtlFile, 0);
 
-	std::unordered_map<std::string, ObjectTexData> v_tex_data = {};
+	std::unordered_map<std::string, ObjectTexData> v_texData = {};
 
 	for (const WorldCellData& v_cell : m_cellMap)
 	{
 		const TilePart* v_part = v_cell.part;
 		if (!v_part) continue;
 
-		v_part->FillTextureMap(v_tex_data);
-		ProgCounter::ProgressMax = v_tex_data.size();
+		v_part->FillTextureMap(v_texData);
+		ProgCounter::ProgressMax = v_texData.size();
 	}
 
 	{
@@ -397,18 +391,16 @@ void SMWorld::WriteMtlFile(const std::wstring& path) const
 			v_tileGroundTextureData.m_textures.nor = L"./GroundTexture_Nor.jpg";
 		}
 
-		v_tex_data["TileGroundTerrain"] = std::move(v_tileGroundTextureData);
+		v_texData["TileGroundTerrain"] = std::move(v_tileGroundTextureData);
 	}
 
-	MtlFileWriter::Write(path, v_tex_data);
+	MtlFileWriter::Write(path, v_texData);
 }
 
 bool SMWorld::WriteObjFile(const std::wstring& dir_path, const std::wstring& file_name, const std::wstring& mtl_name) const
 {
-	const std::wstring v_output_path = dir_path + file_name + L".obj";
-
-	std::ofstream v_output_model(v_output_path);
-	if (!v_output_model.is_open())
+	std::ofstream v_outputModel(dir_path + file_name + L".obj");
+	if (!v_outputModel.is_open())
 	{
 		DebugOutL("Fail!");
 		return false;
@@ -416,25 +408,23 @@ bool SMWorld::WriteObjFile(const std::wstring& dir_path, const std::wstring& fil
 
 	if (SharedConverterSettings::ExportMaterials)
 	{
-		const std::string v_mtl_header = "mtllib " + String::ToUtf8(mtl_name) + "\n";
-		v_output_model.write(v_mtl_header.c_str(), v_mtl_header.size());
+		const std::string v_mtlHeader = "mtllib " + String::ToUtf8(mtl_name) + "\n";
+		v_outputModel.write(v_mtlHeader.c_str(), v_mtlHeader.size());
 	}
 
-	WriterOffsetData v_offset_data;
+	WriterOffsetData v_offsetData;
 
 	{
-		std::vector<float> v_height_array;
-		this->GetVertexHeight(v_height_array);
+		std::vector<float> v_heightArray;
+		this->GetVertexHeight(v_heightArray);
 
-		this->WriteTerrain(v_output_model, v_offset_data, v_height_array);
-		this->WriteClutter(v_output_model, v_offset_data, v_height_array);
+		this->WriteTerrain(v_outputModel, v_offsetData, v_heightArray);
+		this->WriteClutter(v_outputModel, v_offsetData, v_heightArray);
 
 		ProgCounter::SetState(ProgState::MemoryCleanup, 0);
 	}
 
-	this->WriteAssets(v_output_model, v_offset_data);
-	v_output_model.close();
-
+	this->WriteAssets(v_outputModel, v_offsetData);
 	ProgCounter::SetState(ProgState::MemoryCleanup, 0);
 
 	return true;
