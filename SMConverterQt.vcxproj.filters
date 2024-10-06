@@ -583,6 +583,9 @@
     <ClInclude Include="Code\Utils\MemoryMapped.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Code\QtGui\CustomWidgets\UserObjectListViewWidget.hpp">
@@ -594,5 +597,18 @@
     <QtMoc Include="Code\QtGui\ProgramSettingsGui.hpp">
       <Filter>Header Files</Filter>
     </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Media\sm_converter.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Media\favicon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

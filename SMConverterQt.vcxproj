@@ -303,6 +303,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\QtGui\DarkTheme\winDark.h" />
     <ClInclude Include="Code\QtGui\FilterSettingsGui.hpp" />
     <ClInclude Include="Code\QtGui\MainGui.hpp" />
+    <ClInclude Include="resource.h" />
     <QtMoc Include="Code\QtGui\CustomWidgets\PathListViewWidget.hpp" />
     <QtMoc Include="Code\QtGui\ProgramSettingsGui.hpp" />
     <ClInclude Include="Code\QtGui\MainGuiContextMenu.hpp" />
@@ -329,6 +330,13 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\Utils\String.hpp" />
     <ClInclude Include="Code\Utils\Uuid.hpp" />
     <ClInclude Include="Code\Utils\WinInclude.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Media\favicon.ico" />
+    <Image Include="Media\sm_converter.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

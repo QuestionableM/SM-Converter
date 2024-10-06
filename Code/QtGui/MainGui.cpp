@@ -37,8 +37,8 @@
 #include <QLineEdit>
 #include <QMenuBar>
 
-MainGui::MainGui(QWidget* parent)
-	: QMainWindow(parent),
+MainGui::MainGui(QWidget* parent) :
+	QMainWindow(parent),
 	m_contextMenu(new ObjectListContextMenu(this)),
 	m_menuBar(new MainGuiMenuBar(this)),
 	m_objectPathButton(new QPushButton("...", this)),
