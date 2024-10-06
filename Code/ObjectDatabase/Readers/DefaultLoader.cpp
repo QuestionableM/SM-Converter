@@ -74,7 +74,7 @@ bool DefaultLoader::TryLoadSubMeshList(const simdjson::dom::element& lod_item, S
 
 		SMTextureList* v_newTexData;
 		if (DefaultLoader::LoadSubMeshDataEntry(v_sub_mesh_item, &v_newTexData))
-			v_subMeshList->AddTexList("", v_curIdx, v_newTexData);
+			v_subMeshList->addTexList("", v_curIdx, v_newTexData);
 
 		v_idx++;
 	}
@@ -85,21 +85,19 @@ bool DefaultLoader::TryLoadSubMeshList(const simdjson::dom::element& lod_item, S
 
 bool DefaultLoader::TryLoadSubMeshMap(const simdjson::dom::element& lod_item, SMSubMeshBase** v_sub_mesh)
 {
-	const auto v_sub_mesh_map_obj = lod_item["subMeshMap"];
-	if (!v_sub_mesh_map_obj.is_object())
+	const auto v_subMeshMapObj = lod_item["subMeshMap"];
+	if (!v_subMeshMapObj.is_object())
 		return false;
 
 	SMSubMeshMap* v_subMeshMap = new SMSubMeshMap();
 
-	for (const auto v_sub_mesh_item : v_sub_mesh_map_obj.get_object().value_unsafe())
+	for (const auto v_subMeshItem : v_subMeshMapObj.get_object().value_unsafe())
 	{
-		if (!v_sub_mesh_item.value.is_object()) continue;
-
-		const std::string v_sub_mesh_name(v_sub_mesh_item.key);
+		if (!v_subMeshItem.value.is_object()) continue;
 
 		SMTextureList* v_newTexData;
-		if (DefaultLoader::LoadSubMeshDataEntry(v_sub_mesh_item.value, &v_newTexData))
-			v_subMeshMap->AddTexList(v_sub_mesh_name, 0, v_newTexData);
+		if (DefaultLoader::LoadSubMeshDataEntry(v_subMeshItem.value, &v_newTexData))
+			v_subMeshMap->addTexList(v_subMeshItem.key, 0, v_newTexData);
 	}
 
 	(*v_sub_mesh) = v_subMeshMap;

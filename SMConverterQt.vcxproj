@@ -181,6 +181,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClCompile Include="Code\ObjectDatabase\Readers\HarvestableListLoader.cpp" />
     <ClCompile Include="Code\ObjectDatabase\Readers\KinematicListLoader.cpp" />
     <ClCompile Include="Code\ObjectDatabase\Readers\PartListLoader.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\SubMeshData.cpp" />
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\BlueprintFolderReader.cpp" />
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\FilterSettingsData.cpp" />
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\TileFolderReader.cpp" />

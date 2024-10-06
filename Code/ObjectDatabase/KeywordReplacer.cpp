@@ -106,25 +106,41 @@ void KeywordReplacer::UpgradeResource(const std::wstring& mPath, std::wstring& m
 		mOutput = std::move(v_lowerPath);
 }
 
+void KeywordReplacer::UpgradeResourceR(std::wstring& out_path)
+{
+	String::ToLowerR(out_path);
+	String::ReplaceAllR(out_path, L'\\', L'/');
+
+	const auto v_iter = m_ResourceUpgrades.find(out_path);
+	if (v_iter != m_ResourceUpgrades.end())
+		out_path.assign(v_iter->second);
+}
+
 std::wstring KeywordReplacer::ReplaceKey(const std::wstring& path)
 {
 	if (path.empty() || path[0] != L'$')
 		return path;
 
-	std::wstring v_output;
-	KeywordReplacer::UpgradeResource(path, v_output);
+	std::wstring v_output = path;
+	KeywordReplacer::UpgradeResourceR(v_output);
 
-	const wchar_t* v_keyBeg = path.data();
+	const wchar_t* v_keyBeg = v_output.data();
 	const wchar_t* v_keyPtr = std::wcschr(v_keyBeg, L'/');
 	if (v_keyPtr == nullptr) return v_output;
 
-	const std::size_t v_keyIdx = v_keyPtr - v_keyBeg;
-	const std::wstring_view v_keyChunk(v_output.begin(), v_output.begin() + v_keyIdx);
+	const std::wstring_view v_keyChunk(v_keyBeg, v_keyPtr);
 
 	const auto v_iter = m_KeyReplacements.find(v_keyChunk);
 	if (v_iter == m_KeyReplacements.end()) return v_output;
 
-	return v_iter->second + v_output.substr(v_keyIdx);
+	const auto v_pathBegin = v_output.begin();
+	v_output.replace(
+		v_pathBegin,
+		v_pathBegin + (v_keyPtr - v_keyBeg),
+		std::wstring_view(v_iter->second)
+	);
+
+	return v_output;
 }
 
 void KeywordReplacer::ReplaceKeyR(std::wstring& path)
@@ -132,23 +148,22 @@ void KeywordReplacer::ReplaceKeyR(std::wstring& path)
 	if (path.empty() || path[0] != L'$')
 		return;
 
-	KeywordReplacer::UpgradeResource(path, path);
+	KeywordReplacer::UpgradeResourceR(path);
 
 	const wchar_t* v_keyBeg = path.data();
 	const wchar_t* v_keyPtr = std::wcschr(v_keyBeg, L'/');
 	if (v_keyPtr == nullptr) return;
 
-	const std::size_t v_keyIdx = v_keyPtr - v_keyBeg;
-	const std::wstring_view v_keyChunk(path.begin(), path.begin() + v_keyIdx);
+	const std::wstring_view v_keyChunk(v_keyBeg, v_keyPtr);
 
 	const auto v_iter = m_KeyReplacements.find(v_keyChunk);
 	if (v_iter == m_KeyReplacements.end()) return;
 
+	const auto v_pathBegin = path.begin();
 	path.replace(
-		path.begin(),
-		path.begin() + v_keyIdx,
-		v_iter->second.begin(),
-		v_iter->second.end()
+		v_pathBegin,
+		v_pathBegin + (v_keyPtr - v_keyBeg),
+		std::wstring_view(v_iter->second)
 	);
 }
 
@@ -157,13 +172,13 @@ bool KeywordReplacer::ReplaceKeyRLua(std::wstring& path)
 	if (path.empty() || path[0] != L'$')
 		return true;
 
-	KeywordReplacer::UpgradeResource(path, path);
+	KeywordReplacer::UpgradeResourceR(path);
 
-	const std::size_t v_keyIdx = path.find(L'/');
-	if (v_keyIdx == std::wstring::npos)
-		return true;
+	const wchar_t* v_keyBeg = path.data();
+	const wchar_t* v_keyPtr = std::wcschr(v_keyBeg, L'/');
+	if (v_keyPtr == nullptr) return true;
 
-	const std::wstring_view v_keyChunk(path.begin(), path.begin() + v_keyIdx);
+	const std::wstring_view v_keyChunk(v_keyBeg, v_keyPtr);
 	if (v_keyChunk == L"$content_data")
 	{
 		//Throw key error if $CONTENT_DATA doesn't exist
@@ -177,11 +192,11 @@ bool KeywordReplacer::ReplaceKeyRLua(std::wstring& path)
 	const auto v_iter = m_KeyReplacements.find(v_keyChunk);
 	if (v_iter == m_KeyReplacements.end()) return true;
 
+	const auto v_pathBegin = path.begin();
 	path.replace(
-		path.begin(),
-		path.begin() + v_keyIdx,
-		v_iter->second.begin(),
-		v_iter->second.end()
+		v_pathBegin,
+		v_pathBegin + (v_keyPtr - v_keyBeg),
+		std::wstring_view(v_iter->second)
 	);
 
 	return true;

@@ -8,7 +8,22 @@
 
 SM_UNMANAGED_CODE
 
-enum class SMSubMeshType : unsigned char
+struct StringHetHash
+{
+	using is_transparent = void;
+
+	inline std::size_t operator()(const std::string& str) const noexcept
+	{
+		return std::hash<std::string>{}(str);
+	}
+
+	inline std::size_t operator()(const std::string_view& str) const noexcept
+	{
+		return std::hash<std::string_view>{}(str);
+	}
+};
+
+enum class SMSubMeshType : std::uint8_t
 {
 	SubMeshList = 0,
 	SubMeshMap = 1
@@ -21,42 +36,15 @@ public:
 	~SMTextureList() = default;
 
 	SMTextureList(const SMTextureList& other) = default;
+	SMTextureList(SMTextureList&& other) noexcept;
 
-	inline SMTextureList(SMTextureList&& other) noexcept :
-		dif(std::move(other.dif)),
-		asg(std::move(other.asg)),
-		nor(std::move(other.nor)),
-		material(std::move(other.material)),
-		def_color_idx(std::move(other.def_color_idx)),
-		is_shadow_only(other.is_shadow_only)
-	{}
-
-	inline void operator=(const SMTextureList& other)
-	{
-		this->dif = other.dif;
-		this->asg = other.asg;
-		this->nor = other.nor;
-		this->material = other.material;
-		this->def_color_idx = other.def_color_idx;
-		this->is_shadow_only = other.is_shadow_only;
-	}
-
-	inline void operator=(SMTextureList&& other) noexcept
-	{
-		this->dif = std::move(other.dif);
-		this->asg = std::move(other.asg);
-		this->nor = std::move(other.nor);
-		this->material = std::move(other.material);
-		this->def_color_idx = std::move(other.def_color_idx);
-		this->is_shadow_only = other.is_shadow_only;
-	}
+	void operator=(const SMTextureList& other);
+	void operator=(SMTextureList&& other) noexcept;
 
 	// Should only go from 0 to 2
-	std::wstring& getStringRef(std::size_t idx) noexcept
-	{
-		return reinterpret_cast<std::wstring*>(&dif)[idx];
-	}
+	std::wstring& getStringRef(std::size_t idx) noexcept;
 
+public:
 	std::wstring dif;
 	std::wstring asg;
 	std::wstring nor;
@@ -69,15 +57,14 @@ public:
 class SMSubMeshBase
 {
 public:
-	virtual const SMTextureList* GetTexList(const std::string& key, std::size_t key_idx) const = 0;
-	virtual void AddTexList(const std::string& key, std::size_t key_idx, SMTextureList* sub_data) = 0;
-
-	virtual SMSubMeshType Type() const noexcept = 0;
-
 	SMSubMeshBase() = default;
 	SMSubMeshBase(const SMSubMeshBase&) = delete;
 	SMSubMeshBase(SMSubMeshBase&&) = delete;
 	virtual ~SMSubMeshBase() = default;
+
+	virtual const SMTextureList* getTexList(const std::string& key, std::size_t key_idx) const = 0;
+	virtual void addTexList(const std::string_view& key, std::size_t key_idx, SMTextureList* sub_data) = 0;
+	virtual SMSubMeshType type() const = 0;
 };
 
 class SMSubMeshList : public SMSubMeshBase
@@ -88,40 +75,20 @@ public:
 	SMSubMeshList(const SMSubMeshList&) = delete;
 	SMSubMeshList(SMSubMeshList&&) = delete;
 
-	~SMSubMeshList()
-	{
-		for (std::size_t a = 0; a < m_Storage.size(); a++)
-			delete m_Storage[a];
-	}
+	~SMSubMeshList();
 
-	const SMTextureList* GetTexList(const std::string& key, std::size_t key_idx) const override
-	{
-		if (key_idx >= m_Storage.size())
-			return nullptr;
+	const SMTextureList* getTexList(const std::string& key, std::size_t key_idx) const override;
+	void addTexList(const std::string_view& key, std::size_t key_idx, SMTextureList* sub_data) override;
 
-		return m_Storage[key_idx];
-	}
-
-	void AddTexList(const std::string& key, std::size_t key_idx, SMTextureList* sub_data) override
-	{
-		if (m_Storage.size() <= key_idx)
-			m_Storage.resize(key_idx + 1, nullptr);
-
-		m_Storage[key_idx] = sub_data;
-	}
-
-	SMSubMeshType Type() const noexcept override
-	{
-		return SMSubMeshType::SubMeshList;
-	}
+	SMSubMeshType type() const override;
 
 private:
-	std::vector<SMTextureList*> m_Storage = {};
+	std::vector<SMTextureList*> m_storage = {};
 };
 
 class SMSubMeshMap : public SMSubMeshBase
 {
-	using StorageMap = std::unordered_map<std::string, SMTextureList*>;
+	using StorageMap = std::unordered_map<std::string, SMTextureList*, StringHetHash, std::equal_to<>>;
 
 public:
 	SMSubMeshMap() = default;
@@ -129,36 +96,15 @@ public:
 	SMSubMeshMap(const SMSubMeshMap&) = delete;
 	SMSubMeshMap(SMSubMeshMap&&) = delete;
 
-	~SMSubMeshMap()
-	{
-		for (const auto& v_obj : m_Storage)
-			delete v_obj.second;
-	}
+	~SMSubMeshMap();
 
-	const SMTextureList* GetTexList(const std::string& key, std::size_t key_idx) const override
-	{
-		const StorageMap::const_iterator v_iter = m_Storage.find(key);
-		if (v_iter == m_Storage.end())
-			return nullptr;
+	const SMTextureList* getTexList(const std::string& key, std::size_t key_idx) const override;
+	void addTexList(const std::string_view& key, std::size_t key_idx, SMTextureList* sub_data) override;
 
-		return v_iter->second;
-	}
-
-	void AddTexList(const std::string& key, std::size_t key_idx, SMTextureList* sub_data) override
-	{
-		if (m_Storage.find(key) != m_Storage.end())
-			return;
-
-		m_Storage.emplace(key, sub_data);
-	}
-
-	SMSubMeshType Type() const noexcept override
-	{
-		return SMSubMeshType::SubMeshMap;
-	}
+	SMSubMeshType type() const override;
 
 private:
-	StorageMap m_Storage = {};
+	StorageMap m_storage = {};
 };
 
 SM_MANAGED_CODE

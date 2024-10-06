@@ -28,7 +28,7 @@ char* SMAsset::GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, 
 	v_ptr = m_uuid.ToCString(v_ptr);
 	*v_ptr++ = ' ';
 
-	const SMTextureList* v_tex_list = m_parent->m_textures->GetTexList(v_mat_name, v_idx);
+	const SMTextureList* v_tex_list = m_parent->m_textures->getTexList(v_mat_name, v_idx);
 	if (v_tex_list)
 	{
 		v_ptr = this->GetColor(v_tex_list->def_color_idx).StringHexCStr(v_ptr);
@@ -56,7 +56,7 @@ void SMAsset::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex
 	for (std::size_t a = 0; a < v_modelSubMeshCount; a++)
 	{
 		const SubMeshData& v_curSubMesh = m_model->m_subMeshData[a];
-		const SMTextureList* v_pTexList = m_parent->m_textures->GetTexList(v_curSubMesh.m_materialName, a);
+		const SMTextureList* v_pTexList = m_parent->m_textures->getTexList(v_curSubMesh.m_materialName, a);
 		if (!v_pTexList) continue;
 
 		const SMColor v_color = this->GetColor(v_pTexList->def_color_idx);
@@ -72,7 +72,7 @@ void SMAsset::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex
 
 bool SMAsset::GetCanWrite(const std::string& name, std::size_t v_idx) const
 {
-	const SMTextureList* v_tex_list = m_parent->m_textures->GetTexList(name, v_idx);
+	const SMTextureList* v_tex_list = m_parent->m_textures->getTexList(name, v_idx);
 	if (!v_tex_list) return false;
 
 	return !v_tex_list->is_shadow_only;

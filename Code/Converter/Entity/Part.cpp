@@ -16,7 +16,7 @@ char* SMPart::GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, c
 	v_ptr = String::FromInteger<std::size_t>(v_idx + 1, v_ptr);
 	*v_ptr++ = ' ';
 
-	const SMTextureList* v_tex_data = m_parent->m_textures->GetTexList(v_mat_name, v_idx);
+	const SMTextureList* v_tex_data = m_parent->m_textures->getTexList(v_mat_name, v_idx);
 	if (v_tex_data)
 		return MaterialManager::GetMaterialACStr(v_tex_data->material, v_ptr);
 
@@ -34,7 +34,7 @@ void SMPart::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_
 	for (std::size_t a = 0; a < v_subMeshDataCount; a++)
 	{
 		const SubMeshData& v_curSubMesh = m_model->m_subMeshData[a];
-		const SMTextureList* v_pTexList = m_parent->m_textures->GetTexList(v_curSubMesh.m_materialName, a);
+		const SMTextureList* v_pTexList = m_parent->m_textures->getTexList(v_curSubMesh.m_materialName, a);
 		if (!v_pTexList) continue;
 
 		const std::string v_matIdx = MaterialManager::GetMaterialA(v_pTexList->material);
@@ -61,7 +61,7 @@ glm::mat4 SMPart::GetTransformMatrix() const
 
 bool SMPart::GetCanWrite(const std::string& name, std::size_t v_idx) const
 {
-	const SMTextureList* v_pTexList = m_parent->m_textures->GetTexList(name, v_idx);
+	const SMTextureList* v_pTexList = m_parent->m_textures->getTexList(name, v_idx);
 	if (!v_pTexList) return false;
 
 	return !v_pTexList->is_shadow_only;
