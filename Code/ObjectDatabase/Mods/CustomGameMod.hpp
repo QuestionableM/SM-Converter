@@ -7,19 +7,20 @@ SM_UNMANAGED_CODE
 
 class CustomGame : public SMMod
 {
+public:
+	~CustomGame() = default;
+	CustomGame(
+		const std::wstring& name,
+		const std::wstring& directory,
+		const SMUuid& uuid,
+		std::uint64_t workshop_id,
+		bool isLocal
+	);
+
+private:
 	bool CheckSurvivalContent();
 
 public:
-	~CustomGame() = default;
-	inline CustomGame(const std::wstring& v_name, const std::wstring& v_directory, const SMUuid& v_uuid, unsigned long long v_workshop_id, bool v_isLocal)
-		: SMMod(v_name, v_directory, v_uuid, v_workshop_id, v_isLocal)
-	{
-		this->m_id = SMMod::CustomGameVector.size();
-
-		SMMod::CustomGameStorage.emplace(m_Uuid, this);
-		SMMod::CustomGameVector.push_back(this);
-	}
-
 	inline ModType Type() const noexcept override { return ModType::CustomGame; }
 	void LoadObjectDatabase() override;
 

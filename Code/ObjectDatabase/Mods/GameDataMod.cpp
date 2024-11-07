@@ -6,13 +6,15 @@
 
 #pragma unmanaged
 
-GameDataMod::GameDataMod()
-	: SMMod(
+GameDataMod::GameDataMod() :
+	SMMod(
 		L"Vanilla Data",
 		DatabaseConfig::GamePath,
 		SMUuid(0x45157449ee614269, 0xa6ab3137e2945fca),
 		0,
-		true) {}
+		true
+	)
+{}
 
 void GameDataMod::LoadObjectDatabase()
 {

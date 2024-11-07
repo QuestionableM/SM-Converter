@@ -8,37 +8,57 @@
 
 #pragma unmanaged
 
-static const std::wstring g_AssetSetDirectoryPaths[2] = { L"/Terrain/Database/", L"/Database/" };
+TerrainAssetsMod::TerrainAssetsMod(
+	const std::wstring& name,
+	const std::wstring& directory,
+	const SMUuid& uuid,
+	std::uint64_t workshopId,
+	bool isLocal
+) :
+	SMMod(
+		name,
+		directory,
+		uuid,
+		workshopId,
+		isLocal
+	)
+{
+	SMMod::ModStorage.emplace(m_Uuid, this);
+	SMMod::ModVector.push_back(this);
+}
+
+static const std::wstring_view g_assetSetDirectoryPaths[2] = { L"/Terrain/Database/", L"/Database/" };
 bool TerrainAssetsMod::GetValidAssetDatabaseFolder(const std::wstring& mod_path, std::wstring& r_asset_db)
 {
-	for (__int8 a = 0; a < 2; a++)
-	{
-		const std::wstring asset_db_path = mod_path + g_AssetSetDirectoryPaths[a];
+	std::wstring v_assetDbPath;
 
-		if (File::Exists(asset_db_path))
-		{
-			r_asset_db = asset_db_path;
-			return true;
-		}
+	for (std::uint8_t a = 0; a < 2; a++)
+	{
+		v_assetDbPath = mod_path;
+		v_assetDbPath.append(g_assetSetDirectoryPaths[a]);
+		if (!File::Exists(v_assetDbPath)) continue;
+
+		r_asset_db = v_assetDbPath;
+		return true;
 	}
 
 	return false;
 }
 
-static const std::wstring g_AssetSetDbExtensions[2] = { L"json", L"assetdb" };
+static const std::wstring_view g_assetSetDbExtensions[2] = { L"json", L"assetdb" };
 bool TerrainAssetsMod::GetAssetSetDatabaseFile(const std::wstring& asset_db_dir, std::wstring& r_asset_set)
 {
-	const std::wstring near_full_path = asset_db_dir + L"assetsets.";
+	const std::wstring v_nearFullPath = asset_db_dir + L"assetsets.";
+	std::wstring v_fullDbPath;
 
-	for (__int8 a = 0; a < 2; a++)
+	for (std::uint8_t a = 0; a < 2; a++)
 	{
-		const std::wstring full_db_path = near_full_path + g_AssetSetDbExtensions[a];
+		v_fullDbPath = v_nearFullPath;
+		v_fullDbPath.append(g_assetSetDbExtensions[a]);
+		if (!File::Exists(v_fullDbPath)) continue;
 
-		if (File::Exists(full_db_path))
-		{
-			r_asset_set = full_db_path;
-			return true;
-		}
+		r_asset_set = v_fullDbPath;
+		return true;
 	}
 
 	return false;
