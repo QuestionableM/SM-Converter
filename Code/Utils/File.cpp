@@ -42,7 +42,7 @@ bool File::ReadFileBytes(const std::wstring& path, std::vector<Byte>& bytes)
 	return !bytes.empty();
 }
 
-bool File::ReadToString(const std::wstring& path, std::string& r_output)
+bool File::ReadToString(const std::wstring_view& path, std::string& r_output)
 {
 #if defined(USE_MEM_MAPPED_FILES)
 	MemoryMapped v_inputFile(path, MemoryMapped::WholeFile, MemoryMapped::SequentialScan);
@@ -51,7 +51,7 @@ bool File::ReadToString(const std::wstring& path, std::string& r_output)
 	r_output.resize(v_inputFile.size());
 	std::memcpy(r_output.data(), v_inputFile.getData(), r_output.size());
 #else
-	std::ifstream input_file(path, std::ios::binary | std::ios::ate);
+	std::ifstream input_file(path.data(), std::ios::binary | std::ios::ate);
 	if (!input_file.is_open()) return false;
 
 	r_output.resize(input_file.tellg());

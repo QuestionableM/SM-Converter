@@ -19,14 +19,14 @@ void BlueprintConv::WriteToFileInternal(SMBlueprint* pBlueprint, const std::wstr
 	const std::wstring v_bp_out_dir = std::wstring(DatabaseConfig::BlueprintOutputFolder.data());
 	if (!File::CreateDirectorySafe(v_bp_out_dir))
 	{
-		error.setError(1, L"Couldn't create the main output directory");
+		error.setError(1, "Couldn't create the main output directory");
 		return;
 	}
 
 	const std::wstring v_bp_dir_path = v_bp_out_dir + L"/" + bp_name;
 	if (!File::CreateDirectorySafe(v_bp_dir_path))
 	{
-		error.setError(1, L"Couldn't create the blueprint output directory");
+		error.setError(1, "Couldn't create the blueprint output directory");
 		return;
 	}
 
@@ -37,7 +37,7 @@ void BlueprintConv::WriteToFileInternal(SMBlueprint* pBlueprint, const std::wstr
 		std::ofstream v_obj_writer(v_bp_output_path + L".obj");
 		if (!v_obj_writer.is_open())
 		{
-			error.setError(1, L"Couldn't create an object file");
+			error.setError(1, "Couldn't create an object file");
 			return;
 		}
 
@@ -220,7 +220,7 @@ void BlueprintConv::ConvertToModel(
 {
 	if (!File::IsRegularFile(bp_path))
 	{
-		error.setError(1, L"The specified path leads to a directory");
+		error.setError(1, "The specified path leads to a directory");
 		return;
 	}
 

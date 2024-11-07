@@ -127,7 +127,7 @@ public:
 		simdjson::dom::document v_doc;
 		if (!JsonReader::LoadParseSimdjsonCommentsC(path, v_doc, simdjson::dom::element_type::OBJECT))
 		{
-			error.setError(1, L"Couldn't read the specified file. Possible reasons: Invalid Json File, Invalid Path, Syntax Error");
+			error.setError(1, "Couldn't read the specified file. Possible reasons: Invalid Json File, Invalid Path, Syntax Error");
 			return nullptr;
 		}
 
@@ -136,7 +136,7 @@ public:
 		const auto v_cell_data = v_doc_root["cellData"];
 		if (!v_cell_data.is_array())
 		{
-			error.setError(1, L"Couldn't find a cell data inside the world file");
+			error.setError(1, "Couldn't find a cell data inside the world file");
 			return nullptr;
 		}
 

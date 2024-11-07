@@ -16,7 +16,12 @@ class BlueprintListReader
 
 public:
 	template<bool t_mod_counter>
-	static void Read(const CellHeader& header, MemoryWrapper& reader, TilePart* pPart, int version, ConvertError& error)
+	static void Read(
+		const CellHeader& header,
+		MemoryWrapper& reader,
+		TilePart* pPart,
+		std::uint32_t version,
+		ConvertError& error)
 	{
 		if (error) return;
 
@@ -43,7 +48,7 @@ public:
 		if (debugSize != header.blueprintListCompressedSize)
 		{
 			DebugErrorL("DebugSize: ", debugSize, ", header->blueprintListCompressedSize: ", header.blueprintListCompressedSize);
-			error.setError(1, L"BlueprintListReader::Read -> debugSize != header->blueprintListCompressedSize\nTile Version: " + std::to_wstring(version));
+			error.setError(1, "BlueprintListReader::Read -> debugSize != header->blueprintListCompressedSize\nTile Version: ", version);
 			return;
 		}
 
@@ -51,13 +56,17 @@ public:
 		if (debugSize != header.blueprintListSize)
 		{
 			DebugErrorL("DebugSize: ", debugSize, ", header->blueprintListSize: ", header.blueprintListSize);
-			error.setError(1, L"BlueprintListReader::Read -> debugSize != header->blueprintListSize\nTile Version: " + std::to_wstring(version));
+			error.setError(1, "BlueprintListReader::Read -> debugSize != header->blueprintListSize\nTile Version: ", version);
 			return;
 		}
 	}
 
 	template<bool t_mod_counter>
-	static int Read(const std::vector<Byte>& bytes, int count, int version, TilePart* pPart)
+	static int Read(
+		const std::vector<Byte>& bytes,
+		int count,
+		std::uint32_t version,
+		TilePart* pPart)
 	{
 		MemoryWrapper memory(bytes);
 

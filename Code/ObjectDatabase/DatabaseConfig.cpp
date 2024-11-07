@@ -367,7 +367,7 @@ nlohmann::json DatabaseConfig::GetConfigJson(bool* should_write, bool read_from_
 	nlohmann::json cfgData;
 	if (read_from_file)
 	{
-		cfgData = JsonReader::LoadParseJson(DatabaseConfig::ConfigPath.data());
+		cfgData = JsonReader::LoadParseJson(DatabaseConfig::ConfigPath);
 		if (!cfgData.is_object())
 			cfgData = nlohmann::json::object();
 	}
@@ -507,7 +507,7 @@ void DatabaseConfig::SaveConfig()
 	}
 
 	DebugOutL(0b0110_fg, "Saving a new config...");
-	JsonReader::WriteJson(DatabaseConfig::ConfigPath.data(), cfgData);
+	JsonReader::WriteJson(DatabaseConfig::ConfigPath, cfgData);
 
 	//Update the game path keyword in case the path was updated
 	DatabaseConfig::UpdateGamePathReplacement();

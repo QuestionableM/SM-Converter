@@ -30,7 +30,7 @@ SM_UNMANAGED_CODE
 #define THROW_PREFAB_ERROR(expression, error) \
 	if ((expression)) { \
 		DebugErrorL("Prefab Error: ", #expression); \
-		error.setError(1, STR_WIDE3(__FUNCTION__) L" (" STR_WIDE3(STR(__LINE__)) L") -> " STR_WIDE2(expression)); \
+		error.setError(1, __FUNCTION__ "(" STR(__LINE__) ") -> " #expression); \
 		return; \
 	}
 
@@ -60,7 +60,7 @@ public:
 	inline static void ReadPrefabHeader(
 		MemoryWrapper& reader,
 		SMPrefab* pPrefab,
-		int version,
+		std::uint32_t version,
 		ConvertError& error)
 	{
 		BitStream v_stream(reader);
@@ -121,16 +121,16 @@ public:
 	{
 		MemoryWrapper reader(bytes);
 
-		if (reader.NextObject<int>() != 0x50524546)
+		if (reader.NextObject<std::uint32_t>() != 0x50524546)
 		{
 			DebugErrorL("Invalid Prefab Magic");
 			return nullptr;
 		}
 
-		const int version = reader.NextObject<int, true>();
+		const std::uint32_t version = reader.NextObject<std::uint32_t, true>();
 		if (version <= 0 || version > 10)
 		{
-			error.setError(1, L"Unsupported Prefab Version: " + std::to_wstring(version));
+			error.setError(1, "Unsupported Prefab Version: ", version);
 			return nullptr;
 		}
 
@@ -153,7 +153,11 @@ public:
 	}
 
 	template<bool t_mod_counter>
-	static int ReadBlueprints(BitStream& stream, SMPrefab* prefab, PrefabHeader& v_header, int version)
+	static int ReadBlueprints(
+		BitStream& stream,
+		SMPrefab* prefab,
+		PrefabHeader& v_header,
+		std::uint32_t version)
 	{
 		if (!TileConverterSettings::ExportBlueprints)
 		{
@@ -199,7 +203,7 @@ public:
 		BitStream& stream,
 		SMPrefab* pPrefab,
 		PrefabHeader& header,
-		int version,
+		std::uint32_t version,
 		ConvertError& error)
 	{
 		if (!TileConverterSettings::ExportPrefabs)
@@ -298,7 +302,11 @@ public:
 	}
 
 	template<bool t_mod_counter>
-	static int ReadAssets(BitStream& stream, SMPrefab* prefab, PrefabHeader& v_header, int version)
+	static int ReadAssets(
+		BitStream& stream,
+		SMPrefab* prefab,
+		PrefabHeader& v_header,
+		std::uint32_t version)
 	{
 		if (!TileConverterSettings::ExportAssets)
 		{
@@ -360,7 +368,11 @@ public:
 	}
 
 	template<bool t_mod_counter>
-	static int ReadDecals(BitStream& stream, SMPrefab* prefab, PrefabHeader& v_header, int version)
+	static int ReadDecals(
+		BitStream& stream,
+		SMPrefab* prefab,
+		PrefabHeader& v_header,
+		std::uint32_t version)
 	{
 		if (!TileConverterSettings::ExportDecals)
 		{
@@ -402,7 +414,11 @@ public:
 		return stream.Index() - v_start_idx;
 	}
 
-	static int Read_248(BitStream& stream, SMPrefab* prefab, PrefabHeader& v_header, int version)
+	static int Read_248(
+		BitStream& stream,
+		SMPrefab* prefab,
+		PrefabHeader& v_header,
+		std::uint32_t version)
 	{
 		BIT_STREAM_DUMP_INTO_FILE(stream, L"./prefab_dump/prefab" + std::to_wstring(version) + L"_248", 100);
 		DebugWarningL("UNIMPLEMENTED -> ", stream.Index());
@@ -412,7 +428,11 @@ public:
 	}
 
 	template<bool t_mod_counter>
-	static int ReadKinematics(BitStream& stream, SMPrefab* prefab, PrefabHeader& v_header, int version)
+	static int ReadKinematics(
+		BitStream& stream,
+		SMPrefab* prefab,
+		PrefabHeader& v_header,
+		std::uint32_t version)
 	{
 		if (!TileConverterSettings::ExportKinematics)
 		{
@@ -467,7 +487,11 @@ public:
 		return stream.Index() - v_start_idx;
 	}
 
-	static int Read_2(BitStream& stream, SMPrefab* prefab, PrefabHeader& v_header, int version)
+	static int Read_2(
+		BitStream& stream,
+		SMPrefab* prefab,
+		PrefabHeader& v_header,
+		std::uint32_t version)
 	{
 		BIT_STREAM_DUMP_INTO_FILE(stream, L"./prefab_dump/prefab" + std::to_wstring(version) + L"_2", 100);
 		DebugWarningL("UNIMPLEMENTED -> ", stream.Index());

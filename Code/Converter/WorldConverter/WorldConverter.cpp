@@ -19,14 +19,14 @@ void WorldConverter::WriteToFile(
 	const std::wstring v_world_out_dir = std::wstring(DatabaseConfig::WorldOutputFolder.data());
 	if (!File::CreateDirectorySafe(v_world_out_dir))
 	{
-		error.setError(1, L"Couldn't create the main output directory");
+		error.setError(1, "Couldn't create the main output directory");
 		return;
 	}
 
 	const std::wstring v_world_dir_path = v_world_out_dir + L"/" + world_name;
 	if (!File::CreateDirectorySafe(v_world_dir_path))
 	{
-		error.setError(1, L"Couldn't create the tile output directory");
+		error.setError(1, "Couldn't create the tile output directory");
 		return;
 	}
 
@@ -41,7 +41,7 @@ void WorldConverter::ConvertToModel(
 {
 	if (!File::IsRegularFile(path))
 	{
-		error.setError(1, L"The specified path leads to a directory");
+		error.setError(1, "The specified path leads to a directory");
 		return;
 	}
 

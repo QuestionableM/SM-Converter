@@ -43,11 +43,11 @@ public:
 	{
 		MemoryWrapper v_memory = bytes;
 
-		const int v_tileKey = v_memory.NextObject<int>();
+		const std::uint32_t v_tileKey = v_memory.NextObject<std::uint32_t>();
 		if (v_tileKey != 0x454C4954) //TILE - magic keyword
 		{
 			DebugOutL("Invalid File");
-			error.setError(1, L"TileHeader::ReadTile -> Invalid File");
+			error.setError(1, "TileHeader::ReadTile -> Invalid File");
 			return false;
 		}
 
@@ -55,7 +55,7 @@ public:
 		if (pHeader->m_data.version > 1000000)
 		{
 			DebugErrorL("Invalid version");
-			error.setError(1, L"TileHeader::ReadTile -> Invalid Tile Version");
+			error.setError(1, "TileHeader::ReadTile -> Invalid Tile Version");
 			return false;
 		}
 
@@ -70,7 +70,7 @@ public:
 		if (v_memory.Index() != pHeader->m_data.cell_header_offset)
 		{
 			DebugOutL("Error: index doesn't match the cell header offset!");
-			error.setError(1, L"TileHeader::ReadTile -> Index doesn't match the cell header offset!");
+			error.setError(1, "TileHeader::ReadTile -> Index doesn't match the cell header offset!");
 			return false;
 		}
 

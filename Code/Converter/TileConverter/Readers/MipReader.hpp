@@ -52,7 +52,7 @@ public:
 		if (debugSize != header.mipCompressedSize[mipOrLevel])
 		{
 			DebugErrorL("Debug Size: ", debugSize, ", header->mipCompressedSize[mipOrLevel]: ", header.mipCompressedSize[mipOrLevel]);
-			error.setError(1, L"MipReader::Read -> debugSize != header->mipCompressedSize[mipOrLevel]");
+			error.setError(1, "MipReader::Read -> debugSize != header->mipCompressedSize[mipOrLevel]");
 			return false;
 		}
 

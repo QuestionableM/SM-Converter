@@ -16,7 +16,7 @@ namespace File
 	bool ReadFileBytes(const std::wstring& path, std::vector<Byte>& bytes);
 
 	//Reads binary string
-	bool ReadToString(const std::wstring& path, std::string& r_output);
+	bool ReadToString(const std::wstring_view& path, std::string& r_output);
 	//Reads normal string
 	bool ReadToStringNormal(const std::wstring& path, std::string& r_output);
 	//File reader specifically designed to handle weird encodings

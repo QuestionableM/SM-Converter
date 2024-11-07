@@ -5,6 +5,8 @@
 
 SM_UNMANAGED_CODE
 
+#include <cstdint>
+
 class ConvertError
 {
 public:
@@ -13,30 +15,90 @@ public:
 		m_errorMessage()
 	{}
 
-	inline ConvertError(unsigned short ec, const std::wstring& error_msg) :
+	inline ConvertError(std::uint16_t ec, const std::string& error_msg) :
 		m_errorCode(ec),
 		m_errorMessage(error_msg)
 	{}
 
-	inline ConvertError(const std::wstring& error_msg, const std::wstring& func_string) :
-		m_errorCode(1),
-		m_errorMessage(func_string + L" -> " + error_msg)
-	{}
-
 	void operator=(const ConvertError& other) = delete;
 
-	inline void setError(const std::uint16_t ec, const std::wstring_view& error_msg)
+private:
+	template<std::size_t N>
+	inline void setErrorVariadic(const char (&arg_str)[N])
+	{
+		m_errorMessage.append(arg_str, arg_str + (N - 1));
+	}
+
+	template<typename CurArg> requires(
+		std::is_same_v<std::remove_cv_t<CurArg>, bool> ||
+		std::is_same_v<std::remove_cv_t<CurArg>, unsigned char> ||
+		std::is_same_v<std::remove_cv_t<CurArg>, short> ||
+		std::is_same_v<std::remove_cv_t<CurArg>, unsigned short> ||
+		std::is_same_v<std::remove_cv_t<CurArg>, int> ||
+		std::is_same_v<std::remove_cv_t<CurArg>, unsigned int> ||
+		std::is_same_v<std::remove_cv_t<CurArg>, long> ||
+		std::is_same_v<std::remove_cv_t<CurArg>, unsigned long> ||
+		std::is_same_v<std::remove_cv_t<CurArg>, long long> ||
+		std::is_same_v<std::remove_cv_t<CurArg>, unsigned long long>
+	)
+	inline void setErrorVariadic(CurArg arg)
+	{
+		char v_intBuffer[64];
+		char* v_bufferPtr = v_intBuffer + sizeof(v_intBuffer);
+
+		if constexpr (std::is_signed_v<CurArg>)
+		{
+			if (arg < 0)
+			{
+				CurArg v_negArg = -arg;
+				do
+				{
+					*--v_bufferPtr = char(v_negArg % 10) + '0';
+					v_negArg /= 10;
+				} while (v_negArg);
+
+				*--v_bufferPtr = '-';
+				goto jump_assign;
+			}
+		}
+
+		do
+		{
+			*--v_bufferPtr = char(arg % 10) + '0';
+			arg /= 10;
+		} while (arg);
+
+	jump_assign:
+		m_errorMessage.assign(v_bufferPtr, v_intBuffer + sizeof(v_intBuffer));
+	}
+
+	template<typename CurArg> requires(std::is_same_v<CurArg, char>)
+	inline void setErrorVariadic(CurArg arg)
+	{
+		m_errorMessage.append(1, arg);
+	}
+
+	template<typename CurArg, typename ...Args>
+	inline void setErrorVariadic(CurArg&& curArg, Args&& ...otherArgs)
+	{
+		this->setErrorVariadic(curArg);
+		this->setErrorVariadic(otherArgs...);
+	}
+
+public:
+	template<typename ...Args>
+	inline void setError(const std::uint16_t ec, Args&& ...args)
 	{
 		m_errorCode = ec;
-		m_errorMessage.assign(error_msg);
+		this->setErrorVariadic(args...);
 	}
 
 	inline explicit operator bool() const noexcept
 	{
-		return (m_errorCode != 0);
+		return m_errorCode != 0;
 	}
 
-	inline const std::wstring& getErrorMsg() const noexcept
+	inline const std::string& getErrorMsg() const noexcept
 	{
 		return m_errorMessage;
 	}
@@ -48,8 +110,8 @@ public:
 	}
 
 private:
-	unsigned short m_errorCode = 0;
-	std::wstring m_errorMessage;
+	std::uint16_t m_errorCode;
+	std::string m_errorMessage;
 };
 
 SM_MANAGED_CODE

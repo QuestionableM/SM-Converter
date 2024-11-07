@@ -32,7 +32,7 @@ public:
 		std::ifstream v_tileFile(path, std::ios::binary);
 		if (!v_tileFile.is_open())
 		{
-			error.setError(1, L"TileReader::ReadTile -> Couldn't open the file");
+			error.setError(1, "TileReader::ReadTile -> Couldn't open the file");
 			return false;
 		}
 
@@ -44,27 +44,27 @@ public:
 
 		if (!v_tileFile.read(reinterpret_cast<char*>(&v_tileHeader), sizeof(v_tileHeader)).good())
 		{
-			error.setError(1, L"TileReader::ReadTile -> Couldn't read the file");
+			error.setError(1, "TileReader::ReadTile -> Couldn't read the file");
 			return false;
 		}
 
 		if (v_tileHeader.secret != 0x454C4954) //TILE - magic keyword
 		{
 			DebugOutL("Invalid File");
-			error.setError(1, L"TileHeader::ReadTile -> Invalid File");
+			error.setError(1, "TileHeader::ReadTile -> Invalid File");
 			return false;
 		}
 
 		if (v_tileHeader.info.version > 1000000)
 		{
 			DebugErrorL("Invalid Version");
-			error.setError(1, L"TileHeader::ReadTile -> Invalid Tile Version");
+			error.setError(1, "TileHeader::ReadTile -> Invalid Tile Version");
 			return false;
 		}
 
 		if (v_tileHeader.info.cell_header_offset != sizeof(v_tileHeader))
 		{
-			error.setError(1, L"TileHeader::ReadTile -> Index doesn't match the cell header offset!");
+			error.setError(1, "TileHeader::ReadTile -> Index doesn't match the cell header offset!");
 			return false;
 		}
 
@@ -87,7 +87,7 @@ public:
 		const CellHeader& header,
 		MemoryWrapper& reader,
 		TilePart* pPart,
-		int version,
+		std::uint32_t version,
 		ConvertError& error)
 	{
 		AssetListReader::Read<t_mod_counter>      (header, reader, pPart, version, error);
@@ -116,16 +116,16 @@ public:
 		DebugOutL("CellHeaderOffset: ", v_header.m_data.cell_header_offset);
 		DebugOutL("CellHeadersSize: ", v_header.m_data.cell_header_size, "\n");
 
-		const int v_tileVersion = v_header.m_data.version;
-		if (v_tileVersion < 0 || v_tileVersion > 13)
+		const std::uint32_t v_tileVersion = v_header.m_data.version;
+		if (v_tileVersion > 13)
 		{
-			error.setError(1, L"Unsupported Tile Version: " + std::to_wstring(v_tileVersion));
+			error.setError(1, "Unsupported Tile Version: ", v_tileVersion);
 			return false;
 		}
 
 		if (v_header.m_data.width != v_header.m_data.height)
 		{
-			error.setError(1, L"Weird tile dimensions: " + std::to_wstring(v_header.m_data.width) + L", " + std::to_wstring(v_header.m_data.height));
+			error.setError(1, "Weird tile dimensions: ", v_header.m_data.width, ',', v_header.m_data.height);
 			return false;
 		}
 

@@ -15,14 +15,14 @@ void TileConv::WriteToFileInternal(const Tile& tile, const std::wstring& tile_na
 	const std::wstring v_tileOutDir(DatabaseConfig::TileOutputFolder);
 	if (!File::CreateDirectorySafe(v_tileOutDir))
 	{
-		error.setError(1, L"Couldn't create the main output directory");
+		error.setError(1, "Couldn't create the main output directory");
 		return;
 	}
 
 	const std::wstring v_tileDirPath = v_tileOutDir + L"/" + tile_name;
 	if (!File::CreateDirectorySafe(v_tileDirPath))
 	{
-		error.setError(1, L"Coudln't create the tile output directory");
+		error.setError(1, "Coudln't create the tile output directory");
 		return;
 	}
 
@@ -37,7 +37,7 @@ void TileConv::ConvertToModel(
 {
 	if (!File::IsRegularFile(tile_path))
 	{
-		error.setError(1, L"The specified path leads to a directory");
+		error.setError(1, "The specified path leads to a directory");
 		return;
 	}
 

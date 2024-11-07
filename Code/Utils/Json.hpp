@@ -18,27 +18,13 @@ class JsonReader
 {
 public:
 	static nlohmann::json ParseJsonString(const std::string& json_str);
-	static nlohmann::json LoadParseJson(const std::wstring& path);
+	static nlohmann::json LoadParseJson(const std::wstring_view& path);
 
-	static void WriteJson(const std::wstring& path, const nlohmann::json& pJson);
+	static void WriteJson(const std::wstring_view& path, const nlohmann::json& pJson);
 	static std::string WriteJsonString(const nlohmann::json& v_json);
 
-	inline static const nlohmann::json& Get(const nlohmann::json& obj, const std::string& key)
-	{
-		const auto v_iter = obj.find(key);
-		if (v_iter != obj.end())
-			return v_iter.value();
-
-		return m_emptyObject;
-	}
-
-	inline static const nlohmann::json& Get(const nlohmann::json& obj, std::size_t key)
-	{
-		if (key < obj.size())
-			return obj.at(key);
-
-		return m_emptyObject;
-	}
+	static const nlohmann::json& Get(const nlohmann::json& obj, const std::string& key);
+	static const nlohmann::json& Get(const nlohmann::json& obj, std::size_t key);
 
 	//Simdjson functions
 

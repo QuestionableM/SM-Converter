@@ -20,7 +20,12 @@ class DecalListReader
 
 public:
 	template<bool t_mod_counter>
-	inline static void Read(const CellHeader& header, MemoryWrapper& reader, TilePart* pPart, int version, ConvertError& error)
+	inline static void Read(
+		const CellHeader& header,
+		MemoryWrapper& reader,
+		TilePart* pPart,
+		std::uint32_t version,
+		ConvertError& error)
 	{
 		if (error) return;
 
@@ -47,7 +52,7 @@ public:
 		if (debugSize != header.decalCompressedSize)
 		{
 			DebugErrorL("Debug Size: ", debugSize, ", header->decalCompressedSize: ", header.decalCompressedSize);
-			error.setError(1, L"DecalListReader::Read -> debugSize != header->decalCompressedSize\nTile Version: " + std::to_wstring(version));
+			error.setError(1, "DecalListReader::Read -> debugSize != header->decalCompressedSize\nTile Version: ", version);
 			return;
 		}
 
@@ -55,13 +60,17 @@ public:
 		if (debugSize != header.decalSize)
 		{
 			DebugErrorL("Debug Size: ", debugSize, ", header->decalSize: ", header.decalSize);
-			error.setError(1, L"DecalListReader::Read -> debugSize != header->decalSize\nTile Version: " + std::to_wstring(version));
+			error.setError(1, "DecalListReader::Read -> debugSize != header->decalSize\nTile Version: ", version);
 			return;
 		}
 	}
 
 	template<bool t_mod_counter>
-	inline static int Read(const std::vector<Byte>& bytes, int decal_count, int version, TilePart* pPart)
+	inline static int Read(
+		const std::vector<Byte>& bytes,
+		int decal_count,
+		std::uint32_t version,
+		TilePart* pPart)
 	{
 		SMEntityTransform v_transform;
 		MemoryWrapper memory(bytes);

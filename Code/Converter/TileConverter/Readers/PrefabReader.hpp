@@ -20,7 +20,12 @@ class PrefabReader
 
 public:
 	template<bool t_mod_counter>
-	static void Read(const CellHeader& header, MemoryWrapper& reader, TilePart* pPart, int version, ConvertError& error)
+	static void Read(
+		const CellHeader& header,
+		MemoryWrapper& reader,
+		TilePart* pPart,
+		std::uint32_t version,
+		ConvertError& error)
 	{
 		if (error) return;
 
@@ -47,7 +52,7 @@ public:
 		if (debugSize != header.prefabCompressedSize)
 		{
 			DebugErrorL("DebugSize: ", debugSize, ", header->prefabCompressedSize: ", header.prefabCompressedSize);
-			error.setError(1, L"PrefabReader::Read -> debugSize != header->prefabCompressedSize\nTile Version: " + std::to_wstring(version));
+			error.setError(1, "PrefabReader::Read -> debugSize != header->prefabCompressedSize\nTile Version: ", version);
 			return;
 		}
 
@@ -57,13 +62,18 @@ public:
 			if (error) return;
 
 			DebugErrorL("DebugSize: ", debugSize, ", header->prefabSize: ", header.prefabSize);
-			error.setError(1, L"PrefabReader::Read -> debugSize != header->prefabSize\nTile Version: " + std::to_wstring(version));
+			error.setError(1, "PrefabReader::Read -> debugSize != header->prefabSize\nTile Version: ", version);
 			return;
 		}
 	}
 
 	template<bool t_mod_counter>
-	static int Read(const std::vector<Byte>& bytes, int prefabCount, TilePart* pPart, int version, ConvertError& error)
+	static int Read(
+		const std::vector<Byte>& bytes,
+		int prefabCount,
+		TilePart* pPart,
+		std::uint32_t version,
+		ConvertError& error)
 	{
 		SMEntityTransform v_transform;
 		MemoryWrapper memory(bytes);

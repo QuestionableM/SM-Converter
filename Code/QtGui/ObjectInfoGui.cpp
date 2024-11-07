@@ -181,8 +181,8 @@ static bool readWorldData(
 	return true;
 }
 
-ObjectInfoGui::ObjectInfoGui(WorldInstance* world, QWidget* parent)
-	: ObjectInfoGui("World Info", world->preview_image, parent)
+ObjectInfoGui::ObjectInfoGui(WorldInstance* world, QWidget* parent) :
+	ObjectInfoGui("World Info", world->preview_image, parent)
 {
 	ConvertError v_error;
 	std::size_t v_world_width;
@@ -194,10 +194,10 @@ ObjectInfoGui::ObjectInfoGui(WorldInstance* world, QWidget* parent)
 
 	if (v_error)
 	{
-		const QString v_error_msg = QString("Error: %1")
-			.arg(QString::fromStdWString(v_error.getErrorMsg()));
+		const QString v_formattedError = QString("Error: %1")
+			.arg(QString::fromStdString(v_error.getErrorMsg()));
 
-		QtUtil::errorWithSound(this, "World Read Error", v_error_msg);
+		QtUtil::errorWithSound(this, "World Read Error", v_formattedError);
 		return;
 	}
 
@@ -234,7 +234,7 @@ ObjectInfoGui::ObjectInfoGui(TileInstance* tile, QWidget* parent)
 	if (v_error)
 	{
 		const QString v_error_str = QString("Error: %1")
-			.arg(QString::fromStdWString(v_error.getErrorMsg()));
+			.arg(QString::fromStdString(v_error.getErrorMsg()));
 
 		QtUtil::errorWithSound(this, "Tile Read Error", v_error_str);
 		return;

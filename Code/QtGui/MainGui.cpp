@@ -327,26 +327,30 @@ void MainGui::converterFinishedCallback()
 	{
 		m_dbProgressStatus->setText("Success!");
 
-		constexpr const static std::wstring_view v_resultMessages[] =
+		constexpr const static std::string_view v_resultMessages[] =
 		{
-			L"Blueprint has been successfully converted!",
-			L"Tile has been successfully converted!",
-			L"World has been successfully converted!",
-			L"Character has been successfully converted!"
+			"Blueprint has been successfully converted!",
+			"Tile has been successfully converted!",
+			"World has been successfully converted!",
+			"Character has been successfully converted!"
 		};
 
-		const std::wstring_view& v_msg = v_resultMessages[m_converterTypeBox->currentIndex()];
-		QtUtil::infoWithSound(this,
+		const std::string_view& v_msg = v_resultMessages[m_converterTypeBox->currentIndex()];
+		QtUtil::infoWithSound(
+			this,
 			"Convert Success",
-			QString::fromWCharArray(v_msg.data(), v_msg.size()));
+			QString::fromUtf8(v_msg.data(), v_msg.size())
+		);
 	}
 	else
 	{
 		m_dbProgressStatus->setText("Fail!");
 
-		QtUtil::errorWithSound(this,
+		QtUtil::errorWithSound(
+			this,
 			"Convert Error",
-			QString::fromStdWString(v_returnCode.getErrorMsg()));
+			QString::fromStdString(v_returnCode.getErrorMsg())
+		);
 	}
 
 	v_returnCode.clear();

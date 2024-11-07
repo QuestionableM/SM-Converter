@@ -50,7 +50,7 @@ public:
 		if (debugSize != header.clutterCompressedSize)
 		{
 			DebugErrorL("DebugSize: ", debugSize, ", header->clutterCompressedSize: ", header.clutterCompressedSize);
-			error.setError(1, L"ClutterReader::Read -> debugSize != header->clutterCompressedSize");
+			error.setError(1, "ClutterReader::Read -> debugSize != header->clutterCompressedSize");
 			return false;
 		}
 

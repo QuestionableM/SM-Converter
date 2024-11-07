@@ -24,7 +24,12 @@ class HarvestableListReader
 
 public:
 	template<bool t_mod_counter>
-	static void Read(const CellHeader& header, MemoryWrapper& reader, TilePart* pPart, int version, ConvertError& error)
+	static void Read(
+		const CellHeader& header,
+		MemoryWrapper& reader,
+		TilePart* pPart,
+		std::uint32_t version,
+		ConvertError& error)
 	{
 		if (error) return;
 
@@ -58,7 +63,7 @@ public:
 			if (debugSize != v_hvs_list_compressed_sz)
 			{
 				DebugErrorL("debugSize: ", debugSize, ", v_hvs_list_compressed_sz: ", v_hvs_list_compressed_sz);
-				error.setError(1, L"HarvestableListReader::Read -> debugSize != v_hvs_list_compressed_sz\nTile Version: " + std::to_wstring(version));
+				error.setError(1, "HarvestableListReader::Read -> debugSize != v_hvs_list_compressed_sz\nTile Version: ", version);
 				return;
 			}
 
@@ -66,14 +71,19 @@ public:
 			if (debugSize != v_hvs_list_sz)
 			{
 				DebugErrorL("debugSize: ", debugSize, ", v_hvs_list_sz: ", v_hvs_list_sz);
-				error.setError(1, L"HarvestableListReader::Read -> debugSize != v_hvs_list_sz\nTile Version: " + std::to_wstring(version));
+				error.setError(1, "HarvestableListReader::Read -> debugSize != v_hvs_list_sz\nTile Version: ", version);
 				return;
 			}
 		}
 	}
 
 	template<bool t_mod_counter>
-	static int Read(const std::vector<Byte>& bytes, int hvs_index, int len, int version, TilePart* pPart)
+	static int Read(
+		const std::vector<Byte>& bytes,
+		int hvs_index,
+		int len,
+		std::uint32_t version,
+		TilePart* pPart)
 	{
 		SMEntityTransform v_transform;
 		MemoryWrapper memory(bytes);

@@ -48,8 +48,8 @@ MemoryMapped::MemoryMapped()
 
 
 /// open file, mappedBytes = 0 maps the whole file
-MemoryMapped::MemoryMapped(const std::wstring& filename, size_t mappedBytes, CacheHint hint)
-: _filename   (filename),
+MemoryMapped::MemoryMapped(const std::wstring_view& filename, size_t mappedBytes, CacheHint hint) :
+  _filename   (filename),
   _filesize   (0),
   _hint       (hint),
   _mappedBytes(mappedBytes),
@@ -59,7 +59,7 @@ MemoryMapped::MemoryMapped(const std::wstring& filename, size_t mappedBytes, Cac
 #endif
   _mappedView (NULL)
 {
-  open(filename, mappedBytes, hint);
+  open(_filename, mappedBytes, hint);
 }
 
 
@@ -71,11 +71,11 @@ MemoryMapped::~MemoryMapped()
 
 
 /// open file
-bool MemoryMapped::open(const std::wstring& filename, size_t mappedBytes, CacheHint hint)
+bool MemoryMapped::open(const std::wstring_view& filename, size_t mappedBytes, CacheHint hint)
 {
   // already open ?
   if (isValid())
-    return false;
+	return false;
 
   _file       = 0;
   _filesize   = 0;
@@ -98,20 +98,20 @@ bool MemoryMapped::open(const std::wstring& filename, size_t mappedBytes, CacheH
   }
 
   // open file
-  _file = ::CreateFileW(filename.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, winHint, NULL);
+  _file = ::CreateFileW(filename.data(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, winHint, NULL);
   if (!_file)
-    return false;
+	return false;
 
   // file size
   LARGE_INTEGER result;
   if (!GetFileSizeEx(_file, &result))
-    return false;
+	return false;
   _filesize = static_cast<uint64_t>(result.QuadPart);
 
   // convert to mapped mode
   _mappedFile = ::CreateFileMapping(_file, NULL, PAGE_READONLY, 0, 0, NULL);
   if (!_mappedFile)
-    return false;
+	return false;
 
 #else
 
@@ -121,14 +121,14 @@ bool MemoryMapped::open(const std::wstring& filename, size_t mappedBytes, CacheH
   _file = ::open(filename.c_str(), O_RDONLY | O_LARGEFILE);
   if (_file == -1)
   {
-    _file = 0;
-    return false;
+	_file = 0;
+	return false;
   }
 
   // file size
   struct stat64 statInfo;
   if (fstat64(_file, &statInfo) < 0)
-    return false;
+	return false;
 
   _filesize = statInfo.st_size;
 #endif
@@ -137,7 +137,7 @@ bool MemoryMapped::open(const std::wstring& filename, size_t mappedBytes, CacheH
   remap(0, mappedBytes);
 
   if (!_mappedView)
-    return false;
+	return false;
 
   // everything's fine
   return true;
@@ -151,18 +151,18 @@ void MemoryMapped::close()
   if (_mappedView)
   {
 #ifdef _MSC_VER
-    ::UnmapViewOfFile(_mappedView);
+	::UnmapViewOfFile(_mappedView);
 #else
-    ::munmap(_mappedView, _mappedSize);
+	::munmap(_mappedView, _mappedSize);
 #endif
-    _mappedView = NULL;
+	_mappedView = NULL;
   }
 
 #ifdef _MSC_VER
   if (_mappedFile)
   {
-    ::CloseHandle(_mappedFile);
-    _mappedFile = NULL;
+	::CloseHandle(_mappedFile);
+	_mappedFile = NULL;
   }
 #endif
 
@@ -170,11 +170,11 @@ void MemoryMapped::close()
   if (_file)
   {
 #ifdef _MSC_VER
-    ::CloseHandle(_file);
+	::CloseHandle(_file);
 #else
-    ::close(_file);
+	::close(_file);
 #endif
-    _file = 0;
+	_file = 0;
   }
 
   _filesize = 0;
@@ -193,9 +193,9 @@ unsigned char MemoryMapped::at(size_t offset) const
 {
   // checks
   if (!_mappedView)
-    throw std::invalid_argument("No view mapped");
+	throw std::invalid_argument("No view mapped");
   if (offset >= _filesize)
-    throw std::out_of_range("View is not large enough");
+	throw std::out_of_range("View is not large enough");
 
   return operator[](offset);
 }
@@ -233,27 +233,27 @@ size_t MemoryMapped::mappedSize() const
 bool MemoryMapped::remap(uint64_t offset, size_t mappedBytes)
 {
   if (!_file)
-    return false;
+	return false;
 
   if (mappedBytes == WholeFile)
-    mappedBytes = _filesize;
+	mappedBytes = _filesize;
 
   // close old mapping
   if (_mappedView)
   {
 #ifdef _MSC_VER
-    ::UnmapViewOfFile(_mappedView);
+	::UnmapViewOfFile(_mappedView);
 #else
-    ::munmap(_mappedView, _mappedBytes);
+	::munmap(_mappedView, _mappedBytes);
 #endif
-    _mappedView = NULL;
+	_mappedView = NULL;
   }
 
   // don't go further than end of file
   if (offset > _filesize)
-    return false;
+	return false;
   if (offset + mappedBytes > _filesize)
-    mappedBytes = size_t(_filesize - offset);
+	mappedBytes = size_t(_filesize - offset);
 
 #ifdef _MSC_VER
   // Windows
@@ -267,9 +267,9 @@ bool MemoryMapped::remap(uint64_t offset, size_t mappedBytes)
 
   if (_mappedView == NULL)
   {
-    _mappedBytes = 0;
-    _mappedView  = NULL;
-    return false;
+	_mappedBytes = 0;
+	_mappedView  = NULL;
+	return false;
   }
 
   return true;
@@ -281,9 +281,9 @@ bool MemoryMapped::remap(uint64_t offset, size_t mappedBytes)
   _mappedView = ::mmap64(NULL, mappedBytes, PROT_READ, MAP_SHARED, _file, offset);
   if (_mappedView == MAP_FAILED)
   {
-    _mappedBytes = 0;
-    _mappedView  = NULL;
-    return false;
+	_mappedBytes = 0;
+	_mappedView  = NULL;
+	return false;
   }
 
   _mappedBytes = mappedBytes;

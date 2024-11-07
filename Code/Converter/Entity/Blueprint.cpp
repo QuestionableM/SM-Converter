@@ -134,7 +134,7 @@ SMBlueprint* SMBlueprint::FromFileWithStatus(
 	simdjson::dom::document v_bp_doc;
 	if (!JsonReader::LoadParseSimdjsonC(path, v_bp_doc, simdjson::dom::element_type::OBJECT))
 	{
-		error.setError(1, L"Couldn't read the specified blueprint file. Possible reason: Invalid file, Parse error, Invalid path");
+		error.setError(1, "Couldn't read the specified blueprint file. Possible reason: Invalid file, Parse error, Invalid path");
 		return nullptr;
 	}
 
@@ -145,7 +145,7 @@ SMBlueprint* SMBlueprint::FromFileWithStatus(
 
 	if (!has_bodies && !has_joints)
 	{
-		error.setError(1, L"The specified blueprint has no objects to convert");
+		error.setError(1, "The specified blueprint has no objects to convert");
 		return nullptr;
 	}
 
