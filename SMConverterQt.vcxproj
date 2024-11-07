@@ -87,7 +87,8 @@
     <PostBuildEvent>
       <Command>xcopy /y /d "$(SolutionDir)Resources" "$(SolutionDir)Build\$(ProjectName)-$(Configuration)\Resources" /I
 xcopy /y /d "$(SolutionDir)Dependencies\FreeImage\DLL\x$(PlatformArchitecture)\FreeImage.dll" "$(SolutionDir)Build\$(ProjectName)-$(Configuration)"
-xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture).dll" "$(SolutionDir)Build\$(ProjectName)-$(Configuration)"</Command>
+xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture).dll" "$(SolutionDir)Build\$(ProjectName)-$(Configuration)"
+xcopy /y /d "$(SolutionDir)Media\icon.ico" "$(SolutionDir)Build\$(ProjectName)-$(Configuration)"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>"$(SolutionDir)Dependencies\Version Counter\VersionCounter.exe"</Command>
@@ -107,7 +108,8 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <PostBuildEvent>
       <Command>xcopy /y /d "$(SolutionDir)Resources" "$(SolutionDir)Build\$(ProjectName)-$(Configuration)\Resources" /I
 xcopy /y /d "$(SolutionDir)Dependencies\FreeImage\DLL\x$(PlatformArchitecture)\FreeImage.dll" "$(SolutionDir)Build\$(ProjectName)-$(Configuration)"
-xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture).dll" "$(SolutionDir)Build\$(ProjectName)-$(Configuration)"</Command>
+xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture).dll" "$(SolutionDir)Build\$(ProjectName)-$(Configuration)"
+xcopy /y /d "$(SolutionDir)Media\icon.ico" "$(SolutionDir)Build\$(ProjectName)-$(Configuration)"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>"$(SolutionDir)Dependencies\Version Counter\VersionCounter.exe"</Command>

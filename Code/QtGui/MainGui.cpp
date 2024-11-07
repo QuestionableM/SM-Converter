@@ -28,6 +28,8 @@
 #include "Utils/File.hpp"
 #include "QtUtil.hpp"
 
+#include "../resource.h"
+
 #include <QDesktopServices>
 #include <QApplication>
 #include <QFileDialog>
@@ -57,6 +59,8 @@ MainGui::MainGui(QWidget* parent) :
 	m_converterReturnCode()
 {
 	g_mainGuiPtr = this;
+
+	this->setWindowIcon(QIcon("icon.ico"));
 
 	this->initializeUI();
 	this->connectEvents();
