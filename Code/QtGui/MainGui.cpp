@@ -674,40 +674,79 @@ bool MainGui::convertCharacter(const std::wstring& filename, const UserCharacter
 	return false;
 }
 
-void MainGui::convertSelectedIndex()
+bool MainGui::convertSelectedIndex()
 {
-	bool v_converter_ready = false;
+	switch (m_converterTypeBox->currentIndex())
+	{
+	case ConvType_BlueprintConverter:
+	{
+		BlueprintInstance* v_pBlueprint = this->getSelectedObject<BlueprintFolderReader>();
+		return this->convertBlueprint(v_pBlueprint->name, v_pBlueprint->path);
+	}
+	case ConvType_TileConverter:
+	{
+		TileInstance* v_pTile = this->getSelectedObject<TileFolderReader>();
+		return this->convertTile(v_pTile->name, v_pTile->path);
+	}
+	case ConvType_WorldConverter:
+	{
+		WorldInstance* v_pWorld = this->getSelectedObject<WorldFolderReader>();
+		return this->convertWorld(v_pWorld->name, v_pWorld->path);
+	}
+	case ConvType_CharacterConverter:
+	{
+		UserCharacterInstance* v_pChar = this->getSelectedObject<UserCharacterReader>();
+		return this->convertCharacter(v_pChar->name, v_pChar->character_data);
+	}
+	default:
+		return false;
+	}
+}
+
+bool MainGui::convertPath()
+{
+	namespace fs = std::filesystem;
+
+	const std::wstring v_pathWstr = m_objectPath->text().toStdWString();
+	if (!File::Exists(v_pathWstr))
+	{
+		QtUtil::warningWithSound(this, "Invalid Path", "File doesn't exist!");
+		return false;
+	}
+
+	if (!File::IsRegularFile(v_pathWstr))
+	{
+		QtUtil::warningWithSound(this, "Invalid Path", "The path must lead to a file");
+		return false;
+	}
+
+	const fs::path v_curPath = v_pathWstr;
 
 	switch (m_converterTypeBox->currentIndex())
 	{
 	case ConvType_BlueprintConverter:
-		{
-			BlueprintInstance* v_cur_bp = this->getSelectedObject<BlueprintFolderReader>();
-			v_converter_ready = this->convertBlueprint(v_cur_bp->name, v_cur_bp->path);
-			break;
-		}
+		return this->convertBlueprint(v_curPath.has_stem() ? v_curPath.stem().wstring() : L"UnknownBlueprint", v_pathWstr);
 	case ConvType_TileConverter:
-		{
-			TileInstance* v_cur_tile = this->getSelectedObject<TileFolderReader>();
-			v_converter_ready = this->convertTile(v_cur_tile->name, v_cur_tile->path);
-			break;
-		}
+		return this->convertTile(v_curPath.has_stem() ? v_curPath.stem().wstring() : L"UnknownTile", v_pathWstr);
 	case ConvType_WorldConverter:
-		{
-			WorldInstance* v_cur_world = this->getSelectedObject<WorldFolderReader>();
-			v_converter_ready = this->convertWorld(v_cur_world->name, v_cur_world->path);
-			break;
-		}
-	case ConvType_CharacterConverter:
-		{
-			UserCharacterInstance* v_cur_char = this->getSelectedObject<UserCharacterReader>();
-			v_converter_ready = this->convertCharacter(v_cur_char->name, v_cur_char->character_data);
-			break;
-		}
+		return this->convertWorld(v_curPath.has_stem() ? v_curPath.stem().wstring() : L"UnknownWorld", v_pathWstr);
+	default:
+		return false;
 	}
+}
 
-	//The same code for every single converter
-	if (v_converter_ready)
+void MainGui::convert()
+{
+	const bool v_hasSelection = m_objectList->hasSelection();
+	if (m_objectPath->text().length() == 0 && !v_hasSelection)
+		return;
+
+	const bool v_converterReady = v_hasSelection
+		? this->convertSelectedIndex()
+		: this->convertPath();
+
+	// The same code for every single converter
+	if (v_converterReady)
 	{
 		this->updateUIState(this->isGameDatabaseLoaded(), this->isUserDatabaseLoaded(), false);
 		m_dbProgressStatus->m_timer->start(50);
@@ -715,63 +754,6 @@ void MainGui::convertSelectedIndex()
 		QObject::connect(m_converterThread, &QThread::finished, this, &MainGui::converterFinishedCallback);
 		m_converterThread->start();
 	}
-}
-
-void MainGui::convertPath()
-{
-	namespace fs = std::filesystem;
-
-	const std::wstring v_path_wstr = m_objectPath->text().toStdWString();
-	if (!File::Exists(v_path_wstr))
-	{
-		QtUtil::warningWithSound(this, "Invalid Path", "File doesn't exist!");
-		return;
-	}
-
-	if (!File::IsRegularFile(v_path_wstr))
-	{
-		QtUtil::warningWithSound(this, "Invalid Path", "The path must lead to a file");
-		return;
-	}
-
-	const fs::path v_cur_path = v_path_wstr;
-
-	switch (m_converterTypeBox->currentIndex())
-	{
-	case ConvType_BlueprintConverter:
-	{
-		const std::wstring v_bp_name = (v_cur_path.has_stem() ? v_cur_path.stem().wstring() : L"UnknownBlueprint");
-		this->convertBlueprint(v_bp_name, v_path_wstr);
-		break;
-	}
-	case ConvType_TileConverter:
-	{
-		const std::wstring v_tile_name = (v_cur_path.has_stem() ? v_cur_path.stem().wstring() : L"UnknownTile");
-		this->convertTile(v_tile_name, v_path_wstr);
-		break;
-	}
-	case ConvType_WorldConverter:
-	{
-		const std::wstring v_world_name = (v_cur_path.has_stem() ? v_cur_path.stem().wstring() : L"UnknownWorld");
-		this->convertWorld(v_world_name, v_path_wstr);
-		break;
-	}
-	case ConvType_CharacterConverter:
-		//TODO: Implement that
-		break;
-	}
-}
-
-void MainGui::convert()
-{
-	const bool v_has_selection = m_objectList->hasSelection();
-	if (m_objectPath->text().length() == 0 && !v_has_selection)
-		return;
-
-	if (v_has_selection)
-		this->convertSelectedIndex();
-	else
-		this->convertPath();
 }
 
 void MainGui::updateUIState(bool db_loaded, bool objs_loaded, bool obj_converted)

@@ -21,6 +21,7 @@ private:
 	static bool GetValidAssetDatabaseFolder(const std::wstring& mod_path, std::wstring& r_asset_db);
 	static bool GetAssetSetDatabaseFile(const std::wstring& asset_db_dir, std::wstring& r_asset_set);
 
+public:
 	inline ModType Type() const noexcept override { return ModType::TerrainAssets; }
 	void LoadObjectDatabase() override;
 };

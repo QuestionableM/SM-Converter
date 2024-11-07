@@ -16,8 +16,9 @@ void BlueprintConverterThreadData::applySettings() const
 BlueprintConverterSettingsGui::BlueprintConverterSettingsGui(
 	QWidget* parent,
 	const std::wstring& filename,
-	const std::wstring& path)
-	: ConverterSettingsGuiBase(parent, filename),
+	const std::wstring& path
+) :
+	ConverterSettingsGuiBase(parent, filename),
 	m_cbSeparationType(this),
 	m_modelSettings(this),
 	m_cbCustomGameContent(this, path)

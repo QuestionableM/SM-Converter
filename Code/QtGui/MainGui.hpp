@@ -96,8 +96,8 @@ private:
 	bool convertTile(const std::wstring& filename, const std::wstring& path);
 	bool convertWorld(const std::wstring& filename, const std::wstring& path);
 	bool convertCharacter(const std::wstring& filename, const UserCharacterData& v_data);
-	void convertSelectedIndex();
-	void convertPath();
+	bool convertSelectedIndex();
+	bool convertPath();
 	void convert();
 
 	//Object list functions
