@@ -27,7 +27,7 @@ void CharacterConverter::ConvertToModel(const UserCharacterData& v_data, const s
 	for (std::size_t a = 0; a < (sizeof(v_category_names) / sizeof(const char*)); a++)
 	{
 		const SMUuid& v_cur_uuid = v_data.garments[a];
-		if (v_cur_uuid.IsNil()) continue;
+		if (v_cur_uuid.isNil()) continue;
 
 		GarmentData* v_garment = SMMod::GetGarment(v_category_names[a], v_data.garments[a]);
 		if (!v_garment) continue;

@@ -121,7 +121,7 @@ public:
 				index += 0x10;
 			}
 
-			std::unordered_map<std::string, SMColor> color_map;
+			std::unordered_map<std::string, SMColor, Hashing::StringHasher, std::equal_to<>> color_map;
 
 			int bVar4 = (int)memory.Object<Byte>(index++) & 0xff;
 			if (bVar4 != 0)

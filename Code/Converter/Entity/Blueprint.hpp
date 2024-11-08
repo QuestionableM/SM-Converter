@@ -11,18 +11,17 @@
 
 SM_UNMANAGED_CODE
 
-class SMBlueprint : public SMEntity
+class SMBlueprint final : public SMEntity
 {
 	friend class BlueprintConv;
 
-	inline SMBlueprint(const glm::vec3& pos, const glm::quat& rot)
-		: SMEntity(pos, rot, glm::vec3(0.25f)), m_object_index(0), m_body_index(0) {}
+	SMBlueprint(const glm::vec3& pos, const glm::quat& rot);
 
 public:
 	using AddObjectFunction = void (*)(SMBlueprint*, SMEntity*);
 
 	//For object counter
-	static void LoadAndCountAutomatic(const std::string& str);
+	static void LoadAndCountAutomatic(const std::string_view& str);
 	static void CountFromFile(const std::wstring& path);
 	static void CountFromJsonString(const std::string_view& str);
 

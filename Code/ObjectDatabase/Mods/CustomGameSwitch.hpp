@@ -16,13 +16,13 @@ public:
 	inline SMModCustomGameSwitch()
 	{
 		if constexpr (!t_modify_blocks_only) {
-			m_Assets = SMModObjectStorage<AssetData>::StaticStorage;
+			m_Assets       = SMModObjectStorage<AssetData>::StaticStorage;
 			m_Harvestables = SMModObjectStorage<HarvestableData>::StaticStorage;
-			m_Kinematics = SMModObjectStorage<KinematicData>::StaticStorage;
+			m_Kinematics   = SMModObjectStorage<KinematicData>::StaticStorage;
 		}
 
 		m_Blocks = SMModObjectStorage<BlockData>::StaticStorage;
-		m_Parts = SMModObjectStorage<PartData>::StaticStorage;
+		m_Parts  = SMModObjectStorage<PartData>::StaticStorage;
 	}
 
 	inline ~SMModCustomGameSwitch()
@@ -30,13 +30,13 @@ public:
 		DebugOutL(0b1011_fg, "Setting the normal content back...");
 
 		if constexpr (!t_modify_blocks_only) {
-			SMModObjectStorage<AssetData>::StaticStorage = m_Assets;
-			SMModObjectStorage<HarvestableData>::StaticStorage = m_Harvestables;
-			SMModObjectStorage<KinematicData>::StaticStorage = m_Kinematics;
+			SMModObjectStorage<AssetData      >::StaticStorage = std::move(m_Assets);
+			SMModObjectStorage<HarvestableData>::StaticStorage = std::move(m_Harvestables);
+			SMModObjectStorage<KinematicData  >::StaticStorage = std::move(m_Kinematics);
 		}
 
-		SMModObjectStorage<BlockData>::StaticStorage = m_Blocks;
-		SMModObjectStorage<PartData>::StaticStorage = m_Parts;
+		SMModObjectStorage<BlockData>::StaticStorage = std::move(m_Blocks);
+		SMModObjectStorage<PartData >::StaticStorage = std::move(m_Parts);
 
 		if constexpr (t_sets_content_key) {
 			KeywordReplacer::ClearModKeys();
@@ -113,11 +113,11 @@ public:
 	}
 
 private:
-	std::unordered_map<SMUuid, BlockData*> m_Blocks;
-	std::unordered_map<SMUuid, PartData*> m_Parts;
-	std::unordered_map<SMUuid, AssetData*> m_Assets;
-	std::unordered_map<SMUuid, HarvestableData*> m_Harvestables;
-	std::unordered_map<SMUuid, KinematicData*> m_Kinematics;
+	std::unordered_map<SMUuid, BlockData*      , UuidHasher, std::equal_to<>> m_Blocks;
+	std::unordered_map<SMUuid, PartData*       , UuidHasher, std::equal_to<>> m_Parts;
+	std::unordered_map<SMUuid, AssetData*      , UuidHasher, std::equal_to<>> m_Assets;
+	std::unordered_map<SMUuid, HarvestableData*, UuidHasher, std::equal_to<>> m_Harvestables;
+	std::unordered_map<SMUuid, KinematicData*  , UuidHasher, std::equal_to<>> m_Kinematics;
 };
 
 SM_MANAGED_CODE

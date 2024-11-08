@@ -386,9 +386,9 @@ void SMWorld::WriteMtlFile(const std::wstring& path) const
 
 		if (TileConverterSettings::ExportGroundTextures)
 		{
-			v_tileGroundTextureData.m_textures.dif = L"./GroundTexture_Dif.jpg";
-			v_tileGroundTextureData.m_textures.asg = L"./GroundTexture_Asg.jpg";
-			v_tileGroundTextureData.m_textures.nor = L"./GroundTexture_Nor.jpg";
+			v_tileGroundTextureData.m_textures.m_dif = L"./GroundTexture_Dif.jpg";
+			v_tileGroundTextureData.m_textures.m_asg = L"./GroundTexture_Asg.jpg";
+			v_tileGroundTextureData.m_textures.m_nor = L"./GroundTexture_Nor.jpg";
 		}
 
 		v_texData["TileGroundTerrain"] = std::move(v_tileGroundTextureData);

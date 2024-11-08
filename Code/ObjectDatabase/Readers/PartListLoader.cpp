@@ -99,6 +99,8 @@ void PartListLoader::Load(const simdjson::dom::element& fParts, SMMod* mod, bool
 	auto& v_cur_db = mod->m_Parts.GetStorage(add_to_global_db);
 	auto v_adder_func = mod->m_Parts.GetAdderFunction(add_to_global_db);
 
+	std::wstring v_meshPath;
+
 	for (const auto v_prt : v_prt_array)
 	{
 		if (!v_prt.is_object()) continue;
@@ -108,19 +110,18 @@ void PartListLoader::Load(const simdjson::dom::element& fParts, SMMod* mod, bool
 
 		if (!v_uuid.is_string()) continue;
 
-		const SMUuid v_prt_uuid = v_uuid.get_string().value_unsafe();
-		if (mod->m_Parts.ObjectExists(v_cur_db, v_prt_uuid))
+		const SMUuid v_prtUuid = v_uuid.get_string().value_unsafe();
+		if (mod->m_Parts.ObjectExists(v_cur_db, v_prtUuid))
 			continue;
 
-		std::wstring v_mesh_path;
-		SMSubMeshBase* v_tex_data;
-		if (!DefaultLoader::LoadRenderable(v_prt, &v_tex_data, v_mesh_path))
+		SMSubMeshBase* v_pSubMesh;
+		if (!DefaultLoader::LoadRenderable(v_prt, &v_pSubMesh, v_meshPath))
 			continue;
 
 		PartData* v_new_part = new PartData(
-			v_prt_uuid,
-			std::move(v_mesh_path),
-			v_tex_data,
+			v_prtUuid,
+			std::move(v_meshPath),
+			v_pSubMesh,
 			v_color.is_string() ? v_color.get_string().value_unsafe() : "375000",
 			PartListLoader::LoadPartCollision(v_prt),
 			mod

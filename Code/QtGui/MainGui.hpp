@@ -113,7 +113,7 @@ private:
 		for (const typename T::ObjectType v_cur_item : this->getCurrentList<T>())
 			m_objectList->addNewObjectSilent(UserObjectItem(
 				QString::fromStdWString(v_cur_item->name),
-				QString::fromStdString(v_cur_item->uuid.ToString()),
+				QString::fromStdString(v_cur_item->uuid.toString()),
 				QString::fromStdWString(v_cur_item->preview_image)));
 	}
 
@@ -168,7 +168,7 @@ private:
 	{
 		typename T::ObjectType v_curObj = this->getSelectedObject<T>();
 		if (v_curObj)
-			return v_curObj->uuid.ToString();
+			return v_curObj->uuid.toString();
 
 		return "";
 	}

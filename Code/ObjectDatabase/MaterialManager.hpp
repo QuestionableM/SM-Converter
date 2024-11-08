@@ -16,6 +16,8 @@ public:
 	//Returns the end of the material string
 	static char* GetMaterialACStr(const std::string& mat_name, char* v_ptr);
 
+	static std::size_t GetMaterialIdx(const std::string& mat_name);
+	static void AppendMaterialIdx(std::string& outStr, const std::string& mat_name);
 	static std::string GetMaterialA(const std::string& mat_name);
 	static std::wstring GetMaterialW(const std::string& mat_name);
 

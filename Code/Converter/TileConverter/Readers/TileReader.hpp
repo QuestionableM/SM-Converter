@@ -108,7 +108,7 @@ public:
 			return false;
 
 		DebugOutL("TileFileVersion: ", v_header.m_data.version);
-		DebugOutL("TileUuid: ", v_header.m_data.uuid.ToString());
+		DebugOutL("TileUuid: ", v_header.m_data.uuid.toString());
 		DebugOutL("CreatorId: ", v_header.m_data.creator_id);
 		DebugOutL("Size: ", v_header.m_data.width, ", ", v_header.m_data.height);
 		DebugOutL("Type: ", v_header.m_data.type, "\n");

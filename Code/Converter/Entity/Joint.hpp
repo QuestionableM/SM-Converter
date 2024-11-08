@@ -11,18 +11,14 @@ SM_UNMANAGED_CODE
 class SMJoint : public SMEntityWithModelAndUuid
 {
 public:
-	inline SMJoint(
+	SMJoint(
 		const PartData* pParent,
 		const glm::vec3& pos,
 		Model* pModel,
 		SMColor color,
 		unsigned char rotation,
-		std::size_t index)
-		: SMEntityWithModelAndUuid(pParent->m_uuid, pModel, pos),
-		m_parent(pParent),
-		m_index(index),
-		m_color(color),
-		m_xzRotation(rotation) {}
+		std::size_t index
+	);
 
 	SMJoint(const SMJoint&) = delete;
 	SMJoint(SMJoint&) = delete;

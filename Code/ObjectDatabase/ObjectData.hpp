@@ -7,6 +7,7 @@
 
 #include "Utils/GlmUnmanaged.hpp"
 #include "Utils/clr_include.hpp"
+#include "Utils/Hashing.hpp"
 #include "Utils/Color.hpp"
 #include "Utils/Uuid.hpp"
 
@@ -41,7 +42,7 @@ public:
 public:
 	SMUuid m_uuid;
 	std::wstring m_mesh;
-	std::unordered_map<std::string, SMColor> m_defaultColors;
+	std::unordered_map<std::string, SMColor, Hashing::StringHasher, std::equal_to<>> m_defaultColors;
 
 	SMSubMeshBase* m_textures;
 	SMMod* m_mod;

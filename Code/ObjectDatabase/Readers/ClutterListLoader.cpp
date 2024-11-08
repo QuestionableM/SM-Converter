@@ -17,14 +17,14 @@ bool ClutterListLoader::LoadTextureData(const simdjson::dom::element& fClutter, 
 	const auto v_cl_mesh = fClutter["mesh"];
 	if (!v_cl_mesh.is_string()) return false;
 
-	const std::wstring v_cl_dif_wstr = String::ToWide(v_cl_dif.get_string().value_unsafe());
-	tList.dif = KeywordReplacer::ReplaceKey(v_cl_dif_wstr);
+	String::ToWideRef(v_cl_dif.get_string().value_unsafe(), tList.m_dif);
+	KeywordReplacer::ReplaceKeyR(tList.m_dif);
 
 	const auto v_cl_material = fClutter["material"];
-	tList.material.assign(v_cl_material.is_string() ? v_cl_material.get_string().value_unsafe() : "GroundVegetation");
+	tList.m_material.assign(v_cl_material.is_string() ? v_cl_material.get_string().value_unsafe() : "GroundVegetation");
 
-	const std::wstring v_cl_mesh_wstr = String::ToWide(v_cl_mesh.get_string().value_unsafe());
-	mesh = KeywordReplacer::ReplaceKey(v_cl_mesh_wstr);
+	String::ToWideRef(v_cl_mesh.get_string().value_unsafe(), mesh);
+	KeywordReplacer::ReplaceKeyR(mesh);
 
 	return true;
 }
@@ -50,6 +50,9 @@ void ClutterListLoader::Load(const simdjson::dom::element& fClutter, SMMod* mod,
 	const auto v_clutter_array = fClutter.get_array().value_unsafe();
 	ProgCounter::ProgressMax += v_clutter_array.size();
 
+	SMTextureList v_clutterTextures;
+	std::wstring v_clutterMesh;
+
 	for (const auto v_clutter : v_clutter_array)
 	{
 		if (!v_clutter.is_object()) continue;
@@ -60,22 +63,20 @@ void ClutterListLoader::Load(const simdjson::dom::element& fClutter, SMMod* mod,
 		const SMUuid v_clutter_uuid = v_uuid.get_string().value_unsafe();
 		if (mod->m_Clutter.ObjectExists(v_clutter_uuid, false))
 		{
-			DebugErrorL("Clutter with the specified uuid already exists! (", v_clutter_uuid.ToString(), ")");
+			DebugErrorL("Clutter with the specified uuid already exists! (", v_clutter_uuid.toString(), ")");
 			continue;
 		}
 
-		SMTextureList v_tList;
-		std::wstring v_tMesh;
-		if (!ClutterListLoader::LoadTextureData(v_clutter, v_tList, v_tMesh))
+		if (!ClutterListLoader::LoadTextureData(v_clutter, v_clutterTextures, v_clutterMesh))
 		{
-			DebugErrorL("Couldn't load the texture data for: ", v_clutter_uuid.ToString());
+			DebugErrorL("Couldn't load the texture data for: ", v_clutter_uuid.toString());
 			continue;
 		}
 
 		ClutterData* v_new_clutter = new ClutterData(
 			v_clutter_uuid,
-			std::move(v_tMesh),
-			std::move(v_tList),
+			std::move(v_clutterMesh),
+			std::move(v_clutterTextures),
 			ClutterListLoader::LoadClutterData(v_clutter),
 			mod
 		);

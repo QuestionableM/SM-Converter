@@ -11,8 +11,12 @@ SM_UNMANAGED_CODE
 class SMHarvestable : public SMEntityWithModelAndUuid
 {
 public:
-	inline SMHarvestable(const HarvestableData* pParent, const SMEntityTransform& transform, Model* pModel, SMColor color)
-		: SMEntityWithModelAndUuid(pParent->m_uuid, pModel, transform), m_parent(pParent), m_color(color) {}
+	SMHarvestable(
+		const HarvestableData* pParent,
+		const SMEntityTransform& transform,
+		Model* pModel,
+		SMColor color
+	);
 
 	SMHarvestable(const SMHarvestable&) = delete;
 	SMHarvestable(SMHarvestable&) = delete;

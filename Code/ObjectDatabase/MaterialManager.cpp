@@ -34,13 +34,28 @@ char* MaterialManager::GetMaterialACStr(const std::string& mat_name, char* v_ptr
 {
 	*v_ptr++ = 'm';
 
-	const MaterialMap::const_iterator v_iter = m_materialStorage.find(mat_name);
+	const auto v_iter = m_materialStorage.find(mat_name);
 	if (v_iter != m_materialStorage.end())
 		v_ptr = String::FromInteger<std::size_t>(v_iter->second, v_ptr);
 	else
 		*v_ptr++ = '1';
 
 	return v_ptr;
+}
+
+std::size_t MaterialManager::GetMaterialIdx(const std::string& mat_name)
+{
+	const auto v_iter = m_materialStorage.find(mat_name);
+	if (v_iter != m_materialStorage.end())
+		return v_iter->second;
+	else
+		return 1;
+}
+
+void MaterialManager::AppendMaterialIdx(std::string& outStr, const std::string& mat_name)
+{
+	outStr.append(" m", 2);
+	String::AppendIntegerToString(outStr, MaterialManager::GetMaterialIdx(mat_name));
 }
 
 std::string MaterialManager::GetMaterialA(const std::string& mat_name)

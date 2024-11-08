@@ -18,6 +18,8 @@ void HarvestableListLoader::Load(const simdjson::dom::element& fHarvestables, SM
 	auto& v_cur_db = mod->m_Harvestables.GetStorage(add_to_global_db);
 	auto v_adder_func = mod->m_Harvestables.GetAdderFunction(add_to_global_db);
 
+	std::wstring v_meshPath;
+
 	for (const auto v_hvs : v_hvs_array)
 	{
 		if (!v_hvs.is_object()) continue;
@@ -25,19 +27,18 @@ void HarvestableListLoader::Load(const simdjson::dom::element& fHarvestables, SM
 		const auto v_uuid_obj = v_hvs["uuid"];
 		if (!v_uuid_obj.is_string()) continue;
 
-		const SMUuid v_hvs_uuid = v_uuid_obj.get_string().value_unsafe();
-		if (mod->m_Harvestables.ObjectExists(v_cur_db, v_hvs_uuid))
+		const SMUuid v_hvsUuid = v_uuid_obj.get_string().value_unsafe();
+		if (mod->m_Harvestables.ObjectExists(v_cur_db, v_hvsUuid))
 			continue;
 
-		std::wstring v_tMesh;
-		SMSubMeshBase* v_tData;
-		if (!DefaultLoader::LoadRenderable(v_hvs, &v_tData, v_tMesh))
+		SMSubMeshBase* v_pSubMesh;
+		if (!DefaultLoader::LoadRenderable(v_hvs, &v_pSubMesh, v_meshPath))
 			continue;
 
 		HarvestableData* v_new_hvs = new HarvestableData(
-			v_hvs_uuid,
-			std::move(v_tMesh),
-			v_tData,
+			v_hvsUuid,
+			std::move(v_meshPath),
+			v_pSubMesh,
 			mod
 		);
 

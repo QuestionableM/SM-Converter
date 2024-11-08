@@ -9,7 +9,9 @@
 
 #pragma unmanaged
 
-void AssetListLoader::LoadDefaultColors(const simdjson::dom::element& jAsset, std::unordered_map<std::string, SMColor>& def_colors)
+void AssetListLoader::LoadDefaultColors(
+	const simdjson::dom::element& jAsset,
+	std::unordered_map<std::string, SMColor, Hashing::StringHasher, std::equal_to<>>& def_colors)
 {
 	const auto v_def_colors = jAsset["defaultColors"];
 	if (!v_def_colors.is_object()) return;
@@ -22,11 +24,10 @@ void AssetListLoader::LoadDefaultColors(const simdjson::dom::element& jAsset, st
 		const std::string_view v_strView = v_def_col_obj.value.get_string().value_unsafe();
 		const std::string_view v_colorVal = (v_strView.size() >= 6) ? v_strView : "000000";
 
-		std::string v_key_str(v_def_col_obj.key);
-		if (def_colors.find(v_key_str) != def_colors.end())
+		if (def_colors.find(v_def_col_obj.key) != def_colors.end())
 			continue;
 
-		def_colors.emplace(std::move(v_key_str), v_colorVal);
+		def_colors.emplace(v_def_col_obj.key, v_colorVal);
 	}
 }
 
@@ -40,6 +41,8 @@ void AssetListLoader::Load(const simdjson::dom::element& fAssets, SMMod* mod, bo
 	auto& v_cur_db = mod->m_Assets.GetStorage(add_to_global_db);
 	auto v_adder_func = mod->m_Assets.GetAdderFunction(add_to_global_db);
 
+	std::wstring v_meshPath;
+
 	for (const auto v_cur_asset : v_assets_array)
 	{
 		if (!v_cur_asset.is_object()) continue;
@@ -51,7 +54,6 @@ void AssetListLoader::Load(const simdjson::dom::element& fAssets, SMMod* mod, bo
 		if (mod->m_Assets.ObjectExists(v_cur_db, v_assetUuid))
 			continue;
 
-		std::wstring v_meshPath;
 		SMSubMeshBase* v_subMeshData;
 		if (!DefaultLoader::LoadRenderable(v_cur_asset, &v_subMeshData, v_meshPath))
 			continue;

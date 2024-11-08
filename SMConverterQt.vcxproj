@@ -145,6 +145,7 @@ xcopy /y /d "$(SolutionDir)Media\icon.ico" "$(SolutionDir)Build\$(ProjectName)-$
     <ClCompile Include="Code\Converter\Entity\Asset.cpp" />
     <ClCompile Include="Code\Converter\Entity\Block.cpp" />
     <ClCompile Include="Code\Converter\Entity\Blueprint.cpp" />
+    <ClCompile Include="Code\Converter\Entity\Body.cpp" />
     <ClCompile Include="Code\Converter\Entity\Decal.cpp" />
     <ClCompile Include="Code\Converter\Entity\Entity.cpp" />
     <ClCompile Include="Code\Converter\Entity\Harvestable.cpp" />
@@ -305,6 +306,7 @@ xcopy /y /d "$(SolutionDir)Media\icon.ico" "$(SolutionDir)Build\$(ProjectName)-$
     <ClInclude Include="Code\QtGui\DarkTheme\winDark.h" />
     <ClInclude Include="Code\QtGui\FilterSettingsGui.hpp" />
     <ClInclude Include="Code\QtGui\MainGui.hpp" />
+    <ClInclude Include="Code\Utils\Hashing.hpp" />
     <ClInclude Include="resource.h" />
     <QtMoc Include="Code\QtGui\CustomWidgets\PathListViewWidget.hpp" />
     <QtMoc Include="Code\QtGui\ProgramSettingsGui.hpp" />

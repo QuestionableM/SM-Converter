@@ -5,24 +5,23 @@
 #include "UStd/UnmanagedUnorderedMap.hpp"
 
 #include "Utils/clr_include.hpp"
+#include "Utils/Hashing.hpp"
 #include "Utils/Color.hpp"
 #include "Utils/Uuid.hpp"
 
 SM_UNMANAGED_CODE
 
-class SMAsset : public SMEntityWithModelAndUuid
+class SMAsset final : public SMEntityWithModelAndUuid
 {
-	using ColorMap = std::unordered_map<std::string, SMColor>;
+	using ColorMap = std::unordered_map<std::string, SMColor, Hashing::StringHasher, std::equal_to<>>;
 
 public:
-	inline SMAsset(
+	SMAsset(
 		const AssetData* pParent,
 		const SMEntityTransform& transform,
 		Model* pModel,
-		ColorMap&& color_map)
-		: SMEntityWithModelAndUuid(pParent->m_uuid, pModel, transform),
-		m_parent(pParent),
-		m_colors(std::move(color_map)) {}
+		ColorMap&& color_map
+	);
 
 	SMAsset(const SMAsset&) = delete;
 	SMAsset(SMAsset&&) = delete;

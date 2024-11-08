@@ -61,7 +61,7 @@ public:
 
 		DebugOutL("Version: ", pHeader->m_data.version);
 		DebugOutL("CreatorId: ", pHeader->m_data.creator_id);
-		DebugOutL("Uuid: ", pHeader->m_data.uuid.ToString());
+		DebugOutL("Uuid: ", pHeader->m_data.uuid.toString());
 		DebugOutL("Size: {w: ", pHeader->m_data.width, ", h: ", pHeader->m_data.height, "}");
 		DebugOutL("CellHeadersOffset: ", pHeader->m_data.cell_header_offset);
 		DebugOutL("CellHeadersSize: ", pHeader->m_data.cell_header_size);

@@ -129,15 +129,21 @@ void GroundTexture::WriteToFile(const std::wstring& path, int quality) const
 GroundTexBundle GroundTextureDatabase::DefaultTex = {};
 std::array<GroundTexBundle, 8> GroundTextureDatabase::TexStorage = {};
 
-static const std::string objKeyVec[3] = { "Dif", "Asg", "Nor" };
+static const std::string_view g_objKeyVec[3] = { "Dif", "Asg", "Nor" };
 void GroundTextureDatabase::LoadTextureData(const simdjson::dom::element& tObj, GroundTexBundle& tBundle)
 {
+	std::wstring v_wstrTex;
+
 	for (std::size_t a = 0; a < 3; a++)
 	{
-		const auto v_tex_obj = tObj[objKeyVec[a]];
+		const auto v_tex_obj = tObj[g_objKeyVec[a]];
 
-		const std::wstring v_wstr_tex = v_tex_obj.is_string() ? String::ToWide(v_tex_obj.get_string().value_unsafe()) : L"";
-		tBundle[a] = new GroundTexture(v_wstr_tex);
+		if (v_tex_obj.is_string())
+			String::ToWideRef(v_tex_obj.get_string().value_unsafe(), v_wstrTex);
+		else
+			v_wstrTex.clear();
+
+		tBundle[a] = new GroundTexture(v_wstrTex);
 	}
 }
 

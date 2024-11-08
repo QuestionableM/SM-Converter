@@ -1,27 +1,13 @@
 #pragma once
 
 #include "Utils/clr_include.hpp"
+#include "Utils/Hashing.hpp"
 
 #include "UStd/UnmanagedUnorderedMap.hpp"
 #include "UStd/UnmanagedString.hpp"
 #include "UStd/UnmanagedVector.hpp"
 
 SM_UNMANAGED_CODE
-
-struct StringHetHash
-{
-	using is_transparent = void;
-
-	inline std::size_t operator()(const std::string& str) const noexcept
-	{
-		return std::hash<std::string>{}(str);
-	}
-
-	inline std::size_t operator()(const std::string_view& str) const noexcept
-	{
-		return std::hash<std::string_view>{}(str);
-	}
-};
 
 enum class SMSubMeshType : std::uint8_t
 {
@@ -45,13 +31,13 @@ public:
 	std::wstring& getStringRef(std::size_t idx) noexcept;
 
 public:
-	std::wstring dif;
-	std::wstring asg;
-	std::wstring nor;
+	std::wstring m_dif;
+	std::wstring m_asg;
+	std::wstring m_nor;
 
-	std::string material;
-	std::string def_color_idx;
-	bool is_shadow_only = false;
+	std::string m_material;
+	std::string m_defColorIdx;
+	bool m_shadowOnly = false;
 };
 
 class SMSubMeshBase
@@ -83,15 +69,17 @@ public:
 	SMSubMeshType type() const override;
 
 private:
-	std::vector<SMTextureList*> m_storage = {};
+	std::vector<SMTextureList*> m_storage;
 };
 
 class SMSubMeshMap : public SMSubMeshBase
 {
-	using StorageMap = std::unordered_map<std::string, SMTextureList*, StringHetHash, std::equal_to<>>;
+	using StorageMap = std::unordered_map<std::string, SMTextureList*, Hashing::StringHasher, std::equal_to<>>;
 
 public:
-	SMSubMeshMap() = default;
+	inline SMSubMeshMap() :
+		m_storage()
+	{}
 
 	SMSubMeshMap(const SMSubMeshMap&) = delete;
 	SMSubMeshMap(SMSubMeshMap&&) = delete;
@@ -104,7 +92,7 @@ public:
 	SMSubMeshType type() const override;
 
 private:
-	StorageMap m_storage = {};
+	StorageMap m_storage;
 };
 
 SM_MANAGED_CODE

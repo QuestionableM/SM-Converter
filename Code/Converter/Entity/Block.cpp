@@ -9,23 +9,56 @@
 
 #pragma unmanaged
 
+SMBlock::SMBlock(
+	SMBlock* other,
+	const glm::vec3& pos,
+	const glm::quat& rot,
+	const glm::vec3& scale
+) :
+	SMEntityWithUuid(other->m_parent->m_uuid, pos, scale),
+	m_parent(other->m_parent),
+	m_index(0),
+	m_color(other->m_color),
+	m_xzRotation(other->m_xzRotation)
+{}
+
+SMBlock::SMBlock(
+	const BlockData* pParent,
+	const glm::vec3& pos,
+	const glm::vec3& scale,
+	SMColor color,
+	unsigned char rotation,
+	std::size_t index
+) :
+	SMEntityWithUuid(pParent->m_uuid, pos, scale),
+	m_parent(pParent),
+	m_index(index),
+	m_color(color),
+	m_xzRotation(rotation)
+{}
+
 char* SMBlock::GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, char* v_ptr) const
 {
-	v_ptr = m_uuid.ToCString(v_ptr);
+	v_ptr = m_uuid.toCString(v_ptr);
 	*v_ptr++ = ' ';
 	v_ptr = m_color.StringHexCStr(v_ptr);
 	*v_ptr++ = ' ';
 	v_ptr = String::FromInteger<std::size_t>(v_idx + 1, v_ptr);
 	*v_ptr++ = ' ';
 
-	return MaterialManager::GetMaterialACStr(m_parent->m_textures.material, v_ptr);
+	return MaterialManager::GetMaterialACStr(m_parent->m_textures.m_material, v_ptr);
 }
 
 std::string SMBlock::GetMtlName(std::size_t v_idx) const
 {
-	const std::string v_mat_name_idx = MaterialManager::GetMaterialA(m_parent->m_textures.material);
+	std::string v_mtlName(m_uuid.toString());
+	v_mtlName.append(1, ' ');
+	m_color.appendStringHex(v_mtlName);
+	v_mtlName.append(1, ' ');
+	String::AppendIntegerToString(v_mtlName, v_idx + 1);
+	MaterialManager::AppendMaterialIdx(v_mtlName, m_parent->m_textures.m_material);
 
-	return m_uuid.ToString() + ' ' + m_color.StringHex() + ' ' + std::to_string(v_idx + 1) + ' ' + v_mat_name_idx;
+	return v_mtlName;
 }
 
 void SMBlock::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
@@ -71,7 +104,7 @@ static void GenerateUVs(Model& model, const glm::vec3& bounds, const glm::vec3& 
 	}
 }
 
-void FillCustomCube(Model& model, const glm::vec3& bounds, const glm::vec3& position, int tiling)
+static void FillCustomCube(Model& model, const glm::vec3& bounds, const glm::vec3& position, int tiling)
 {
 	model.m_vertices =
 	{

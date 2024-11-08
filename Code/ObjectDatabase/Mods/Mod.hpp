@@ -7,6 +7,7 @@
 #include "UStd/UnmanagedString.hpp"
 
 #include "Utils/clr_include.hpp"
+#include "Utils/Hashing.hpp"
 #include "Utils/Uuid.hpp"
 #include "Utils/Json.hpp"
 
@@ -37,7 +38,7 @@ public:
 		if (v_iter != SMModObjectStorage<T>::StaticStorage.end())
 			return v_iter->second;
 
-		DebugErrorL("Couldn't find an object with the specified uuid: ", uuid.ToString());
+		DebugErrorL("Couldn't find an object with the specified uuid: ", uuid.toString());
 		return nullptr;
 	}
 
@@ -57,21 +58,25 @@ public:
 	template<bool t_check_blocks = true>
 	inline static SMMod* GetModFromBlocksAndParts(const SMUuid& uuid)
 	{
-		const std::unordered_map<SMUuid, PartData*>::const_iterator v_part_iter = SMModObjectStorage<PartData>::StaticStorage.find(uuid);
-		if (v_part_iter != SMModObjectStorage<PartData>::StaticStorage.end())
-			return v_part_iter->second->m_mod;
+		const PrecomputedUuidHash v_uuidHash(uuid);
+
+		const auto v_partIter = SMModObjectStorage<PartData>::StaticStorage.find(v_uuidHash);
+		if (v_partIter != SMModObjectStorage<PartData>::StaticStorage.end())
+			return v_partIter->second->m_mod;
 
 		if constexpr (t_check_blocks) {
-			const std::unordered_map<SMUuid, BlockData*>::const_iterator v_block_iter = SMModObjectStorage<BlockData>::StaticStorage.find(uuid);
-			if (v_block_iter != SMModObjectStorage<BlockData>::StaticStorage.end())
-				return v_block_iter->second->m_mod;
+			const auto v_blockIter = SMModObjectStorage<BlockData>::StaticStorage.find(v_uuidHash);
+			if (v_blockIter != SMModObjectStorage<BlockData>::StaticStorage.end())
+				return v_blockIter->second->m_mod;
 		}
 
 		return nullptr;
 	}
 
 	template<typename T, bool t_allow_replacements>
-	inline static void MergeMaps(std::unordered_map<SMUuid, T*>& v_output, std::unordered_map<SMUuid, T*>& to_add)
+	inline static void MergeMaps(
+		std::unordered_map<SMUuid, T*, UuidHasher, std::equal_to<>>& v_output,
+		std::unordered_map<SMUuid, T*, UuidHasher, std::equal_to<>>& to_add)
 	{
 		for (const auto& v_item : to_add)
 		{
@@ -93,17 +98,17 @@ public:
 	inline static std::vector<CustomGame*>& GetCustomGames() noexcept { return SMMod::CustomGameVector; }
 	inline static const std::vector<SMMod*>& GetAllMods() noexcept { return SMMod::ModVector; }
 
-	inline static GarmentData* GetGarment(const std::string& v_category, const SMUuid& v_uuid)
+	inline static GarmentData* GetGarment(const std::string& category, const SMUuid& uuid)
 	{
-		const auto v_category_iter = SMMod::GarmentStorage.find(v_category);
-		if (v_category_iter == SMMod::GarmentStorage.end())
+		const auto v_categoryIter = SMMod::GarmentStorage.find(category);
+		if (v_categoryIter == SMMod::GarmentStorage.end())
 			return nullptr;
 
-		const auto v_cur_item = v_category_iter->second.find(v_uuid);
-		if (v_cur_item == v_category_iter->second.end())
+		const auto v_curItem = v_categoryIter->second.find(uuid);
+		if (v_curItem == v_categoryIter->second.end())
 			return nullptr;
 
-		return v_cur_item->second;
+		return v_curItem->second;
 	}
 
 	inline static std::size_t GetAmountOfMods() noexcept { return SMMod::ModVector.size(); }
@@ -157,7 +162,12 @@ public:
 	SMModObjectStorage<KinematicData> m_Kinematics;
 	SMModObjectStorage<ClutterData> m_Clutter;
 	inline static std::vector<ClutterData*> ClutterVector = {};
-	inline static std::unordered_map<std::string, std::unordered_map<SMUuid, GarmentData*>> GarmentStorage = {};
+	inline static std::unordered_map<
+		std::string,
+		std::unordered_map<SMUuid, GarmentData*>,
+		Hashing::StringHasher,
+		std::equal_to<>
+	> GarmentStorage = {};
 
 	inline static SMMod* GameDataMod = nullptr;
 

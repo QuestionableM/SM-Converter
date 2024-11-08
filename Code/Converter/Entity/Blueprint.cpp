@@ -13,7 +13,13 @@
 
 SM_UNMANAGED_CODE
 
-void SMBlueprint::LoadAndCountAutomatic(const std::string& str)
+SMBlueprint::SMBlueprint(const glm::vec3& pos, const glm::quat& rot) :
+	SMEntity(pos, rot, glm::vec3(0.25f)),
+	m_object_index(0),
+	m_body_index(0)
+{}
+
+void SMBlueprint::LoadAndCountAutomatic(const std::string_view& str)
 {
 	const std::size_t v_secretIdx = str.find("?JB:");
 	if (v_secretIdx != std::string::npos)
@@ -25,12 +31,13 @@ void SMBlueprint::LoadAndCountAutomatic(const std::string& str)
 		return;
 	}
 
-	const std::wstring v_wide_str = String::ToWide(str);
-	const std::wstring v_bp_path = KeywordReplacer::ReplaceKey(v_wide_str);
 
-	DebugOutL(0b0011_fg, "CountingBlueprintPath: ", v_bp_path);
+	std::wstring v_bpPath = String::ToWide(str);
+	KeywordReplacer::ReplaceKeyR(v_bpPath);
 
-	SMBlueprint::CountFromFile(v_bp_path);
+	DebugOutL(0b0011_fg, "CountingBlueprintPath: ", v_bpPath);
+
+	SMBlueprint::CountFromFile(v_bpPath);
 }
 
 void SMBlueprint::CountFromFile(const std::wstring& path)
@@ -104,8 +111,8 @@ SMBlueprint* SMBlueprint::LoadAutomatic(const std::string& str, const glm::vec3&
 		return SMBlueprint::FromJsonString(v_bpStr, pos, rot);
 	}
 
-	const std::wstring v_wideStr = String::ToWide(str);
-	const std::wstring v_bpPath = KeywordReplacer::ReplaceKey(v_wideStr);
+	std::wstring v_bpPath = String::ToWide(str);
+	KeywordReplacer::ReplaceKeyR(v_bpPath);
 
 	DebugOutL(0b0011_fg, "LoadingBlueprintPath: ", v_bpPath);
 

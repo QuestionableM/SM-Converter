@@ -2,6 +2,7 @@
 
 #include "UStd/UnmanagedString.hpp"
 #include "Utils/clr_include.hpp"
+#include "Utils/String.hpp"
 
 SM_UNMANAGED_CODE
 
@@ -44,32 +45,9 @@ private:
 	inline void setErrorVariadic(CurArg arg)
 	{
 		char v_intBuffer[64];
-		char* v_bufferPtr = v_intBuffer + sizeof(v_intBuffer);
+		const std::string_view v_result = String::IntegerToString<CurArg>(v_intBuffer, sizeof(v_intBuffer), arg);
 
-		if constexpr (std::is_signed_v<CurArg>)
-		{
-			if (arg < 0)
-			{
-				CurArg v_negArg = -arg;
-				do
-				{
-					*--v_bufferPtr = char(v_negArg % 10) + '0';
-					v_negArg /= 10;
-				} while (v_negArg);
-
-				*--v_bufferPtr = '-';
-				goto jump_assign;
-			}
-		}
-
-		do
-		{
-			*--v_bufferPtr = char(arg % 10) + '0';
-			arg /= 10;
-		} while (arg);
-
-	jump_assign:
-		m_errorMessage.assign(v_bufferPtr, v_intBuffer + sizeof(v_intBuffer));
+		m_errorMessage.assign(v_result);
 	}
 
 	template<typename CurArg> requires(std::is_same_v<CurArg, char>)

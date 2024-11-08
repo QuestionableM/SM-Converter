@@ -8,7 +8,7 @@
 
 SM_UNMANAGED_CODE
 
-class SMDecal : public SMEntity
+class SMDecal final : public SMEntity
 {
 public:
 	~SMDecal() = default;
@@ -16,10 +16,8 @@ public:
 	SMDecal(const SMDecal&) = delete;
 	SMDecal(SMDecal&) = delete;
 	
-	inline SMDecal(const DecalData* data_ptr, const SMEntityTransform& transform, SMColor color)
-		: SMEntity(transform), m_data(data_ptr), m_color(color) {}
-
-	inline EntityType Type() const noexcept override { return EntityType::Decal; }
+	SMDecal(const DecalData* data_ptr, const SMEntityTransform& transform, SMColor color);
+	EntityType Type() const noexcept override;
 
 	char* GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, char* v_ptr) const override;
 	std::string GetMtlName(std::size_t mIdx) const override;

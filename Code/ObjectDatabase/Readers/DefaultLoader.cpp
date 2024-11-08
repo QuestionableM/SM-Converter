@@ -20,7 +20,7 @@ void DefaultLoader::LoadTextureList(const simdjson::dom::array& texList, SMTextu
 		{
 			std::wstring& v_wstrPath = v_tex_list->getStringRef(a);
 
-			v_wstrPath = String::ToWide(v_curItem.get_string().value_unsafe());
+			String::ToWideRef(v_curItem.get_string().value_unsafe(), v_wstrPath);
 			KeywordReplacer::ReplaceKeyR(v_wstrPath);
 		}
 	}
@@ -35,18 +35,18 @@ bool DefaultLoader::LoadSubMeshDataEntry(const simdjson::dom::element& v_item, S
 		return false;
 
 	SMTextureList* v_newEntry = new SMTextureList();
-	v_newEntry->material.assign(v_material.get_string().value_unsafe());
+	v_newEntry->m_material.assign(v_material.get_string().value_unsafe());
 
 	const auto v_custom_prop = v_item["custom"];
 	if (v_custom_prop.is_object())
 	{
 		const auto v_def_col_idx = v_custom_prop["color"];
 		if (v_def_col_idx.is_string())
-			v_newEntry->def_color_idx.assign(v_def_col_idx.get_string().value_unsafe());
+			v_newEntry->m_defColorIdx.assign(v_def_col_idx.get_string().value_unsafe());
 
 		const auto v_shadow_only_mode = v_custom_prop["shadowOnly"];
 		if (v_shadow_only_mode.is_bool())
-			v_newEntry->is_shadow_only = v_shadow_only_mode.get_bool().value_unsafe();
+			v_newEntry->m_shadowOnly = v_shadow_only_mode.get_bool().value_unsafe();
 	}
 
 
@@ -59,8 +59,7 @@ bool DefaultLoader::LoadSubMeshDataEntry(const simdjson::dom::element& v_item, S
 bool DefaultLoader::TryLoadSubMeshList(const simdjson::dom::element& lod_item, SMSubMeshBase** v_sub_mesh)
 {
 	const auto v_sub_mesh_list_obj = lod_item["subMeshList"];
-	if (!v_sub_mesh_list_obj.is_array())
-		return false;
+	if (!v_sub_mesh_list_obj.is_array()) return false;
 
 	std::size_t v_idx = 0;
 	SMSubMeshList* v_subMeshList = new SMSubMeshList();
@@ -86,8 +85,7 @@ bool DefaultLoader::TryLoadSubMeshList(const simdjson::dom::element& lod_item, S
 bool DefaultLoader::TryLoadSubMeshMap(const simdjson::dom::element& lod_item, SMSubMeshBase** v_sub_mesh)
 {
 	const auto v_subMeshMapObj = lod_item["subMeshMap"];
-	if (!v_subMeshMapObj.is_object())
-		return false;
+	if (!v_subMeshMapObj.is_object()) return false;
 
 	SMSubMeshMap* v_subMeshMap = new SMSubMeshMap();
 
@@ -106,29 +104,25 @@ bool DefaultLoader::TryLoadSubMeshMap(const simdjson::dom::element& lod_item, SM
 
 bool DefaultLoader::LoadRenderableData(const simdjson::dom::element& jRenderable, SMSubMeshBase** tData, std::wstring& mesh)
 {
-	const auto v_lod_list_obj = jRenderable["lodList"];
-	if (!v_lod_list_obj.is_array())
-		return false;
+	const auto v_lodListObj = jRenderable["lodList"];
+	if (!v_lodListObj.is_array()) return false;
 
-	const auto v_lod_list_array = v_lod_list_obj.get_array().value_unsafe();
-	if (v_lod_list_array.size() == 0)
-		return false;
+	const auto v_lodListArray = v_lodListObj.get_array().value_unsafe();
+	if (v_lodListArray.size() == 0) return false;
 
-	const auto v_lod_list0 = v_lod_list_array.at(0).value_unsafe();
-	if (!v_lod_list0.is_object())
-		return false;
+	const auto v_lodList0 = v_lodListArray.at(0).value_unsafe();
+	if (!v_lodList0.is_object()) return false;
 
-	if (!DefaultLoader::TryLoadSubMeshList(v_lod_list0, tData))
+	if (!DefaultLoader::TryLoadSubMeshList(v_lodList0, tData) &&
+		!DefaultLoader::TryLoadSubMeshMap(v_lodList0, tData))
 	{
-		if (!DefaultLoader::TryLoadSubMeshMap(v_lod_list0, tData))
-			return false;
+		return false;
 	}
 
-	const auto v_mesh_path = v_lod_list0["mesh"];
-	if (!v_mesh_path.is_string())
-		return false;
+	const auto v_meshPath = v_lodList0["mesh"];
+	if (!v_meshPath.is_string()) return false;
 
-	mesh = String::ToWide(v_mesh_path.get_string().value_unsafe());
+	String::ToWideRef(v_meshPath.get_string().value_unsafe(), mesh);
 	KeywordReplacer::ReplaceKeyR(mesh);
 
 	return true;
@@ -136,7 +130,7 @@ bool DefaultLoader::LoadRenderableData(const simdjson::dom::element& jRenderable
 
 bool DefaultLoader::LoadRenderableFromPath(const std::string_view& path, SMSubMeshBase** tData, std::wstring& mesh)
 {
-	std::wstring v_renderablePath = String::ToWide(path);
+	std::wstring v_renderablePath(String::ToWide(path));
 	KeywordReplacer::ReplaceKeyR(v_renderablePath);
 
 	simdjson::dom::document v_rend_doc;

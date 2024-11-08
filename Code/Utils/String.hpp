@@ -65,6 +65,44 @@ namespace String
 		return static_cast<unsigned char>(v_output);
 	}
 
+	template<typename T>
+	inline std::string_view IntegerToString(char* buffer, std::size_t buffer_sz, T num)
+	{
+		char* v_bufferPtr = buffer + buffer_sz;
+
+		if constexpr (std::is_signed_v<T>)
+		{
+			if (num < 0)
+			{
+				T v_negNum = -num;
+				do
+				{
+					*--v_bufferPtr = char(v_negNum % 10) + '0';
+					v_negNum /= 10;
+				} while (v_negNum);
+
+				*--v_bufferPtr = '-';
+				goto jump_assign;
+			}
+		}
+
+		do
+		{
+			*--v_bufferPtr = char(num % 10) + '0';
+			num /= 10;
+		} while (num);
+
+	jump_assign:
+		return std::string_view(v_bufferPtr, buffer + buffer_sz);
+	}
+
+	template<typename T>
+	inline void AppendIntegerToString(std::string& outStr, T num)
+	{
+		char v_intBuffer[64];
+		outStr.append(String::IntegerToString<T>(v_intBuffer, sizeof(v_intBuffer), num));
+	}
+
 	inline std::string ToUtf8(const std::wstring& wstr)
 	{
 		const int v_count = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), static_cast<int>(wstr.size()), NULL, 0, NULL, NULL);
@@ -73,6 +111,15 @@ namespace String
 		WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, &v_str[0], v_count, NULL, NULL);
 
 		return v_str;
+	}
+
+	inline void ToWideRef(const std::string_view& str, std::wstring& outStr)
+	{
+		const int v_strSz = static_cast<int>(str.size());
+		const int v_count = MultiByteToWideChar(CP_UTF8, 0, str.data(), v_strSz, NULL, 0);
+
+		outStr.resize(v_count);
+		MultiByteToWideChar(CP_UTF8, 0, str.data(), v_strSz, outStr.data(), v_count);
 	}
 
 	inline std::wstring ToWide(const std::string_view& v_str)

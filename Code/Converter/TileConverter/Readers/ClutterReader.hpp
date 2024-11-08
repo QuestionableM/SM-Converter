@@ -88,11 +88,11 @@ public:
 				const ClutterData* v_clutter_data = SMMod::GetGlobalObject<ClutterData>(clutter_uuid);
 				if (v_clutter_data)
 				{
-					DebugOutL(0b1101_fg, "Clutter: ", clutter_uuid.ToString(), " -> ", uVar7);
+					DebugOutL(0b1101_fg, "Clutter: ", clutter_uuid.toString(), " -> ", uVar7);
 				}
 				else
 				{
-					DebugErrorL("The specified clutter doesn't exist: ", clutter_uuid.ToString());
+					DebugErrorL("The specified clutter doesn't exist: ", clutter_uuid.toString());
 				}
 
 				/*

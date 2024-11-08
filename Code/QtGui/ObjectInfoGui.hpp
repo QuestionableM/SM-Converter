@@ -63,7 +63,7 @@ private:
 		const QString v_bp_name = QString("Name: %1")
 			.arg(QString::fromStdWString(obj->name));
 		const QString v_uuid = QString("UUID: %1")
-			.arg(QString::fromStdString(obj->uuid.ToString()));
+			.arg(QString::fromStdString(obj->uuid.toString()));
 		const QString v_content_type = QString("Content Type: %1")
 			.arg(QString::fromStdWString(FilterSettingsData::GetFilterName(obj->filter)));
 

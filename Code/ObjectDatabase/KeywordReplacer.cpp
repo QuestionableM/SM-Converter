@@ -28,12 +28,12 @@ void KeywordReplacer::SetReplacement(const std::wstring& key, const std::wstring
 
 void KeywordReplacer::CreateContentKey(const SMUuid& v_uuid, const std::wstring& v_replacement)
 {
-	KeywordReplacer::SetReplacement(L"$content_" + v_uuid.ToWstring(), v_replacement);
+	KeywordReplacer::SetReplacement(L"$content_" + v_uuid.toWstring(), v_replacement);
 }
 
 void KeywordReplacer::SetModData(const std::wstring& path, const SMUuid& uuid)
 {
-	const std::wstring v_contentKey = L"$content_" + uuid.ToWstring();
+	const std::wstring v_contentKey = L"$content_" + uuid.toWstring();
 
 	KeywordReplacer::SetReplacement(v_contentKey    , path);
 	KeywordReplacer::SetReplacement(L"$mod_data"    , path);
@@ -55,8 +55,9 @@ void KeywordReplacer::LoadResourceUpgrades(const std::wstring& path)
 	DebugOutL("Loading resource upgrades: ", 0b1101_fg, path);
 
 	const auto v_upgrade_array = v_doc.root()["upgrade"];
-	if (!v_upgrade_array.is_array())
-		return;
+	if (!v_upgrade_array.is_array()) return;
+
+	std::wstring v_keyWstr, v_valWstr;
 
 	for (const auto v_upgrade_list : v_upgrade_array.get_array().value_unsafe())
 	{
@@ -73,13 +74,13 @@ void KeywordReplacer::LoadResourceUpgrades(const std::wstring& path)
 
 			if (!(v_upgrade_key.is_string() && v_upgrade_val.is_string())) continue;
 
-			std::wstring v_key_wstr = String::ToWide(v_upgrade_key.get_string().value_unsafe());
-			std::wstring v_val_wstr = String::ToWide(v_upgrade_val.get_string().value_unsafe());
+			String::ToWideRef(v_upgrade_key.get_string().value_unsafe(), v_keyWstr);
+			String::ToWideRef(v_upgrade_val.get_string().value_unsafe(), v_valWstr);
 
-			KeywordReplacer::CreateKey(v_key_wstr, v_val_wstr);
+			KeywordReplacer::CreateKey(v_keyWstr, v_valWstr);
 
-			if (m_ResourceUpgrades.find(v_key_wstr) == m_ResourceUpgrades.end())
-				m_ResourceUpgrades.emplace(std::move(v_key_wstr), std::move(v_val_wstr));
+			if (m_ResourceUpgrades.find(v_keyWstr) == m_ResourceUpgrades.end())
+				m_ResourceUpgrades.emplace(std::move(v_keyWstr), std::move(v_valWstr));
 		}
 	}
 }

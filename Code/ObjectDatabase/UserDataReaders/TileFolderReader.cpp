@@ -93,11 +93,11 @@ void TileFolderReader::LoadFromFile(const std::filesystem::path& path)
 
 	if (TileFolderReader::TileMap.find(v_tile_info.uuid) != TileFolderReader::TileMap.end())
 	{
-		DebugWarningL("The tile with the specified key already exists! (Uuid: ", v_tile_info.uuid.ToString(), ")");
+		DebugWarningL("The tile with the specified key already exists! (Uuid: ", v_tile_info.uuid.toString(), ")");
 		return;
 	}
 
-	const std::wstring v_previewImg = path.parent_path().wstring() + L"/" + v_tile_info.uuid.ToWstring() + L".png";
+	const std::wstring v_previewImg = path.parent_path().wstring() + L"/" + v_tile_info.uuid.toWstring() + L".png";
 
 	TileInstance* v_pNewTile = new TileInstance(
 		v_tile_info.uuid,
@@ -146,11 +146,11 @@ void TileFolderReader::LoadFromFolder(const std::wstring& path, const simdjson::
 
 	if (TileFolderReader::TileMap.find(v_content_uuid) != TileFolderReader::TileMap.end())
 	{
-		DebugWarningL("The tile with the specified key already exists! (Uuid: ", v_content_uuid.ToString(), ")");
+		DebugWarningL("The tile with the specified key already exists! (Uuid: ", v_content_uuid.toString(), ")");
 		return;
 	}
 
-	const std::wstring v_previewImg = path + L"/" + v_tile_info.uuid.ToWstring() + L".png";
+	const std::wstring v_previewImg = path + L"/" + v_tile_info.uuid.toWstring() + L".png";
 	const auto v_workshopId = v_cur_elem["fileId"];
 
 	TileInstance* v_pNewTile = new TileInstance(

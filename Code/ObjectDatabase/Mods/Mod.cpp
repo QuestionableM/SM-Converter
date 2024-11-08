@@ -113,22 +113,22 @@ SMMod* SMMod::LoadFromDescription(const std::wstring& mod_folder, bool is_local)
 	const SMUuid v_mod_uuid = v_mod_uuid_obj.get_string().value_unsafe();
 	const std::wstring v_mod_name = String::ToWide(v_mod_name_obj.get_string().value_unsafe());
 
-	const std::unordered_map<SMUuid, SMMod*>& v_cur_map = (v_mod_type != ModType::CustomGame) ? SMMod::ModStorage : SMMod::CustomGameStorage;
-	const std::unordered_map<SMUuid, SMMod*>::const_iterator v_iter = v_cur_map.find(v_mod_uuid);
-	if (v_iter != v_cur_map.end())
+	const auto& v_curMap = (v_mod_type != ModType::CustomGame) ? SMMod::ModStorage : SMMod::CustomGameStorage;
+	const auto v_iter = v_curMap.find(v_mod_uuid);
+	if (v_iter != v_curMap.end())
 	{
 	#if defined(DEBUG) || defined(_DEBUG)
 		const SMMod* v_modPtr = v_iter->second;
 
 		if (v_iter->second->m_isLocal && !is_local)
 		{
-			DebugOutL("Skipped a mod as it was already loaded locally (name: ", v_mod_name, ", uuid: ", v_mod_uuid.ToString(), ")");
+			DebugOutL("Skipped a mod as it was already loaded locally (name: ", v_mod_name, ", uuid: ", v_mod_uuid.toString(), ")");
 			return nullptr;
 		}
 
 		if (v_iter->second->m_isLocal == is_local)
 		{
-			DebugWarningL("Uuid conflict between: ", v_iter->second->m_Name, " and ", v_mod_name, " (uuid: ", v_mod_uuid.ToString(), ")");
+			DebugWarningL("Uuid conflict between: ", v_iter->second->m_Name, " and ", v_mod_name, " (uuid: ", v_mod_uuid.toString(), ")");
 			return nullptr;
 		}
 	#else
@@ -162,7 +162,7 @@ SMMod* SMMod::LoadFromDescription(const std::wstring& mod_folder, bool is_local)
 		return nullptr;
 	}
 
-	DebugOutL("Mod: ", 0b1101_fg, v_new_mod->m_Name, 0b1110_fg, ", Uuid: ", 0b1101_fg, v_new_mod->m_Uuid.ToString(), 0b1110_fg, ", Type: ", 0b1101_fg, v_mod_type_obj.get_string().value_unsafe());
+	DebugOutL("Mod: ", 0b1101_fg, v_new_mod->m_Name, 0b1110_fg, ", Uuid: ", 0b1101_fg, v_new_mod->m_Uuid.toString(), 0b1110_fg, ", Type: ", 0b1101_fg, v_mod_type_obj.get_string().value_unsafe());
 	return v_new_mod;
 }
 
@@ -177,8 +177,8 @@ CustomGame* SMMod::GetCustomGameFromPath(const std::wstring& v_path)
 	return nullptr;
 }
 
-using DataLoaderMap = std::unordered_map<std::string, void (*)(const simdjson::dom::element&, SMMod*, bool)>;
-static const DataLoaderMap g_DataLoaders =
+using ListLoaderFunc = void(*)(const simdjson::dom::element&, SMMod*, bool);
+static const std::unordered_map<std::string_view, ListLoaderFunc> g_dataLoaders =
 {
 	{ "assetListRenderable", AssetListLoader::Load       },
 	{ "harvestableList"    , HarvestableListLoader::Load },
@@ -200,12 +200,10 @@ void SMMod::LoadFile(const std::wstring& path, bool add_to_global_db)
 
 	for (const auto v_obj : v_doc.root().get_object().value_unsafe())
 	{
-		const std::string v_key_str(v_obj.key);
-
-		const DataLoaderMap::const_iterator v_iter = g_DataLoaders.find(v_key_str);
-		if (v_iter == g_DataLoaders.end())
+		const auto v_iter = g_dataLoaders.find(v_obj.key);
+		if (v_iter == g_dataLoaders.end())
 		{
-			DebugErrorL("Couldn't find the loader for: ", v_key_str, "\nFile: ", path);
+			DebugErrorL("Couldn't find the loader for: ", v_obj.key, "\nFile: ", path);
 			continue;
 		}
 
@@ -219,20 +217,22 @@ void SMMod::LoadAssetSetList(const std::wstring& path, SMMod* v_mod, bool add_to
 	if (!JsonReader::LoadParseSimdjsonCommentsC(path, v_assetset_doc, simdjson::dom::element_type::OBJECT))
 		return;
 
-	const auto v_assetset_list = v_assetset_doc.root()["assetSetList"];
-	if (!v_assetset_list.is_array()) return;
+	const auto v_assetSetList = v_assetset_doc.root()["assetSetList"];
+	if (!v_assetSetList.is_array()) return;
 
-	for (const auto v_asset_set : v_assetset_list.get_array().value_unsafe())
+	std::wstring v_assetSetPath;
+
+	for (const auto v_assetSet : v_assetSetList.get_array().value_unsafe())
 	{
-		if (!v_asset_set.is_object()) continue;
+		if (!v_assetSet.is_object()) continue;
 
-		const auto v_assetset_path_obj = v_asset_set["assetSet"];
-		if (!v_assetset_path_obj.is_string()) continue;
+		const auto v_assetSetPathObj = v_assetSet["assetSet"];
+		if (!v_assetSetPathObj.is_string()) continue;
 
-		std::wstring v_assetset_path = String::ToWide(v_assetset_path_obj.get_string().value_unsafe());
-		KeywordReplacer::ReplaceKeyR(v_assetset_path);
+		String::ToWideRef(v_assetSetPathObj.get_string().value_unsafe(), v_assetSetPath);
+		KeywordReplacer::ReplaceKeyR(v_assetSetPath);
 
-		v_mod->LoadFile(v_assetset_path, add_to_global_db);
+		v_mod->LoadFile(v_assetSetPath, add_to_global_db);
 	}
 }
 
@@ -245,14 +245,16 @@ void SMMod::LoadShapeSetList(const std::wstring& path, SMMod* v_mod, bool add_to
 	const auto v_shapeset_list = v_shapedb_doc.root()["shapeSetList"];
 	if (!v_shapeset_list.is_array()) return;
 
+	std::wstring v_shapeSetPath;
+
 	for (const auto v_shapeset : v_shapeset_list.get_array().value_unsafe())
 	{
 		if (!v_shapeset.is_string()) continue;
 
-		std::wstring v_shapeset_path = String::ToWide(v_shapeset.get_string().value_unsafe());
-		KeywordReplacer::ReplaceKeyR(v_shapeset_path);
+		String::ToWideRef(v_shapeset.get_string().value_unsafe(), v_shapeSetPath);
+		KeywordReplacer::ReplaceKeyR(v_shapeSetPath);
 
-		v_mod->LoadFile(v_shapeset_path, add_to_global_db);
+		v_mod->LoadFile(v_shapeSetPath, add_to_global_db);
 	}
 }
 
@@ -264,6 +266,8 @@ void SMMod::LoadHarvestableSetList(const std::wstring& path, SMMod* v_mod, bool 
 
 	const auto v_hvsset_list = v_hvsdb_doc.root()["harvestableSetList"];
 	if (!v_hvsset_list.is_array()) return;
+	
+	std::wstring v_hvsSetPath;
 
 	for (const auto v_hvsset : v_hvsset_list.get_array().value_unsafe())
 	{
@@ -272,10 +276,10 @@ void SMMod::LoadHarvestableSetList(const std::wstring& path, SMMod* v_mod, bool 
 		const auto v_hvsset_path_obj = v_hvsset["name"];
 		if (!v_hvsset_path_obj.is_string()) continue;
 
-		std::wstring v_hvsset_path = String::ToWide(v_hvsset_path_obj.get_string().value_unsafe());
-		KeywordReplacer::ReplaceKeyR(v_hvsset_path);
+		String::ToWideRef(v_hvsset_path_obj.get_string().value_unsafe(), v_hvsSetPath);
+		KeywordReplacer::ReplaceKeyR(v_hvsSetPath);
 
-		v_mod->LoadFile(v_hvsset_path, add_to_global_db);
+		v_mod->LoadFile(v_hvsSetPath, add_to_global_db);
 	}
 }
 
@@ -288,17 +292,19 @@ void SMMod::LoadKinematicSetList(const std::wstring& path, SMMod* v_mod, bool ad
 	const auto v_kinematicset_list = v_kinematicdb_doc.root()["kinematicSetList"];
 	if (!v_kinematicset_list.is_array()) return;
 
-	for (const auto v_kinematic_set : v_kinematicset_list.get_array().value_unsafe())
+	std::wstring v_kinematicSetPath;
+
+	for (const auto v_kinematicSet : v_kinematicset_list.get_array().value_unsafe())
 	{
-		if (!v_kinematic_set.is_object()) continue;
+		if (!v_kinematicSet.is_object()) continue;
 
-		const auto v_kinematicset_path_obj = v_kinematic_set["name"];
-		if (!v_kinematicset_path_obj.is_string()) continue;
+		const auto v_kinematicsetPathObj = v_kinematicSet["name"];
+		if (!v_kinematicsetPathObj.is_string()) continue;
 
-		std::wstring v_kinematicset_path = String::ToWide(v_kinematicset_path_obj.get_string().value_unsafe());
-		KeywordReplacer::ReplaceKeyR(v_kinematicset_path);
+		String::ToWideRef(v_kinematicsetPathObj.get_string().value_unsafe(), v_kinematicSetPath);
+		KeywordReplacer::ReplaceKeyR(v_kinematicSetPath);
 
-		v_mod->LoadFile(v_kinematicset_path, add_to_global_db);
+		v_mod->LoadFile(v_kinematicSetPath, add_to_global_db);
 	}
 }
 

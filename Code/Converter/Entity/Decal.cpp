@@ -8,23 +8,43 @@
 
 #pragma unmanaged
 
+SMDecal::SMDecal(
+	const DecalData* data_ptr,
+	const SMEntityTransform& transform,
+	SMColor color
+) :
+	SMEntity(transform),
+	m_data(data_ptr),
+	m_color(color)
+{}
+
+EntityType SMDecal::Type() const noexcept
+{
+	return EntityType::Decal;
+}
+
 char* SMDecal::GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, char* v_ptr) const
 {
-	v_ptr = m_data->m_uuid.ToCString(v_ptr);
+	v_ptr = m_data->m_uuid.toCString(v_ptr);
 	*v_ptr++ = ' ';
 	v_ptr = m_color.StringHexCStr(v_ptr);
 	*v_ptr++ = ' ';
 	v_ptr = String::FromInteger<std::size_t>(v_idx + 1, v_ptr);
 	*v_ptr++ = ' ';
 
-	return MaterialManager::GetMaterialACStr(m_data->m_textures.material, v_ptr);
+	return MaterialManager::GetMaterialACStr(m_data->m_textures.m_material, v_ptr);
 }
 
 std::string SMDecal::GetMtlName(std::size_t mIdx) const
 {
-	const std::string v_materialIdx = MaterialManager::GetMaterialA(m_data->m_textures.material);
+	std::string v_mtlName(m_data->m_uuid.toString());
+	v_mtlName.append(1, ' ');
+	m_color.appendStringHex(v_mtlName);
+	v_mtlName.append(1, ' ');
+	String::AppendIntegerToString(v_mtlName, mIdx + 1);
+	MaterialManager::AppendMaterialIdx(v_mtlName, m_data->m_textures.m_material);
 
-	return m_data->m_uuid.ToString() + " " + m_color.StringHex() + " " + std::to_string(mIdx + 1) + " " + v_materialIdx;
+	return v_mtlName;
 }
 
 void SMDecal::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const

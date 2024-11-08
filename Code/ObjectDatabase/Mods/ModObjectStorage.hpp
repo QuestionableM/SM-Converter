@@ -29,20 +29,21 @@ public:
 			delete v_item.second;
 	}
 
-	inline static std::unordered_map<SMUuid, T*> StaticStorage = {};
-	std::unordered_map<SMUuid, T*> DynamicStorage = {};
+	using MapType = std::unordered_map<SMUuid, T*, UuidHasher, std::equal_to<>>;
 
-	inline std::unordered_map<SMUuid, T*>& GetStorage(bool add_to_global_db)
+	inline static MapType StaticStorage = {};
+	MapType DynamicStorage = {};
+
+	inline MapType& GetStorage(bool add_to_global_db)
 	{
 		return add_to_global_db ? StaticStorage : this->DynamicStorage;
 	}
 
-	inline bool ObjectExists(const std::unordered_map<SMUuid, T*>& v_storage, const SMUuid& v_uuid)
+	inline bool ObjectExists(const MapType& mapStorage, const SMUuid& uuid)
 	{
-		if (v_storage.find(v_uuid) == v_storage.end())
-			return false;
+		if (!mapStorage.contains(uuid)) return false;
 
-		DebugWarningL("Object with the same uuid already exists! (", v_uuid.ToString(), ")");
+		DebugWarningL("Object with the same uuid already exists! (", uuid.toString(), ")");
 		return true;
 	}
 
@@ -63,13 +64,12 @@ public:
 		StaticStorage.emplace(v_object->m_uuid, v_object);
 	}
 
-	inline bool ObjectExists(const SMUuid& v_uuid, bool add_to_global_db)
+	inline bool ObjectExists(const SMUuid& uuid, bool add_to_global_db)
 	{
-		const std::unordered_map<SMUuid, T*>& v_cur_map = add_to_global_db ? StaticStorage : this->DynamicStorage;
-		if (v_cur_map.find(v_uuid) == v_cur_map.end())
-			return false;
+		const auto& v_curMap = add_to_global_db ? StaticStorage : this->DynamicStorage;
+		if (!v_curMap.contains(uuid)) return false;
 
-		DebugWarningL("Object with the same uuid already exists! (", v_uuid.ToString(), ")");
+		DebugWarningL("Object with the same uuid already exists! (", uuid.toString(), ")");
 		return true;
 	}
 

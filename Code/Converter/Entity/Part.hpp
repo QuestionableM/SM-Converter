@@ -11,17 +11,14 @@ SM_UNMANAGED_CODE
 class SMPart : public SMEntityWithModelAndUuid
 {
 public:
-	inline SMPart(const PartData* pParent,
+	SMPart(
+		const PartData* pParent,
 		const glm::vec3& pos,
 		Model* pModel,
 		SMColor color,
 		unsigned char rotation,
-		std::size_t index)
-		: SMEntityWithModelAndUuid(pParent->m_uuid, pModel, pos),
-		m_parent(pParent),
-		m_index(index),
-		m_color(color),
-		m_xzRotation(rotation) {}
+		std::size_t index
+	);
 
 	SMPart(const SMPart&) = delete;
 	SMPart(SMPart&) = delete;

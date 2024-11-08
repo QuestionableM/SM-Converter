@@ -28,14 +28,9 @@ SMUuid::SMUuid(long long first, long long second, bool isBigEndian)
 	}
 }
 
-bool SMUuid::IsNil() const noexcept
-{
-	return (m_Data64[0] == 0 && m_Data64[1] == 0);
-}
-
 SMUuid SMUuid::GenerateNamedStatic(const SMUuid& uuid, const std::string& some_string)
 {
-	const std::string v_hash_string = uuid.ToString() + some_string;
+	const std::string v_hash_string = uuid.toString() + some_string;
 	const std::string v_hash = Crypt::GetHashString(v_hash_string.data(), v_hash_string.size(), Crypt::HashType::Sha1);
 
 	SMUuid v_new_uuid;
@@ -62,7 +57,7 @@ SMUuid SMUuid::GenerateNamedStatic(const SMUuid& uuid, const std::string& some_s
 
 void SMUuid::GenerateNamed(const SMUuid& uuid, const std::string& str)
 {
-	const std::string v_hash_str = uuid.ToString() + str;
+	const std::string v_hash_str = uuid.toString() + str;
 	const std::string v_hash = Crypt::GetHashString(v_hash_str.data(), v_hash_str.size(), Crypt::HashType::Sha1);
 
 	m_Data8[0] = static_cast<unsigned char>(std::stoi(v_hash.substr(0, 2), nullptr, 16));
@@ -83,7 +78,7 @@ void SMUuid::GenerateNamed(const SMUuid& uuid, const std::string& str)
 	m_Data8[15] = static_cast<unsigned char>(std::stoi(v_hash.substr(30, 2), nullptr, 16));
 }
 
-std::size_t SMUuid::Hash() const
+std::size_t SMUuid::hash() const noexcept
 {
 	const std::uint64_t v_hash1 = std::hash<std::uint64_t>{}(m_Data64[0]);
 	const std::uint64_t v_hash2 = std::hash<std::uint64_t>{}(m_Data64[1]);
@@ -91,7 +86,12 @@ std::size_t SMUuid::Hash() const
 	return (v_hash1 >> 1) ^ (v_hash2 << 2);
 }
 
-char* SMUuid::ToCString(char* v_beginning) const
+bool SMUuid::isNil() const noexcept
+{
+	return (m_Data64[0] == 0 && m_Data64[1] == 0);
+}
+
+char* SMUuid::toCString(char* v_beginning) const
 {
 	v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[0], v_beginning);
 	v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[1], v_beginning);
@@ -115,7 +115,7 @@ char* SMUuid::ToCString(char* v_beginning) const
 	return String::FromInteger<unsigned char, 16>(m_Data8[15], v_beginning);
 }
 
-wchar_t* SMUuid::ToCStringW(wchar_t* v_beginning) const
+wchar_t* SMUuid::toCStringW(wchar_t* v_beginning) const
 {
 	v_beginning = String::FromIntegerW<unsigned char, 16>(m_Data8[0], v_beginning);
 	v_beginning = String::FromIntegerW<unsigned char, 16>(m_Data8[1], v_beginning);
@@ -139,20 +139,33 @@ wchar_t* SMUuid::ToCStringW(wchar_t* v_beginning) const
 	return String::FromIntegerW<unsigned char, 16>(m_Data8[15], v_beginning);
 }
 
-std::string SMUuid::ToString() const
+std::string SMUuid::toString() const
 {
 	char v_buffer[37];
 	v_buffer[36] = '\0';
-	this->ToCString(v_buffer);
+	this->toCString(v_buffer);
 
 	return std::string(v_buffer, 36);
 }
 
-std::wstring SMUuid::ToWstring() const
+std::wstring SMUuid::toWstring() const
 {
 	wchar_t v_buffer[37];
 	v_buffer[36] = L'\0';
-	this->ToCStringW(v_buffer);
+	this->toCStringW(v_buffer);
 
 	return std::wstring(v_buffer, 36);
+}
+
+void SMUuid::fromStringView(const std::string_view& uuid)
+{
+	if (uuid.size() != 36)
+	{
+		std::memset(m_Data8, 0, sizeof(m_Data8));
+		return;
+	}
+
+	const constexpr static std::size_t v_offsets[16] = { 0, 2, 4, 6, 9, 11, 14, 16, 19, 21, 24, 26, 28, 30, 32, 34 };
+	for (std::size_t a = 0; a < sizeof(m_Data8); a++)
+		m_Data8[a] = String::HexStringToByte(uuid.data() + v_offsets[a]);
 }

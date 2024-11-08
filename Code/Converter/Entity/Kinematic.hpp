@@ -11,14 +11,12 @@ SM_UNMANAGED_CODE
 class SMKinematic : public SMEntityWithModelAndUuid
 {
 public:
-	inline SMKinematic(
+	SMKinematic(
 		const KinematicData* pParent,
 		const SMEntityTransform& transform,
 		Model* pModel,
-		SMColor color)
-		: SMEntityWithModelAndUuid(pParent->m_uuid, pModel, transform),
-		m_parent(pParent),
-		m_color(color) {}
+		SMColor color
+	);
 
 	SMKinematic(const SMKinematic&) = delete;
 	SMKinematic(SMKinematic&) = delete;

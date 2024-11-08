@@ -191,7 +191,7 @@ public:
 				SMBlueprint* blueprint = SMBlueprint::LoadAutomatic(value, f_pos, f_quat);
 				if (!blueprint) continue;
 
-				prefab->AddObject(blueprint);
+				prefab->addObject(blueprint);
 			}
 		}
 
@@ -240,10 +240,9 @@ public:
 			{
 				SMPrefab* rec_prefab = PrefabFileReader::Read<t_mod_counter>(v_pref_path, L"", v_transform, error);
 				if (error) return 0;
-
 				if (!rec_prefab) continue;
 
-				pPrefab->AddObject(rec_prefab);
+				pPrefab->addObject(rec_prefab);
 			}
 		}
 
@@ -327,7 +326,7 @@ public:
 			const SMUuid uuid = stream.ReadUuid();
 			const int materialCount = stream.ReadByte();
 
-			std::unordered_map<std::string, SMColor> color_map;
+			std::unordered_map<std::string, SMColor, Hashing::StringHasher, std::equal_to<>> color_map;
 
 			if (materialCount != 0)
 			{
@@ -360,7 +359,7 @@ public:
 				if (!pModel) continue;
 
 				SMAsset* nAsset = new SMAsset(v_asset_data, v_transform, pModel, std::move(color_map));
-				prefab->AddObject(nAsset);
+				prefab->addObject(nAsset);
 			}
 		}
 
@@ -407,7 +406,7 @@ public:
 				if (!v_decal_data) continue;
 
 				SMDecal* v_newDecal = new SMDecal(v_decal_data, v_transform, v_color);
-				prefab->AddObject(v_newDecal);
+				prefab->addObject(v_newDecal);
 			}
 		}
 
@@ -479,8 +478,14 @@ public:
 				Model* v_km_model = ModelStorage::LoadModel(v_kinematic_data->m_mesh);
 				if (!v_km_model) continue;
 
-				SMKinematic* v_new_kinematic = new SMKinematic(v_kinematic_data, v_transform, v_km_model, v_color);
-				prefab->AddObject(v_new_kinematic);
+				prefab->addObject(
+					new SMKinematic(
+						v_kinematic_data,
+						v_transform,
+						v_km_model,
+						v_color
+					)
+				);
 			}
 		}
 

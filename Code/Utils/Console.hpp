@@ -122,6 +122,11 @@ private:
 		WriteConsoleA(DebugConsole::Handle, v_str.data(), static_cast<DWORD>(v_str.size()), NULL, NULL);
 	}
 
+	inline static void Output(const std::wstring_view& str)
+	{
+		WriteConsoleW(DebugConsole::Handle, str.data(), static_cast<DWORD>(str.size()), NULL, NULL);
+	}
+
 	inline static void Output(const ConColor& con_color)
 	{
 		SetConsoleTextAttribute(DebugConsole::Handle, static_cast<WORD>(con_color));

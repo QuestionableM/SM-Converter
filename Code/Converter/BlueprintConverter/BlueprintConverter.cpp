@@ -180,7 +180,7 @@ void BlueprintConv::BlueprintAddObject_SeparateJoints(SMBlueprint* self, SMEntit
 
 void BlueprintConv::BlueprintAddObject_SeparateUuid(SMBlueprint* self, SMEntity* pEntity)
 {
-	BlueprintConv::CreateAndAddObjToCollectionNI(self, pEntity->GetUuid().ToString(), pEntity);
+	BlueprintConv::CreateAndAddObjToCollectionNI(self, pEntity->GetUuid().toString(), pEntity);
 }
 
 void BlueprintConv::BlueprintAddObject_SeparateColor(SMBlueprint* self, SMEntity* pEntity)
@@ -190,7 +190,7 @@ void BlueprintConv::BlueprintAddObject_SeparateColor(SMBlueprint* self, SMEntity
 
 void BlueprintConv::BlueprintAddObject_SeparateUuidAndColor(SMBlueprint* self, SMEntity* pEntity)
 {
-	std::string v_group_name = pEntity->GetUuid().ToString();
+	std::string v_group_name = pEntity->GetUuid().toString();
 	v_group_name.append("_");
 	v_group_name.append(pEntity->GetColor().StringHex());
 

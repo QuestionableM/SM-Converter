@@ -6,33 +6,38 @@
 
 #pragma unmanaged
 
-void MtlFileWriter::Write(const std::wstring& path, const std::unordered_map<std::string, ObjectTexData>& v_data)
+void MtlFileWriter::Write(
+	const std::wstring& path,
+	const std::unordered_map<std::string, ObjectTexData>& v_data)
 {
 	std::ofstream v_mtl_writer(path);
 	if (!v_mtl_writer.is_open())
 		return;
 
+	std::string v_outputStr;
+
 	for (const auto& v_tex_data : v_data)
 	{
-		std::string output_str = "newmtl " + v_tex_data.first;
-		output_str.append("\nNs 324");
-		output_str.append("\nKa 1 1 1\nKd ");
-		output_str.append(v_tex_data.second.m_texColor.StringNormalized());
-		output_str.append("\nKs 0.5 0.5 0.5");
-		output_str.append("\nKe 0 0 0");
-		output_str.append("\nNi 1.45");
-		output_str.append("\nd 1");
-		output_str.append("\nillum 2");
+		v_outputStr.append("newmtl ");
+		v_outputStr.append(v_tex_data.first);
+		v_outputStr.append("\nNs 324");
+		v_outputStr.append("\nKa 1 1 1\nKd ");
+		v_outputStr.append(v_tex_data.second.m_texColor.StringNormalized());
+		v_outputStr.append("\nKs 0.5 0.5 0.5");
+		v_outputStr.append("\nKe 0 0 0");
+		v_outputStr.append("\nNi 1.45");
+		v_outputStr.append("\nd 1");
+		v_outputStr.append("\nillum 2");
 
 		const SMTextureList& tList = v_tex_data.second.m_textures;
 
-		if (!tList.nor.empty()) output_str.append("\nmap_Bump " + String::ToUtf8(tList.nor));
-		if (!tList.dif.empty()) output_str.append("\nmap_Kd " + String::ToUtf8(tList.dif));
-		if (!tList.asg.empty()) output_str.append("\nmap_Ks " + String::ToUtf8(tList.asg));
+		if (!tList.m_nor.empty()) v_outputStr.append("\nmap_Bump " + String::ToUtf8(tList.m_nor));
+		if (!tList.m_dif.empty()) v_outputStr.append("\nmap_Kd " + String::ToUtf8(tList.m_dif));
+		if (!tList.m_asg.empty()) v_outputStr.append("\nmap_Ks " + String::ToUtf8(tList.m_asg));
 
-		output_str.append("\n\n");
+		v_outputStr.append("\n\n");
 
-		v_mtl_writer.write(output_str.c_str(), output_str.size());
+		v_mtl_writer.write(v_outputStr.c_str(), v_outputStr.size());
 
 		ProgCounter::ProgressValue++;
 	}

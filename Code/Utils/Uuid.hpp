@@ -21,32 +21,21 @@ public:
 	SMUuid(const std::vector<long long>& longs);
 	SMUuid(long long first, long long second, bool isBigEndian = false);
 
-	bool IsNil() const noexcept;
 
 	static SMUuid GenerateNamedStatic(const SMUuid& uuid, const std::string& some_string);
 	void GenerateNamed(const SMUuid& uuid, const std::string& str);
 
-	std::size_t Hash() const;
+	std::size_t hash() const noexcept;
+	bool isNil() const noexcept;
 
 	//Returns the end of the uuid
-	char* ToCString(char* v_beginning) const;
-	wchar_t* ToCStringW(wchar_t* v_beginning) const;
+	char* toCString(char* v_beginning) const;
+	wchar_t* toCStringW(wchar_t* v_beginning) const;
 
-	std::string ToString() const;
-	std::wstring ToWstring() const;
+	std::string toString() const;
+	std::wstring toWstring() const;
 
-	inline void fromStringView(const std::string_view& uuid)
-	{
-		if (uuid.size() != 36)
-		{
-			std::memset(m_Data8, 0, sizeof(m_Data8));
-			return;
-		}
-
-		const constexpr static std::size_t v_offsets[16] = { 0, 2, 4, 6, 9, 11, 14, 16, 19, 21, 24, 26, 28, 30, 32, 34 };
-		for (std::size_t a = 0; a < sizeof(m_Data8); a++)
-			m_Data8[a] = String::HexStringToByte(uuid.data() + v_offsets[a]);
-	}
+	void fromStringView(const std::string_view& uuid);
 
 public:
 	friend bool operator==(const SMUuid& lhs, const SMUuid& rhs) noexcept;
@@ -94,11 +83,42 @@ namespace std
 		using argument_type = SMUuid;
 		using result_type = std::size_t;
 
-		inline result_type operator()(argument_type const& uuid) const
+		inline result_type operator()(argument_type const& uuid) const noexcept
 		{
-			return uuid.Hash();
+			return uuid.hash();
 		}
 	};
 }
+
+struct PrecomputedUuidHash
+{
+	inline PrecomputedUuidHash(const SMUuid& uuid) noexcept :
+		m_uuid(uuid),
+		m_hash(uuid.hash())
+	{}
+
+	SMUuid m_uuid;
+	std::size_t m_hash;
+};
+
+inline bool operator==(const SMUuid& lhs, PrecomputedUuidHash rhs) noexcept
+{
+	return lhs == rhs.m_uuid;
+}
+
+struct UuidHasher
+{
+	using is_transparent = void;
+
+	inline std::size_t operator()(const SMUuid& uuid) const noexcept
+	{
+		return std::hash<SMUuid>{}(uuid);
+	}
+
+	inline std::size_t operator()(PrecomputedUuidHash hash) const noexcept
+	{
+		return hash.m_hash;
+	}
+};
 
 SM_MANAGED_CODE
