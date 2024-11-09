@@ -55,7 +55,7 @@ public:
 	static void SetState(ProgState nState);
 	static void SetState(ProgState nState, std::size_t new_max);
 
-	static const std::wstring& GetStateString();
+	static const std::string_view& GetStateString();
 	static bool StateHasNumbers();
 };
 

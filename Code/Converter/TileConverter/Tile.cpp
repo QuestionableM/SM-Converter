@@ -701,7 +701,7 @@ void Tile::FillMaterialMap(std::array<MaterialData, 8>& mat_data) const
 	}
 }
 
-static const std::wstring GroundTextureNames[] = { L"Dif", L"Asg", L"Nor" };
+static const std::wstring_view GroundTextureNames[] = { L"Dif", L"Asg", L"Nor" };
 void Tile::WriteGroundTextures(const std::wstring& dir) const
 {
 	if (!m_hasTerrain || !TileConverterSettings::ExportGroundTextures) return;
@@ -721,6 +721,8 @@ void Tile::WriteGroundTextures(const std::wstring& dir) const
 		v_widthDiv = m_width * 2;
 		v_heightDiv = m_height * 2;
 	}
+
+	std::wstring v_filePath;
 
 	for (std::size_t texture_id = 0; texture_id < 3; texture_id++)
 	{
@@ -757,7 +759,12 @@ void Tile::WriteGroundTextures(const std::wstring& dir) const
 		}
 
 		ProgCounter::SetState(static_cast<ProgState>(writing_gnd_idx + 2), 0);
-		gnd_tex.WriteToFile(dir + L"GroundTexture_" + GroundTextureNames[texture_id] + L".jpg");
+
+		v_filePath.assign(dir);
+		v_filePath.append(L"GroundTexture_");
+		v_filePath.append(GroundTextureNames[texture_id]);
+		v_filePath.append(L".jpg");
+		gnd_tex.WriteToFile(v_filePath);
 	}
 }
 

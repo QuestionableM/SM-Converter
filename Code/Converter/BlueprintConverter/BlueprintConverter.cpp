@@ -64,7 +64,7 @@ void BlueprintConv::WriteToFileInternal(SMBlueprint* pBlueprint, const std::wstr
 
 		std::unordered_map<std::string, ObjectTexData> v_tex_map;
 
-		for (const SMEntity* v_entity : pBlueprint->Objects)
+		for (const SMEntity* v_entity : pBlueprint->m_objects)
 		{
 			v_entity->FillTextureMap(v_tex_map);
 			ProgCounter::ProgressMax = v_tex_map.size();
@@ -74,23 +74,28 @@ void BlueprintConv::WriteToFileInternal(SMBlueprint* pBlueprint, const std::wstr
 	}
 }
 
-SMBody* BlueprintConv::CreateCollection(SMBlueprint* self, const std::string& name)
+SMBody* BlueprintConv::CreateCollection(
+	SMBlueprint* self,
+	const std::string_view& name)
 {
 	const auto v_iter = BlueprintConv::BodyGroupMap.find(name);
 	if (v_iter != BlueprintConv::BodyGroupMap.end())
 		return v_iter->second;
 
-	SMBody* v_new_collection = new SMBody(name);
+	SMBody* v_newCollection = new SMBody(name);
 
 	DebugOutL("Created a new collection: ", name);
 
-	BlueprintConv::BodyGroupMap.emplace(name, v_new_collection);
-	self->Objects.push_back(v_new_collection);
+	BlueprintConv::BodyGroupMap.emplace(name, v_newCollection);
+	self->m_objects.push_back(v_newCollection);
 
-	return v_new_collection;
+	return v_newCollection;
 }
 
-void BlueprintConv::CreateAndAddObjToCollection(SMBlueprint* self, const std::string& name, SMEntity* pEntity)
+void BlueprintConv::CreateAndAddObjToCollection(
+	SMBlueprint* self,
+	const std::string_view& name,
+	SMEntity* pEntity)
 {
 	SMBody* v_collection = BlueprintConv::CreateCollection(self, name);
 
@@ -98,7 +103,10 @@ void BlueprintConv::CreateAndAddObjToCollection(SMBlueprint* self, const std::st
 	BlueprintConv::BodyIndexMap.emplace(pEntity->GetIndex(), v_collection);
 }
 
-void BlueprintConv::CreateAndAddObjToCollectionNI(SMBlueprint* self, const std::string& name, SMEntity* pEntity)
+void BlueprintConv::CreateAndAddObjToCollectionNI(
+	SMBlueprint* self,
+	const std::string_view& name,
+	SMEntity* pEntity)
 {
 	BlueprintConv::CreateCollection(self, name)->Add(pEntity);
 }
@@ -113,15 +121,18 @@ void BlueprintConv::BlueprintAddObject_SeparateAll(SMBlueprint* self, SMEntity* 
 		const std::size_t v_bounds_y = static_cast<std::size_t>(v_block->m_size.y);
 		const std::size_t v_bounds_z = static_cast<std::size_t>(v_block->m_size.z);
 
-		const std::string v_coll_name = "Object_" + std::to_string(self->m_object_index + 1);
+		std::string v_collName("Object_");
+		String::AppendIntegerToString(v_collName, self->m_objectIndex + 1);
+
+		const std::string_view v_collNameView(v_collName);
 
 		if (v_bounds_x == 1 && v_bounds_y == 1 && v_bounds_z == 1)
 		{
-			BlueprintConv::CreateAndAddObjToCollectionNI(self, v_coll_name, pEntity);
+			BlueprintConv::CreateAndAddObjToCollectionNI(self, v_collNameView, pEntity);
 		}
 		else
 		{
-			SMBody* v_pCollection = BlueprintConv::CreateCollection(self, v_coll_name);
+			SMBody* v_pCollection = BlueprintConv::CreateCollection(self, v_collNameView);
 			glm::vec3 v_blk_pos;
 
 			for (std::size_t x = 0; x < v_bounds_x; x++)
@@ -153,7 +164,10 @@ void BlueprintConv::BlueprintAddObject_SeparateAll(SMBlueprint* self, SMEntity* 
 
 void BlueprintConv::BlueprintAddObject_SeparateShapes(SMBlueprint* self, SMEntity* pEntity)
 {
-	BlueprintConv::CreateAndAddObjToCollectionNI(self, "Object_" + std::to_string(self->m_object_index + 1), pEntity);
+	std::string v_groupName("Object_");
+	String::AppendIntegerToString(v_groupName, self->m_objectIndex + 1);
+
+	BlueprintConv::CreateAndAddObjToCollectionNI(self, v_groupName, pEntity);
 }
 
 void BlueprintConv::BlueprintAddObject_SeparateJoints(SMBlueprint* self, SMEntity* pEntity)
@@ -174,27 +188,41 @@ void BlueprintConv::BlueprintAddObject_SeparateJoints(SMBlueprint* self, SMEntit
 	}
 	else
 	{
-		BlueprintConv::CreateAndAddObjToCollection(self, "Objects_" + std::to_string(self->m_body_index + 1), pEntity);
+		std::string v_groupName("Objects_");
+		String::AppendIntegerToString(v_groupName, self->m_bodyIndex + 1);
+
+		BlueprintConv::CreateAndAddObjToCollection(self, v_groupName, pEntity);
 	}
 }
 
 void BlueprintConv::BlueprintAddObject_SeparateUuid(SMBlueprint* self, SMEntity* pEntity)
 {
-	BlueprintConv::CreateAndAddObjToCollectionNI(self, pEntity->GetUuid().toString(), pEntity);
+	char v_uuidBuffer[36];
+	pEntity->GetUuid().toCString(v_uuidBuffer);
+
+	BlueprintConv::CreateAndAddObjToCollectionNI(self, std::string_view(v_uuidBuffer, sizeof(v_uuidBuffer)), pEntity);
 }
 
 void BlueprintConv::BlueprintAddObject_SeparateColor(SMBlueprint* self, SMEntity* pEntity)
 {
-	BlueprintConv::CreateAndAddObjToCollectionNI(self, pEntity->GetColor().StringHex(), pEntity);
+	char v_colBuffer[6];
+	pEntity->GetColor().StringHexCStr(v_colBuffer);
+
+	BlueprintConv::CreateAndAddObjToCollectionNI(self, std::string_view(v_colBuffer, sizeof(v_colBuffer)), pEntity);
 }
 
 void BlueprintConv::BlueprintAddObject_SeparateUuidAndColor(SMBlueprint* self, SMEntity* pEntity)
 {
-	std::string v_group_name = pEntity->GetUuid().toString();
-	v_group_name.append("_");
-	v_group_name.append(pEntity->GetColor().StringHex());
+	char v_uuidAndColBuffer[36 + 1 + 6];
+	pEntity->GetUuid().toCString(v_uuidAndColBuffer);
+	v_uuidAndColBuffer[36] = '_';
+	pEntity->GetColor().StringHexCStr(v_uuidAndColBuffer + 37);
 
-	BlueprintConv::CreateAndAddObjToCollectionNI(self, v_group_name, pEntity);
+	BlueprintConv::CreateAndAddObjToCollectionNI(
+		self,
+		std::string_view(v_uuidAndColBuffer, sizeof(v_uuidAndColBuffer)),
+		pEntity
+	);
 }
 
 SMBlueprint::AddObjectFunction BlueprintConv::GetAddObjectFunction()

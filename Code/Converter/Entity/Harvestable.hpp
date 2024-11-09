@@ -8,7 +8,7 @@
 
 SM_UNMANAGED_CODE
 
-class SMHarvestable : public SMEntityWithModelAndUuid
+class SMHarvestable final : public SMEntityWithModelAndUuid
 {
 public:
 	SMHarvestable(

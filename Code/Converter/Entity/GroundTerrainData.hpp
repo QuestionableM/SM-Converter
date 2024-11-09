@@ -5,7 +5,7 @@
 
 SM_UNMANAGED_CODE
 
-class SMGroundTerrainData : public SMEntity
+class SMGroundTerrainData final : public SMEntity
 {
 public:
 	inline EntityType Type() const noexcept override { return EntityType::GroundTerrain; }

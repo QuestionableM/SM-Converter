@@ -34,7 +34,7 @@ public:
 	{
 		static_assert(!std::is_pointer_v<T>, "GetObject -> Template argument should not be a pointer!");
 
-		const std::unordered_map<SMUuid, T*>::const_iterator v_iter = SMModObjectStorage<T>::StaticStorage.find(uuid);
+		const auto v_iter = SMModObjectStorage<T>::StaticStorage.find(uuid);
 		if (v_iter != SMModObjectStorage<T>::StaticStorage.end())
 			return v_iter->second;
 

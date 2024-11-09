@@ -8,6 +8,7 @@
 
 #include "UStd/UnmanagedUnorderedMap.hpp"
 #include "Utils/clr_include.hpp"
+#include "Utils/Hashing.hpp"
 
 SM_UNMANAGED_CODE
 
@@ -27,11 +28,11 @@ class BlueprintConv
 {
 	static void WriteToFileInternal(SMBlueprint* pBlueprint, const std::wstring& bp_name, ConvertError& error);
 
-	static SMBody* CreateCollection(SMBlueprint* self, const std::string& name);
+	static SMBody* CreateCollection(SMBlueprint* self, const std::string_view& name);
 
-	static void CreateAndAddObjToCollection(SMBlueprint* self, const std::string& name, SMEntity* pEntity);
+	static void CreateAndAddObjToCollection(SMBlueprint* self, const std::string_view& name, SMEntity* pEntity);
 	//A version that doesn't fill body index map, as it is only used in joint separation mode
-	static void CreateAndAddObjToCollectionNI(SMBlueprint* self, const std::string& name, SMEntity* pEntity);
+	static void CreateAndAddObjToCollectionNI(SMBlueprint* self, const std::string_view& name, SMEntity* pEntity);
 
 	static void BlueprintAddObject_SeparateAll(SMBlueprint* self, SMEntity* pEntity);
 	static void BlueprintAddObject_SeparateShapes(SMBlueprint* self, SMEntity* pEntity);
@@ -51,7 +52,7 @@ public:
 
 private:
 	//Is used to group all the objects
-	inline static std::unordered_map<std::string, SMBody*> BodyGroupMap = {};
+	inline static std::unordered_map<std::string, SMBody*, Hashing::StringHasher, std::equal_to<>> BodyGroupMap = {};
 	inline static std::unordered_map<std::size_t, SMBody*> BodyIndexMap = {};
 
 	BlueprintConv() = default;

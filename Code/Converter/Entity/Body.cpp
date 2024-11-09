@@ -4,10 +4,10 @@
 
 SM_UNMANAGED_CODE
 
-SMBody::SMBody(const std::string& name) :
+SMBody::SMBody(const std::string_view& name) :
 	SMEntity(),
 	m_objects(),
-	m_body_name(name)
+	m_bodyName(name)
 {}
 
 SMBody::~SMBody()
@@ -38,7 +38,7 @@ void SMBody::WriteObjectToFile(
 	const glm::mat4& transform_matrix) const
 {
 	std::string v_groupName = "o ";
-	v_groupName.append(m_body_name);
+	v_groupName.append(m_bodyName);
 
 	if (BlueprintConverterSettings::SeparationType == BPObjectSep_All)
 	{

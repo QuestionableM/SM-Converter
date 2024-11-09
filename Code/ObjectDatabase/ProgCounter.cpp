@@ -21,65 +21,54 @@ void ProgCounter::SetState(ProgState nState, std::size_t new_max)
 
 struct StateData
 {
-	std::wstring Description;
-	bool DisplayNumbers;
+	std::string_view description;
+	bool displayNumbers;
 };
 
-static const StateData StateDataArray[] =
+static const StateData g_stateArray[] =
 {
-	{ L"Loading Vanilla Objects... ", true },
-	{ L"Loading Modded Objects... ",  true },
+	{ "NO_STATE", false },
 
-	{ L"Reading Tile...",          false },
-	{ L"Writing Ground Mesh...",   false },
-	{ L"Writing Clutter...  ",     true  },
-	{ L"Writing Objects... ",      true  },
-	{ L"Writing Material Maps...", false },
-	{ L"Writing Color Map...",     false },
-	{ L"Writing Mtl File...",      true  },
+	{ "Loading Vanilla Objects... ", true },
+	{ "Loading Modded Objects... ",  true },
 
-	{ L"Success!",       false },
-	{ L"Convert Failed", false },
+	{ "Reading Tile...",          false },
+	{ "Writing Ground Mesh...",   false },
+	{ "Writing Clutter...  ",     true  },
+	{ "Writing Objects... ",      true  },
+	{ "Writing Material Maps...", false },
+	{ "Writing Color Map...",     false },
+	{ "Writing Mtl File...",      true  },
 
-	{ L"Filling Ground Dif Texture...",   false },
-	{ L"Sampling Ground Dif Texture... ", true  },
-	{ L"Writing Ground Dif Texture...",   false },
+	{ "Success!",       false },
+	{ "Convert Failed", false },
 
-	{ L"Filling Ground Asg Texture...",   false },
-	{ L"Sampling Ground Asg Texture... ", true  },
-	{ L"Writing Ground Asg Texture...",   false },
+	{ "Filling Ground Dif Texture...",   false },
+	{ "Sampling Ground Dif Texture... ", true  },
+	{ "Writing Ground Dif Texture...",   false },
 
-	{ L"Filling Ground Nor Texture...",   false },
-	{ L"Sampling Ground Nor Texture... ", true  },
-	{ L"Writing Ground Nor Texture...",   false },
+	{ "Filling Ground Asg Texture...",   false },
+	{ "Sampling Ground Asg Texture... ", true  },
+	{ "Writing Ground Asg Texture...",   false },
 
-	{ L"Parsing Blueprint...", false },
-	{ L"Reading Parts...",     true  },
-	{ L"Reading Joints...",    true  },
+	{ "Filling Ground Nor Texture...",   false },
+	{ "Sampling Ground Nor Texture... ", true  },
+	{ "Writing Ground Nor Texture...",   false },
 
-	{ L"Reading Cells...", true },
-	{ L"Memory cleanup...", false }
+	{ "Parsing Blueprint...", false },
+	{ "Reading Parts...",     true  },
+	{ "Reading Joints...",    true  },
+
+	{ "Reading Cells..." , true  },
+	{ "Memory cleanup...", false }
 };
 
-const static std::wstring g_no_state_string = L"NO_STATE";
-const std::wstring& ProgCounter::GetStateString()
+const std::string_view& ProgCounter::GetStateString()
 {
-	const std::size_t state_idx = static_cast<std::size_t>(ProgCounter::State.load());
-	if (state_idx > 0)
-	{
-		return StateDataArray[state_idx - 1].Description;
-	}
-
-	return g_no_state_string;
+	return g_stateArray[static_cast<std::size_t>(ProgCounter::State.load())].description;
 }
 
 bool ProgCounter::StateHasNumbers()
 {
-	const std::size_t state_idx = static_cast<std::size_t>(ProgCounter::State.load());
-	if (state_idx > 0)
-	{
-		return StateDataArray[state_idx - 1].DisplayNumbers;
-	}
-
-	return false;
+	return g_stateArray[static_cast<std::size_t>(ProgCounter::State.load())].displayNumbers;
 }

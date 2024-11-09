@@ -11,43 +11,28 @@ SM_UNMANAGED_CODE
 class SMColor
 {
 public:
-	inline SMColor() noexcept : m_color(0x000000ff) {}
+	SMColor() noexcept;
+	SMColor(const std::string_view& color) noexcept;
 
-	inline SMColor(const std::string_view& color) { this->fromStringView(color); }
+	SMColor(Byte r, Byte g, Byte b) noexcept;
+	SMColor(Byte r_val, Byte g_val, Byte b_val, Byte a_val) noexcept;
+	SMColor(std::uint32_t color) noexcept;
 
-	inline SMColor(Byte r, Byte g, Byte b) :
-		m_bytes{ r, g, b, 255 }
-	{}
+	void operator=(const std::string_view& color) noexcept;
 
-	inline SMColor(Byte r_val, Byte g_val, Byte b_val, Byte a_val) :
-		r(r_val),
-		g(g_val),
-		b(b_val),
-		a(a_val)
-	{}
+	void SetIntLittleEndian(std::uint32_t color) noexcept;
+	void SetIntBigEndian(std::uint32_t color) noexcept;
 
-	inline SMColor(unsigned int color)
-	{
-		this->SetIntLittleEndian(color);
-	}
+	std::string String() const;
+	std::string StringNormalized() const;
+	std::string StringHex() const;
+	std::string StringHexAlpha() const;
+	//Returns the end of the hex string
+	char* StringHexCStr(char* ptr) const noexcept;
+	void appendStringHex(std::string& outStr) const;
+	static char* WriteEmptyHex(char* ptr) noexcept;
 
-	inline void operator=(const std::string_view& color) { this->fromStringView(color); }
-
-	inline void SetIntLittleEndian(unsigned int color)
-	{
-		this->r = static_cast<Byte>(color);
-		this->g = static_cast<Byte>(color >> 8);
-		this->b = static_cast<Byte>(color >> 16);
-		this->a = static_cast<Byte>(color >> 24);
-	}
-
-	inline void SetIntBigEndian(unsigned int color)
-	{
-		this->r = static_cast<Byte>(color >> 24);
-		this->g = static_cast<Byte>(color >> 16);
-		this->b = static_cast<Byte>(color >> 8);
-		this->a = static_cast<Byte>(color);
-	}
+	inline void fromStringView(const std::string_view& color) noexcept;
 
 	template<class T>
 	constexpr inline void SetRGBFloat(T r, T g, T b)
@@ -70,74 +55,6 @@ public:
 		this->a = static_cast<Byte>(std::max(static_cast<T>(0.0), std::min(a, static_cast<T>(1.0))) * static_cast<T>(255.0));
 	}
 
-	inline std::string String() const
-	{
-		return std::to_string(this->r) + " " + std::to_string(this->g) + " " + std::to_string(this->b);
-	}
-
-	inline std::string StringNormalized() const
-	{
-		const float v_norm_r = static_cast<float>(this->r) / 255.0f;
-		const float v_norm_g = static_cast<float>(this->g) / 255.0f;
-		const float v_norm_b = static_cast<float>(this->b) / 255.0f;
-
-		return std::to_string(v_norm_r) + " " + std::to_string(v_norm_g) + " " + std::to_string(v_norm_b);
-	}
-
-	inline static char* WriteEmptyHex(char* v_ptr)
-	{
-		*v_ptr++ = '0';
-		*v_ptr++ = '0';
-		*v_ptr++ = '0';
-		*v_ptr++ = '0';
-		*v_ptr++ = '0';
-		*v_ptr++ = '0';
-
-		return v_ptr;
-	}
-
-	//Returns the end of the hex string
-	inline char* StringHexCStr(char* v_ptr) const
-	{
-		v_ptr = String::FromInteger<unsigned char, 16>(this->r, v_ptr);
-		v_ptr = String::FromInteger<unsigned char, 16>(this->g, v_ptr);
-		return String::FromInteger<unsigned char, 16>(this->b, v_ptr);
-	}
-
-	void appendStringHex(std::string& outStr) const
-	{
-		char v_buffer[6], *v_ptr;
-		v_ptr = String::FromInteger<std::uint8_t, 16>(this->r, v_buffer);
-		v_ptr = String::FromInteger<std::uint8_t, 16>(this->g, v_ptr);
-		String::FromInteger<std::uint8_t, 16>(this->b, v_ptr);
-
-		outStr.append(v_buffer, 6);
-	}
-
-	inline std::string StringHex() const
-	{
-		char v_buffer[7], *v_ptr;
-
-		v_ptr = String::FromInteger<unsigned char, 16>(this->r, v_buffer);
-		v_ptr = String::FromInteger<unsigned char, 16>(this->g, v_ptr);
-		String::FromInteger<unsigned char, 16>(this->b, v_ptr);
-
-		return std::string(v_buffer, 6);
-	}
-
-	//Convert to string with alpha component
-	inline std::string StringHexAlpha() const
-	{
-		char v_buffer[9], *v_ptr;
-
-		v_ptr = String::FromInteger<unsigned char, 16>(this->r, v_buffer);
-		v_ptr = String::FromInteger<unsigned char, 16>(this->g, v_ptr);
-		v_ptr = String::FromInteger<unsigned char, 16>(this->b, v_ptr);
-		String::FromInteger<unsigned char, 16>(this->a, v_ptr);
-
-		return std::string(v_buffer, 8);
-	}
-
 	template<typename T>
 	inline T GetFloat(std::size_t idx) const
 	{
@@ -152,33 +69,6 @@ public:
 		static_assert(std::is_floating_point_v<T>, "SetFloat can only be used with floating point types");
 
 		m_bytes[idx] = static_cast<Byte>(std::max(static_cast<T>(0.0), std::min(fp_val, static_cast<T>(1.0))) * static_cast<T>(255.0));
-	}
-
-	inline void fromStringView(const std::string_view& color)
-	{
-		if (color.empty())
-		{
-			m_color = 0x000000ff;
-			return;
-		}
-
-		const std::size_t v_ptrAdder(color[0] == '#');
-		const std::size_t v_lessCheck = 6 + v_ptrAdder;
-		const std::size_t v_moreCheck = 8 + v_ptrAdder;
-
-		if (color.size() < v_lessCheck)
-		{
-			m_color = 0x000000ff;
-			return;
-		}
-
-		char v_strCpy[9] = { 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 'f', 'f', 0x0 };
-		std::memcpy(v_strCpy, color.data() + v_ptrAdder, (color.size() >= v_moreCheck) ? 8 : 6);
-
-		this->r = String::HexStringToByte(v_strCpy);
-		this->g = String::HexStringToByte(v_strCpy + 2);
-		this->b = String::HexStringToByte(v_strCpy + 4);
-		this->a = String::HexStringToByte(v_strCpy + 6);
 	}
 
 	union

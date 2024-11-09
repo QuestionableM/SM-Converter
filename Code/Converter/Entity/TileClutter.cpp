@@ -4,6 +4,31 @@
 
 #pragma unmanaged
 
+SMTileClutter::SMTileClutter(ClutterData* pParent, Model* pModel) :
+	SMEntityWithModel(pModel),
+	m_parent(pParent)
+{}
+
+float SMTileClutter::ScaleVariance() const noexcept
+{
+	return m_parent->m_scaleVariance;
+}
+
+void SMTileClutter::SetColor(SMColor color)
+{
+	this->m_color = color;
+}
+
+const SMUuid& SMTileClutter::GetUuid() const
+{
+	return m_parent->m_uuid;
+}
+
+EntityType SMTileClutter::Type() const noexcept
+{
+	return EntityType::Clutter;
+}
+
 char* SMTileClutter::GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, char* v_ptr) const
 {
 	v_ptr = m_parent->m_uuid.toCString(v_ptr);

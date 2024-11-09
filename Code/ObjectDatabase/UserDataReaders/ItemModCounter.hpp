@@ -10,8 +10,16 @@ SM_UNMANAGED_CODE
 
 struct ItemModInstance
 {
-	SMMod* mod;
-	size_t part_count;
+	inline ItemModInstance(
+		SMMod* pMod,
+		std::size_t partCount
+	) noexcept :
+		m_pMod(pMod),
+		m_partCount(partCount)
+	{}
+
+	SMMod* m_pMod;
+	size_t m_partCount;
 };
 
 struct ItemModStats
@@ -19,21 +27,21 @@ struct ItemModStats
 	inline static std::unordered_map<SMUuid, ItemModInstance*> ModStorage = {};
 	inline static std::vector<ItemModInstance*> ModVector = {};
 
-	inline static void IncrementModPart(SMMod* v_mod)
+	inline static void IncrementModPart(SMMod* pMod)
 	{
-		const SMUuid v_cur_uuid = (v_mod != nullptr) ? v_mod->GetUuid() : SMUuid::Null;
+		const SMUuid v_curUuid = (pMod != nullptr) ? pMod->GetUuid() : SMUuid::Null;
 
-		const auto v_iter = ItemModStats::ModStorage.find(v_cur_uuid);
+		const auto v_iter = ItemModStats::ModStorage.find(v_curUuid);
 		if (v_iter == ItemModStats::ModStorage.end())
 		{
-			ItemModInstance* v_new_instance = new ItemModInstance{ v_mod, 1 };
+			ItemModInstance* v_newInstance = new ItemModInstance(pMod, 1);
 
-			ItemModStats::ModStorage.emplace(v_cur_uuid, v_new_instance);
-			ItemModStats::ModVector.push_back(v_new_instance);
+			ItemModStats::ModVector.emplace_back(v_newInstance);
+			ItemModStats::ModStorage.emplace(v_curUuid, v_newInstance);
 		}
 		else
 		{
-			v_iter->second->part_count++;
+			v_iter->second->m_partCount++;
 		}
 	}
 
@@ -41,17 +49,14 @@ struct ItemModStats
 	{
 		std::size_t	v_output = 0;
 
-		for (auto v_cur_mod : ItemModStats::ModVector)
-			v_output += v_cur_mod->part_count;
+		for (const ItemModInstance* v_curMod : ItemModStats::ModVector)
+			v_output += v_curMod->m_partCount;
 
 		return v_output;
 	}
 
 	inline static void Reset()
 	{
-		for (auto v_cur_mod : ItemModStats::ModVector)
-			delete v_cur_mod;
-
 		ItemModStats::ModStorage.clear();
 		ItemModStats::ModVector.clear();
 	}

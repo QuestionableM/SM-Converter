@@ -91,28 +91,18 @@ bool SMUuid::isNil() const noexcept
 	return (m_Data64[0] == 0 && m_Data64[1] == 0);
 }
 
-char* SMUuid::toCString(char* v_beginning) const
+char* SMUuid::toCString(char* buff) const
 {
-	v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[0], v_beginning);
-	v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[1], v_beginning);
-	v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[2], v_beginning);
-	v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[3], v_beginning);
-	*v_beginning++ = '-';
-	v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[4], v_beginning);
-	v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[5], v_beginning);
-	*v_beginning++ = '-';
-	v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[6], v_beginning);
-	v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[7], v_beginning);
-	*v_beginning++ = '-';
-	v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[8], v_beginning);
-	v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[9], v_beginning);
-	*v_beginning++ = '-';
-	v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[10], v_beginning);
-	v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[11], v_beginning);
-	v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[12], v_beginning);
-	v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[13], v_beginning);
-	v_beginning = String::FromInteger<unsigned char, 16>(m_Data8[14], v_beginning);
-	return String::FromInteger<unsigned char, 16>(m_Data8[15], v_beginning);
+	buff[8] = '-';
+	buff[13] = '-';
+	buff[18] = '-';
+	buff[23] = '-';
+
+	const constexpr static std::size_t v_offsets[16] = { 0, 2, 4, 6, 9, 11, 14, 16, 19, 21, 24, 26, 28, 30, 32, 34 };
+	for (std::size_t a = 0; a < sizeof(m_Data8); a++)
+		String::ByteToHexString(buff + v_offsets[a], m_Data8[a]);
+
+	return buff + 36;
 }
 
 wchar_t* SMUuid::toCStringW(wchar_t* v_beginning) const

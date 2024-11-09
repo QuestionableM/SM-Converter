@@ -13,20 +13,22 @@ MaterialManager::MaterialMap MaterialManager::m_materialStorage = {};
 void MaterialManager::Initialize()
 {
 	simdjson::dom::document v_doc;
-	if (!JsonReader::LoadParseSimdjsonCommentsC(DatabaseConfig::MaterialMapPath.data(), v_doc, simdjson::dom::element_type::OBJECT))
+	if (!JsonReader::LoadParseSimdjsonCommentsC(
+		DatabaseConfig::MaterialMapPath.data(),
+		v_doc,
+		simdjson::dom::element_type::OBJECT))
+	{
 		return;
+	}
 
 	for (const auto& v_object : v_doc.root().get_object().value_unsafe())
 	{
-		if (!v_object.value.is_number()) continue;
+		if (!v_object.value.is_number() || m_materialStorage.contains(v_object.key)) continue;
 
-		std::string v_key(v_object.key);
-		const std::size_t v_value = JsonReader::GetNumber<std::size_t>(v_object.value);
-
-		if (m_materialStorage.find(v_key) != m_materialStorage.end())
-			continue;
-
-		m_materialStorage.emplace(std::move(v_key), v_value);
+		m_materialStorage.emplace(
+			v_object.key,
+			JsonReader::GetNumber<std::size_t>(v_object.value)
+		);
 	}
 }
 
@@ -56,20 +58,4 @@ void MaterialManager::AppendMaterialIdx(std::string& outStr, const std::string& 
 {
 	outStr.append(" m", 2);
 	String::AppendIntegerToString(outStr, MaterialManager::GetMaterialIdx(mat_name));
-}
-
-std::string MaterialManager::GetMaterialA(const std::string& mat_name)
-{
-	const MaterialMap::const_iterator v_iter = m_materialStorage.find(mat_name);
-	if (v_iter != m_materialStorage.end())
-		return "m" + std::to_string(v_iter->second);
-
-	DebugOutL("Couldn't find the specified material: ", mat_name);
-
-	return "m1";
-}
-
-std::wstring MaterialManager::GetMaterialW(const std::string& mat_name)
-{
-	return String::ToWide(MaterialManager::GetMaterialA(mat_name));
 }

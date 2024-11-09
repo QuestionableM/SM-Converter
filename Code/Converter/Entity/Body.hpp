@@ -14,7 +14,7 @@ SM_UNMANAGED_CODE
 class SMBody : public SMEntity
 {
 public:
-	SMBody(const std::string& name);
+	SMBody(const std::string_view& name);
 	~SMBody();
 
 	void Add(SMEntity* pEntity);
@@ -28,7 +28,7 @@ public:
 
 private:
 	std::vector<SMEntity*> m_objects = {};
-	std::string m_body_name;
+	std::string m_bodyName;
 };
 
 SM_MANAGED_CODE

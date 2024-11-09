@@ -54,6 +54,19 @@ namespace String
 		return v_partTwo | v_partOne << 4;
 	}
 
+	constexpr static const char g_byteToCharLookupTable[] =
+	{
+		'0', '1', '2', '3', '4', '5', '6', '7',
+		'8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
+	};
+
+	inline char* ByteToHexString(char* bufferIn, std::uint8_t val) noexcept
+	{
+		*bufferIn++ = g_byteToCharLookupTable[(val >> 4) & 0b1111];
+		*bufferIn++ = g_byteToCharLookupTable[val & 0b1111];
+		return bufferIn;
+	}
+
 	inline unsigned char HexStrtolSafe(char* v_ptr)
 	{
 		char* v_end_ptr;

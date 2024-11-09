@@ -18,6 +18,8 @@ class SMBlueprint final : public SMEntity
 	SMBlueprint(const glm::vec3& pos, const glm::quat& rot);
 
 public:
+	~SMBlueprint();
+
 	using AddObjectFunction = void (*)(SMBlueprint*, SMEntity*);
 
 	//For object counter
@@ -38,22 +40,16 @@ public:
 	std::size_t GetAmountOfObjects() const override;
 	void CalculateCenterPoint(glm::vec3& v_input) const override;
 
-	inline ~SMBlueprint()
-	{
-		for (SMEntity* pObject : this->Objects)
-			delete pObject;
-	}
-
 	/*
 		This vector contains blocks, parts and joints
 		When in blueprint converter mode, this vector only stores bodies
 	*/
-	std::vector<SMEntity*> Objects = {};
+	std::vector<SMEntity*> m_objects = {};
 
 private:
 	AddObjectFunction m_addObjectFunction = SMBlueprint::AddObject_Default;
 
-	static void AddObject_Default(SMBlueprint* self, SMEntity* v_entity);
+	static void AddObject_Default(SMBlueprint* self, SMEntity* pEntity);
 
 	static glm::vec3 JsonToVector(const simdjson::simdjson_result<simdjson::dom::element>& vec_json);
 
@@ -66,8 +62,8 @@ private:
 	void LoadBodies(const simdjson::dom::element& pJson);
 	void LoadJoints(const simdjson::dom::element& pJson);
 
-	std::size_t m_object_index;
-	std::size_t m_body_index;
+	std::size_t m_objectIndex;
+	std::size_t m_bodyIndex;
 };
 
 SM_MANAGED_CODE

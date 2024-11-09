@@ -292,7 +292,7 @@ namespace SMConverter
 		if (ProgCounter::State == ProgState::None)
 			return;
 
-		std::wstring v_state_output = ProgCounter::GetStateString();
+		std::string v_stateOutput(ProgCounter::GetStateString());
 		if (ProgCounter::StateHasNumbers())
 		{
 			const std::size_t v_max_val = ProgCounter::ProgressMax.load();
@@ -301,15 +301,15 @@ namespace SMConverter
 			m_pb_progress->Maximum = static_cast<int>(v_max_val);
 			m_pb_progress->Value   = static_cast<int>(v_cur_val);
 
-			//Append numbers to the string
-			v_state_output.append(L"(");
-			v_state_output.append(std::to_wstring(v_cur_val));
-			v_state_output.append(L" / ");
-			v_state_output.append(std::to_wstring(v_max_val));
-			v_state_output.append(L")");
+			// Append numbers to the string
+			v_stateOutput.append("(");
+			v_stateOutput.append(std::to_string(v_cur_val));
+			v_stateOutput.append(" / ");
+			v_stateOutput.append(std::to_string(v_max_val));
+			v_stateOutput.append(")");
 		}
 
-		m_lbl_progressStatus->Text = gcnew System::String(v_state_output.c_str());
+		m_lbl_progressStatus->Text = gcnew System::String(v_stateOutput.c_str());
 	}
 
 	void MainGui::LoadObjectDatabase(const bool& should_reload)

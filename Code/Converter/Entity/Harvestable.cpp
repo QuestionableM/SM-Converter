@@ -52,10 +52,9 @@ void SMHarvestable::FillTextureMap(std::unordered_map<std::string, ObjectTexData
 
 		v_matName.assign(v_mtlFirstPart);
 		String::AppendIntegerToString(v_matName, a + 1);
-		MaterialManager::AppendMaterialIdx(v_matName, v_curSubMesh.m_materialName);
+		MaterialManager::AppendMaterialIdx(v_matName, v_pTexList->m_material);
 
-		if (tex_map.find(v_matName) != tex_map.end())
-			continue;
+		if (tex_map.contains(v_matName)) continue;
 
 		tex_map.emplace(std::move(v_matName), ObjectTexDataConstructInfo(*v_pTexList, m_color));
 	}

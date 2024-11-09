@@ -15,9 +15,15 @@ SM_UNMANAGED_CODE
 
 SMBlueprint::SMBlueprint(const glm::vec3& pos, const glm::quat& rot) :
 	SMEntity(pos, rot, glm::vec3(0.25f)),
-	m_object_index(0),
-	m_body_index(0)
+	m_objectIndex(0),
+	m_bodyIndex(0)
 {}
+
+SMBlueprint::~SMBlueprint()
+{
+	for (SMEntity* v_pCurObject : m_objects)
+		delete v_pCurObject;
+}
 
 void SMBlueprint::LoadAndCountAutomatic(const std::string_view& str)
 {
@@ -187,7 +193,7 @@ SMBlueprint* SMBlueprint::FromJsonString(const std::string_view& json_str, const
 
 void SMBlueprint::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
 {
-	for (const SMEntity* pEntity : this->Objects)
+	for (const SMEntity* pEntity : m_objects)
 		pEntity->FillTextureMap(tex_map);
 }
 
@@ -195,7 +201,7 @@ void SMBlueprint::WriteObjectToFile(std::ofstream& file, WriterOffsetData& mOffs
 {
 	const glm::mat4 blueprint_matrix = transform_matrix * this->GetTransformMatrix();
 
-	for (const SMEntity* pEntity : this->Objects)
+	for (const SMEntity* pEntity : m_objects)
 		pEntity->WriteObjectToFile(file, mOffset, blueprint_matrix);
 }
 
@@ -203,7 +209,7 @@ std::size_t SMBlueprint::GetAmountOfObjects() const
 {
 	std::size_t v_output = 0;
 
-	for (const SMEntity* v_entity : this->Objects)
+	for (const SMEntity* v_entity : m_objects)
 		v_output += v_entity->GetAmountOfObjects();
 
 	return v_output;
@@ -211,13 +217,13 @@ std::size_t SMBlueprint::GetAmountOfObjects() const
 
 void SMBlueprint::CalculateCenterPoint(glm::vec3& v_input) const
 {
-	for (const SMEntity* v_entity : this->Objects)
+	for (const SMEntity* v_entity : m_objects)
 		v_entity->CalculateCenterPoint(v_input);
 }
 
-void SMBlueprint::AddObject_Default(SMBlueprint* self, SMEntity* v_entity)
+void SMBlueprint::AddObject_Default(SMBlueprint* self, SMEntity* pEntity)
 {
-	self->Objects.push_back(v_entity);
+	self->m_objects.push_back(pEntity);
 }
 
 glm::vec3 SMBlueprint::JsonToVector(const simdjson::simdjson_result<simdjson::dom::element>& vec_json)
@@ -280,7 +286,7 @@ void SMBlueprint::LoadChild(const simdjson::dom::element& v_child)
 				v_blk_bounds,
 				v_obj_color,
 				v_xzRotation,
-				m_object_index
+				m_objectIndex
 			)
 		);
 	}
@@ -300,7 +306,7 @@ void SMBlueprint::LoadChild(const simdjson::dom::element& v_child)
 				v_prt_model,
 				v_obj_color,
 				v_xzRotation,
-				m_object_index
+				m_objectIndex
 			)
 		);
 	}
@@ -367,10 +373,10 @@ void SMBlueprint::LoadBodiesWithCounter(const simdjson::dom::element& v_blueprin
 			this->LoadChild(v_child);
 
 			ProgCounter::ProgressValue++;
-			m_object_index++;
+			m_objectIndex++;
 		}
 
-		m_body_index++;
+		m_bodyIndex++;
 	}
 }
 
@@ -387,7 +393,7 @@ void SMBlueprint::LoadJointsWithCounter(const simdjson::dom::element& v_blueprin
 		this->LoadJoint(v_jnt);
 
 		ProgCounter::ProgressValue++;
-		m_object_index++;
+		m_objectIndex++;
 	}
 }
 
@@ -404,10 +410,10 @@ void SMBlueprint::LoadBodies(const simdjson::dom::element& pJson)
 		for (const auto v_child : v_childs_array.get_array().value_unsafe())
 		{
 			this->LoadChild(v_child);
-			m_object_index++;
+			m_objectIndex++;
 		}
 
-		m_body_index++;
+		m_bodyIndex++;
 	}
 }
 
@@ -419,6 +425,6 @@ void SMBlueprint::LoadJoints(const simdjson::dom::element& pJson)
 	for (const auto v_jnt : v_jnt_array.get_array().value_unsafe())
 	{
 		this->LoadJoint(v_jnt);
-		m_object_index++;
+		m_objectIndex++;
 	}
 }

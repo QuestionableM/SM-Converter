@@ -29,8 +29,8 @@ public:
 	bool isNil() const noexcept;
 
 	//Returns the end of the uuid
-	char* toCString(char* v_beginning) const;
-	wchar_t* toCStringW(wchar_t* v_beginning) const;
+	char* toCString(char* buff) const;
+	wchar_t* toCStringW(wchar_t* buff) const;
 
 	std::string toString() const;
 	std::wstring toWstring() const;

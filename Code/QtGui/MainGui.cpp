@@ -384,7 +384,7 @@ void MainGui::updateDbProgressCallback()
 	if (ProgCounter::State == ProgState::None)
 		return;
 
-	std::wstring v_state_output = ProgCounter::GetStateString();
+	std::string v_stateOutput(ProgCounter::GetStateString());
 	if (ProgCounter::StateHasNumbers())
 	{
 		const std::size_t v_max_val = ProgCounter::ProgressMax;
@@ -393,19 +393,19 @@ void MainGui::updateDbProgressCallback()
 		m_dbProgressBar->setMaximum(int(v_max_val));
 		m_dbProgressBar->setValue(int(v_cur_val));
 
-		//Append numbers to the string
-		v_state_output.append(L"(");
-		v_state_output.append(std::to_wstring(v_cur_val));
-		v_state_output.append(L" / ");
-		v_state_output.append(std::to_wstring(v_max_val));
-		v_state_output.append(L")");
+		// Append numbers to the string
+		v_stateOutput.append("(");
+		v_stateOutput.append(std::to_string(v_cur_val));
+		v_stateOutput.append(" / ");
+		v_stateOutput.append(std::to_string(v_max_val));
+		v_stateOutput.append(")");
 	}
 	else
 	{
 		m_dbProgressBar->setValue(m_dbProgressBar->maximum());
 	}
 
-	m_dbProgressStatus->setText(QString::fromStdWString(v_state_output));
+	m_dbProgressStatus->setText(QString::fromUtf8(v_stateOutput));
 }
 
 void MainGui::converterTypeChanged()
@@ -858,44 +858,42 @@ void MainGui::updateUserObjectStatusPosition()
 
 void MainGui::updateObjectPathTextBox()
 {
-	constexpr const static std::wstring_view v_selectedGenMessages[2][4] =
+	constexpr const static std::string_view v_selectedGenMessages[2][4] =
 	{
 		{
-			L"Path to Blueprint",
-			L"Path to Tile",
-			L"Path to World",
-			L"Path to Character"
+			"Path to Blueprint",
+			"Path to Tile",
+			"Path to World",
+			"Path to Character"
 		},
 		{
-			L"Selected a Blueprint in the list",
-			L"Selected a Tile in the list",
-			L"Selected a World in the list",
-			L"Selected a Character in the list"
+			"Selected a Blueprint in the list",
+			"Selected a Tile in the list",
+			"Selected a World in the list",
+			"Selected a Character in the list"
 		}
 	};
 
-	const std::wstring_view& v_cur_view = v_selectedGenMessages
+	const std::string_view& v_curView = v_selectedGenMessages
 		[std::size_t(m_objectList->hasSelection())]
 		[m_converterTypeBox->currentIndex()];
 		
 	m_objectPath->setPlaceholderText(
-		QString::fromWCharArray(v_cur_view.data(), v_cur_view.size()));
+		QString::fromUtf8(v_curView.data(), v_curView.size()));
 }
 
 void MainGui::updateSearchTextBox()
 {
-	constexpr const static std::wstring_view v_searchTextMsgs[] =
+	constexpr const static std::string_view v_searchTextMsgs[] =
 	{
-		L"Search Blueprints",
-		L"Search Tiles",
-		L"Search Worlds",
-		L"Search Characters"
+		"Search Blueprints",
+		"Search Tiles",
+		"Search Worlds",
+		"Search Characters"
 	};
 
-	const std::wstring_view& v_cur_view = v_searchTextMsgs[m_converterTypeBox->currentIndex()];
-
-	m_searchBox->setPlaceholderText(
-		QString::fromWCharArray(v_cur_view.data(), v_cur_view.size()));
+	const std::string_view& v_curView = v_searchTextMsgs[m_converterTypeBox->currentIndex()];
+	m_searchBox->setPlaceholderText(QString::fromUtf8(v_curView.data(), v_curView.size()));
 }
 
 void MainGui::updateConvertButton()

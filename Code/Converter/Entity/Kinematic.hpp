@@ -8,7 +8,7 @@
 
 SM_UNMANAGED_CODE
 
-class SMKinematic : public SMEntityWithModelAndUuid
+class SMKinematic final : public SMEntityWithModelAndUuid
 {
 public:
 	SMKinematic(

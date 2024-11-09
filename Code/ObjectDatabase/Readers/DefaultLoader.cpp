@@ -37,18 +37,17 @@ bool DefaultLoader::LoadSubMeshDataEntry(const simdjson::dom::element& v_item, S
 	SMTextureList* v_newEntry = new SMTextureList();
 	v_newEntry->m_material.assign(v_material.get_string().value_unsafe());
 
-	const auto v_custom_prop = v_item["custom"];
-	if (v_custom_prop.is_object())
+	const auto v_customProp = v_item["custom"];
+	if (v_customProp.is_object())
 	{
-		const auto v_def_col_idx = v_custom_prop["color"];
+		const auto v_def_col_idx = v_customProp["color"];
 		if (v_def_col_idx.is_string())
 			v_newEntry->m_defColorIdx.assign(v_def_col_idx.get_string().value_unsafe());
 
-		const auto v_shadow_only_mode = v_custom_prop["shadowOnly"];
+		const auto v_shadow_only_mode = v_customProp["shadowOnly"];
 		if (v_shadow_only_mode.is_bool())
 			v_newEntry->m_shadowOnly = v_shadow_only_mode.get_bool().value_unsafe();
 	}
-
 
 	DefaultLoader::LoadTextureList(v_tex_list_obj.get_array().value_unsafe(), v_newEntry);
 
@@ -102,7 +101,10 @@ bool DefaultLoader::TryLoadSubMeshMap(const simdjson::dom::element& lod_item, SM
 	return true;
 }
 
-bool DefaultLoader::LoadRenderableData(const simdjson::dom::element& jRenderable, SMSubMeshBase** tData, std::wstring& mesh)
+bool DefaultLoader::LoadRenderableData(
+	const simdjson::dom::element& jRenderable,
+	SMSubMeshBase** tData,
+	std::wstring& mesh)
 {
 	const auto v_lodListObj = jRenderable["lodList"];
 	if (!v_lodListObj.is_array()) return false;

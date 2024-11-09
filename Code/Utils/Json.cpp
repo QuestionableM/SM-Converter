@@ -285,14 +285,14 @@ bool JsonReader::LoadParseSimdjsonCommentsC(const std::wstring& path, simdjson::
 {
 	try
 	{
-		std::string v_json_str;
-		if (!File::ReadToStringED(path, v_json_str))
+		std::string v_jsonStr;
+		if (!File::ReadToStringED(path, v_jsonStr))
 			return false;
 
-		JsonReader::RemoveComments(v_json_str);
+		JsonReader::RemoveComments(v_jsonStr);
 
 		simdjson::dom::parser v_parser;
-		const auto v_root = v_parser.parse_into_document(v_doc, v_json_str);
+		const auto v_root = v_parser.parse_into_document(v_doc, v_jsonStr);
 		if (v_root.error())
 		{
 			DebugErrorL("Parse Error:\nFile: ", path, "\nError: ", simdjson::error_message(v_root.error()));

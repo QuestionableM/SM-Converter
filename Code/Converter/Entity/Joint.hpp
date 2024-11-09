@@ -8,7 +8,7 @@
 
 SM_UNMANAGED_CODE
 
-class SMJoint : public SMEntityWithModelAndUuid
+class SMJoint final : public SMEntityWithModelAndUuid
 {
 public:
 	SMJoint(

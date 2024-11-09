@@ -212,6 +212,7 @@ xcopy /y /d "$(SolutionDir)Media\icon.ico" "$(SolutionDir)Build\$(ProjectName)-$
     <ClCompile Include="Code\QtGui\ConvSettings\TileConverterSettingsGui.cpp" />
     <ClCompile Include="Code\QtGui\CustomWidgets\UserObjectListViewWidget.cpp" />
     <ClCompile Include="Code\qt_main.cpp" />
+    <ClCompile Include="Code\Utils\Color.cpp" />
     <ClCompile Include="Code\Utils\Console.cpp" />
     <ClCompile Include="Code\Utils\Crypt.cpp" />
     <ClCompile Include="Code\Utils\File.cpp" />

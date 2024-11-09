@@ -47,6 +47,21 @@ namespace Hashing
 			return hash.m_hash;
 		}
 	};
+
+	struct WstringHasher
+	{
+		using is_transparent = void;
+
+		inline std::size_t operator()(const std::wstring& wstr) const
+		{
+			return std::hash<std::wstring>{}(wstr);
+		}
+
+		inline std::size_t operator()(const std::wstring_view& wstr_view) const
+		{
+			return std::hash<std::wstring_view>{}(wstr_view);
+		}
+	};
 }
 
 SM_UNMANAGED_CODE

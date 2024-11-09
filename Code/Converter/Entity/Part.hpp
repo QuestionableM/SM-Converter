@@ -8,7 +8,7 @@
 
 SM_UNMANAGED_CODE
 
-class SMPart : public SMEntityWithModelAndUuid
+class SMPart final : public SMEntityWithModelAndUuid
 {
 public:
 	SMPart(

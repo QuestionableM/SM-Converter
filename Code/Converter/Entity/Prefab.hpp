@@ -7,7 +7,7 @@
 
 SM_UNMANAGED_CODE
 
-class SMPrefab : public SMEntity
+class SMPrefab final : public SMEntity
 {
 public:
 	SMPrefab(const SMPrefab&) = delete;

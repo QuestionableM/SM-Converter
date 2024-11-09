@@ -14,8 +14,8 @@
 
 #include <QContextMenuEvent>
 
-ModListContextMenu::ModListContextMenu(QWidget* parent)
-	: QMenu(parent),
+ModListContextMenu::ModListContextMenu(QWidget* parent) :
+	QMenu(parent),
 	m_openInSteamWorkshopAction(new QAction("Open in Steam Workshop", this)),
 	m_openInExplorerAction(new QAction("Open in File Explorer", this))
 {
@@ -25,8 +25,8 @@ ModListContextMenu::ModListContextMenu(QWidget* parent)
 
 ////////////////////////MOD LIST WIDGET////////////////////////
 
-ModListWidget::ModListWidget(QWidget* parent)
-	: QListWidget(parent),
+ModListWidget::ModListWidget(QWidget* parent) :
+	QListWidget(parent),
 	m_noModsLabel(new CenteredLabel("No Mods", this)),
 	m_contextMenu(new ModListContextMenu(this))
 {
@@ -43,11 +43,11 @@ ModListWidget::ModListWidget(QWidget* parent)
 
 SMMod* ModListWidget::getSelectedMod() const
 {
-	const int v_cur_idx = this->currentIndex().row();
-	if (v_cur_idx < 0 || v_cur_idx > int(ItemModStats::ModVector.size()))
+	const int v_curIdx = this->currentIndex().row();
+	if (v_curIdx < 0 || v_curIdx > int(ItemModStats::ModVector.size()))
 		return nullptr;
 
-	return ItemModStats::ModVector[v_cur_idx]->mod;
+	return ItemModStats::ModVector[v_curIdx]->m_pMod;
 }
 
 void ModListWidget::updateContextMenu()
@@ -71,17 +71,20 @@ void ModListWidget::updateModList()
 	this->blockSignals(true);
 	this->clear();
 
-	for (const ItemModInstance* v_mod_data : ItemModStats::ModVector)
+	std::wstring v_modName;
+
+	for (const ItemModInstance* v_curMod : ItemModStats::ModVector)
 	{
-		std::wstring v_mod_name = (v_mod_data->mod != nullptr)
-			? v_mod_data->mod->GetName()
+		const std::wstring_view v_modNameView = (v_curMod->m_pMod != nullptr)
+			? std::wstring_view(v_curMod->m_pMod->GetName())
 			: L"UNKNOWN_MOD";
 
-		v_mod_name.append(L" (");
-		v_mod_name.append(std::to_wstring(v_mod_data->part_count));
-		v_mod_name.append(L")");
+		v_modName.assign(v_modNameView);
+		v_modName.append(L" (");
+		v_modName.append(std::to_wstring(v_curMod->m_partCount));
+		v_modName.append(L")");
 
-		this->addItem(QString::fromStdWString(v_mod_name));
+		this->addItem(QString::fromStdWString(v_modName));
 	}
 
 	this->blockSignals(false);
@@ -115,8 +118,8 @@ void ModListWidget::contextMenuEvent(QContextMenuEvent* event)
 
 /////////////////////////OBJECT INFO GUI//////////////////////////
 
-ObjectInfoGui::ObjectInfoGui(const QString& title, const std::wstring& image, QWidget* parent)
-	: QDialog(parent),
+ObjectInfoGui::ObjectInfoGui(const QString& title, const std::wstring& image, QWidget* parent) :
+	QDialog(parent),
 	m_mainLayout(new QVBoxLayout(this)),
 	m_mainInfoLayout(new QHBoxLayout(this)),
 	m_objectImage(new ImageBox(QString::fromStdWString(image))),
