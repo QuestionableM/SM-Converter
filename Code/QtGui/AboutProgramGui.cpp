@@ -2,7 +2,7 @@
 
 #include "BuildInfo.hpp"
 
-#define VERSION_NUMBER "1.2.0"
+#define VERSION_NUMBER "1.2.1"
 
 #if defined(_DEBUG) || defined(DEBUG)
 #define VERSION_DEBUG_POSTFIX " (DEBUG)"

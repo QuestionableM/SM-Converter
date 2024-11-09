@@ -91,7 +91,7 @@ namespace SMConverter {
 			this->m_lbl_version->Name = L"m_lbl_version";
 			this->m_lbl_version->Size = System::Drawing::Size(86, 16);
 			this->m_lbl_version->TabIndex = 1;
-			this->m_lbl_version->Text = L"Version: 1.1.0";
+			this->m_lbl_version->Text = L"Version: 1.2.1";
 			// 
 			// m_lbl_createdBy
 			// 
