@@ -207,6 +207,18 @@
     <ClCompile Include="Code\Utils\Uuid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Code\Utils\Color.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Utils\MemoryMapped.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Converter\Entity\Body.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\ObjectDatabase\SubMeshData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\Gui\MainGui.h">
@@ -522,6 +534,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Code\Converter\CharacterConverter\CharacterConverter.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Utils\Hashing.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Utils\MemoryMapped.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

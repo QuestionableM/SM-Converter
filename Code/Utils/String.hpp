@@ -79,34 +79,51 @@ namespace String
 	}
 
 	template<typename T>
-	inline std::string_view IntegerToString(char* buffer, std::size_t buffer_sz, T num)
+	inline char* IntegerToBuffer(char* buffer, std::make_unsigned_t<T> num)
+	{
+		do {
+			*--buffer = char(num % 10) + '0';
+			num /= 10;
+		} while (num != 0);
+
+		return buffer;
+	}
+
+	template<typename T> requires(std::is_signed_v<T>)
+	inline std::string_view IntegerToStringS(char* buffer, std::size_t buffer_sz, std::make_signed_t<T> num)
 	{
 		char* v_bufferPtr = buffer + buffer_sz;
 
-		if constexpr (std::is_signed_v<T>)
+		if (num < 0)
 		{
-			if (num < 0)
-			{
-				T v_negNum = -num;
-				do
-				{
-					*--v_bufferPtr = char(v_negNum % 10) + '0';
-					v_negNum /= 10;
-				} while (v_negNum);
-
-				*--v_bufferPtr = '-';
-				goto jump_assign;
-			}
+			v_bufferPtr = String::IntegerToBuffer(v_bufferPtr, static_cast<std::make_unsigned_t<T>>(0 - num));
+			*--v_bufferPtr = '-';
+		}
+		else
+		{
+			v_bufferPtr = String::IntegerToBuffer(v_bufferPtr, num);
 		}
 
-		do
-		{
-			*--v_bufferPtr = char(num % 10) + '0';
-			num /= 10;
-		} while (num);
-
-	jump_assign:
 		return std::string_view(v_bufferPtr, buffer + buffer_sz);
+	}
+
+	template<typename T> requires(std::is_unsigned_v<T>)
+	inline std::string_view IntegerToStringU(char* buffer, std::size_t buffer_sz, std::make_unsigned_t<T> num)
+	{
+		return std::string_view(
+			String::IntegerToBuffer<T>(buffer + buffer_sz, num),
+			buffer + buffer_sz
+		);
+	}
+
+	template<typename T>
+	inline std::string_view IntegerToString(char* buffer, std::size_t buffer_sz, T num)
+	{
+		if constexpr (std::is_unsigned_v<T>) {
+			return String::IntegerToStringU<T>(buffer, buffer_sz, num);
+		} else {
+			return String::IntegerToStringS<T>(buffer, buffer_sz, num);
+		}
 	}
 
 	template<typename T>

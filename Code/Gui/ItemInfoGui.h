@@ -16,9 +16,9 @@ namespace SMConverter
 	public ref class ItemInfoGui : public System::Windows::Forms::Form
 	{
 	public:
-		ItemInfoGui(BlueprintInstance* v_blueprint);
-		ItemInfoGui(WorldInstance* v_world);
-		ItemInfoGui(TileInstance* v_tile);
+		ItemInfoGui(BlueprintInstance* pBlueprint);
+		ItemInfoGui(WorldInstance* pWorld);
+		ItemInfoGui(TileInstance* pTile);
 
 		bool m_isSuccess = true;
 

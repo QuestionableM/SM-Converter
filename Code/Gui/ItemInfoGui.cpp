@@ -15,24 +15,24 @@
 
 namespace SMConverter
 {
-	ItemInfoGui::ItemInfoGui(BlueprintInstance* v_blueprint)
+	ItemInfoGui::ItemInfoGui(BlueprintInstance* pBlueprint)
 	{
 		ItemModStats::Reset();
 
 		this->InitializeComponent();
 		this->Text = "Blueprint Info";
 
-		m_lbl_line1->Text += gcnew System::String(v_blueprint->name.c_str());
-		m_lbl_line2->Text += gcnew System::String(v_blueprint->uuid.ToString().c_str());
+		m_lbl_line1->Text += gcnew System::String(pBlueprint->name.c_str());
+		m_lbl_line2->Text += gcnew System::String(pBlueprint->uuid.toString().c_str());
 		
-		const std::wstring v_filter_name = FilterSettingsData::GetFilterName(v_blueprint->v_filter);
-		m_lbl_line3->Text = gcnew System::String((L"Content Type: " + v_filter_name).c_str());
+		const std::string v_filter_name(FilterSettingsData::GetFilterName(pBlueprint->filter));
+		m_lbl_line3->Text = gcnew System::String(("Content Type: " + v_filter_name).c_str());
 
-		const std::wstring& v_bp_preview = v_blueprint->preview_image;
+		const std::wstring& v_bp_preview = pBlueprint->preview_image;
 		if (!v_bp_preview.empty() && File::Exists(v_bp_preview))
 			m_bp_blueprintPreview->ImageLocation = gcnew System::String(v_bp_preview.c_str());
 
-		SMBlueprint::CountFromFile(v_blueprint->path);
+		SMBlueprint::CountFromFile(pBlueprint->path);
 
 		m_lbl_line4->Text = gcnew System::String(("Part Count: " + std::to_string(ItemModStats::GetTotalPartCount())).c_str());
 		m_lbl_line5->Text = gcnew System::String(("Mod Count: " + std::to_string(ItemModStats::ModStorage.size())).c_str());
@@ -40,48 +40,50 @@ namespace SMConverter
 		this->UpdateModList();
 	}
 
-	inline SMWorld* ItemInfoGui_ReadWorldData(WorldInstance* v_world, ConvertError& v_error)
+	inline SMWorld* ItemInfoGui_ReadWorldData(const std::wstring& worldPath, ConvertError& v_error)
 	{
 		TileFolderReader::InitializeTileKeys();
 
-		CustomGame* v_cur_cg = SMMod::GetCustomGameFromPath(v_world->path);
-		if (v_cur_cg)
+		CustomGame* v_pCustomGame = SMMod::GetCustomGameFromPath(worldPath);
+		if (v_pCustomGame)
 		{
 			SMModCustomGameSwitch<false, true> v_cg_switch;
-			v_cg_switch.MergeContent(v_cur_cg);
+			v_cg_switch.MergeContent(v_pCustomGame);
 
-			SMWorld* v_out_world = SMWorld::LoadFromFile<true>(v_world->path, v_error);
+			SMWorld* v_out_world = SMWorld::LoadFromFile<true>(worldPath, v_error);
 			return v_out_world;
 		}
-
-		return SMWorld::LoadFromFile<true>(v_world->path, v_error);
+		else
+		{
+			return SMWorld::LoadFromFile<true>(worldPath, v_error);
+		}
 	}
 
-	ItemInfoGui::ItemInfoGui(WorldInstance* v_world)
+	ItemInfoGui::ItemInfoGui(WorldInstance* pWorld)
 	{
 		ItemModStats::Reset();
 
 		this->InitializeComponent();
 		this->Text = "World Info";
 
-		m_lbl_line1->Text += gcnew System::String(v_world->name.c_str());
-		m_lbl_line2->Text += gcnew System::String(v_world->uuid.ToString().c_str());
+		m_lbl_line1->Text += gcnew System::String(pWorld->name.c_str());
+		m_lbl_line2->Text += gcnew System::String(pWorld->uuid.toString().c_str());
 
 		ConvertError v_error;
-		SMWorld* v_cur_world = ItemInfoGui_ReadWorldData(v_world, v_error);
+		SMWorld* v_cur_world = ItemInfoGui_ReadWorldData(pWorld->path, v_error);
 
 		const std::string v_world_sz_str = std::to_string(v_cur_world->GetWidth());
 		m_lbl_line3->Text = gcnew System::String(("World Size: " + v_world_sz_str + "x" + v_world_sz_str).c_str());
 
-		const std::wstring v_filter_name = FilterSettingsData::GetFilterName(v_world->v_filter);
-		m_lbl_line4->Text = gcnew System::String((L"Content Type: " + v_filter_name).c_str());
+		const std::string v_filter_name(FilterSettingsData::GetFilterName(pWorld->filter));
+		m_lbl_line4->Text = gcnew System::String(("Content Type: " + v_filter_name).c_str());
 
 		if (v_cur_world) delete v_cur_world;
 
 		if (v_error)
 		{
 			System::Windows::Forms::MessageBox::Show(
-				gcnew System::String((L"Error: " + v_error.GetErrorMsg()).c_str()),
+				gcnew System::String(("Error: " + v_error.getErrorMsg()).c_str()),
 				"World Read Error",
 				System::Windows::Forms::MessageBoxButtons::OK,
 				System::Windows::Forms::MessageBoxIcon::Error
@@ -91,7 +93,7 @@ namespace SMConverter
 			return;
 		}
 
-		const std::wstring& v_world_preview = v_world->preview_image;
+		const std::wstring& v_world_preview = pWorld->preview_image;
 		if (!v_world_preview.empty() && File::Exists(v_world_preview))
 			m_bp_blueprintPreview->ImageLocation = gcnew System::String(v_world_preview.c_str());
 
@@ -102,44 +104,45 @@ namespace SMConverter
 		this->UpdateModList();
 	}
 
-	inline void ItemInfoGui_ReadTileData(TileInstance* v_tile, ConvertError& v_error)
+	inline void ItemInfoGui_ReadTileData(const std::wstring& path, ConvertError& v_error)
 	{
-		CustomGame* v_cur_cg = SMMod::GetCustomGameFromPath(v_tile->path);
-		if (v_cur_cg)
+		CustomGame* v_pCustomGame = SMMod::GetCustomGameFromPath(path);
+		if (v_pCustomGame)
 		{
 			SMModCustomGameSwitch<false, true> v_cg_switch;
-			v_cg_switch.MergeContent(v_cur_cg);
+			v_cg_switch.MergeContent(v_pCustomGame);
 
-			TileFolderReader::GetTileData(v_tile, v_error);
-			return;
+			TileFolderReader::GetTileData(path, v_error);
 		}
-
-		TileFolderReader::GetTileData(v_tile, v_error);
+		else
+		{
+			TileFolderReader::GetTileData(path, v_error);
+		}
 	}
 
-	ItemInfoGui::ItemInfoGui(TileInstance* v_tile)
+	ItemInfoGui::ItemInfoGui(TileInstance* pTile)
 	{
 		ItemModStats::Reset();
 
 		this->InitializeComponent();
 		this->Text = "Tile Info";
 
-		m_lbl_line1->Text += gcnew System::String(v_tile->name.c_str());
-		m_lbl_line2->Text += gcnew System::String(v_tile->uuid.ToString().c_str());
+		m_lbl_line1->Text += gcnew System::String(pTile->name.c_str());
+		m_lbl_line2->Text += gcnew System::String(pTile->uuid.toString().c_str());
 		
-		const std::wstring v_size_name = FilterSettingsData::GetTileSizeName(v_tile->v_size_filter);
-		m_lbl_line3->Text = gcnew System::String((L"Tile Size: " + v_size_name).c_str());
+		const std::string v_size_name(FilterSettingsData::GetTileSizeName(pTile->size_filter));
+		m_lbl_line3->Text = gcnew System::String(("Tile Size: " + v_size_name).c_str());
 
-		const std::wstring v_filter_name = FilterSettingsData::GetFilterName(v_tile->v_filter);
-		m_lbl_line4->Text = gcnew System::String((L"Content Type: " + v_filter_name).c_str());
+		const std::string v_filter_name(FilterSettingsData::GetFilterName(pTile->filter));
+		m_lbl_line4->Text = gcnew System::String(("Content Type: " + v_filter_name).c_str());
 
 		ConvertError v_error;
-		ItemInfoGui_ReadTileData(v_tile, v_error);
+		ItemInfoGui_ReadTileData(pTile->path, v_error);
 
 		if (v_error)
 		{
 			System::Windows::Forms::MessageBox::Show(
-				gcnew System::String((L"Error: " + v_error.GetErrorMsg()).c_str()),
+				gcnew System::String(("Error: " + v_error.getErrorMsg()).c_str()),
 				"Tile Read Error",
 				System::Windows::Forms::MessageBoxButtons::OK,
 				System::Windows::Forms::MessageBoxIcon::Error
@@ -149,7 +152,7 @@ namespace SMConverter
 			return;
 		}
 
-		const std::wstring& v_tile_preview = v_tile->preview_image;
+		const std::wstring& v_tile_preview = pTile->preview_image;
 		if (!v_tile_preview.empty() && File::Exists(v_tile_preview))
 			m_bp_blueprintPreview->ImageLocation = gcnew System::String(v_tile_preview.c_str());
 
@@ -175,10 +178,10 @@ namespace SMConverter
 
 		for (const ItemModInstance* v_mod_data : ItemModStats::ModVector)
 		{
-			std::wstring v_mod_name = (v_mod_data->mod != nullptr) ? v_mod_data->mod->GetName() : L"UNKNOWN_MOD";
+			std::wstring v_mod_name = (v_mod_data->m_pMod != nullptr) ? v_mod_data->m_pMod->GetName() : L"UNKNOWN_MOD";
 
 			v_mod_name.append(L" (");
-			v_mod_name.append(std::to_wstring(v_mod_data->part_count));
+			v_mod_name.append(std::to_wstring(v_mod_data->m_partCount));
 			v_mod_name.append(L")");
 
 			m_lb_modSelector->Items->Add(gcnew System::String(v_mod_name.c_str()));
@@ -193,7 +196,7 @@ namespace SMConverter
 	{
 		if (m_lb_modSelector->SelectedIndex == -1) return nullptr;
 
-		return ItemModStats::ModVector[m_lb_modSelector->SelectedIndex]->mod;
+		return ItemModStats::ModVector[m_lb_modSelector->SelectedIndex]->m_pMod;
 	}
 
 	void ItemInfoGui::ModSelector_MouseDown(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e)

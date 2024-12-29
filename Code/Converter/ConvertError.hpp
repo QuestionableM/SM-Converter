@@ -6,6 +6,7 @@
 
 SM_UNMANAGED_CODE
 
+#include <type_traits>
 #include <cstdint>
 
 class ConvertError

@@ -132,9 +132,9 @@ public:
 		MemoryWrapper v_reader(tileData);
 		Tile v_newTile(v_header);
 
-		for (int y = 0; y < v_header.m_data.height; y++)
+		for (std::uint32_t y = 0; y < v_header.m_data.height; y++)
 		{
-			for (int x = 0; x < v_header.m_data.width; x++)
+			for (std::uint32_t x = 0; x < v_header.m_data.width; x++)
 			{
 				const CellHeader& v_cellHeader = v_header.GetCellHeader(x, y);
 				TilePart* v_pPart = v_newTile.GetPart(x, y);

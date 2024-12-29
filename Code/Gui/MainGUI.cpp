@@ -883,9 +883,7 @@ namespace SMConverter
 			v_op_result = gcnew cli::array<System::Object^>(3);
 
 			v_op_result->SetValue(true, static_cast<int>(1));
-
-			const std::wstring& v_error_msg = v_error.GetErrorMsg();
-			v_op_result->SetValue(gcnew System::String(v_error_msg.c_str()), static_cast<int>(2));
+			v_op_result->SetValue(gcnew System::String(v_error.getErrorMsg().c_str()), static_cast<int>(2));
 		}
 		else
 		{

@@ -79,8 +79,8 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions);SMC_ENABLE_DEBUG_CONSOLE</PreprocessorDefinitions>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Code;$(SolutionDir)Dependencies\nlohmann_json;$(SolutionDir)Dependencies\simdjson;$(SolutionDir)Dependencies\ValveVDF\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\FreeImage\Include;$(SolutionDir)Dependencies\Assimp\Include;$(SolutionDir)Dependencies\lz4\Include;$(SolutionDir)Dependencies\PerlinNoise;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)Code;$(SolutionDir)Dependencies\nlohmann_json;$(SolutionDir)Dependencies\simdjson;$(SolutionDir)Dependencies\ValveVDF\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\FreeImage\Include;$(SolutionDir)Dependencies\Assimp\Include;$(SolutionDir)Dependencies\lz4\Include;$(SolutionDir)Dependencies\PerlinNoise;$(SolutionDir)Dependencies\emhash;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <IntrinsicFunctions>false</IntrinsicFunctions>
@@ -104,8 +104,8 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Code;$(SolutionDir)Dependencies\nlohmann_json;$(SolutionDir)Dependencies\simdjson;$(SolutionDir)Dependencies\ValveVDF\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\FreeImage\Include;$(SolutionDir)Dependencies\Assimp\Include;$(SolutionDir)Dependencies\lz4\Include;$(SolutionDir)Dependencies\PerlinNoise;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)Code;$(SolutionDir)Dependencies\nlohmann_json;$(SolutionDir)Dependencies\simdjson;$(SolutionDir)Dependencies\ValveVDF\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\FreeImage\Include;$(SolutionDir)Dependencies\Assimp\Include;$(SolutionDir)Dependencies\lz4\Include;$(SolutionDir)Dependencies\PerlinNoise;$(SolutionDir)Dependencies\emhash;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -133,8 +133,8 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions);SMC_ENABLE_DEBUG_CONSOLE</PreprocessorDefinitions>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Code;$(SolutionDir)Dependencies\nlohmann_json;$(SolutionDir)Dependencies\simdjson;$(SolutionDir)Dependencies\ValveVDF\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\FreeImage\Include;$(SolutionDir)Dependencies\Assimp\Include;$(SolutionDir)Dependencies\lz4\Include;$(SolutionDir)Dependencies\PerlinNoise;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)Code;$(SolutionDir)Dependencies\nlohmann_json;$(SolutionDir)Dependencies\simdjson;$(SolutionDir)Dependencies\ValveVDF\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\FreeImage\Include;$(SolutionDir)Dependencies\Assimp\Include;$(SolutionDir)Dependencies\lz4\Include;$(SolutionDir)Dependencies\PerlinNoise;$(SolutionDir)Dependencies\emhash;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -179,6 +179,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='ReleaseDebugInfo|x64'">true</CompileAsManaged>
     </ClCompile>
+    <ClCompile Include="Code\Converter\Entity\Body.cpp" />
     <ClCompile Include="Code\Converter\Entity\Decal.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</CompileAsManaged>
@@ -245,6 +246,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClCompile Include="Code\ObjectDatabase\Mods\CustomGameMod.cpp" />
     <ClCompile Include="Code\ObjectDatabase\Readers\GarmentListLoader.cpp" />
     <ClCompile Include="Code\ObjectDatabase\Readers\KinematicListLoader.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\SubMeshData.cpp" />
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\BlueprintFolderReader.cpp" />
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\FilterSettingsData.cpp" />
     <ClCompile Include="Code\Gui\SettingsGuiChangeDetector.cpp" />
@@ -356,6 +358,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\UserCharacterReader.cpp" />
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\UserObjectFolderReader.cpp" />
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\WorldFolderReader.cpp" />
+    <ClCompile Include="Code\Utils\Color.cpp" />
     <ClCompile Include="Code\Utils\Console.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</CompileAsManaged>
@@ -377,6 +380,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='ReleaseDebugInfo|x64'">true</CompileAsManaged>
     </ClCompile>
     <ClCompile Include="Code\Utils\Lz4Lib.cpp" />
+    <ClCompile Include="Code\Utils\MemoryMapped.cpp" />
     <ClCompile Include="Code\Utils\Uuid.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -489,10 +493,12 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\Utils\Crypt.hpp" />
     <ClInclude Include="Code\Utils\File.hpp" />
     <ClInclude Include="Code\Utils\GlmUnmanaged.hpp" />
+    <ClInclude Include="Code\Utils\Hashing.hpp" />
     <ClInclude Include="Code\Utils\Json.hpp" />
     <ClInclude Include="Code\Utils\Lz4Lib.hpp" />
     <ClInclude Include="Code\Utils\Math.hpp" />
     <ClInclude Include="Code\Utils\Memory.hpp" />
+    <ClInclude Include="Code\Utils\MemoryMapped.h" />
     <ClInclude Include="Code\Utils\String.hpp" />
     <ClInclude Include="Code\UStd\UnmanagedAlgorithm.hpp" />
     <ClInclude Include="Code\UStd\UnmanagedArray.hpp" />
