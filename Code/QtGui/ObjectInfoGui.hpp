@@ -65,7 +65,7 @@ private:
 		const QString v_uuid = QString("UUID: %1")
 			.arg(QString::fromStdString(obj->uuid.toString()));
 		const QString v_content_type = QString("Content Type: %1")
-			.arg(QString::fromStdWString(FilterSettingsData::GetFilterName(obj->filter)));
+			.arg(FilterSettingsData::GetFilterName(obj->filter));
 
 		m_infoLayout->addWidget(new QLabel(v_bp_name, this));
 		m_infoLayout->addWidget(new QLabel(v_uuid, this));

@@ -133,6 +133,8 @@ void BlueprintConv::BlueprintAddObject_SeparateAll(SMBlueprint* self, SMEntity* 
 		else
 		{
 			SMBody* v_pCollection = BlueprintConv::CreateCollection(self, v_collNameView);
+			SMEntity** v_addIter = v_pCollection->ResizeAdd(v_bounds_x * v_bounds_y * v_bounds_z);
+
 			glm::vec3 v_blk_pos;
 
 			for (std::size_t x = 0; x < v_bounds_x; x++)
@@ -145,10 +147,12 @@ void BlueprintConv::BlueprintAddObject_SeparateAll(SMBlueprint* self, SMEntity* 
 					{
 						v_blk_pos.z = static_cast<float>(z);
 
-						SMBlock* v_new_blk = new SMBlock(v_block, v_block->m_position + v_blk_pos,
-							v_block->m_rotation, glm::vec3(1.0f));
-
-						v_pCollection->Add(v_new_blk);
+						(*v_addIter++) = new SMBlock(
+							v_block,
+							v_block->m_position + v_blk_pos,
+							v_block->m_rotation,
+							glm::vec3(1.0f)
+						);
 					}
 				}
 			}

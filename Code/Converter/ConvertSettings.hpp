@@ -36,9 +36,10 @@ private:
 
 struct SharedConverterSettings
 {
-	inline static bool ExportMaterials = true;
-	inline static bool ExportNormals   = true;
-	inline static bool ExportUvs       = true;
+	inline static bool ExportMaterials     = true;
+	inline static bool ExportNormals       = true;
+	inline static bool ExportUvs           = true;
+	inline static bool DeduplicateVertices = false;
 
 private:
 	SharedConverterSettings() = default;

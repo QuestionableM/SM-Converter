@@ -250,16 +250,16 @@ void MainGui::resizeEvent(QResizeEvent* event)
 
 void MainGui::closeEvent(QCloseEvent* event)
 {
-	const bool v_thread_running = m_converterThread
-		&& m_converterThread->isRunning();
+	if (!m_converterThread || !m_converterThread->isRunning())
+		return;
 
-	if (!v_thread_running) return;
-
-	QMessageBox v_mbox(QMessageBox::Question,
+	QMessageBox v_mbox(
+		QMessageBox::Question,
 		"Closing",
 		"Are you sure you want to close the program while an item is being converted?\n\nClosing the program might produce a corrupt model!",
 		QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No,
-		this);
+		this
+	);
 
 	if (v_mbox.exec() != QMessageBox::StandardButton::Yes)
 		event->ignore();
@@ -275,19 +275,19 @@ void MainGui::updateUserObjectStatusCallback()
 	{
 	case ConvType_BlueprintConverter:
 		v_status_text = QString("Loading blueprints... (%1)")
-			.arg(BlueprintFolderReader::ObjectCounter);
+			.arg(BlueprintFolderReader::ObjectCounter.load());
 		break;
 	case ConvType_TileConverter:
 		v_status_text = QString("Loading Tiles... (%1)")
-			.arg(TileFolderReader::ObjectCounter);
+			.arg(TileFolderReader::ObjectCounter.load());
 		break;
 	case ConvType_WorldConverter:
 		v_status_text = QString("Loading Worlds... (%1)")
-			.arg(WorldFolderReader::ObjectCounter);
+			.arg(WorldFolderReader::ObjectCounter.load());
 		break;
 	case ConvType_CharacterConverter:
 		v_status_text = QString("Loading Characters... (%1)")
-			.arg(UserCharacterReader::ObjectCounter);
+			.arg(UserCharacterReader::ObjectCounter.load());
 		break;
 	}
 
@@ -627,12 +627,12 @@ bool MainGui::convertBlueprint(const std::wstring& filename, const std::wstring&
 	if (v_conv_settings.exec() != QDialog::DialogCode::Accepted)
 		return false;
 
-	BlueprintConverterThreadData v_thread_data;
-	v_thread_data.path = path;
-	v_conv_settings.getThreadData(&v_thread_data);
+	BlueprintConverterThreadData v_threadData;
+	v_threadData.path = path;
+	v_conv_settings.getThreadData(&v_threadData);
 
 	m_converterThread = QThread::create(
-		MainGui::ConverterFunction<BlueprintConverterThreadData, BlueprintConv>, this, v_thread_data);
+		MainGui::ConverterFunction<BlueprintConverterThreadData, BlueprintConv>, this, v_threadData);
 
 	DebugOutL(__FUNCTION__);
 	return true;

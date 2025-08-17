@@ -18,6 +18,9 @@ public:
 	~SMBody();
 
 	void Add(SMEntity* pEntity);
+	// Returns the pointer to the beginning of added area for fast insertion
+	SMEntity** ResizeAdd(const std::size_t objCount);
+
 	EntityType Type() const noexcept override;
 
 	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const override;

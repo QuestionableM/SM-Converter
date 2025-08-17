@@ -16,12 +16,12 @@ SubMeshData::SubMeshData(
 	std::uint32_t idx,
 	bool hasNormals,
 	bool hasUvs
-) :
-	m_materialName(),
-	m_dataIdx(),
-	m_subMeshIdx(idx),
-	m_hasNormals(hasNormals),
-	m_hasUvs(hasUvs)
+)
+	: m_materialName()
+	, m_dataIdx()
+	, m_subMeshIdx(idx)
+	, m_hasNormals(hasNormals)
+	, m_hasUvs(hasUvs)
 {}
 
 SubMeshData::SubMeshData(
@@ -29,29 +29,79 @@ SubMeshData::SubMeshData(
 	bool hasNormals,
 	bool hasUvs,
 	const std::vector<std::vector<VertexData>>& dataIdx
-) :
-	m_materialName(),
-	m_dataIdx(dataIdx),
-	m_subMeshIdx(idx),
-	m_hasNormals(hasNormals),
-	m_hasUvs(hasUvs)
+)
+	: m_materialName()
+	, m_dataIdx(dataIdx)
+	, m_subMeshIdx(idx)
+	, m_hasNormals(hasNormals)
+	, m_hasUvs(hasUvs)
 {}
 
-SubMeshData::SubMeshData(SubMeshData&& other) noexcept :
-	m_materialName(std::move(other.m_materialName)),
-	m_dataIdx(std::move(other.m_dataIdx)),
-	m_subMeshIdx(other.m_subMeshIdx),
-	m_hasNormals(other.m_hasNormals),
-	m_hasUvs(other.m_hasUvs)
+SubMeshData::SubMeshData(SubMeshData&& other) noexcept
+	: m_materialName(std::move(other.m_materialName))
+	, m_dataIdx(std::move(other.m_dataIdx))
+	, m_subMeshIdx(other.m_subMeshIdx)
+	, m_hasNormals(other.m_hasNormals)
+	, m_hasUvs(other.m_hasUvs)
 {}
+
+inline static char* WriteVertexOnly(char* ptr, const std::size_t vertIdx)
+{
+	*ptr++ = ' ';
+	ptr = String::FromInteger<std::size_t>(vertIdx, ptr);
+
+	return ptr;
+}
+
+inline static char* WriteNormals(char* ptr, const std::size_t vertIdx, const std::size_t normIdx)
+{
+	*ptr++ = ' ';
+	ptr = String::FromInteger<std::size_t>(vertIdx, ptr);
+	*ptr++ = '/';
+	*ptr++ = '/';
+	ptr = String::FromInteger<std::size_t>(normIdx, ptr);
+
+	return ptr;
+}
+
+inline static char* WriteUvs(char* ptr, const std::size_t vertIdx, const std::size_t uvIdx)
+{
+	*ptr++ = ' ';
+	ptr = String::FromInteger<std::size_t>(vertIdx, ptr);
+	*ptr++ = '/';
+	ptr = String::FromInteger<std::size_t>(uvIdx, ptr);
+
+	return ptr;
+}
+
+inline static char* WriteUvsAndNormals(
+	char* ptr,
+	const std::size_t vertIdx,
+	const std::size_t uvIdx,
+	const std::size_t normIdx)
+{
+	*ptr++ = ' ';
+	ptr = String::FromInteger<std::size_t>(vertIdx, ptr);
+	*ptr++ = '/';
+	ptr = String::FromInteger<std::size_t>(uvIdx, ptr);
+	*ptr++ = '/';
+	ptr = String::FromInteger<std::size_t>(normIdx, ptr);
+
+	return ptr;
+}
 
 void SubMeshData::IndexWriter_None(const IndexWriterArguments& data, const VertexData& vert)
 {
 	const glm::vec3& v_vertex = data.m_translatedVertices[vert.m_vert];
 	const std::size_t v_vertIdx = data.m_offset.VertexMap.at(v_vertex);
 
-	*g_modelWriterPtr++ = ' ';
-	g_modelWriterPtr = String::FromInteger<std::size_t>(v_vertIdx, g_modelWriterPtr);
+	g_modelWriterPtr = WriteVertexOnly(g_modelWriterPtr, v_vertIdx);
+}
+
+void SubMeshData::IndexWriter_NoneUnoptimized(const IndexWriterArguments& data, const VertexData& vert)
+{
+	const std::size_t v_vertIdx = vert.m_vert + data.m_offset.Vertex;
+	g_modelWriterPtr = WriteVertexOnly(g_modelWriterPtr, v_vertIdx);
 }
 
 void SubMeshData::IndexWriter_Normals(const IndexWriterArguments& data, const VertexData& vert)
@@ -62,25 +112,31 @@ void SubMeshData::IndexWriter_Normals(const IndexWriterArguments& data, const Ve
 	const std::size_t v_vertIdx = data.m_offset.VertexMap.at(v_vertex);
 	const std::size_t v_normIdx = data.m_offset.NormalMap.at(v_normal);
 
-	*g_modelWriterPtr++ = ' ';
-	g_modelWriterPtr = String::FromInteger<std::size_t>(v_vertIdx, g_modelWriterPtr);
-	*g_modelWriterPtr++ = '/';
-	*g_modelWriterPtr++ = '/';
-	g_modelWriterPtr = String::FromInteger<std::size_t>(v_normIdx, g_modelWriterPtr);
+	g_modelWriterPtr = WriteNormals(g_modelWriterPtr, v_vertIdx, v_normIdx);
+}
+
+void SubMeshData::IndexWriter_NormalsUnoptimized(const IndexWriterArguments& data, const VertexData& vert)
+{
+	const glm::vec3& v_normal = data.m_translatedNormals[vert.m_norm];
+
+	const std::size_t v_vertIdx = vert.m_vert + data.m_offset.Vertex;
+	const std::size_t v_normIdx = data.m_offset.NormalMap.at(v_normal);
+
+	g_modelWriterPtr = WriteNormals(g_modelWriterPtr, v_vertIdx, v_normIdx);
 }
 
 void SubMeshData::IndexWriter_Uvs(const IndexWriterArguments& data, const VertexData& vert)
 {
 	const glm::vec3& v_vertex = data.m_translatedVertices[vert.m_vert];
-	//const glm::vec2& v_uv = v_data.m_model->uvs[v_vert.m_Uv];
-
 	const std::size_t v_vertIdx = data.m_offset.VertexMap.at(v_vertex);
-	//const std::size_t& v_uv_idx = v_data.offset->UvMap.at(v_uv);
 
-	*g_modelWriterPtr++ = ' ';
-	g_modelWriterPtr = String::FromInteger<std::size_t>(v_vertIdx, g_modelWriterPtr);
-	*g_modelWriterPtr++ = '/';
-	g_modelWriterPtr = String::FromInteger<std::size_t>(vert.m_uv, g_modelWriterPtr);
+	g_modelWriterPtr = WriteUvs(g_modelWriterPtr, v_vertIdx, vert.m_uv);
+}
+
+void SubMeshData::IndexWriter_UvsUnoptimized(const IndexWriterArguments& data, const VertexData& vert)
+{
+	const std::size_t v_vertIdx = vert.m_vert + data.m_offset.Vertex;
+	g_modelWriterPtr = WriteUvs(g_modelWriterPtr, v_vertIdx, vert.m_uv);
 }
 
 void SubMeshData::IndexWriter_UvsAndNormals(const IndexWriterArguments& data, const VertexData& vert)
@@ -91,26 +147,42 @@ void SubMeshData::IndexWriter_UvsAndNormals(const IndexWriterArguments& data, co
 	const std::size_t v_vertIdx = data.m_offset.VertexMap.at(v_vertex);
 	const std::size_t v_normIdx = data.m_offset.NormalMap.at(v_normal);
 
-	*g_modelWriterPtr++ = ' ';
-	g_modelWriterPtr = String::FromInteger<std::size_t>(v_vertIdx, g_modelWriterPtr);
-	*g_modelWriterPtr++ = '/';
-	g_modelWriterPtr = String::FromInteger<std::size_t>(vert.m_uv, g_modelWriterPtr);
-	*g_modelWriterPtr++ = '/';
-	g_modelWriterPtr = String::FromInteger<std::size_t>(v_normIdx, g_modelWriterPtr);
+	g_modelWriterPtr = WriteUvsAndNormals(g_modelWriterPtr, v_vertIdx, vert.m_uv, v_normIdx);
+}
+
+void SubMeshData::IndexWriter_UvsAndNormalsUnoptimized(const IndexWriterArguments& data, const VertexData& vert)
+{
+	const glm::vec3& v_normal = data.m_translatedNormals[vert.m_norm];
+	const std::size_t v_normIdx = data.m_offset.NormalMap.at(v_normal);
+
+	const std::size_t v_vertIdx = vert.m_vert + data.m_offset.Vertex;
+
+	g_modelWriterPtr = WriteUvsAndNormals(g_modelWriterPtr, v_vertIdx, vert.m_uv, v_normIdx);
 }
 
 SubMeshData::IndexWriterFunction SubMeshData::getWriterFunction() const noexcept
 {
-	const SubMeshData::IndexWriterFunction v_writerFunctions[4] =
+	const SubMeshData::IndexWriterFunction v_writerFunctions[8] =
 	{
+		// Optimized algos
+
 		SubMeshData::IndexWriter_None,
 		SubMeshData::IndexWriter_Normals,
 		SubMeshData::IndexWriter_Uvs,
-		SubMeshData::IndexWriter_UvsAndNormals
+		SubMeshData::IndexWriter_UvsAndNormals,
+
+		// Unoptimized algos
+
+		SubMeshData::IndexWriter_NoneUnoptimized,
+		SubMeshData::IndexWriter_NormalsUnoptimized,
+		SubMeshData::IndexWriter_UvsUnoptimized,
+		SubMeshData::IndexWriter_UvsAndNormalsUnoptimized
 	};
 
-	const std::uint32_t v_funcIdx = static_cast<std::uint32_t>(m_hasNormals) | (static_cast<std::uint32_t>(m_hasUvs) << 1);
-	return v_writerFunctions[v_funcIdx];
+	const std::size_t v_funcIdx = static_cast<std::size_t>(m_hasNormals) | (static_cast<std::size_t>(m_hasUvs) << 1);
+	const std::size_t v_unoptimizedOffset = SharedConverterSettings::DeduplicateVertices ? 0 : 4;
+
+	return v_writerFunctions[v_funcIdx + v_unoptimizedOffset];
 }
 
 /////////////////////// MODEL //////////////////////
@@ -133,9 +205,26 @@ Model::Model() :
 	m_bUvsCached(false)
 {}
 
-void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, std::ofstream& file, const SMEntity* pEntity)
+// This is actually faster than sprintf("%g %g %g")
+inline static char* WriteVertexLine(char* ptr, const glm::vec3& vertex)
 {
-	std::vector<glm::vec3> v_translatedVertices(m_vertices.size());
+	ptr = String::FromFloat(vertex.x, ptr);
+	*ptr++ = ' ';
+	ptr = String::FromFloat(vertex.y, ptr);
+	*ptr++ = ' ';
+	ptr = String::FromFloat(vertex.z, ptr);
+	*ptr++ = '\n';
+
+	return ptr;
+}
+
+void Model::WriteToFile(
+	const glm::mat4& model_mat,
+	WriterOffsetData& offset,
+	std::ofstream& file,
+	const SMEntity* pEntity)
+{
+	std::vector<glm::vec3> v_translatedVertices(SharedConverterSettings::DeduplicateVertices ? m_vertices.size() : 0);
 	std::vector<glm::vec3> v_translatedNormals(m_normals.size());
 
 	char* v_writer_off_two = g_modelWriterBuf + 2;
@@ -144,25 +233,32 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 	g_modelWriterBuf[0] = 'v';
 	g_modelWriterBuf[1] = ' ';
 
-	const std::size_t v_verticesCount = m_vertices.size();
-	for (std::size_t a = 0; a < v_verticesCount; a++)
+	if (SharedConverterSettings::DeduplicateVertices)
 	{
-		const glm::vec3 v_vertex = model_mat * glm::vec4(m_vertices[a], 1.0f);
-
-		v_translatedVertices[a] = v_vertex;
-
-		if (offset.VertexMap.emplace(v_vertex, offset.Vertex).second)
+		const std::size_t v_verticesCount = m_vertices.size();
+		for (std::size_t a = 0; a < v_verticesCount; a++)
 		{
-			offset.Vertex++;
+			const glm::vec3 v_vertex = model_mat * glm::vec4(m_vertices[a], 1.0f);
 
-			//This is actually faster than sprintf("%g %g %g")
-			g_modelWriterPtr = String::FromFloat(v_vertex.x, v_writer_off_two);
-			*g_modelWriterPtr++ = ' ';
-			g_modelWriterPtr = String::FromFloat(v_vertex.y, g_modelWriterPtr);
-			*g_modelWriterPtr++ = ' ';
-			g_modelWriterPtr = String::FromFloat(v_vertex.z, g_modelWriterPtr);
-			*g_modelWriterPtr++ = '\n';
+			v_translatedVertices[a] = v_vertex;
 
+			if (offset.VertexMap.emplace(v_vertex, offset.Vertex).second)
+			{
+				offset.Vertex++;
+
+				g_modelWriterPtr = WriteVertexLine(v_writer_off_two, v_vertex);
+				file.write(g_modelWriterBuf, g_modelWriterPtr - g_modelWriterBuf);
+			}
+		}
+	}
+	else
+	{
+		const std::size_t v_numVertices = m_vertices.size();
+		for (std::size_t a = 0; a < v_numVertices; a++)
+		{
+			const glm::vec3 v_vertex = model_mat * glm::vec4(m_vertices[a], 1.0f);
+
+			g_modelWriterPtr = WriteVertexLine(v_writer_off_two, v_vertex);
 			file.write(g_modelWriterBuf, g_modelWriterPtr - g_modelWriterBuf);
 		}
 	}
@@ -322,6 +418,9 @@ void Model::WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, st
 			file.write(g_modelWriterBuf, g_modelWriterPtr - g_modelWriterBuf);
 		}
 	}
+
+	if (!SharedConverterSettings::DeduplicateVertices)
+		offset.Vertex += m_vertices.size();
 }
 
 ////////////////// MODEL STORAGE ///////////////////////

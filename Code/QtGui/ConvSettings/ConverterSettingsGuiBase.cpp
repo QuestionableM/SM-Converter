@@ -10,9 +10,10 @@
 
 void ModelExportSettings::apply() const
 {
-	SharedConverterSettings::ExportMaterials = this->export_materials && this->export_uvs;
-	SharedConverterSettings::ExportNormals = this->export_normals;
-	SharedConverterSettings::ExportUvs = this->export_uvs;
+	SharedConverterSettings::ExportMaterials     = this->export_materials && this->export_uvs;
+	SharedConverterSettings::ExportNormals       = this->export_normals;
+	SharedConverterSettings::ExportUvs           = this->export_uvs;
+	SharedConverterSettings::DeduplicateVertices = this->deduplicate_vertices;
 }
 
 CustomGame* CustomGameIndex::getPtr() const
@@ -36,14 +37,16 @@ void ConverterThreadDataBase::applySettingsBase() const
 }
 
 ModelSettingsBox::ModelSettingsBox(QWidget* parent)
-	: AlignedGroupBox(parent, "Model Settings"),
-	m_bExportMaterials(new QCheckBox("Export Materials", this)),
-	m_bExportUvs(new QCheckBox("Export UV Coordinates", this)),
-	m_bExportNormals(new QCheckBox("Export Normals", this))
+	: AlignedGroupBox(parent, "Model Settings")
+	, m_bExportMaterials(new QCheckBox("Export Materials", this))
+	, m_bExportUvs(new QCheckBox("Export UV Coordinates", this))
+	, m_bExportNormals(new QCheckBox("Export Normals", this))
+	, m_bDeduplicateVertices(new QCheckBox("Deduplicate Vertices", this))
 {
 	m_layout->addWidget(m_bExportMaterials);
 	m_layout->addWidget(m_bExportUvs);
 	m_layout->addWidget(m_bExportNormals);
+	m_layout->addWidget(m_bDeduplicateVertices);
 
 	QObject::connect(m_bExportUvs, &QCheckBox::stateChanged, this,
 		[this]() -> void {
@@ -58,13 +61,15 @@ ModelSettingsBox::ModelSettingsBox(QWidget* parent)
 		&& SharedConverterSettings::ExportUvs);
 	m_bExportUvs->setChecked(SharedConverterSettings::ExportUvs);
 	m_bExportNormals->setChecked(SharedConverterSettings::ExportNormals);
+	m_bDeduplicateVertices->setChecked(SharedConverterSettings::DeduplicateVertices);
 }
 
 void ModelSettingsBox::fillSettings(ModelExportSettings* settings) const
 {
-	settings->export_materials = m_bExportMaterials->isChecked();
-	settings->export_normals = m_bExportNormals->isChecked();
-	settings->export_uvs = m_bExportUvs->isChecked();
+	settings->export_materials     = m_bExportMaterials->isChecked();
+	settings->export_normals       = m_bExportNormals->isChecked();
+	settings->export_uvs           = m_bExportUvs->isChecked();
+	settings->deduplicate_vertices = m_bDeduplicateVertices->isChecked();
 }
 
 
@@ -92,11 +97,12 @@ public:
 
 ConverterSettingsGuiBase::ConverterSettingsGuiBase(
 	QWidget* parent,
-	const std::wstring& object_name)
-	: QDialog(parent),
-	m_objectLayout(new QVBoxLayout(this)),
-	m_objectName(this),
-	m_convertButton(new QPushButton("Convert", this))
+	const std::wstring& object_name
+)
+	: QDialog(parent)
+	, m_objectLayout(new QVBoxLayout(this))
+	, m_objectName(this)
+	, m_convertButton(new QPushButton("Convert", this))
 {
 	this->setResult(DialogCode::Rejected);
 

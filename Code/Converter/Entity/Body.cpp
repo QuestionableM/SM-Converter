@@ -21,6 +21,14 @@ void SMBody::Add(SMEntity* pEntity)
 	m_objects.push_back(pEntity);
 }
 
+SMEntity** SMBody::ResizeAdd(const std::size_t objCount)
+{
+	const std::size_t v_prevSize = m_objects.size();
+	m_objects.resize(v_prevSize + objCount);
+
+	return m_objects.data() + v_prevSize;
+}
+
 EntityType SMBody::Type() const noexcept
 {
 	return EntityType::Body;

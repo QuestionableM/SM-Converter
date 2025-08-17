@@ -71,9 +71,16 @@ struct SubMeshData
 	~SubMeshData() = default;
 
 	static void IndexWriter_None(const IndexWriterArguments& data, const VertexData& vert);
+	static void IndexWriter_NoneUnoptimized(const IndexWriterArguments& data, const VertexData& vert);
+
 	static void IndexWriter_Normals(const IndexWriterArguments& data, const VertexData& vert);
+	static void IndexWriter_NormalsUnoptimized(const IndexWriterArguments& data, const VertexData& vert);
+
 	static void IndexWriter_Uvs(const IndexWriterArguments& data, const VertexData& vert);
+	static void IndexWriter_UvsUnoptimized(const IndexWriterArguments& data, const VertexData& vert);
+
 	static void IndexWriter_UvsAndNormals(const IndexWriterArguments& data, const VertexData& vert);
+	static void IndexWriter_UvsAndNormalsUnoptimized(const IndexWriterArguments& data, const VertexData& vert);
 
 	IndexWriterFunction getWriterFunction() const noexcept;
 	inline bool isEmpty() const noexcept { return m_dataIdx.empty(); }

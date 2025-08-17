@@ -21,6 +21,7 @@ public:
 	bool export_materials;
 	bool export_uvs;
 	bool export_normals;
+	bool deduplicate_vertices;
 };
 
 struct CustomGameIndex
@@ -55,6 +56,7 @@ public:
 	QCheckBox* m_bExportMaterials;
 	QCheckBox* m_bExportUvs;
 	QCheckBox* m_bExportNormals;
+	QCheckBox* m_bDeduplicateVertices;
 };
 
 class ConverterSettingsGuiBase : public QDialog
