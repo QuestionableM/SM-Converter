@@ -58,15 +58,17 @@ struct SubMeshData
 	using IndexWriterFunction = void(*)(const IndexWriterArguments&, const VertexData&);
 
 	SubMeshData(
-		std::uint32_t idx,
-		bool hasNormals,
-		bool hasUvs);
+		const std::uint32_t idx,
+		const bool hasNormals,
+		const bool hasUvs
+	);
 
 	SubMeshData(
-		std::uint32_t idx,
-		bool hasNormals,
-		bool hasUvs,
-		const std::vector<std::vector<VertexData>>& dataIdx);
+		const std::uint32_t idx,
+		const bool hasNormals,
+		const bool hasUvs,
+		const std::initializer_list<std::initializer_list<VertexData>>& dataIdx
+	);
 
 	SubMeshData(SubMeshData&& other) noexcept;
 	~SubMeshData() = default;

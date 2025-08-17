@@ -13,9 +13,9 @@ static char* g_modelWriterBufferEnd = g_modelWriterBuf + sizeof(g_modelWriterBuf
 static char* g_modelWriterPtr;
 
 SubMeshData::SubMeshData(
-	std::uint32_t idx,
-	bool hasNormals,
-	bool hasUvs
+	const std::uint32_t idx,
+	const bool hasNormals,
+	const bool hasUvs
 )
 	: m_materialName()
 	, m_dataIdx()
@@ -25,13 +25,13 @@ SubMeshData::SubMeshData(
 {}
 
 SubMeshData::SubMeshData(
-	std::uint32_t idx,
-	bool hasNormals,
-	bool hasUvs,
-	const std::vector<std::vector<VertexData>>& dataIdx
+	const std::uint32_t idx,
+	const bool hasNormals,
+	const bool hasUvs,
+	const std::initializer_list<std::initializer_list<VertexData>>& dataIdx
 )
 	: m_materialName()
-	, m_dataIdx(dataIdx)
+	, m_dataIdx(dataIdx.begin(), dataIdx.end())
 	, m_subMeshIdx(idx)
 	, m_hasNormals(hasNormals)
 	, m_hasUvs(hasUvs)

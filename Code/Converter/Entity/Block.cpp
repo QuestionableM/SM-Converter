@@ -132,7 +132,7 @@ static void FillCustomCube(Model& model, const glm::vec3& bounds, const glm::vec
 		0,
 		SharedConverterSettings::ExportNormals,
 		SharedConverterSettings::ExportUvs,
-		std::initializer_list<std::vector<VertexData>>{
+		std::initializer_list<std::initializer_list<VertexData>>{
 			{ { 0, 0 , 0 }, { 1, 1 , 0 }, { 2, 2 , 0 } },
 			{ { 3, 3 , 1 }, { 4, 4 , 1 }, { 1, 5 , 1 } },
 			{ { 5, 6 , 2 }, { 6, 7 , 2 }, { 4, 8 , 2 } },
