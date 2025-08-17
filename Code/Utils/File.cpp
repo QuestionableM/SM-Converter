@@ -21,7 +21,7 @@ SM_UNMANAGED_CODE
 
 #include <ShlObj.h>
 
-bool File::ReadFileBytes(const std::wstring& path, std::vector<Byte>& bytes)
+bool File::ReadFileBytes(const std::wstring_view& path, std::vector<Byte>& bytes)
 {
 #if defined(USE_MEM_MAPPED_FILES)
 	MemoryMapped v_inputFile(path, MemoryMapped::WholeFile, MemoryMapped::SequentialScan);
@@ -30,7 +30,7 @@ bool File::ReadFileBytes(const std::wstring& path, std::vector<Byte>& bytes)
 	bytes.resize(v_inputFile.size());
 	std::memcpy(bytes.data(), v_inputFile.getData(), bytes.size());
 #else
-	std::ifstream input_file(path, std::ios::binary | std::ios::ate);
+	std::ifstream input_file(path.data(), std::ios::binary | std::ios::ate);
 	if (!input_file.is_open()) return false;
 
 	bytes.resize(static_cast<std::size_t>(input_file.tellg()));
@@ -63,9 +63,9 @@ bool File::ReadToString(const std::wstring_view& path, std::string& r_output)
 	return true;
 }
 
-bool File::ReadToStringNormal(const std::wstring& path, std::string& r_output)
+bool File::ReadToStringNormal(const std::wstring_view& path, std::string& r_output)
 {
-	std::ifstream v_input_file(path, std::ios::ate);
+	std::ifstream v_input_file(path.data(), std::ios::ate);
 	if (!v_input_file.is_open()) return false;
 
 	r_output.resize(v_input_file.tellg());
@@ -77,7 +77,7 @@ bool File::ReadToStringNormal(const std::wstring& path, std::string& r_output)
 	return true;
 }
 
-bool File::ReadToStringED(const std::wstring& path, std::string& r_output)
+bool File::ReadToStringED(const std::wstring_view& path, std::string& r_output)
 {
 #if defined(USE_MEM_MAPPED_FILES)
 	MemoryMapped v_inputFile(path, MemoryMapped::WholeFile, MemoryMapped::SequentialScan);
@@ -91,7 +91,7 @@ bool File::ReadToStringED(const std::wstring& path, std::string& r_output)
 	r_output.resize(v_inputFile.size() - v_fileOffset);
 	std::memcpy(r_output.data(), v_inputFile.getData() + v_fileOffset, r_output.size() - v_fileOffset);
 #else
-	std::ifstream v_input_file(path, std::ios::binary | std::ios::ate);
+	std::ifstream v_input_file(path.data(), std::ios::binary | std::ios::ate);
 	if (!v_input_file.is_open()) return false;
 
 	const std::size_t v_file_size = static_cast<std::size_t>(v_input_file.tellg());

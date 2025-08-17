@@ -16,7 +16,7 @@ void WorldConverter::WriteToFile(
 {
 	if (error) return; //Error check
 
-	const std::wstring v_world_out_dir = std::wstring(DatabaseConfig::WorldOutputFolder.data());
+	const std::wstring v_world_out_dir(DatabaseConfig::WorldOutputFolder);
 	if (!File::CreateDirectorySafe(v_world_out_dir))
 	{
 		error.setError(1, "Couldn't create the main output directory");

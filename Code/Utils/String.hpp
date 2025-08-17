@@ -133,12 +133,12 @@ namespace String
 		outStr.append(String::IntegerToString<T>(v_intBuffer, sizeof(v_intBuffer), num));
 	}
 
-	inline std::string ToUtf8(const std::wstring& wstr)
+	inline std::string ToUtf8(const std::wstring_view& wstr)
 	{
-		const int v_count = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), static_cast<int>(wstr.size()), NULL, 0, NULL, NULL);
+		const int v_count = WideCharToMultiByte(CP_UTF8, 0, wstr.data(), static_cast<int>(wstr.size()), NULL, 0, NULL, NULL);
 
 		std::string v_str(v_count, 0);
-		WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, &v_str[0], v_count, NULL, NULL);
+		WideCharToMultiByte(CP_UTF8, 0, wstr.data(), -1, &v_str[0], v_count, NULL, NULL);
 
 		return v_str;
 	}
@@ -163,28 +163,6 @@ namespace String
 		return v_wstr;
 	}
 
-	inline std::wstring ToWide(const char* str)
-	{
-		const int v_str_sz = static_cast<int>(strlen(str));
-		const int v_count = MultiByteToWideChar(CP_UTF8, 0, str, v_str_sz, NULL, 0);
-
-		std::wstring v_wstr(v_count, 0);
-		MultiByteToWideChar(CP_UTF8, 0, str, v_str_sz, &v_wstr[0], v_count);
-
-		return v_wstr;
-	}
-
-	inline std::wstring ToWide(const std::string& str)
-	{
-		const int v_str_sz = static_cast<int>(str.size());
-		const int v_count = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), v_str_sz, NULL, 0);
-
-		std::wstring v_wstr(v_count, 0);
-		MultiByteToWideChar(CP_UTF8, 0, str.c_str(), v_str_sz, &v_wstr[0], v_count);
-
-		return v_wstr;
-	}
-
 	template<typename T>
 	inline void ToLowerR(T& r_str)
 	{
@@ -201,26 +179,23 @@ namespace String
 	}
 
 	template<typename T>
-	inline T ToLower(const T& str)
+	inline auto ToLower(const T& str)
 	{
-		static_assert(std::is_same_v<T, std::string> || std::is_same_v<T, std::wstring>, "ToLower can only be used with the following types: std::string, std::wstring");
+		static_assert(
+			std::is_same_v<T, std::string> || std::is_same_v<T, std::string_view> ||
+			std::is_same_v<T, std::wstring> || std::is_same_v<T, std::wstring_view>,
+			"ToLower can only be used with the following types: std::string, std::string_view, std::wstring, std::wstring_view");
 
-		if constexpr (std::is_same_v<T, std::wstring>) {
-			std::wstring v_output = str;
+		using TStringType = std::conditional_t<
+			std::is_same_v<T, std::string> || std::is_same_v<T, std::string_view>,
+			std::string,
+			std::wstring
+		>;
 
-			for (wchar_t& w_char : v_output)
-				w_char = std::towlower(w_char);
+		TStringType v_output(str);
+		String::ToLowerR(v_output);
 
-			return v_output;
-		}
-		else if constexpr (std::is_same_v<T, std::string>) {
-			std::string v_output = str;
-
-			for (char& s_char : v_output)
-				s_char = std::tolower(s_char);
-
-			return v_output;
-		}
+		return v_output;
 	}
 
 	template<typename T>
@@ -245,15 +220,7 @@ namespace String
 		static_assert(std::is_same_v<T, std::string> || std::is_same_v<T, std::wstring>, "ReplaceAll can only be used with the following types: std::string, std::wstring");
 
 		T str_cpy = str;
-		typename T::value_type* v_iter = str_cpy.data();
-
-		if constexpr (std::is_same_v<T, std::string>) {
-			while ((v_iter = strchr(v_iter, to_replace)) != nullptr)
-				*v_iter = replacer;
-		} else if constexpr (std::is_same_v<T, std::wstring>) {
-			while ((v_iter = wcschr(v_iter, to_replace)) != nullptr)
-				*v_iter = replacer;
-		}
+		String::ReplaceAllR(str_cpy, to_replace, replacer);
 
 		return str_cpy;
 	}

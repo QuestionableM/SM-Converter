@@ -64,8 +64,10 @@ private:
 			.arg(QString::fromStdWString(obj->name));
 		const QString v_uuid = QString("UUID: %1")
 			.arg(QString::fromStdString(obj->uuid.toString()));
+
+		const std::string_view v_filterName = FilterSettingsData::GetFilterName(obj->filter);
 		const QString v_content_type = QString("Content Type: %1")
-			.arg(FilterSettingsData::GetFilterName(obj->filter));
+			.arg(QString::fromUtf8(v_filterName.data(), v_filterName.size()));
 
 		m_infoLayout->addWidget(new QLabel(v_bp_name, this));
 		m_infoLayout->addWidget(new QLabel(v_uuid, this));

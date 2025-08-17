@@ -187,26 +187,26 @@ SubMeshData::IndexWriterFunction SubMeshData::getWriterFunction() const noexcept
 
 /////////////////////// MODEL //////////////////////
 
-Model::Model(const std::wstring& mesh_path) :
-	m_path(mesh_path),
-	m_vertices(),
-	m_normals(),
-	m_uvs(),
-	m_subMeshData(),
-	m_bUvsCached(false)
+Model::Model(const std::wstring_view& mesh_path)
+	: m_path(mesh_path)
+	, m_vertices()
+	, m_normals()
+	, m_uvs()
+	, m_subMeshData()
+	, m_bUvsCached(false)
 {}
 
-Model::Model() :
-	m_path(),
-	m_vertices(),
-	m_normals(),
-	m_uvs(),
-	m_subMeshData(),
-	m_bUvsCached(false)
+Model::Model()
+	: m_path()
+	, m_vertices()
+	, m_normals()
+	, m_uvs()
+	, m_subMeshData()
+	, m_bUvsCached(false)
 {}
 
 // This is actually faster than sprintf("%g %g %g")
-inline static char* WriteVertexLine(char* ptr, const glm::vec3& vertex)
+inline static char* WriteVec3Line(char* ptr, const glm::vec3& vertex)
 {
 	ptr = String::FromFloat(vertex.x, ptr);
 	*ptr++ = ' ';
@@ -246,7 +246,7 @@ void Model::WriteToFile(
 			{
 				offset.Vertex++;
 
-				g_modelWriterPtr = WriteVertexLine(v_writer_off_two, v_vertex);
+				g_modelWriterPtr = WriteVec3Line(v_writer_off_two, v_vertex);
 				file.write(g_modelWriterBuf, g_modelWriterPtr - g_modelWriterBuf);
 			}
 		}
@@ -258,7 +258,7 @@ void Model::WriteToFile(
 		{
 			const glm::vec3 v_vertex = model_mat * glm::vec4(m_vertices[a], 1.0f);
 
-			g_modelWriterPtr = WriteVertexLine(v_writer_off_two, v_vertex);
+			g_modelWriterPtr = WriteVec3Line(v_writer_off_two, v_vertex);
 			file.write(g_modelWriterBuf, g_modelWriterPtr - g_modelWriterBuf);
 		}
 	}
@@ -331,13 +331,7 @@ void Model::WriteToFile(
 			{
 				offset.Normal++;
 
-				g_modelWriterPtr = String::FromFloat(v_normal.x, v_writer_off_three);
-				*g_modelWriterPtr++ = ' ';
-				g_modelWriterPtr = String::FromFloat(v_normal.y, g_modelWriterPtr);
-				*g_modelWriterPtr++ = ' ';
-				g_modelWriterPtr = String::FromFloat(v_normal.z, g_modelWriterPtr);
-				*g_modelWriterPtr++ = '\n';
-
+				g_modelWriterPtr = WriteVec3Line(v_writer_off_three, v_normal);
 				file.write(g_modelWriterBuf, g_modelWriterPtr - g_modelWriterBuf);
 			}
 		}
@@ -425,7 +419,7 @@ void Model::WriteToFile(
 
 ////////////////// MODEL STORAGE ///////////////////////
 
-const aiScene* ModelStorage::LoadScene(const std::wstring& path)
+const aiScene* ModelStorage::LoadScene(const std::wstring_view& path)
 {
 	return Importer.ReadFile(
 		String::ToUtf8(path).c_str(),
@@ -517,7 +511,7 @@ void ModelStorage::LoadSubMeshes(const aiScene* pScene, Model* pModel)
 	}
 }
 
-Model* ModelStorage::LoadModel(const std::wstring& path)
+Model* ModelStorage::LoadModel(const std::wstring_view& path)
 {
 	const auto v_iter = ModelStorage::CachedModels.find(path);
 	if (v_iter != ModelStorage::CachedModels.end())

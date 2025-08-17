@@ -245,9 +245,10 @@ ObjectInfoGui::ObjectInfoGui(TileInstance* tile, QWidget* parent)
 
 	this->appendMainObjectInfo<TileInstance>(tile);
 
-	const QString v_tile_sz = QString("Tile Size: %1")
-		.arg(FilterSettingsData::GetTileSizeName(tile->size_filter));
-	m_infoLayout->addWidget(new QLabel(v_tile_sz, this));
+	const std::string_view v_tileSizeName = FilterSettingsData::GetTileSizeName(tile->size_filter);
+	const QString v_tileSz = QString("Tile Size: %1")
+		.arg(QString::fromUtf8(v_tileSizeName.data(), v_tileSizeName.size()));
+	m_infoLayout->addWidget(new QLabel(v_tileSz, this));
 
 	this->appendPartsStats();
 	m_modList->updateModList();

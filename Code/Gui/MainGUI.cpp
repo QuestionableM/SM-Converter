@@ -1300,7 +1300,7 @@ namespace SMConverter
 
 	void MainGui::MainGui_OpenBlueprintOutputFolder_Click(System::Object^ sender, System::EventArgs^ e)
 	{
-		const std::wstring v_bp_out_dir = std::wstring(DatabaseConfig::BlueprintOutputFolder.data());
+		const std::wstring v_bp_out_dir(DatabaseConfig::BlueprintOutputFolder);
 		if (File::CreateDirectorySafe(v_bp_out_dir))
 			System::Diagnostics::Process::Start("explorer.exe", gcnew System::String(v_bp_out_dir.c_str()));
 		else
@@ -1309,7 +1309,7 @@ namespace SMConverter
 
 	void MainGui::MainGui_OpenWorldOutputDirectory_Click(System::Object^ sender, System::EventArgs^ e)
 	{
-		const std::wstring v_world_out_dir = std::wstring(DatabaseConfig::WorldOutputFolder.data());
+		const std::wstring v_world_out_dir(DatabaseConfig::WorldOutputFolder);
 		if (File::CreateDirectorySafe(v_world_out_dir))
 			System::Diagnostics::Process::Start("explorer.exe", gcnew System::String(v_world_out_dir.c_str()));
 		else
@@ -1318,7 +1318,7 @@ namespace SMConverter
 
 	void MainGui::MainGui_OpenTileOutputFolder_Click(System::Object^ sender, System::EventArgs^ e)
 	{
-		const std::wstring v_tile_out_dir = std::wstring(DatabaseConfig::TileOutputFolder.data());
+		const std::wstring v_tile_out_dir(DatabaseConfig::TileOutputFolder);
 		if (File::CreateDirectorySafe(v_tile_out_dir))
 			System::Diagnostics::Process::Start("explorer.exe", gcnew System::String(v_tile_out_dir.c_str()));
 		else

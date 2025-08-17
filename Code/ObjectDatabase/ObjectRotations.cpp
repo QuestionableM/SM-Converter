@@ -23,8 +23,8 @@ namespace Rotations
 
 void Rotations::InitializeRotations()
 {
-	const nlohmann::json v_settings = JsonReader::LoadParseJson(DatabaseConfig::RotationsPath.data());
-	if (!v_settings.is_object())
+	nlohmann::json v_settings;
+	if (!JsonReader::LoadParseJson(DatabaseConfig::RotationsPath, v_settings) || !v_settings.is_object())
 	{
 		DebugErrorL("Couldn't read rotation configuration file!");
 		return;
@@ -52,7 +52,7 @@ void Rotations::InitializeRotations()
 			v_entry.pos_vector = glm::vec3(0.0f);
 			v_entry.rot_matrix = glm::mat4(1.0f);
 
-			const auto v_offset = JsonReader::Get(v_second_rot.value(), "Offset");
+			const auto& v_offset = JsonReader::Get(v_second_rot.value(), "Offset");
 			if (v_offset.is_object())
 			{
 				const auto& v_x_pos = JsonReader::Get(v_offset, "x");
@@ -63,7 +63,7 @@ void Rotations::InitializeRotations()
 					v_entry.pos_vector = glm::vec3(v_x_pos.get<float>(), v_y_pos.get<float>(), v_z_pos.get<float>());
 			}
 
-			const auto v_rot_mat = JsonReader::Get(v_second_rot.value(), "Rotation");
+			const auto& v_rot_mat = JsonReader::Get(v_second_rot.value(), "Rotation");
 			if (v_rot_mat.is_object())
 			{
 				const auto& v_x_rot = JsonReader::Get(v_rot_mat, "x");

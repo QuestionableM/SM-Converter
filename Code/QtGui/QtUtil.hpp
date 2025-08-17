@@ -5,8 +5,8 @@
 
 namespace QtUtil
 {
-    bool openDirInExplorer(const std::wstring& pathIn);
-    bool showFileInExplorer(const std::wstring& pathIn);
+    bool openDirInExplorer(const std::wstring_view& pathIn);
+    bool showFileInExplorer(const std::wstring_view& pathIn);
 
     void warningWithSound(QWidget* parent, const QString& title, const QString& message);
     void errorWithSound(QWidget* parent, const QString& title, const QString& message);

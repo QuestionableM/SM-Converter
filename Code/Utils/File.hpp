@@ -13,14 +13,14 @@ SM_UNMANAGED_CODE
 
 namespace File
 {
-	bool ReadFileBytes(const std::wstring& path, std::vector<Byte>& bytes);
+	bool ReadFileBytes(const std::wstring_view& path, std::vector<Byte>& bytes);
 
 	//Reads binary string
 	bool ReadToString(const std::wstring_view& path, std::string& r_output);
 	//Reads normal string
-	bool ReadToStringNormal(const std::wstring& path, std::string& r_output);
+	bool ReadToStringNormal(const std::wstring_view& path, std::string& r_output);
 	//File reader specifically designed to handle weird encodings
-	bool ReadToStringED(const std::wstring& path, std::string& r_output);
+	bool ReadToStringED(const std::wstring_view& path, std::string& r_output);
 
 	bool Exists(const std::wstring& path);
 	bool CreateDirectorySafe(const std::wstring& path);

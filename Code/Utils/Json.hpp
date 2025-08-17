@@ -18,12 +18,12 @@ class JsonReader
 {
 public:
 	static nlohmann::json ParseJsonString(const std::string& json_str);
-	static nlohmann::json LoadParseJson(const std::wstring_view& path);
+	static bool LoadParseJson(const std::wstring_view& path, nlohmann::json& outJson);
 
 	static void WriteJson(const std::wstring_view& path, const nlohmann::json& pJson);
 	static std::string WriteJsonString(const nlohmann::json& v_json);
 
-	static const nlohmann::json& Get(const nlohmann::json& obj, const std::string& key);
+	static const nlohmann::json& Get(const nlohmann::json& obj, const std::string_view& key);
 	static const nlohmann::json& Get(const nlohmann::json& obj, std::size_t key);
 
 	//Simdjson functions
@@ -32,13 +32,13 @@ public:
 	static void RemoveComments(std::string& json_string);
 
 	//Parse simdjson unchecked
-	static bool LoadParseSimdjson(const std::wstring& path, simdjson::dom::document& v_doc);
+	static bool LoadParseSimdjson(const std::wstring_view& path, simdjson::dom::document& v_doc);
 	//Parse simdjson with root node type check
-	static bool LoadParseSimdjsonC(const std::wstring& path, simdjson::dom::document& v_doc, const simdjson::dom::element_type& type_check);
+	static bool LoadParseSimdjsonC(const std::wstring_view& path, simdjson::dom::document& v_doc, const simdjson::dom::element_type& type_check);
 	//Parse simdjson with comments
-	static bool LoadParseSimdjsonComments(const std::wstring& path, simdjson::dom::document& v_doc);
+	static bool LoadParseSimdjsonComments(const std::wstring_view& path, simdjson::dom::document& v_doc);
 	//Parse simdjson with comments and root node type checking
-	static bool LoadParseSimdjsonCommentsC(const std::wstring& path, simdjson::dom::document& v_doc, const simdjson::dom::element_type& type_check);
+	static bool LoadParseSimdjsonCommentsC(const std::wstring_view& path, simdjson::dom::document& v_doc, const simdjson::dom::element_type& type_check);
 	//Parse simdjson from string
 	static bool ParseSimdjsonString(const std::string_view& json_str, simdjson::dom::document& v_doc);
 

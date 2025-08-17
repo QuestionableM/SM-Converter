@@ -484,8 +484,7 @@ void MainGui::openDirectory(
 	const std::wstring_view& path_view,
 	const char* type_str)
 {
-	const std::wstring v_dir_wide = std::wstring(
-		path_view.data(), path_view.size());
+	const std::wstring v_dir_wide(path_view.data());
 
 	if (!(File::CreateDirectorySafe(v_dir_wide) && QtUtil::openDirInExplorer(v_dir_wide)))
 	{

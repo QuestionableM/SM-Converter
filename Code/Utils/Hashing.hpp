@@ -42,6 +42,16 @@ namespace Hashing
 			return std::hash<std::string_view>{}(str);
 		}
 
+		inline std::size_t operator()(const std::wstring& str) const noexcept
+		{
+			return std::hash<std::wstring>{}(str);
+		}
+
+		inline std::size_t operator()(const std::wstring_view& str) const noexcept
+		{
+			return std::hash<std::wstring_view>{}(str);
+		}
+
 		inline std::size_t operator()(PrecomputedStringHash hash) const noexcept
 		{
 			return hash.m_hash;

@@ -14,7 +14,7 @@ void MaterialManager::Initialize()
 {
 	simdjson::dom::document v_doc;
 	if (!JsonReader::LoadParseSimdjsonCommentsC(
-		DatabaseConfig::MaterialMapPath.data(),
+		DatabaseConfig::MaterialMapPath,
 		v_doc,
 		simdjson::dom::element_type::OBJECT))
 	{

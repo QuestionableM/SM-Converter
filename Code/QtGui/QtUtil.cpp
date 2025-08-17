@@ -11,17 +11,17 @@
 #pragma comment(lib, "Winmm.lib")
 #endif
 
-bool QtUtil::openDirInExplorer(const std::wstring& pathIn)
+bool QtUtil::openDirInExplorer(const std::wstring_view& pathIn)
 {
 	return QProcess::startDetached("explorer.exe",
-		QStringList{ QString::fromStdWString(pathIn) });
+		QStringList{ QString::fromWCharArray(pathIn.data(), pathIn.size()) });
 }
 
-bool QtUtil::showFileInExplorer(const std::wstring& pathIn)
+bool QtUtil::showFileInExplorer(const std::wstring_view& pathIn)
 {
 	QStringList v_params;
 	v_params += QLatin1String("/select,");
-	v_params += QDir::toNativeSeparators(QString::fromStdWString(pathIn));
+	v_params += QDir::toNativeSeparators(QString::fromWCharArray(pathIn.data(), pathIn.size()));
 
 	return QProcess::startDetached("explorer.exe", v_params);
 }

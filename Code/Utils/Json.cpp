@@ -28,29 +28,33 @@ nlohmann::json JsonReader::ParseJsonString(const std::string& json_str)
 	return m_emptyObject;
 }
 
-nlohmann::json JsonReader::LoadParseJson(const std::wstring_view& path)
+bool JsonReader::LoadParseJson(const std::wstring_view& path, nlohmann::json& outJson)
 {
 	std::string v_fileData;
-	if (!File::ReadToString(path, v_fileData))
+	bool v_success = false;
+
+	if (File::ReadToString(path, v_fileData))
+	{
+		try
+		{
+			outJson = nlohmann::json::parse(v_fileData, nullptr, true, true);
+			v_success = true;
+		}
+	#ifdef _DEBUG
+		catch (nlohmann::json::parse_error& p_err)
+		{
+			DebugErrorL("Couldn't parse the json file:\nPath: ", path, "\nError: ", p_err.what());
+		}
+	#else
+		catch (...) {}
+	#endif
+	}
+	else
 	{
 		DebugErrorL("Couldn't read the specified json file: ", path);
-		return m_emptyObject;
 	}
 
-	try
-	{
-		return nlohmann::json::parse(v_fileData, nullptr, true, true);
-	}
-#ifdef _DEBUG
-	catch (nlohmann::json::parse_error& p_err)
-	{
-		DebugErrorL("Couldn't parse the json file:\nPath: ", path, "\nError: ", p_err.what());
-	}
-#else
-	catch (...) {}
-#endif
-
-	return m_emptyObject;
+	return v_success;
 }
 
 void JsonReader::WriteJson(const std::wstring_view& path, const nlohmann::json& pJson)
@@ -70,7 +74,7 @@ std::string JsonReader::WriteJsonString(const nlohmann::json& v_json)
 	return v_str.str();
 }
 
-const nlohmann::json& JsonReader::Get(const nlohmann::json& obj, const std::string& key)
+const nlohmann::json& JsonReader::Get(const nlohmann::json& obj, const std::string_view& key)
 {
 	const auto v_iter = obj.find(key);
 	if (v_iter != obj.end())
@@ -197,126 +201,135 @@ void JsonReader::RemoveComments(std::string& json_string)
 	}
 }
 
-bool JsonReader::LoadParseSimdjson(const std::wstring& path, simdjson::dom::document& v_doc)
+bool JsonReader::LoadParseSimdjson(const std::wstring_view& path, simdjson::dom::document& v_doc)
 {
-	try
+	std::string v_jsonStr;
+	bool v_success = false;
+
+	if (File::ReadToStringED(path, v_jsonStr))
 	{
-		std::string v_json_str;
-		if (!File::ReadToStringED(path, v_json_str))
-			return false;
-
-		simdjson::dom::parser v_parser;
-		v_parser.parse_into_document(v_doc, v_json_str);
-
-		return true;
-	}
-#if defined(_DEBUG) || defined(DEBUG)
-	catch (const simdjson::simdjson_error& v_err)
-	{
-		DebugErrorL("Couldn't parse: ", path, "\nError: ", v_err.what());
-	}
-#else
-	catch (...) {}
-#endif
-
-	return false;
-}
-
-bool JsonReader::LoadParseSimdjsonC(const std::wstring& path, simdjson::dom::document& v_doc, const simdjson::dom::element_type& type_check)
-{
-	try
-	{
-		std::string v_json_str;
-		if (!File::ReadToStringED(path, v_json_str))
-			return false;
-
-		simdjson::dom::parser v_parser;
-		v_parser.parse_into_document(v_doc, v_json_str);
-
-		const auto v_root = v_doc.root();
-		if (v_root.type() != type_check)
+		try
 		{
-			DebugErrorL("Mismatching root json type!\nFile: ", path);
-			return false;
+			simdjson::dom::parser v_parser;
+			v_parser.parse_into_document(v_doc, v_jsonStr);
+
+			v_success = true;
 		}
-
-		return true;
+	#if defined(_DEBUG) || defined(DEBUG)
+		catch (const simdjson::simdjson_error& v_err)
+		{
+			DebugErrorL("Couldn't parse: ", path, "\nError: ", v_err.what());
+		}
+	#else
+		catch (...) {}
+	#endif
 	}
-#if defined(_DEBUG) || defined(DEBUG)
-	catch (const simdjson::simdjson_error& v_err)
-	{
-		DebugErrorL("Couldn't parse: ", path, "\nError: ", v_err.what());
-	}
-#else
-	catch (...) {}
-#endif
 
-	return false;
+	return v_success;
 }
 
-bool JsonReader::LoadParseSimdjsonComments(const std::wstring& path, simdjson::dom::document& v_doc)
+bool JsonReader::LoadParseSimdjsonC(const std::wstring_view& path, simdjson::dom::document& v_doc, const simdjson::dom::element_type& type_check)
 {
-	try
+	std::string v_jsonStr;
+	bool v_success = false;
+
+	if (File::ReadToStringED(path, v_jsonStr))
 	{
-		std::string v_json_str;
-		if (!File::ReadToStringED(path, v_json_str))
-			return false;
+		try
+		{
+			simdjson::dom::parser v_parser;
+			v_parser.parse_into_document(v_doc, v_jsonStr);
 
-		JsonReader::RemoveComments(v_json_str);
-
-		simdjson::dom::parser v_parser;
-		v_parser.parse_into_document(v_doc, v_json_str);
-
-		return true;
+			if (v_doc.root().type() == type_check)
+				v_success = true;
+			else
+				DebugErrorL("Mismatching root json type!\nFile: ", path);
+		}
+	#if defined(_DEBUG) || defined(DEBUG)
+		catch (const simdjson::simdjson_error& v_err)
+		{
+			DebugErrorL("Couldn't parse: ", path, "\nError: ", v_err.what());
+		}
+	#else
+		catch (...) {}
+	#endif
 	}
-#if defined(_DEBUG) || defined(DEBUG)
-	catch (const simdjson::simdjson_error& v_err)
-	{
-		DebugErrorL("Couldn't parse: ", path, "\nError: ", v_err.what());
-	}
-#else
-	catch (...) {}
-#endif
 
-	return false;
+
+	return v_success;
 }
 
-bool JsonReader::LoadParseSimdjsonCommentsC(const std::wstring& path, simdjson::dom::document& v_doc, const simdjson::dom::element_type& type_check)
+bool JsonReader::LoadParseSimdjsonComments(const std::wstring_view& path, simdjson::dom::document& v_doc)
 {
-	try
-	{
-		std::string v_jsonStr;
-		if (!File::ReadToStringED(path, v_jsonStr))
-			return false;
+	std::string v_jsonStr;
+	bool v_success = false;
 
+	if (File::ReadToStringED(path, v_jsonStr))
+	{
 		JsonReader::RemoveComments(v_jsonStr);
 
-		simdjson::dom::parser v_parser;
-		const auto v_root = v_parser.parse_into_document(v_doc, v_jsonStr);
-		if (v_root.error())
+		try
 		{
-			DebugErrorL("Parse Error:\nFile: ", path, "\nError: ", simdjson::error_message(v_root.error()));
-			return false;
-		}
+			simdjson::dom::parser v_parser;
+			v_parser.parse_into_document(v_doc, v_jsonStr);
 
-		if (v_root.type() != type_check)
+			v_success = true;
+		}
+	#if defined(_DEBUG) || defined(DEBUG)
+		catch (const simdjson::simdjson_error& v_err)
 		{
-			DebugErrorL("Mismatching root json type!\nFile: ", path);
-			return false;
+			DebugErrorL("Couldn't parse: ", path, "\nError: ", v_err.what());
 		}
-
-		return true;
+	#else
+		catch (...) {}
+	#endif
 	}
-#if defined(_DEBUG) || defined(DEBUG)
-	catch (const simdjson::simdjson_error& v_err)
+
+	return v_success;
+}
+
+bool JsonReader::LoadParseSimdjsonCommentsC(const std::wstring_view& path, simdjson::dom::document& v_doc, const simdjson::dom::element_type& type_check)
+{
+	std::string v_jsonStr;
+	bool v_success = false;
+
+	if (File::ReadToStringED(path, v_jsonStr))
 	{
-		DebugErrorL("Couldn't parse: ", path, "\nError: ", v_err.what());
-	}
-#else
-	catch (...) {}
-#endif
+		JsonReader::RemoveComments(v_jsonStr);
 
-	return false;
+		try
+		{
+			simdjson::dom::parser v_parser;
+			const auto v_root = v_parser.parse_into_document(v_doc, v_jsonStr);
+
+			// Yes, this might look bad, but this generates the smallest possible assembly
+			if (!v_root.error())
+			{
+				if (v_root.type() == type_check)
+				{
+					v_success = true;
+				}
+				else
+				{
+					DebugErrorL("Mismatching root json type!\nFile: ", path);
+				}
+			}
+			else
+			{
+				DebugErrorL("Parse Error:\nFile: ", path, "\nError: ", simdjson::error_message(v_root.error()));
+			}
+		}
+	#if defined(_DEBUG) || defined(DEBUG)
+		catch (const simdjson::simdjson_error& v_err)
+		{
+			DebugErrorL("Couldn't parse: ", path, "\nError: ", v_err.what());
+		}
+	#else
+		catch (...) {}
+	#endif
+	}
+
+	return v_success;
 }
 
 bool JsonReader::ParseSimdjsonString(const std::string_view& json_str, simdjson::dom::document& v_doc)

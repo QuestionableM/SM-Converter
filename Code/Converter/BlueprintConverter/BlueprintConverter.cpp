@@ -16,7 +16,7 @@ void BlueprintConv::WriteToFileInternal(SMBlueprint* pBlueprint, const std::wstr
 {
 	if (error) return;
 
-	const std::wstring v_bp_out_dir = std::wstring(DatabaseConfig::BlueprintOutputFolder.data());
+	const std::wstring v_bp_out_dir(DatabaseConfig::BlueprintOutputFolder);
 	if (!File::CreateDirectorySafe(v_bp_out_dir))
 	{
 		error.setError(1, "Couldn't create the main output directory");

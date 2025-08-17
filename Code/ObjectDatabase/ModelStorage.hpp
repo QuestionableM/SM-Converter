@@ -9,6 +9,7 @@
 
 #include "Utils/GlmUnmanaged.hpp"
 #include "Utils/clr_include.hpp"
+#include "Utils/Hashing.hpp"
 
 SM_UNMANAGED_CODE
 
@@ -96,7 +97,7 @@ struct SubMeshData
 
 struct Model
 {
-	Model(const std::wstring& mesh_path);
+	Model(const std::wstring_view& mesh_path);
 	Model();
 
 	Model(const Model&) = delete;
@@ -121,18 +122,18 @@ struct Model
 
 class ModelStorage
 {
-	using ModelMap = std::unordered_map<std::wstring, Model*>;
+	using ModelMap = std::unordered_map<std::wstring, Model*, Hashing::StringHasher, std::equal_to<>>;
 
 	inline static ModelMap CachedModels = {};
 	inline static Assimp::Importer Importer = Assimp::Importer();
 
-	static const aiScene* LoadScene(const std::wstring& path);
+	static const aiScene* LoadScene(const std::wstring_view& path);
 	static void LoadVertices(const aiMesh* mesh, Model* model);
 	static void LoadMaterialName(const aiScene* pScene, const aiMesh* pMesh, SubMeshData& subMesh);
 	static void LoadIndices(const aiMesh* pMesh, Model* pModel, SubMeshData& subMesh);
 	static void LoadSubMeshes(const aiScene* pScene, Model* pModel);
 public:
-	static Model* LoadModel(const std::wstring& path);
+	static Model* LoadModel(const std::wstring_view& path);
 
 	static void ClearStorage();
 };
