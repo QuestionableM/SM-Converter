@@ -275,20 +275,39 @@ void SMBlueprint::LoadChild(const simdjson::dom::element& v_child)
 		if (!(v_blk_bounds.x > 0.0f && v_blk_bounds.y > 0.0f && v_blk_bounds.z > 0.0f))
 			return;
 
-		const BlockData* v_blk_data = SMMod::GetGlobalObject<BlockData>(v_obj_uuid);
-		if (!v_blk_data) return;
+		const BlockData* v_blkData = SMMod::GetGlobalObject<BlockData>(v_obj_uuid);
+		if (v_blkData)
+		{
+			this->m_addObjectFunction(
+				this,
+				new SMBlock(
+					v_blkData,
+					v_obj_pos,
+					v_blk_bounds,
+					v_obj_color,
+					v_xzRotation,
+					m_objectIndex
+				)
+			);
 
-		this->m_addObjectFunction(
-			this,
-			new SMBlock(
-				v_blk_data,
-				v_obj_pos,
-				v_blk_bounds,
-				v_obj_color,
-				v_xzRotation,
-				m_objectIndex
-			)
-		);
+			return;
+		}
+
+		const WedgeData* v_wedgeData = SMMod::GetGlobalObject<WedgeData>(v_obj_uuid);
+		if (v_wedgeData)
+		{
+			this->m_addObjectFunction(
+				this,
+				new SMWedge(
+					v_wedgeData,
+					v_obj_pos,
+					v_blk_bounds,
+					v_obj_color,
+					v_xzRotation,
+					m_objectIndex
+				)
+			);
+		}
 	}
 	else
 	{

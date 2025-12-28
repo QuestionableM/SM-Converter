@@ -7,6 +7,7 @@
 #include "ObjectDatabase\Readers\GarmentListLoader.hpp"
 #include "ObjectDatabase\Readers\AssetListLoader.hpp"
 #include "ObjectDatabase\Readers\BlockListLoader.hpp"
+#include "ObjectDatabase\Readers\WedgeListLoader.hpp"
 #include "ObjectDatabase\Readers\PartListLoader.hpp"
 #include "ObjectDatabase\KeywordReplacer.hpp"
 
@@ -31,6 +32,7 @@ void SMMod::ClearModStorage()
 	SMModObjectStorage<ClutterData>::Clear();
 	SMModObjectStorage<DecalData>::Clear();
 	SMModObjectStorage<KinematicData>::Clear();
+	SMModObjectStorage<WedgeData>::Clear();
 
 	SMMod::ClutterVector.clear();
 
@@ -187,7 +189,8 @@ static const std::unordered_map<std::string_view, ListLoaderFunc> g_dataLoaders 
 	{ "clutterList"        , ClutterListLoader::Load     },
 	{ "decalSetList"       , DecalsetListReader::Load    },
 	{ "kinematicList"      , KinematicListLoader::Load   },
-	{ "categoryList"       , GarmentListLoader::Load     }
+	{ "categoryList"       , GarmentListLoader::Load     },
+	{ "wedgeList"          , WedgeListLoader::Load       }
 };
 
 void SMMod::LoadFile(const std::wstring& path, bool add_to_global_db)

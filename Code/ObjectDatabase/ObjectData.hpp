@@ -23,12 +23,12 @@ public:
 		std::wstring&& mesh,
 		SMSubMeshBase* pTextures,
 		SMMod* pMod
-	) :
-		m_uuid(uuid),
-		m_defaultColors(),
-		m_textures(pTextures),
-		m_mod(pMod),
-		m_mesh(std::move(mesh))
+	)
+		: m_uuid(uuid)
+		, m_defaultColors()
+		, m_textures(pTextures)
+		, m_mod(pMod)
+		, m_mesh(std::move(mesh))
 	{}
 
 	AssetData(const AssetData&) = delete;
@@ -56,11 +56,11 @@ public:
 		std::wstring&& mesh,
 		SMSubMeshBase* pTextures,
 		SMMod* pMod
-	) :
-		m_uuid(uuid),
-		m_mesh(std::move(mesh)),
-		m_textures(pTextures),
-		m_mod(pMod)
+	)
+		: m_uuid(uuid)
+		, m_mesh(std::move(mesh))
+		, m_textures(pTextures)
+		, m_mod(pMod)
 	{}
 
 	HarvestableData(const HarvestableData&) = delete;
@@ -87,11 +87,11 @@ public:
 		std::wstring&& mesh,
 		SMSubMeshBase* pTextures,
 		SMMod* pMod
-	) :
-		m_uuid(uuid),
-		m_mesh(std::move(mesh)),
-		m_textures(pTextures),
-		m_mod(pMod)
+	)
+		: m_uuid(uuid)
+		, m_mesh(std::move(mesh))
+		, m_textures(pTextures)
+		, m_mod(pMod)
 	{}
 
 	KinematicData(const KinematicData&) = delete;
@@ -119,12 +119,12 @@ public:
 		const std::string_view& defaultColor,
 		int tiling,
 		SMMod* pMod
-	) :
-		m_uuid(uuid),
-		m_textures(std::move(texList)),
-		m_defaultColor(defaultColor),
-		m_tiling(tiling),
-		m_mod(pMod)
+	)
+		: m_uuid(uuid)
+		, m_textures(std::move(texList))
+		, m_defaultColor(defaultColor)
+		, m_tiling(tiling)
+		, m_mod(pMod)
 	{}
 
 	BlockData(const BlockData&) = delete;
@@ -151,13 +151,13 @@ public:
 		const std::string_view& defaultColor,
 		glm::vec3 bounds,
 		SMMod* pMod
-	) :
-		m_uuid(uuid),
-		m_mesh(std::move(mesh)),
-		m_textures(pTextures),
-		m_defaultColor(defaultColor),
-		m_bounds(bounds),
-		m_mod(pMod)
+	)
+		: m_uuid(uuid)
+		, m_mesh(std::move(mesh))
+		, m_textures(pTextures)
+		, m_defaultColor(defaultColor)
+		, m_bounds(bounds)
+		, m_mod(pMod)
 	{}
 
 	PartData(const PartData&) = delete;
@@ -193,14 +193,14 @@ public:
 		SMTextureList&& texList,
 		ClutterDataParams params,
 		SMMod* pMod
-	) :
-		m_uuid(uuid),
-		m_mesh(std::move(path)),
-		m_textures(std::move(texList)),
-		m_height(params.m_height),
-		m_scaleVariance(params.m_scaleVariance),
-		m_groundNormal(params.m_groundNormal),
-		m_mod(pMod)
+	)
+		: m_uuid(uuid)
+		, m_mesh(std::move(path))
+		, m_textures(std::move(texList))
+		, m_height(params.m_height)
+		, m_scaleVariance(params.m_scaleVariance)
+		, m_groundNormal(params.m_groundNormal)
+		, m_mod(pMod)
 	{}
 
 	ClutterData(const ClutterData&) = delete;
@@ -217,13 +217,6 @@ public:
 	SMMod* m_mod;
 };
 
-/*
-v_new_decal->m_name.assign(v_decal.key);
-		v_new_decal->m_uuid = v_decal_uuid;
-		v_new_decal->m_textures = v_texList;
-		v_new_decal->m_mod = mod;
-*/
-
 class DecalData
 {
 public:
@@ -232,12 +225,12 @@ public:
 		const std::string_view& name,
 		const SMTextureList& texList,
 		SMMod* pMod
-	) :
-		m_uuid(uuid),
-		m_name(name),
-		m_textures(texList),
-		m_ranges(),
-		m_mod(pMod)
+	)
+		: m_uuid(uuid)
+		, m_name(name)
+		, m_textures(texList)
+		, m_ranges()
+		, m_mod(pMod)
 	{}
 
 	DecalData(const DecalData&) = delete;
@@ -261,12 +254,12 @@ public:
 		std::wstring&& femaleMesh,
 		SMSubMeshBase* maleData,
 		SMSubMeshBase* femaleData
-	) :
-		m_uuid(uuid),
-		m_male_mesh(std::move(maleMesh)),
-		m_female_mesh(std::move(femaleMesh)),
-		m_male_data(maleData),
-		m_female_data(femaleData)
+	)
+		: m_uuid(uuid)
+		, m_male_mesh(std::move(maleMesh))
+		, m_female_mesh(std::move(femaleMesh))
+		, m_male_data(maleData)
+		, m_female_data(femaleData)
 	{}
 
 	GarmentData(const GarmentData&) = delete;
@@ -286,6 +279,32 @@ public:
 
 	SMSubMeshBase* m_male_data;
 	SMSubMeshBase* m_female_data;
+};
+
+class WedgeData
+{
+public:
+	inline WedgeData(
+		const SMUuid& uuid,
+		const SMColor defaultColor,
+		const float frameSize,
+		const BlockData* pParentBlock,
+		SMMod* pMod
+	)
+		: m_uuid(uuid)
+		, m_defaultColor(defaultColor)
+		, m_frameSize(frameSize)
+		, m_parentBlock(pParentBlock)
+		, m_mod(pMod)
+	{}
+
+public:
+	SMUuid m_uuid;
+	SMColor m_defaultColor;
+	float m_frameSize;
+
+	const BlockData* m_parentBlock;
+	SMMod* m_mod;
 };
 
 SM_MANAGED_CODE

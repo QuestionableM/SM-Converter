@@ -51,29 +51,29 @@ public:
 		switch (v_elem.type())
 		{
 		case simdjson::dom::element_type::DOUBLE:
-			{
-				if constexpr (std::is_same_v<T, double>)
-					return v_elem.get_double().value_unsafe();
-				else
-					return static_cast<T>(v_elem.get_double().value_unsafe());
-			}
-		case simdjson::dom::element_type::INT64:
-			{
-				if constexpr (std::is_same_v<T, long long>)
-					return v_elem.get_int64().value_unsafe();
-				else
-					return static_cast<T>(v_elem.get_int64().value_unsafe());
-			}
-		case simdjson::dom::element_type::UINT64:
-			{
-				if constexpr (std::is_same_v<T, unsigned long long>)
-					return v_elem.get_uint64().value_unsafe();
-				else
-					return static_cast<T>(v_elem.get_uint64().value_unsafe());
-			}
+		{
+			if constexpr (std::is_same_v<T, double>)
+				return v_elem.get_double().value_unsafe();
+			else
+				return static_cast<T>(v_elem.get_double().value_unsafe());
 		}
-
-		return 0;
+		case simdjson::dom::element_type::INT64:
+		{
+			if constexpr (std::is_same_v<T, long long>)
+				return v_elem.get_int64().value_unsafe();
+			else
+				return static_cast<T>(v_elem.get_int64().value_unsafe());
+		}
+		case simdjson::dom::element_type::UINT64:
+		{
+			if constexpr (std::is_same_v<T, unsigned long long>)
+				return v_elem.get_uint64().value_unsafe();
+			else
+				return static_cast<T>(v_elem.get_uint64().value_unsafe());
+		}
+		default:
+			return 0;
+		}
 	}
 
 private:

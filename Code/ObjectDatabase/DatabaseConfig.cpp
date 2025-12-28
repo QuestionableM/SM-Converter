@@ -11,24 +11,30 @@
 
 #include <valve_vdf\vdf_parser.hpp>
 
-void DatabaseConfig::WstrVecToJson(nlohmann::json& j_obj, const std::string& key, const std::vector<std::wstring>& r_wstr_vec)
+void DatabaseConfig::WstrVecToJson(
+	nlohmann::json& outObject,
+	const char* key,
+	const std::vector<std::wstring>& stringVec)
 {
 	nlohmann::json v_strArray = nlohmann::json::array();
 
-	for (const std::wstring& v_curWstr : r_wstr_vec)
+	for (const std::wstring& v_curWstr : stringVec)
 		v_strArray.push_back(String::ToUtf8(v_curWstr));
 
-	j_obj[key] = std::move(v_strArray);
+	outObject[key] = std::move(v_strArray);
 }
 
-void DatabaseConfig::WstrMapToJson(nlohmann::json& j_obj, const std::string& key, const PathChecker& v_map)
+void DatabaseConfig::WstrMapToJson(
+	nlohmann::json& outObject,
+	const char* key,
+	const PathChecker& pathChecker)
 {
 	nlohmann::json v_strArray = nlohmann::json::array();
 
-	for (const auto& v_item : v_map)
+	for (const auto& v_item : pathChecker)
 		v_strArray.push_back(String::ToUtf8(v_item));
 
-	j_obj[key] = std::move(v_strArray);
+	outObject[key] = std::move(v_strArray);
 }
 
 bool DatabaseConfig::AddToStrVec(std::vector<std::wstring>& v_vec, PathChecker& v_path_checker, const std::wstring& v_new_str)
@@ -78,37 +84,46 @@ bool DatabaseConfig::AddToStrMap(PathChecker& v_map, const std::wstring& v_new_s
 	return true;
 }
 
-void DatabaseConfig::JsonStrArrayToStrVec(const nlohmann::json& v_json, const std::string& key, std::vector<std::wstring>& v_vec, PathChecker& v_path_checker, bool replace_keys)
+void DatabaseConfig::JsonStrArrayToStrVec(
+	const nlohmann::json& jsonData,
+	const std::string_view& key,
+	std::vector<std::wstring>& outVec,
+	PathChecker& pathChecker,
+	const bool shouldReplaceKeys)
 {
-	const auto v_array = JsonReader::Get(v_json, key);
+	const auto v_array = JsonReader::Get(jsonData, key);
 	if (!v_array.is_array()) return;
 
-	for (const auto& v_cur_item : v_array)
+	for (const auto& v_curItem : v_array)
 	{
-		if (!v_cur_item.is_string()) continue;
+		if (!v_curItem.is_string()) continue;
 
-		std::wstring v_wstr_path = String::ToWide(v_cur_item.get_ref<const std::string&>());
-		if (replace_keys)
-			KeywordReplacer::ReplaceKeyR(v_wstr_path);
+		std::wstring v_widePath = String::ToWide(v_curItem.get_ref<const std::string&>());
+		if (shouldReplaceKeys)
+			KeywordReplacer::ReplaceKeyR(v_widePath);
 
-		DatabaseConfig::AddToStrVec(v_vec, v_path_checker, v_wstr_path);
+		DatabaseConfig::AddToStrVec(outVec, pathChecker, v_widePath);
 	}
 }
 
-void DatabaseConfig::JsonStrArrayToStrMap(const nlohmann::json& v_json, const std::string& key, PathChecker& v_map, bool replace_keys)
+void DatabaseConfig::JsonStrArrayToStrMap(
+	const nlohmann::json& jsonData,
+	const std::string_view& key,
+	PathChecker& pathChecker,
+	const bool shouldReplaceKeys)
 {
-	const auto v_array = JsonReader::Get(v_json, key);
+	const auto v_array = JsonReader::Get(jsonData, key);
 	if (!v_array.is_array()) return;
 
-	for (const auto& v_cur_item : v_array)
+	for (const auto& v_curItem : v_array)
 	{
-		if (!v_cur_item.is_string()) continue;
+		if (!v_curItem.is_string()) continue;
 
-		std::wstring v_wstr_path = String::ToWide(v_cur_item.get_ref<const std::string&>());
-		if (replace_keys)
+		std::wstring v_wstr_path = String::ToWide(v_curItem.get_ref<const std::string&>());
+		if (shouldReplaceKeys)
 			KeywordReplacer::ReplaceKeyR(v_wstr_path);
 
-		DatabaseConfig::AddToStrMap(v_map, v_wstr_path);
+		DatabaseConfig::AddToStrMap(pathChecker, v_wstr_path);
 	}
 }
 
@@ -314,9 +329,12 @@ void DatabaseConfig::FindGamePath(const nlohmann::json& config_json, bool& shoul
 	}
 }
 
-inline void ReadJsonDirectory(const nlohmann::json& config_json, const std::string& key, std::wstring& v_output)
+inline static void ReadJsonDirectory(
+	const nlohmann::json& config,
+	const std::string_view& key,
+	std::wstring& outDirPath)
 {
-	const auto& v_dir_json = JsonReader::Get(config_json, key);
+	const auto& v_dir_json = JsonReader::Get(config, key);
 	if (!v_dir_json.is_string())
 		return;
 
@@ -329,7 +347,7 @@ inline void ReadJsonDirectory(const nlohmann::json& config_json, const std::stri
 
 	if (File::IsDirectory(v_dir))
 	{
-		v_output = v_dir;
+		outDirPath = v_dir;
 	}
 	else
 	{
@@ -434,11 +452,11 @@ nlohmann::json DatabaseConfig::GetConfigJson(bool* should_write, bool read_from_
 	return cfgData;
 }
 
-void DatabaseConfig::AddKeywordReplacement(const std::wstring& key, const std::wstring& path)
+void DatabaseConfig::AddKeywordReplacement(const std::wstring_view& key, const std::wstring_view& path)
 {
 	DebugOutL(key, " is set to ", path);
 
-	DatabaseConfig::DefaultKeywords[key] = path;
+	DatabaseConfig::DefaultKeywords.emplace(key, std::wstring_view()).first->second = path;
 	KeywordReplacer::SetReplacement(key, path);
 }
 
@@ -461,7 +479,7 @@ void DatabaseConfig::FillUserItems(bool should_fill, bool& should_write)
 
 	DebugOutL("Filling user items with default paths...");
 
-	const static wchar_t* v_tile_paths[] =
+	const static wchar_t* v_tilePaths[] =
 	{
 		L"$SURVIVAL_DATA/Terrain/Tiles/autumn_forest",
 		L"$SURVIVAL_DATA/Terrain/Tiles/burnt_forest",
@@ -480,9 +498,8 @@ void DatabaseConfig::FillUserItems(bool should_fill, bool& should_write)
 		L"$SURVIVAL_DATA/DungeonTiles"
 	};
 
-	constexpr const std::size_t v_tile_paths_sz = sizeof(v_tile_paths) / sizeof(wchar_t*);
-	for (std::size_t a = 0; a < v_tile_paths_sz; a++)
-		should_write |= DatabaseConfig::ReplaceKeyAndAddToMap(v_tile_paths[a], DatabaseConfig::UserItemFolders);
+	for (const wchar_t* v_curTilePath : v_tilePaths)
+		should_write |= DatabaseConfig::ReplaceKeyAndAddToMap(v_curTilePath, DatabaseConfig::UserItemFolders);
 }
 
 void DatabaseConfig::SaveConfig()
@@ -490,19 +507,19 @@ void DatabaseConfig::SaveConfig()
 	nlohmann::json cfgData = DatabaseConfig::GetConfigJson(nullptr, false);
 
 	{
-		nlohmann::json user_settings = nlohmann::json::object();
+		nlohmann::json v_userSettings = nlohmann::json::object();
 
-		user_settings["GameDirectory"] = String::ToUtf8(DatabaseConfig::GamePath);
-		user_settings["WorkshopDirectory"] = String::ToUtf8(DatabaseConfig::WorkshopFolder);
+		v_userSettings["GameDirectory"] = String::ToUtf8(DatabaseConfig::GamePath);
+		v_userSettings["WorkshopDirectory"] = String::ToUtf8(DatabaseConfig::WorkshopFolder);
 
-		user_settings["OpenLinksInSteam"] = DatabaseConfig::OpenLinksInSteam;
-		user_settings["IsDarkMode"] = DatabaseConfig::IsDarkMode;
+		v_userSettings["OpenLinksInSteam"] = DatabaseConfig::OpenLinksInSteam;
+		v_userSettings["IsDarkMode"] = DatabaseConfig::IsDarkMode;
 
-		DatabaseConfig::WstrVecToJson(user_settings, "ModFolders", DatabaseConfig::ModFolders);
-		DatabaseConfig::WstrVecToJson(user_settings, "LocalModFolders", DatabaseConfig::LocalModFolders);
-		DatabaseConfig::WstrMapToJson(user_settings, "UserItemFolders", DatabaseConfig::UserItemFolders);
+		DatabaseConfig::WstrVecToJson(v_userSettings, "ModFolders", DatabaseConfig::ModFolders);
+		DatabaseConfig::WstrVecToJson(v_userSettings, "LocalModFolders", DatabaseConfig::LocalModFolders);
+		DatabaseConfig::WstrMapToJson(v_userSettings, "UserItemFolders", DatabaseConfig::UserItemFolders);
 
-		cfgData["UserSettings"] = user_settings;
+		cfgData["UserSettings"] = v_userSettings;
 	}
 
 	DebugOutL(0b0110_fg, "Saving a new config...");

@@ -20,7 +20,7 @@
     <ProjectGuid>{2202D869-5ABB-4A5F-B995-D57C632A4F41}</ProjectGuid>
     <Keyword>QtVS_v304</Keyword>
     <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">10.0</WindowsTargetPlatformVersion>
-    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">10.0.22621.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">10.0</WindowsTargetPlatformVersion>
     <QtMsBuild Condition="'$(QtMsBuild)'=='' OR !Exists('$(QtMsBuild)\qt.targets')">$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -155,6 +155,7 @@ xcopy /y /d "$(SolutionDir)Media\icon.ico" "$(SolutionDir)Build\$(ProjectName)-$
     <ClCompile Include="Code\Converter\Entity\Part.cpp" />
     <ClCompile Include="Code\Converter\Entity\Prefab.cpp" />
     <ClCompile Include="Code\Converter\Entity\TileClutter.cpp" />
+    <ClCompile Include="Code\Converter\Entity\Wedge.cpp" />
     <ClCompile Include="Code\Converter\MtlFileWriter.cpp" />
     <ClCompile Include="Code\Converter\TileConverter\Tile.cpp" />
     <ClCompile Include="Code\Converter\TileConverter\TileConverter.cpp" />
@@ -185,6 +186,7 @@ xcopy /y /d "$(SolutionDir)Media\icon.ico" "$(SolutionDir)Build\$(ProjectName)-$
     <ClCompile Include="Code\ObjectDatabase\Readers\HarvestableListLoader.cpp" />
     <ClCompile Include="Code\ObjectDatabase\Readers\KinematicListLoader.cpp" />
     <ClCompile Include="Code\ObjectDatabase\Readers\PartListLoader.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\Readers\WedgeListLoader.cpp" />
     <ClCompile Include="Code\ObjectDatabase\SubMeshData.cpp" />
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\BlueprintFolderReader.cpp" />
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\FilterSettingsData.cpp" />
@@ -240,6 +242,7 @@ xcopy /y /d "$(SolutionDir)Media\icon.ico" "$(SolutionDir)Build\$(ProjectName)-$
     <ClInclude Include="Code\Converter\Entity\Part.hpp" />
     <ClInclude Include="Code\Converter\Entity\Prefab.hpp" />
     <ClInclude Include="Code\Converter\Entity\TileClutter.hpp" />
+    <ClInclude Include="Code\Converter\Entity\Wedge.hpp" />
     <ClInclude Include="Code\Converter\MtlFileWriter.hpp" />
     <ClInclude Include="Code\Converter\TileConverter\CellHeader.hpp" />
     <ClInclude Include="Code\Converter\TileConverter\Readers\AssetListReader.hpp" />
@@ -287,6 +290,7 @@ xcopy /y /d "$(SolutionDir)Media\icon.ico" "$(SolutionDir)Build\$(ProjectName)-$
     <ClInclude Include="Code\ObjectDatabase\Readers\HarvestableListLoader.hpp" />
     <ClInclude Include="Code\ObjectDatabase\Readers\KinematicListLoader.hpp" />
     <ClInclude Include="Code\ObjectDatabase\Readers\PartListLoader.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\Readers\WedgeListLoader.hpp" />
     <ClInclude Include="Code\ObjectDatabase\SubMeshData.hpp" />
     <ClInclude Include="Code\ObjectDatabase\UserDataReaders\BlueprintFolderReader.hpp" />
     <ClInclude Include="Code\ObjectDatabase\UserDataReaders\FilterSettingsData.hpp" />

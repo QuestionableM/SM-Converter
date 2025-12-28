@@ -16,34 +16,49 @@ void KeywordReplacer::CreateKey(std::wstring& key, std::wstring& replacement)
 	String::ReplaceAllR(replacement, L'\\', L'/');
 }
 
-void KeywordReplacer::SetReplacement(const std::wstring& key, const std::wstring& replacement)
+void KeywordReplacer::SetReplacement(const std::wstring_view& key, const std::wstring_view& replacement)
 {
-	std::wstring v_lowerKey = key;
-	std::wstring v_lowerVal = replacement;
+	std::wstring v_lowerKey(key);
+	std::wstring v_lowerVal(replacement);
 
 	KeywordReplacer::CreateKey(v_lowerKey, v_lowerVal);
 
 	m_KeyReplacements[std::move(v_lowerKey)] = std::move(v_lowerVal);
 }
 
-void KeywordReplacer::CreateContentKey(const SMUuid& v_uuid, const std::wstring& v_replacement)
+void KeywordReplacer::CreateContentKey(const SMUuid& uuid, const std::wstring_view& replacement)
 {
-	KeywordReplacer::SetReplacement(L"$content_" + v_uuid.toWstring(), v_replacement);
+	constexpr const std::wstring_view c_contentKey = L"$content_";
+
+	// $content_ + uuid (36 characters) + null terminator
+	wchar_t v_buffer[c_contentKey.size() + 36 + 1];
+	std::memcpy(v_buffer, c_contentKey.data(), c_contentKey.size() * sizeof(wchar_t));
+	uuid.toCStringW(v_buffer + c_contentKey.size());
+	v_buffer[(sizeof(v_buffer) / sizeof(wchar_t)) - 1] = 0;
+
+	KeywordReplacer::SetReplacement(std::wstring_view(v_buffer, sizeof(v_buffer) / sizeof(v_buffer[0]) - 1), replacement);
 }
 
 void KeywordReplacer::SetModData(const std::wstring& path, const SMUuid& uuid)
 {
-	const std::wstring v_contentKey = L"$content_" + uuid.toWstring();
-
-	KeywordReplacer::SetReplacement(v_contentKey    , path);
+	KeywordReplacer::CreateContentKey(uuid, path);
 	KeywordReplacer::SetReplacement(L"$mod_data"    , path);
 	KeywordReplacer::SetReplacement(L"$content_data", path);
 }
 
 void KeywordReplacer::ClearModKeys()
 {
-	m_KeyReplacements.erase(L"$content_data");
-	m_KeyReplacements.erase(L"$mod_data");
+	{
+		auto v_iter = m_KeyReplacements.find(std::wstring_view(L"$content_data"));
+		if (v_iter != m_KeyReplacements.end())
+			m_KeyReplacements.erase(v_iter);
+	}
+
+	{
+		auto v_iter = m_KeyReplacements.find(std::wstring_view(L"$mod_data"));
+		if (v_iter != m_KeyReplacements.end())
+			m_KeyReplacements.erase(v_iter);
+	}
 }
 
 void KeywordReplacer::LoadResourceUpgrades(const std::wstring& path)
@@ -90,9 +105,9 @@ void KeywordReplacer::LoadResourceUpgradesFromConfig()
 	for (const auto& v_upgrade_path : DatabaseConfig::ResourceUpgradeFiles)
 		KeywordReplacer::LoadResourceUpgrades(v_upgrade_path);
 
-	//Nonor normal textures look weird in blender, so i'm just gonna skip em by replacing the string with nothing
-	m_ResourceUpgrades[L"$game_data/textures/nonor_nor.png"] = L"";
-	m_ResourceUpgrades[L"$game_data/textures/nonor_nor.tga"] = L"";
+	// Nonor normal textures look weird in blender, so i'm just gonna skip em by replacing the string with nothing
+	m_ResourceUpgrades.emplace(std::wstring_view(L"$game_data/textures/nonor_nor.png"), std::wstring_view()).first->second = L"";
+	m_ResourceUpgrades.emplace(std::wstring_view(L"$game_data/textures/nonor_nor.tga"), std::wstring_view()).first->second = L"";
 }
 
 void KeywordReplacer::UpgradeResource(const std::wstring& mPath, std::wstring& mOutput)

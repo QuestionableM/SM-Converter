@@ -37,9 +37,8 @@ public:
 		const auto v_iter = SMModObjectStorage<T>::StaticStorage.find(uuid);
 		if (v_iter != SMModObjectStorage<T>::StaticStorage.end())
 			return v_iter->second;
-
-		DebugErrorL("Couldn't find an object with the specified uuid: ", uuid.toString());
-		return nullptr;
+		else
+			return nullptr;
 	}
 
 	inline static ClutterData* GetGlobalClutterById(std::size_t idx)
@@ -120,7 +119,8 @@ public:
 			+ SMModObjectStorage<HarvestableData>::StaticStorage.size()
 			+ SMModObjectStorage<ClutterData>::StaticStorage.size()
 			+ SMModObjectStorage<DecalData>::StaticStorage.size()
-			+ SMModObjectStorage<KinematicData>::StaticStorage.size();
+			+ SMModObjectStorage<KinematicData>::StaticStorage.size()
+			+ SMModObjectStorage<WedgeData>::StaticStorage.size();
 	}
 
 	void LoadFile(const std::wstring& path, bool add_to_global_db);
@@ -161,6 +161,7 @@ public:
 	SMModObjectStorage<DecalData> m_Decals;
 	SMModObjectStorage<KinematicData> m_Kinematics;
 	SMModObjectStorage<ClutterData> m_Clutter;
+	SMModObjectStorage<WedgeData> m_Wedges;
 	inline static std::vector<ClutterData*> ClutterVector = {};
 	inline static std::unordered_map<
 		std::string,
