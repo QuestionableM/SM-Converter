@@ -23,7 +23,7 @@ enum class ModType
 
 class CustomGame;
 
-class SMMod
+class SMC_NOVTABLE SMMod
 {
 public:
 	static void ClearModStorage();

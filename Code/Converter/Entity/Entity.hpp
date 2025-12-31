@@ -88,7 +88,7 @@ struct SMEntityTransform
 	glm::vec3 scale;
 };
 
-class SMEntity
+class SMC_NOVTABLE SMEntity
 {
 public:
 	virtual ~SMEntity() = default;
@@ -153,7 +153,7 @@ protected:
 	glm::vec3 m_size = glm::vec3(1.0f, 1.0f, 1.0f);
 };
 
-class SMEntityWithUuid : public SMEntity
+class SMC_NOVTABLE SMEntityWithUuid : public SMEntity
 {
 public:
 	using SMEntity::SMEntity;
@@ -185,7 +185,7 @@ protected:
 	SMUuid m_uuid;
 };
 
-class SMEntityWithModel : public SMEntity
+class SMC_NOVTABLE SMEntityWithModel : public SMEntity
 {
 public:
 	virtual ~SMEntityWithModel() = default;
@@ -213,7 +213,7 @@ protected:
 	Model* m_model;
 };
 
-class SMEntityWithModelAndUuid : public SMEntityWithModel
+class SMC_NOVTABLE SMEntityWithModelAndUuid : public SMEntityWithModel
 {
 public:
 	virtual ~SMEntityWithModelAndUuid() = default;
