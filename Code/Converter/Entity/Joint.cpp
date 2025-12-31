@@ -71,15 +71,15 @@ void SMJoint::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex
 
 glm::mat4 SMJoint::GetTransformMatrix() const
 {
-	const glm::mat4 joint_rotation = Rotations::GetRotationMatrix(m_xzRotation);
-	const glm::vec3 pos_offset = Rotations::GetOffsetPosition(m_xzRotation);
+	const glm::mat4 v_jointRotation = Rotations::GetRotationMatrix(m_xzRotation);
+	const glm::vec3 v_positionOffset = Rotations::GetOffsetPosition(m_xzRotation);
 
-	glm::mat4 model_matrix(1.0f);
-	model_matrix *= glm::translate(m_position + pos_offset);
-	model_matrix *= joint_rotation;
-	model_matrix *= glm::translate(m_parent->m_bounds / 2.0f);
+	glm::mat4 v_modelMatrix(1.0f);
+	v_modelMatrix *= glm::translate(m_position + v_positionOffset);
+	v_modelMatrix *= v_jointRotation;
+	v_modelMatrix *= glm::translate(m_parent->m_bounds / 2.0f);
 
-	return model_matrix;
+	return v_modelMatrix;
 }
 
 bool SMJoint::GetCanWrite(const std::string& name, std::size_t v_idx) const

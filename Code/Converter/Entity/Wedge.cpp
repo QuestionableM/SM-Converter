@@ -11,6 +11,7 @@ SM_UNMANAGED_CODE
 
 SMWedge::SMWedge(
 	const WedgeData* pParent,
+	const BlockData* pBlockParent,
 	const glm::vec3& pos,
 	const glm::vec3& scale,
 	const SMColor color,
@@ -19,6 +20,7 @@ SMWedge::SMWedge(
 )
 	: SMEntityWithUuid(pParent->m_uuid, pos, scale)
 	, m_parent(pParent)
+	, m_parentBlock(pBlockParent)
 	, m_index(index)
 	, m_color(color)
 	, m_xzRotation(rotation)
@@ -33,7 +35,7 @@ char* SMWedge::GetMtlNameCStr(const std::string& matName, std::size_t idx, char*
 	ptr = String::FromInteger<std::size_t>(idx + 1, ptr);
 	*ptr++ = ' ';
 
-	return MaterialManager::GetMaterialACStr(m_parent->m_parentBlock->m_textures.m_material, ptr);
+	return MaterialManager::GetMaterialACStr(m_parentBlock->m_textures.m_material, ptr);
 }
 
 std::string SMWedge::GetMtlName(std::size_t idx) const
@@ -43,7 +45,7 @@ std::string SMWedge::GetMtlName(std::size_t idx) const
 	m_color.appendStringHex(v_mtlName);
 	v_mtlName.append(1, ' ');
 	String::AppendIntegerToString(v_mtlName, idx + 1);
-	MaterialManager::AppendMaterialIdx(v_mtlName, m_parent->m_parentBlock->m_textures.m_material);
+	MaterialManager::AppendMaterialIdx(v_mtlName, m_parentBlock->m_textures.m_material);
 
 	return v_mtlName;
 }
@@ -54,7 +56,7 @@ void SMWedge::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& out
 	if (outTexMap.find(v_mtlName) != outTexMap.end())
 		return;
 
-	outTexMap.emplace(std::move(v_mtlName), ObjectTexDataConstructInfo(m_parent->m_parentBlock->m_textures, m_color));
+	outTexMap.emplace(std::move(v_mtlName), ObjectTexDataConstructInfo(m_parentBlock->m_textures, m_color));
 }
 
 static void GenerateUVs(Model& model, const glm::vec3& bounds, const glm::vec3& position, const int tiling)
@@ -173,7 +175,7 @@ static void FillCustomCube(Model& model, const glm::vec3& bounds, const glm::vec
 void SMWedge::WriteObjectToFile(std::ofstream& file, WriterOffsetData& offset, const glm::mat4& transformMatrix) const
 {
 	Model v_newWedge;
-	FillCustomCube(v_newWedge, m_size * 0.5f, m_position, m_parent->m_parentBlock->m_tiling);
+	FillCustomCube(v_newWedge, m_size * 0.5f, m_position, m_parentBlock->m_tiling);
 
 	const glm::mat4 v_wedgeMatrix = transformMatrix * this->GetTransformMatrix();
 	v_newWedge.WriteToFile(v_wedgeMatrix, offset, file, this);
