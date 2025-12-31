@@ -6,7 +6,7 @@
 #include "Utils\Console.hpp"
 #include "Utils\String.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 static char g_modelWriterBuf[1024];
 static char* g_modelWriterBufferEnd = g_modelWriterBuf + sizeof(g_modelWriterBuf);

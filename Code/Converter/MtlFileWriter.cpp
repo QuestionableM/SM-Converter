@@ -1,10 +1,9 @@
 #include "MtlFileWriter.hpp"
 
 #include "ObjectDatabase\ProgCounter.hpp"
-
 #include "UStd\UnmanagedFstream.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 void MtlFileWriter::Write(
 	const std::wstring& path,

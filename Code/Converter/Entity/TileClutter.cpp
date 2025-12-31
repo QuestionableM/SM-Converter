@@ -2,11 +2,11 @@
 
 #include "ObjectDatabase\MaterialManager.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
-SMTileClutter::SMTileClutter(ClutterData* pParent, Model* pModel) :
-	SMEntityWithModel(pModel),
-	m_parent(pParent)
+SMTileClutter::SMTileClutter(ClutterData* pParent, Model* pModel)
+	: SMEntityWithModel(pModel)
+	, m_parent(pParent)
 {}
 
 float SMTileClutter::ScaleVariance() const noexcept

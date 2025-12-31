@@ -10,7 +10,7 @@
 #include "Utils\Console.hpp"
 #include "Utils\File.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 void BlueprintConv::WriteToFileInternal(SMBlueprint* pBlueprint, const std::wstring& bp_name, ConvertError& error)
 {

@@ -286,24 +286,25 @@ class WedgeData
 public:
 	inline WedgeData(
 		const SMUuid& uuid,
+		const SMUuid& blockUuid,
 		const SMColor defaultColor,
 		const float frameSize,
-		const BlockData* pParentBlock,
 		SMMod* pMod
 	)
 		: m_uuid(uuid)
+		, m_blockUuid(blockUuid)
 		, m_defaultColor(defaultColor)
 		, m_frameSize(frameSize)
-		, m_parentBlock(pParentBlock)
 		, m_mod(pMod)
 	{}
 
 public:
 	SMUuid m_uuid;
+	SMUuid m_blockUuid;
+
 	SMColor m_defaultColor;
 	float m_frameSize;
 
-	const BlockData* m_parentBlock;
 	SMMod* m_mod;
 };
 

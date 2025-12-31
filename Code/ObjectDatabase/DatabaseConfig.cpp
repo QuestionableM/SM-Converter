@@ -7,7 +7,7 @@
 #include "Utils\String.hpp"
 #include "Utils\File.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 #include <valve_vdf\vdf_parser.hpp>
 

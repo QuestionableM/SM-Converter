@@ -13,7 +13,7 @@ public:
 	SMPrefab(const SMPrefab&) = delete;
 	SMPrefab(SMPrefab&) = delete;
 
-	SMPrefab(const std::wstring& path, const std::wstring& flag, const SMEntityTransform& transform);
+	SMPrefab(const std::wstring_view& path, const std::wstring_view& flag, const SMEntityTransform& transform);
 	~SMPrefab();
 
 	const std::wstring& getPath() const;

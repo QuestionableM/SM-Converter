@@ -6,7 +6,7 @@
 
 #include "Utils\Console.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 SMJoint::SMJoint(
 	const PartData* pParent,
@@ -15,12 +15,12 @@ SMJoint::SMJoint(
 	SMColor color,
 	unsigned char rotation,
 	std::size_t index
-) :
-	SMEntityWithModelAndUuid(pParent->m_uuid, pModel, pos),
-	m_parent(pParent),
-	m_index(index),
-	m_color(color),
-	m_xzRotation(rotation)
+)
+	: SMEntityWithModelAndUuid(pParent->m_uuid, pModel, pos)
+	, m_parent(pParent)
+	, m_index(index)
+	, m_color(color)
+	, m_xzRotation(rotation)
 {}
 
 char* SMJoint::GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, char* v_ptr) const

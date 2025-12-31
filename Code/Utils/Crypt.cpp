@@ -5,7 +5,7 @@
 
 #include "Utils\WinInclude.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 #include <wincrypt.h>
 

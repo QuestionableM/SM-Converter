@@ -3,7 +3,7 @@
 #include "ObjectDatabase\DatabaseConfig.hpp"
 #include "Utils\File.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 unsigned char FilterSettingsData::GetUserDataFilter(const std::wstring& path)
 {

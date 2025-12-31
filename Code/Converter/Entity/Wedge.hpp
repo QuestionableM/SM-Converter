@@ -11,6 +11,7 @@ class SMWedge final : public SMEntityWithUuid
 public:
 	SMWedge(
 		const WedgeData* pParent,
+		const BlockData* pBlockParent,
 		const glm::vec3& pos,
 		const glm::vec3& scale,
 		const SMColor color,
@@ -33,6 +34,8 @@ public:
 
 private:
 	const WedgeData* m_parent;
+	const BlockData* m_parentBlock;
+
 	std::size_t m_index;
 	SMColor m_color;
 	std::uint8_t m_xzRotation;

@@ -56,13 +56,6 @@ void WedgeListLoader::Load(
 		const auto v_blockUuid = v_curWedge["blockUuid"];
 		if (!v_blockUuid.is_string()) continue;
 
-		const auto v_pBlock = pMod->GetGlobalObject<BlockData>(v_blockUuid.get_string().value_unsafe());
-		if (!v_pBlock)
-		{
-			DebugErrorL("Couldn't find a block for the specified wedge");
-			continue;
-		}
-
 		const auto v_uuid = v_curWedge["uuid"];
 		if (!v_uuid.is_string()) continue;
 
@@ -78,9 +71,9 @@ void WedgeListLoader::Load(
 
 		WedgeData* v_pNewWedge = new WedgeData(
 			v_wedgeUuid,
+			v_blockUuid.get_string().value_unsafe(),
 			v_defaultColor.is_string() ? v_defaultColor.get_string().value_unsafe() : "375000",
 			v_frameSize.is_number() ? JsonReader::GetNumber<float>(v_frameSize.value_unsafe()) : 0.0f,
-			v_pBlock,
 			pMod
 		);
 

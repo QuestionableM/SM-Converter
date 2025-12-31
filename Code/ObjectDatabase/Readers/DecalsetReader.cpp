@@ -6,7 +6,7 @@
 #include "Utils\String.hpp"
 #include "Utils\Json.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 inline void GetWstringFromDecalset(const simdjson::dom::element& obj, const std::string& key, std::wstring& r_output)
 {

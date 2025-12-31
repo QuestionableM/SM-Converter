@@ -21,7 +21,7 @@
 #include "Utils\String.hpp"
 #include "Utils\File.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 void SMMod::ClearModStorage()
 {
@@ -362,15 +362,15 @@ void SMMod::SetContentKey() const
 }
 
 SMMod::SMMod(
-	const std::wstring& name,
-	const std::wstring& directory,
+	const std::wstring_view& name,
+	const std::wstring_view& directory,
 	const SMUuid& uuid,
-	std::uint64_t workshop_id,
-	bool isLocal
-) :
-	m_Uuid(uuid),
-	m_Name(name),
-	m_Directory(directory),
-	m_WorkshopId(workshop_id),
-	m_isLocal(isLocal)
+	const std::uint64_t workshop_id,
+	const bool isLocal
+)
+	: m_Uuid(uuid)
+	, m_Name(name)
+	, m_Directory(directory)
+	, m_WorkshopId(workshop_id)
+	, m_isLocal(isLocal)
 {}

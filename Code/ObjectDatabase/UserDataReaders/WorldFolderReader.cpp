@@ -4,7 +4,7 @@
 
 #include "Utils\File.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 WorldInstance::WorldInstance(
 	const SMUuid& wld_uuid,
@@ -13,15 +13,15 @@ WorldInstance::WorldInstance(
 	const std::wstring_view& wld_directory,
 	const std::wstring_view& wld_image,
 	std::uint64_t wld_workshop_id
-) :
-	uuid(wld_uuid),
-	name(wld_name),
-	lower_name(wld_name),
-	path(wld_path),
-	directory(wld_directory),
-	preview_image(wld_image),
-	workshop_id(wld_workshop_id),
-	filter(FilterSettingsData::GetUserDataFilter(path))
+)
+	: uuid(wld_uuid)
+	, name(wld_name)
+	, lower_name(wld_name)
+	, path(wld_path)
+	, directory(wld_directory)
+	, preview_image(wld_image)
+	, workshop_id(wld_workshop_id)
+	, filter(FilterSettingsData::GetUserDataFilter(path))
 {
 	String::ToLower(lower_name);
 }

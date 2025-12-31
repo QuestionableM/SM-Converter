@@ -5,7 +5,7 @@
 #include "Utils\Console.hpp"
 #include "Utils\String.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 void KeywordReplacer::CreateKey(std::wstring& key, std::wstring& replacement)
 {

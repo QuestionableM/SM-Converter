@@ -7,19 +7,19 @@
 
 #include "Converter/ConvertSettings.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 SMBlock::SMBlock(
 	SMBlock* other,
 	const glm::vec3& pos,
 	const glm::quat& rot,
 	const glm::vec3& scale
-) :
-	SMEntityWithUuid(other->m_parent->m_uuid, pos, scale),
-	m_parent(other->m_parent),
-	m_index(0),
-	m_color(other->m_color),
-	m_xzRotation(other->m_xzRotation)
+)
+	: SMEntityWithUuid(other->m_parent->m_uuid, pos, scale)
+	, m_parent(other->m_parent)
+	, m_index(0)
+	, m_color(other->m_color)
+	, m_xzRotation(other->m_xzRotation)
 {}
 
 SMBlock::SMBlock(

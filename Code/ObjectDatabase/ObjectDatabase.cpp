@@ -14,7 +14,7 @@
 #include "Utils\Console.hpp"
 #include "Utils\Json.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 void DatabaseLoader::LoadGameDatabase()
 {

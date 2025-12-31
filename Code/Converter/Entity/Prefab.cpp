@@ -2,17 +2,17 @@
 
 #include "ObjectDatabase\ModelStorage.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 SMPrefab::SMPrefab(
-	const std::wstring& path,
-	const std::wstring& flag,
+	const std::wstring_view& path,
+	const std::wstring_view& flag,
 	const SMEntityTransform& transform
-) :
-	SMEntity(transform),
-	m_path(path),
-	m_flag(flag),
-	m_objects()
+)
+	: SMEntity(transform)
+	, m_path(path)
+	, m_flag(flag)
+	, m_objects()
 {}
 
 SMPrefab::~SMPrefab()

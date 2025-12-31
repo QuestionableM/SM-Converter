@@ -2,7 +2,7 @@
 
 #include "ObjectDatabase\Mods\Mod.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 #include <assimp\postprocess.h>
 #include <assimp\Exporter.hpp>
