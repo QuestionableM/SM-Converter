@@ -10,11 +10,11 @@ class TerrainAssetsMod : public SMMod
 public:
 	~TerrainAssetsMod() = default;
 	TerrainAssetsMod(
-		const std::wstring& name,
-		const std::wstring& directory,
+		const std::wstring_view& name,
+		const std::wstring_view& directory,
 		const SMUuid& uuid,
-		std::uint64_t workshopId,
-		bool isLocal
+		const std::uint64_t workshopId,
+		const bool isLocal
 	);
 
 private:

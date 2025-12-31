@@ -7,8 +7,7 @@
 #include "Utils\String.hpp"
 #include "Utils\File.hpp"
 
-
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 nlohmann::json JsonReader::ParseJsonString(const std::string& json_str)
 {

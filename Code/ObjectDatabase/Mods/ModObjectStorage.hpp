@@ -18,7 +18,8 @@ class SMModObjectStorage
 		|| std::is_same_v<T, class HarvestableData>
 		|| std::is_same_v<T, class DecalData>
 		|| std::is_same_v<T, class KinematicData>
-		|| std::is_same_v<T, class ClutterData>, "Invalid template type");
+		|| std::is_same_v<T, class ClutterData>
+		|| std::is_same_v<T, class WedgeData>, "Invalid template type");
 
 public:
 	SMModObjectStorage() = default;

@@ -7,7 +7,7 @@
 #include "Utils\Console.hpp"
 #include "Utils\String.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 bool ClutterListLoader::LoadTextureData(const simdjson::dom::element& fClutter, SMTextureList& tList, std::wstring& mesh)
 {

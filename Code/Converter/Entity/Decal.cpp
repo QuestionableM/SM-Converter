@@ -6,16 +6,16 @@
 
 #include "Utils\Console.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 SMDecal::SMDecal(
 	const DecalData* data_ptr,
 	const SMEntityTransform& transform,
 	SMColor color
-) :
-	SMEntity(transform),
-	m_data(data_ptr),
-	m_color(color)
+)
+	: SMEntity(transform)
+	, m_data(data_ptr)
+	, m_color(color)
 {}
 
 EntityType SMDecal::Type() const noexcept

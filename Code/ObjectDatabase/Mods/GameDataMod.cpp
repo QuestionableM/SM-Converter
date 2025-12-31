@@ -4,10 +4,10 @@
 
 #include "UStd\UnmanagedFilesystem.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
-GameDataMod::GameDataMod() :
-	SMMod(
+GameDataMod::GameDataMod()
+	: SMMod(
 		L"Vanilla Data",
 		DatabaseConfig::GamePath,
 		SMUuid(0x45157449ee614269, 0xa6ab3137e2945fca),

@@ -3,6 +3,7 @@
 #include "UStd/UnmanagedString.hpp"
 
 #include "Utils/clr_include.hpp"
+#include "Utils/Hashing.hpp"
 #include "Utils/Json.hpp"
 
 SM_UNMANAGED_CODE
@@ -38,19 +39,19 @@ public:
 	inline static std::vector<std::wstring> ModFolders           = {};
 	inline static std::vector<std::wstring> LocalModFolders      = {};
 
-	inline static std::unordered_map<std::wstring, std::wstring> DefaultKeywords = {};
+	inline static std::unordered_map<std::wstring, std::wstring, Hashing::WstringHasher, std::equal_to<>> DefaultKeywords = {};
 
 private:
-	static void WstrVecToJson(nlohmann::json& j_obj, const std::string& key, const std::vector<std::wstring>& r_wstr_vec);
-	static void WstrMapToJson(nlohmann::json& j_obj, const std::string& key, const PathChecker& v_map);
+	static void WstrVecToJson(nlohmann::json& outObject, const char* key, const std::vector<std::wstring>& stringVec);
+	static void WstrMapToJson(nlohmann::json& outObject, const char* key, const PathChecker& pathChecker);
 
 public:
 	static bool AddToStrVec(std::vector<std::wstring>& v_vec, PathChecker& v_path_checker, const std::wstring& v_new_str);
 	static bool AddToStrMap(PathChecker& v_map, const std::wstring& v_new_str);
 
 private:
-	static void JsonStrArrayToStrVec(const nlohmann::json& v_json, const std::string& key, std::vector<std::wstring>& v_vec, PathChecker& v_path_checker, bool replace_keys);
-	static void JsonStrArrayToStrMap(const nlohmann::json& v_json, const std::string& key, PathChecker& v_map, bool replace_keys);
+	static void JsonStrArrayToStrVec(const nlohmann::json& jsonData, const std::string_view& key, std::vector<std::wstring>& outVec, PathChecker& pathChecker, const bool shouldReplaceKeys);
+	static void JsonStrArrayToStrMap(const nlohmann::json& jsonData, const std::string_view& key, PathChecker& pathChecker, const bool shouldReplaceKeys);
 
 	static void ReadProgramSettings(const nlohmann::json& config_json);
 
@@ -60,7 +61,7 @@ private:
 	static bool ReadUserSettings(const nlohmann::json& config_json, bool& should_write);
 
 	static nlohmann::json GetConfigJson(bool* should_write, bool read_from_file);
-	static void AddKeywordReplacement(const std::wstring& key, const std::wstring& path);
+	static void AddKeywordReplacement(const std::wstring_view& key, const std::wstring_view& path);
 	static void UpdateGamePathReplacement();
 
 	static bool ReplaceKeyAndAddToMap(const std::wstring& path, PathChecker& v_map);

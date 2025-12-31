@@ -7,7 +7,7 @@
 #include "Converter\WorldConverter\World.hpp"
 #include "Utils\File.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 void WorldConverter::WriteToFile(
 	class SMWorld* pWorld,

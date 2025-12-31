@@ -2,17 +2,17 @@
 
 #include "ObjectDatabase\MaterialManager.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 SMHarvestable::SMHarvestable(
 	const HarvestableData* pParent,
 	const SMEntityTransform& transform,
 	Model* pModel,
 	SMColor color
-) :
-	SMEntityWithModelAndUuid(pParent->m_uuid, pModel, transform),
-	m_parent(pParent),
-	m_color(color)
+)
+	: SMEntityWithModelAndUuid(pParent->m_uuid, pModel, transform)
+	, m_parent(pParent)
+	, m_color(color)
 {}
 
 char* SMHarvestable::GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, char* v_ptr) const

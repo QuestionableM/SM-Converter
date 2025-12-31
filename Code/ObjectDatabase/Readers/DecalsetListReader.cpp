@@ -6,7 +6,7 @@
 #include "Utils\Console.hpp"
 #include "Utils\String.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 void DecalsetListReader::Load(const simdjson::dom::element& j_data, SMMod* mod, bool add_to_global_db)
 {

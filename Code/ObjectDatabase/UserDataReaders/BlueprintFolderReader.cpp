@@ -8,7 +8,7 @@
 #include "Utils\Json.hpp"
 #include "Utils\File.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 BlueprintInstance::BlueprintInstance(
 	SMUuid bp_uuid,

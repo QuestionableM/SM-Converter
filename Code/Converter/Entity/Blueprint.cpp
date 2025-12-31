@@ -275,20 +275,44 @@ void SMBlueprint::LoadChild(const simdjson::dom::element& v_child)
 		if (!(v_blk_bounds.x > 0.0f && v_blk_bounds.y > 0.0f && v_blk_bounds.z > 0.0f))
 			return;
 
-		const BlockData* v_blk_data = SMMod::GetGlobalObject<BlockData>(v_obj_uuid);
-		if (!v_blk_data) return;
+		SMEntity* v_outputEntity;
 
-		this->m_addObjectFunction(
-			this,
-			new SMBlock(
-				v_blk_data,
+		const BlockData* v_blkData = SMMod::GetGlobalObject<BlockData>(v_obj_uuid);
+		if (v_blkData)
+		{
+			v_outputEntity = new SMBlock(
+				v_blkData,
 				v_obj_pos,
 				v_blk_bounds,
 				v_obj_color,
 				v_xzRotation,
 				m_objectIndex
-			)
-		);
+			);
+		}
+		else
+		{
+			const WedgeData* v_wedgeData = SMMod::GetGlobalObject<WedgeData>(v_obj_uuid);
+			if (!v_wedgeData) return;
+
+			const BlockData* v_wedgeBlockData = SMMod::GetGlobalObject<BlockData>(v_wedgeData->m_blockUuid);
+			if (!v_wedgeBlockData)
+			{
+				DebugErrorL("Couldn't find a parent block (", v_wedgeData->m_blockUuid.toString(), ") for the specified wedge (", v_wedgeData->m_uuid.toString(), ")");
+				return;
+			}
+
+			v_outputEntity = new SMWedge(
+				v_wedgeData,
+				v_wedgeBlockData,
+				v_obj_pos,
+				v_blk_bounds,
+				v_obj_color,
+				v_xzRotation,
+				m_objectIndex
+			);
+		}
+
+		this->m_addObjectFunction(this, v_outputEntity);
 	}
 	else
 	{

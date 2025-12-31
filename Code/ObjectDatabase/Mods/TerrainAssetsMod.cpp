@@ -6,16 +6,16 @@
 #include "Utils\String.hpp"
 #include "Utils\File.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 TerrainAssetsMod::TerrainAssetsMod(
-	const std::wstring& name,
-	const std::wstring& directory,
+	const std::wstring_view& name,
+	const std::wstring_view& directory,
 	const SMUuid& uuid,
-	std::uint64_t workshopId,
-	bool isLocal
-) :
-	SMMod(
+	const std::uint64_t workshopId,
+	const bool isLocal
+)
+	: SMMod(
 		name,
 		directory,
 		uuid,
@@ -32,13 +32,13 @@ bool TerrainAssetsMod::GetValidAssetDatabaseFolder(const std::wstring& mod_path,
 {
 	std::wstring v_assetDbPath;
 
-	for (std::uint8_t a = 0; a < 2; a++)
+	for (const std::wstring_view& v_assetSetDir : g_assetSetDirectoryPaths)
 	{
 		v_assetDbPath = mod_path;
-		v_assetDbPath.append(g_assetSetDirectoryPaths[a]);
+		v_assetDbPath.append(v_assetSetDir);
 		if (!File::Exists(v_assetDbPath)) continue;
 
-		r_asset_db = v_assetDbPath;
+		r_asset_db = std::move(v_assetDbPath);
 		return true;
 	}
 
@@ -51,13 +51,13 @@ bool TerrainAssetsMod::GetAssetSetDatabaseFile(const std::wstring& asset_db_dir,
 	const std::wstring v_nearFullPath = asset_db_dir + L"assetsets.";
 	std::wstring v_fullDbPath;
 
-	for (std::uint8_t a = 0; a < 2; a++)
+	for (const std::wstring_view& v_assetSetDbExtension : g_assetSetDbExtensions)
 	{
 		v_fullDbPath = v_nearFullPath;
-		v_fullDbPath.append(g_assetSetDbExtensions[a]);
+		v_fullDbPath.append(v_assetSetDbExtension);
 		if (!File::Exists(v_fullDbPath)) continue;
 
-		r_asset_set = v_fullDbPath;
+		r_asset_set = std::move(v_fullDbPath);
 		return true;
 	}
 

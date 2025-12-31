@@ -3,7 +3,7 @@
 #include "ObjectDatabase\ModelStorage.hpp"
 #include "ObjectDatabase\ProgCounter.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 void SMEntityWithModel::WriteObjectToFile(
 	std::ofstream& file,

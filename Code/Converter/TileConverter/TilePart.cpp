@@ -6,15 +6,15 @@
 #include "Utils\Console.hpp"
 #include "Utils\String.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
-TilePart::TilePart() :
-	m_vertexHeight(),
-	m_vertexColor(),
-	m_ground(),
-	m_clutter(),
-	m_clutterMap(),
-	m_objects()
+TilePart::TilePart()
+	: m_vertexHeight()
+	, m_vertexColor()
+	, m_ground()
+	, m_clutter()
+	, m_clutterMap()
+	, m_objects()
 {}
 
 TilePart::~TilePart()

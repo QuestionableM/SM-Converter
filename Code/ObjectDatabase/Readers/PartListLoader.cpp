@@ -6,7 +6,7 @@
 
 #include "Utils\Console.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 const PartListLoader::__CollisionLoaderData PartListLoader::g_collisionDataLoaders[] =
 {

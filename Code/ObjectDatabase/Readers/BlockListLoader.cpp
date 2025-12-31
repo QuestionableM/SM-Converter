@@ -8,7 +8,7 @@
 #include "Utils\String.hpp"
 #include "Utils\Uuid.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 static const std::string_view g_blkTexNames[3] = { "dif", "asg", "nor" };
 bool BlockListLoader::GetBlockTextures(const simdjson::dom::element& block, SMTextureList& tex)

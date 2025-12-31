@@ -4,17 +4,17 @@
 #include "ObjectDatabase\ModelStorage.hpp"
 #include "ObjectDatabase\ObjectData.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 SMAsset::SMAsset(
 	const AssetData* pParent,
 	const SMEntityTransform& transform,
 	Model* pModel,
 	ColorMap&& color_map
-) :
-	SMEntityWithModelAndUuid(pParent->m_uuid, pModel, transform),
-	m_parent(pParent),
-	m_colors(std::move(color_map))
+)
+	: SMEntityWithModelAndUuid(pParent->m_uuid, pModel, transform)
+	, m_parent(pParent)
+	, m_colors(std::move(color_map))
 {}
 
 SMColor SMAsset::GetColor(const std::string& color) const

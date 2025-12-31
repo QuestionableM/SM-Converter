@@ -2,6 +2,7 @@
 
 #include "Converter/Entity/Entity.hpp"
 #include "Converter/Entity/Block.hpp"
+#include "Converter/Entity/Wedge.hpp"
 #include "Converter/Entity/Joint.hpp"
 #include "Converter/Entity/Part.hpp"
 #include "Converter/ConvertError.hpp"

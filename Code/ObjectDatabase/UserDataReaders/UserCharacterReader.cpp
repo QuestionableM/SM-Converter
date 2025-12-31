@@ -5,20 +5,20 @@
 #include "Utils\Console.hpp"
 #include "Utils\File.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 UserCharacterInstance::UserCharacterInstance(
 	const std::wstring_view& char_name,
 	std::wstring&& char_path,
 	const std::wstring_view& char_directory,
 	const UserCharacterData& char_data
-) :
-	name(char_name),
-	lower_name(char_name),
-	path(std::move(char_path)),
-	directory(char_directory),
-	filter(FilterSettingsData::GetUserDataFilter(path)),
-	character_data(char_data)
+)
+	: name(char_name)
+	, lower_name(char_name)
+	, path(std::move(char_path))
+	, directory(char_directory)
+	, filter(FilterSettingsData::GetUserDataFilter(path))
+	, character_data(char_data)
 {}
 
 ////////////// USER CHARACTER READER ///////////////

@@ -6,7 +6,7 @@
 #include "Utils\String.hpp"
 #include "Utils\Json.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 MaterialManager::MaterialMap MaterialManager::m_materialStorage = {};
 
