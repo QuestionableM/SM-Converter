@@ -32,30 +32,35 @@ void MaterialManager::Initialize()
 	}
 }
 
-char* MaterialManager::GetMaterialACStr(const std::string& mat_name, char* v_ptr)
+char* MaterialManager::GetMaterialACStr(
+	const std::string_view& material,
+	char* pCString)
 {
-	*v_ptr++ = 'm';
+	*pCString++ = 'm';
 
-	const auto v_iter = m_materialStorage.find(mat_name);
+	const auto v_iter = m_materialStorage.find(material);
 	if (v_iter != m_materialStorage.end())
-		v_ptr = String::FromInteger<std::size_t>(v_iter->second, v_ptr);
+		pCString = String::FromInteger<std::size_t>(v_iter->second, pCString);
 	else
-		*v_ptr++ = '1';
+		*pCString++ = '1';
 
-	return v_ptr;
+	return pCString;
 }
 
-std::size_t MaterialManager::GetMaterialIdx(const std::string& mat_name)
+std::size_t MaterialManager::GetMaterialIdx(
+	const std::string_view& material)
 {
-	const auto v_iter = m_materialStorage.find(mat_name);
+	const auto v_iter = m_materialStorage.find(material);
 	if (v_iter != m_materialStorage.end())
 		return v_iter->second;
 	else
 		return 1;
 }
 
-void MaterialManager::AppendMaterialIdx(std::string& outStr, const std::string& mat_name)
+void MaterialManager::AppendMaterialIdx(
+	std::string& outStr,
+	const std::string_view& material)
 {
 	outStr.append(" m", 2);
-	String::AppendIntegerToString(outStr, MaterialManager::GetMaterialIdx(mat_name));
+	String::AppendIntegerToString(outStr, MaterialManager::GetMaterialIdx(material));
 }
