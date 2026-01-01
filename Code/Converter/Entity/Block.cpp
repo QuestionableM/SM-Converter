@@ -26,48 +26,70 @@ SMBlock::SMBlock(
 	const BlockData* pParent,
 	const glm::vec3& pos,
 	const glm::vec3& scale,
-	SMColor color,
-	unsigned char rotation,
-	std::size_t index
-) :
-	SMEntityWithUuid(pParent->m_uuid, pos, scale),
-	m_parent(pParent),
-	m_index(index),
-	m_color(color),
-	m_xzRotation(rotation)
+	const SMColor color,
+	const std::uint8_t rotation,
+	const std::size_t index
+)
+	: SMEntityWithUuid(pParent->m_uuid, pos, scale)
+	, m_parent(pParent)
+	, m_index(index)
+	, m_color(color)
+	, m_xzRotation(rotation)
 {}
 
-char* SMBlock::GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, char* v_ptr) const
+std::size_t SMBlock::GetIndex() const
 {
-	v_ptr = m_uuid.toCString(v_ptr);
-	*v_ptr++ = ' ';
-	v_ptr = m_color.StringHexCStr(v_ptr);
-	*v_ptr++ = ' ';
-	v_ptr = String::FromInteger<std::size_t>(v_idx + 1, v_ptr);
-	*v_ptr++ = ' ';
-
-	return MaterialManager::GetMaterialACStr(m_parent->m_textures.m_material, v_ptr);
+	return m_index;
 }
 
-std::string SMBlock::GetMtlName(std::size_t v_idx) const
+SMColor SMBlock::GetColor() const
+{
+	return m_color;
+}
+
+EntityType SMBlock::Type() const
+{
+	return EntityType::Block;
+}
+
+char* SMBlock::GetMtlNameCStr(
+	const std::string_view& material,
+	const std::size_t idx,
+	char* pCString) const
+{
+	pCString = m_uuid.toCString(pCString);
+	*pCString++ = ' ';
+	pCString = m_color.StringHexCStr(pCString);
+	*pCString++ = ' ';
+	pCString = String::FromInteger<std::size_t>(idx + 1, pCString);
+	*pCString++ = ' ';
+
+	return MaterialManager::GetMaterialACStr(m_parent->m_textures.m_material, pCString);
+}
+
+std::string SMBlock::GetMtlName(const std::size_t idx) const
 {
 	std::string v_mtlName(m_uuid.toString());
 	v_mtlName.append(1, ' ');
 	m_color.appendStringHex(v_mtlName);
 	v_mtlName.append(1, ' ');
-	String::AppendIntegerToString(v_mtlName, v_idx + 1);
+	String::AppendIntegerToString(v_mtlName, idx + 1);
 	MaterialManager::AppendMaterialIdx(v_mtlName, m_parent->m_textures.m_material);
 
 	return v_mtlName;
 }
 
-void SMBlock::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
+void SMBlock::FillTextureMap(
+	EntityTextureMap& textureMap) const
 {
 	std::string v_mtlName = this->GetMtlName(0);
-	if (tex_map.find(v_mtlName) != tex_map.end())
+	if (textureMap.find(v_mtlName) != textureMap.end())
 		return;
 
-	tex_map.emplace(std::move(v_mtlName), ObjectTexDataConstructInfo(m_parent->m_textures, m_color));
+	textureMap.emplace(
+		std::move(v_mtlName),
+		ObjectTexDataConstructInfo(m_parent->m_textures, m_color)
+	);
 }
 
 static void GenerateUVs(Model& model, const glm::vec3& bounds, const glm::vec3& pos, int tiling)
@@ -152,25 +174,28 @@ static void FillCustomCube(Model& model, const glm::vec3& bounds, const glm::vec
 		GenerateUVs(model, bounds, position, tiling);
 }
 
-void SMBlock::WriteObjectToFile(std::ofstream& file, WriterOffsetData& mOffset, const glm::mat4& transform_matrix) const
+void SMBlock::WriteObjectToFile(
+	std::ofstream& file,
+	WriterOffsetData& offset,
+	const glm::mat4& transform) const
 {
-	Model new_block;
-	FillCustomCube(new_block, m_size / 2.0f, m_position, m_parent->m_tiling);
+	Model v_blockModel;
+	FillCustomCube(v_blockModel, m_size / 2.0f, m_position, m_parent->m_tiling);
 
-	const glm::mat4 block_matrix = transform_matrix * this->GetTransformMatrix();
-	new_block.WriteToFile(block_matrix, mOffset, file, this);
+	const glm::mat4 v_blockTransform = transform * this->GetTransformMatrix();
+	v_blockModel.WriteToFile(v_blockTransform, offset, file, this);
 
 	ProgCounter::ProgressValue++;
 }
 
 glm::mat4 SMBlock::GetTransformMatrix() const
 {
-	const glm::mat4 block_matrix = Rotations::GetRotationMatrix(m_xzRotation);
+	const glm::mat4 v_blockRotation = Rotations::GetRotationMatrix(m_xzRotation);
 
-	glm::mat4 transform_matrix(1.0f);
-	transform_matrix *= glm::translate(m_position);
-	transform_matrix *= block_matrix;
-	transform_matrix *= glm::translate(m_size / 2.0f);
+	glm::mat4 v_transform(1.0f);
+	v_transform *= glm::translate(m_position);
+	v_transform *= v_blockRotation;
+	v_transform *= glm::translate(m_size / 2.0f);
 
-	return transform_matrix;
+	return v_transform;
 }
