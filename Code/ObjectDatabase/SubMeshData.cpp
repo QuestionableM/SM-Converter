@@ -45,20 +45,25 @@ SMSubMeshList::~SMSubMeshList()
 		delete m_storage[a];
 }
 
-const SMTextureList* SMSubMeshList::getTexList(const std::string& key, std::size_t key_idx) const
+const SMTextureList* SMSubMeshList::getTexList(
+	const std::string_view& key,
+	const std::size_t keyIdx) const
 {
-	if (key_idx >= m_storage.size())
+	if (keyIdx >= m_storage.size())
 		return nullptr;
 
-	return m_storage[key_idx];
+	return m_storage[keyIdx];
 }
 
-void SMSubMeshList::addTexList(const std::string_view& key, std::size_t key_idx, SMTextureList* sub_data)
+void SMSubMeshList::addTexList(
+	const std::string_view& key,
+	const std::size_t keyIdx,
+	SMTextureList* pTexList)
 {
-	if (m_storage.size() <= key_idx)
-		m_storage.resize(key_idx + 1, nullptr);
+	if (m_storage.size() <= keyIdx)
+		m_storage.resize(keyIdx + 1, nullptr);
 
-	m_storage[key_idx] = sub_data;
+	m_storage[keyIdx] = pTexList;
 }
 
 SMSubMeshType SMSubMeshList::type() const
@@ -68,13 +73,19 @@ SMSubMeshType SMSubMeshList::type() const
 
 ////////////////// SM SUB MESH MAP /////////////////////
 
+SMSubMeshMap::SMSubMeshMap()
+	: m_storage()
+{}
+
 SMSubMeshMap::~SMSubMeshMap()
 {
 	for (const auto& v_obj : m_storage)
 		delete v_obj.second;
 }
 
-const SMTextureList* SMSubMeshMap::getTexList(const std::string& key, std::size_t key_idx) const
+const SMTextureList* SMSubMeshMap::getTexList(
+	const std::string_view& key,
+	const std::size_t keyIdx) const
 {
 	const auto v_iter = m_storage.find(key);
 	if (v_iter != m_storage.end())
@@ -83,12 +94,15 @@ const SMTextureList* SMSubMeshMap::getTexList(const std::string& key, std::size_
 	return nullptr;
 }
 
-void SMSubMeshMap::addTexList(const std::string_view& key, std::size_t key_idx, SMTextureList* sub_data)
+void SMSubMeshMap::addTexList(
+	const std::string_view& key,
+	const std::size_t keyIdx,
+	SMTextureList* pTexList)
 {
 	if (m_storage.find(key) != m_storage.end())
 		return;
 
-	m_storage.emplace(key, sub_data);
+	m_storage.emplace(key, pTexList);
 }
 
 SMSubMeshType SMSubMeshMap::type() const

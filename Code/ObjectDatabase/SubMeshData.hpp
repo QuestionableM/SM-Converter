@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Utils/clr_include.hpp"
+#include "Utils/WinInclude.hpp"
 #include "Utils/Hashing.hpp"
 
 #include "UStd/UnmanagedUnorderedMap.hpp"
@@ -40,7 +40,7 @@ public:
 	bool m_shadowOnly = false;
 };
 
-class SMSubMeshBase
+class SMC_NOVTABLE SMSubMeshBase
 {
 public:
 	SMSubMeshBase() = default;
@@ -48,23 +48,21 @@ public:
 	SMSubMeshBase(SMSubMeshBase&&) = delete;
 	virtual ~SMSubMeshBase() = default;
 
-	virtual const SMTextureList* getTexList(const std::string& key, std::size_t key_idx) const = 0;
-	virtual void addTexList(const std::string_view& key, std::size_t key_idx, SMTextureList* sub_data) = 0;
+	virtual const SMTextureList* getTexList(const std::string_view& key, const std::size_t keyIdx) const = 0;
+	virtual void addTexList(const std::string_view& key, const std::size_t keyIdx, SMTextureList* pTexList) = 0;
 	virtual SMSubMeshType type() const = 0;
 };
 
-class SMSubMeshList : public SMSubMeshBase
+class SMSubMeshList final : public SMSubMeshBase
 {
 public:
 	SMSubMeshList() = default;
-
 	SMSubMeshList(const SMSubMeshList&) = delete;
 	SMSubMeshList(SMSubMeshList&&) = delete;
+	virtual ~SMSubMeshList();
 
-	~SMSubMeshList();
-
-	const SMTextureList* getTexList(const std::string& key, std::size_t key_idx) const override;
-	void addTexList(const std::string_view& key, std::size_t key_idx, SMTextureList* sub_data) override;
+	const SMTextureList* getTexList(const std::string_view& key, const std::size_t keyIdx) const override;
+	void addTexList(const std::string_view& key, const std::size_t keyIdx, SMTextureList* pTexList) override;
 
 	SMSubMeshType type() const override;
 
@@ -72,22 +70,18 @@ private:
 	std::vector<SMTextureList*> m_storage;
 };
 
-class SMSubMeshMap : public SMSubMeshBase
+class SMSubMeshMap final : public SMSubMeshBase
 {
 	using StorageMap = std::unordered_map<std::string, SMTextureList*, Hashing::StringHasher, std::equal_to<>>;
 
 public:
-	inline SMSubMeshMap() :
-		m_storage()
-	{}
-
+	SMSubMeshMap();
 	SMSubMeshMap(const SMSubMeshMap&) = delete;
 	SMSubMeshMap(SMSubMeshMap&&) = delete;
+	virtual ~SMSubMeshMap();
 
-	~SMSubMeshMap();
-
-	const SMTextureList* getTexList(const std::string& key, std::size_t key_idx) const override;
-	void addTexList(const std::string_view& key, std::size_t key_idx, SMTextureList* sub_data) override;
+	const SMTextureList* getTexList(const std::string_view& key, const std::size_t keyIdx) const override;
+	void addTexList(const std::string_view& key, const std::size_t keyIdx, SMTextureList* pTexList) override;
 
 	SMSubMeshType type() const override;
 
