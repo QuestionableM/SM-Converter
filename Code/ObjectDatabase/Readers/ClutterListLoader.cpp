@@ -1,11 +1,11 @@
 #include "ClutterListLoader.hpp"
 
-#include "ObjectDatabase\KeywordReplacer.hpp"
-#include "ObjectDatabase\ProgCounter.hpp"
-#include "ObjectDatabase\Mods\Mod.hpp"
+#include "ObjectDatabase/KeywordReplacer.hpp"
+#include "ObjectDatabase/ProgCounter.hpp"
+#include "ObjectDatabase/Mods/Mod.hpp"
 
-#include "Utils\Console.hpp"
-#include "Utils\String.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/String.hpp"
 
 SM_UNMANAGED_CODE
 

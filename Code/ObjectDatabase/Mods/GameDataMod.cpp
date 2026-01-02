@@ -1,8 +1,7 @@
 #include "GameDataMod.hpp"
 
-#include "ObjectDatabase\DatabaseConfig.hpp"
-
-#include "UStd\UnmanagedFilesystem.hpp"
+#include "ObjectDatabase/DatabaseConfig.hpp"
+#include "UStd/UnmanagedFilesystem.hpp"
 
 SM_UNMANAGED_CODE
 

@@ -1,7 +1,7 @@
 #include "CustomGameSelector.hpp"
 
-#include "ObjectDatabase\Mods\CustomGameMod.hpp"
-#include "Converter\ConvertSettings.hpp"
+#include "ObjectDatabase/Mods/CustomGameMod.hpp"
+#include "Converter/ConvertSettings.hpp"
 
 CustomGameSelector::CustomGameSelector(QWidget* parent, const std::wstring& path)
 	: NamedComboBox(parent)

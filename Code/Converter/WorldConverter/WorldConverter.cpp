@@ -1,11 +1,11 @@
 #include "WorldConverter.hpp"
 
-#include "ObjectDatabase\UserDataReaders\TileFolderReader.hpp"
-#include "ObjectDatabase\Mods\CustomGameSwitch.hpp"
-#include "ObjectDatabase\DatabaseConfig.hpp"
+#include "ObjectDatabase/UserDataReaders/TileFolderReader.hpp"
+#include "ObjectDatabase/Mods/CustomGameSwitch.hpp"
+#include "ObjectDatabase/DatabaseConfig.hpp"
 
-#include "Converter\WorldConverter\World.hpp"
-#include "Utils\File.hpp"
+#include "Converter/WorldConverter/World.hpp"
+#include "Utils/File.hpp"
 
 SM_UNMANAGED_CODE
 

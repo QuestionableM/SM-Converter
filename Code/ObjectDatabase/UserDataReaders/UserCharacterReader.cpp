@@ -1,9 +1,9 @@
 #include "UserCharacterReader.hpp" 
 
-#include "ObjectDatabase\UserDataReaders\FilterSettingsData.hpp"
+#include "ObjectDatabase/UserDataReaders/FilterSettingsData.hpp"
 
-#include "Utils\Console.hpp"
-#include "Utils\File.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/File.hpp"
 
 SM_UNMANAGED_CODE
 

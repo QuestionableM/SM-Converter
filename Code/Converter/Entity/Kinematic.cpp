@@ -1,6 +1,6 @@
 #include "Kinematic.hpp"
 
-#include "ObjectDatabase\MaterialManager.hpp"
+#include "ObjectDatabase/MaterialManager.hpp"
 
 SM_UNMANAGED_CODE
 

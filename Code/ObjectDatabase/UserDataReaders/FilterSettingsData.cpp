@@ -1,7 +1,7 @@
 #include "FilterSettingsData.hpp"
 
-#include "ObjectDatabase\DatabaseConfig.hpp"
-#include "Utils\File.hpp"
+#include "ObjectDatabase/DatabaseConfig.hpp"
+#include "Utils/File.hpp"
 
 SM_UNMANAGED_CODE
 

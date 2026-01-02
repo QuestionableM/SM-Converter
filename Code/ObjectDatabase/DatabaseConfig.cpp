@@ -1,15 +1,15 @@
 #include "DatabaseConfig.hpp"
 
-#include "ObjectDatabase\KeywordReplacer.hpp"
-#include "UStd\UnmanagedFilesystem.hpp"
+#include "ObjectDatabase/KeywordReplacer.hpp"
+#include "UStd/UnmanagedFilesystem.hpp"
 
-#include "Utils\Console.hpp"
-#include "Utils\String.hpp"
-#include "Utils\File.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/String.hpp"
+#include "Utils/File.hpp"
 
 SM_UNMANAGED_CODE
 
-#include <valve_vdf\vdf_parser.hpp>
+#include <valve_vdf/vdf_parser.hpp>
 
 void DatabaseConfig::WstrVecToJson(
 	nlohmann::json& outObject,

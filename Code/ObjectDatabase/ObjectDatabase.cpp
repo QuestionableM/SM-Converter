@@ -1,18 +1,18 @@
 #include "ObjectDatabase.hpp"
 
-#include "ObjectDatabase\GroundTextureDatabase.hpp"
-#include "ObjectDatabase\DatabaseConfig.hpp"
-#include "ObjectDatabase\ProgCounter.hpp"
+#include "ObjectDatabase/GroundTextureDatabase.hpp"
+#include "ObjectDatabase/DatabaseConfig.hpp"
+#include "ObjectDatabase/ProgCounter.hpp"
 
-#include "ObjectDatabase\Mods\GameDataMod.hpp"
-#include "ObjectDatabase\MaterialManager.hpp"
-#include "ObjectDatabase\ObjectRotations.hpp"
-#include "ObjectDatabase\KeywordReplacer.hpp"
+#include "ObjectDatabase/Mods/GameDataMod.hpp"
+#include "ObjectDatabase/MaterialManager.hpp"
+#include "ObjectDatabase/ObjectRotations.hpp"
+#include "ObjectDatabase/KeywordReplacer.hpp"
 
-#include "UStd\UnmanagedFilesystem.hpp"
+#include "UStd/UnmanagedFilesystem.hpp"
 
-#include "Utils\Console.hpp"
-#include "Utils\Json.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/Json.hpp"
 
 SM_UNMANAGED_CODE
 

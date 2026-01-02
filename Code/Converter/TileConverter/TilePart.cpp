@@ -1,10 +1,10 @@
 #include "TilePart.hpp"
 
-#include "Converter\TileConverter\Tile.hpp"
+#include "Converter/TileConverter/Tile.hpp"
 
-#include "Utils\GlmUnmanaged.hpp"
-#include "Utils\Console.hpp"
-#include "Utils\String.hpp"
+#include "Utils/GlmUnmanaged.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/String.hpp"
 
 SM_UNMANAGED_CODE
 

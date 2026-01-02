@@ -1,9 +1,9 @@
 #include "DefaultLoader.hpp"
 
-#include "ObjectDatabase\KeywordReplacer.hpp"
+#include "ObjectDatabase/KeywordReplacer.hpp"
 
-#include "Utils\Console.hpp"
-#include "Utils\String.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/String.hpp"
 
 SM_UNMANAGED_CODE
 

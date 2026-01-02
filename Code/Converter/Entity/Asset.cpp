@@ -1,8 +1,8 @@
 #include "Asset.hpp"
 
-#include "ObjectDatabase\MaterialManager.hpp"
-#include "ObjectDatabase\ModelStorage.hpp"
-#include "ObjectDatabase\ObjectData.hpp"
+#include "ObjectDatabase/MaterialManager.hpp"
+#include "ObjectDatabase/ModelStorage.hpp"
+#include "ObjectDatabase/ObjectData.hpp"
 
 SM_UNMANAGED_CODE
 

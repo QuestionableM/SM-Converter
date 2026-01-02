@@ -1,12 +1,12 @@
 #include "ObjectRotations.hpp"
 
-#include "ObjectDatabase\DatabaseConfig.hpp"
+#include "ObjectDatabase/DatabaseConfig.hpp"
 
-#include "UStd\UnmanagedUnorderedMap.hpp"
-#include "UStd\UnmanagedString.hpp"
+#include "UStd/UnmanagedUnorderedMap.hpp"
+#include "UStd/UnmanagedString.hpp"
 
-#include "Utils\Console.hpp"
-#include "Utils\Json.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/Json.hpp"
 
 SM_UNMANAGED_CODE
 

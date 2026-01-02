@@ -1,6 +1,6 @@
 #include "UserCharacterData.hpp"
 
-#include "UStd\UnmanagedFstream.hpp"
+#include "UStd/UnmanagedFstream.hpp"
 
 SM_UNMANAGED_CODE
 

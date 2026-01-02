@@ -1,12 +1,12 @@
 #include "BlueprintConvertSettings.h"
 
-#include "ObjectDatabase\Mods\CustomGameMod.hpp"
-#include "Converter\ConvertSettings.hpp"
+#include "ObjectDatabase/Mods/CustomGameMod.hpp"
+#include "Converter/ConvertSettings.hpp"
 
-#include "Utils\String.hpp"
-#include "Utils\File.hpp"
+#include "Utils/String.hpp"
+#include "Utils/File.hpp"
 
-#include <msclr\marshal_cppstd.h>
+#include <msclr/marshal_cppstd.h>
 
 namespace SMConverter
 {

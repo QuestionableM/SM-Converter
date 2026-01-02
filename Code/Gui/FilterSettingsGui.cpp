@@ -1,6 +1,6 @@
 #include "FilterSettingsGui.h"
 
-#include "ObjectDatabase\UserDataReaders\FilterSettingsData.hpp"
+#include "ObjectDatabase/UserDataReaders/FilterSettingsData.hpp"
 
 namespace SMConverter
 {

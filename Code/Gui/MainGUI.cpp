@@ -7,36 +7,36 @@
 #include "SettingsGui.h"
 #include "AboutGui.h"
 
-#include "ObjectDatabase\UserDataReaders\UserObjectFolderReader.hpp"
-#include "ObjectDatabase\UserDataReaders\UserCharacterReader.hpp"
-#include "ObjectDatabase\GroundTextureDatabase.hpp"
-#include "ObjectDatabase\KeywordReplacer.hpp"
-#include "ObjectDatabase\ObjectDatabase.hpp"
-#include "ObjectDatabase\DatabaseConfig.hpp"
-#include "ObjectDatabase\ProgCounter.hpp"
-#include "ObjectDatabase\Mods\Mod.hpp"
+#include "ObjectDatabase/UserDataReaders/UserObjectFolderReader.hpp"
+#include "ObjectDatabase/UserDataReaders/UserCharacterReader.hpp"
+#include "ObjectDatabase/GroundTextureDatabase.hpp"
+#include "ObjectDatabase/KeywordReplacer.hpp"
+#include "ObjectDatabase/ObjectDatabase.hpp"
+#include "ObjectDatabase/DatabaseConfig.hpp"
+#include "ObjectDatabase/ProgCounter.hpp"
+#include "ObjectDatabase/Mods/Mod.hpp"
 
-#include "Converter\BlueprintConverter\BlueprintConverter.hpp"
-#include "Converter\CharacterConverter\CharacterConverter.hpp"
-#include "Converter\WorldConverter\WorldConverter.hpp"
-#include "Converter\TileConverter\TileConverter.hpp"
-#include "Converter\ConvertSettings.hpp"
+#include "Converter/BlueprintConverter/BlueprintConverter.hpp"
+#include "Converter/CharacterConverter/CharacterConverter.hpp"
+#include "Converter/WorldConverter/WorldConverter.hpp"
+#include "Converter/TileConverter/TileConverter.hpp"
+#include "Converter/ConvertSettings.hpp"
 
-#include "UStd\UnmanagedFilesystem.hpp"
+#include "UStd/UnmanagedFilesystem.hpp"
 
-#include "Utils\WinInclude.hpp"
-#include "Utils\Console.hpp"
-#include "Utils\String.hpp"
-#include "Utils\File.hpp"
+#include "Utils/WinInclude.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/String.hpp"
+#include "Utils/File.hpp"
 
 #include <WinUser.h>
 #include <CommCtrl.h>
-#include <msclr\marshal_cppstd.h>
+#include <msclr/marshal_cppstd.h>
 
 //#define SMC_TILE_TESTER
 #if defined(SMC_TILE_TESTER)
-#include "Converter\TileConverter\Readers\TileReader.hpp"
-#include "ObjectDatabase\Mods\CustomGameSwitch.hpp"
+# include "Converter/TileConverter/Readers/TileReader.hpp"
+# include "ObjectDatabase/Mods/CustomGameSwitch.hpp"
 #endif
 
 #define WF_SHOW_WARNING(title, message) \

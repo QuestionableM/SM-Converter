@@ -1,7 +1,7 @@
 #include "Entity.hpp"
 
-#include "ObjectDatabase\ModelStorage.hpp"
-#include "ObjectDatabase\ProgCounter.hpp"
+#include "ObjectDatabase/ModelStorage.hpp"
+#include "ObjectDatabase/ProgCounter.hpp"
 
 SM_UNMANAGED_CODE
 

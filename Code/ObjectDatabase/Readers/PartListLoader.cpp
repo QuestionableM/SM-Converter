@@ -1,10 +1,10 @@
 #include "PartListLoader.hpp"
 
-#include "ObjectDatabase\Readers\DefaultLoader.hpp"
-#include "ObjectDatabase\ProgCounter.hpp"
-#include "ObjectDatabase\Mods\Mod.hpp"
+#include "ObjectDatabase/Readers/DefaultLoader.hpp"
+#include "ObjectDatabase/ProgCounter.hpp"
+#include "ObjectDatabase/Mods/Mod.hpp"
 
-#include "Utils\Console.hpp"
+#include "Utils/Console.hpp"
 
 SM_UNMANAGED_CODE
 

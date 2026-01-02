@@ -1,8 +1,7 @@
 #include "WorldFolderReader.hpp"
 
-#include "ObjectDatabase\UserDataReaders\FilterSettingsData.hpp"
-
-#include "Utils\File.hpp"
+#include "ObjectDatabase/UserDataReaders/FilterSettingsData.hpp"
+#include "Utils/File.hpp"
 
 SM_UNMANAGED_CODE
 

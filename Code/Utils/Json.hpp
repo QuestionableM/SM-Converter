@@ -4,14 +4,14 @@
 
 SM_UNMANAGED_CODE
 
-#include <nlohmann\json.hpp>
+#include <nlohmann/json.hpp>
 
 #if defined(_MT)
 	#undef _MT
-	#include <simdjson\simdjson.h>
+	#include <simdjson/simdjson.h>
 	#define _MT
 #else
-	#include <simdjson\simdjson.h>
+	#include <simdjson/simdjson.h>
 #endif
 
 class JsonReader

@@ -1,12 +1,12 @@
 #include "BlueprintFolderReader.hpp"
 
-#include "ObjectDatabase\UserDataReaders\ItemModCounter.hpp"
-#include "ObjectDatabase\DatabaseConfig.hpp"
+#include "ObjectDatabase/UserDataReaders/ItemModCounter.hpp"
+#include "ObjectDatabase/DatabaseConfig.hpp"
 
-#include "Utils\Console.hpp"
-#include "Utils\String.hpp"
-#include "Utils\Json.hpp"
-#include "Utils\File.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/String.hpp"
+#include "Utils/Json.hpp"
+#include "Utils/File.hpp"
 
 SM_UNMANAGED_CODE
 

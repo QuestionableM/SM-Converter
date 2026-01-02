@@ -1,12 +1,12 @@
 #pragma once
 
-#include "ObjectDatabase\UserDataReaders\BlueprintFolderReader.hpp"
-#include "ObjectDatabase\UserDataReaders\UserCharacterReader.hpp"
-#include "ObjectDatabase\UserDataReaders\WorldFolderReader.hpp"
-#include "ObjectDatabase\UserDataReaders\TileFolderReader.hpp"
+#include "ObjectDatabase/UserDataReaders/BlueprintFolderReader.hpp"
+#include "ObjectDatabase/UserDataReaders/UserCharacterReader.hpp"
+#include "ObjectDatabase/UserDataReaders/WorldFolderReader.hpp"
+#include "ObjectDatabase/UserDataReaders/TileFolderReader.hpp"
 
-#include "Converter\ConvertError.hpp"
-#include "UStd\UnmanagedVector.hpp"
+#include "Converter/ConvertError.hpp"
+#include "UStd/UnmanagedVector.hpp"
 
 namespace SMConverter
 {

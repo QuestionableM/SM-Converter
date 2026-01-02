@@ -1,10 +1,10 @@
 #include "TileConverter.hpp"
 
-#include "ObjectDatabase\Mods\CustomGameSwitch.hpp"
-#include "ObjectDatabase\DatabaseConfig.hpp"
+#include "ObjectDatabase/Mods/CustomGameSwitch.hpp"
+#include "ObjectDatabase/DatabaseConfig.hpp"
 
-#include "Readers\TileReader.hpp"
-#include "Utils\File.hpp"
+#include "Readers/TileReader.hpp"
+#include "Utils/File.hpp"
 
 SM_UNMANAGED_CODE
 

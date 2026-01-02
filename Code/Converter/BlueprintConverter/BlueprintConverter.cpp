@@ -1,14 +1,14 @@
 #include "BlueprintConverter.hpp"
 
-#include "ObjectDatabase\Mods\CustomGameSwitch.hpp"
-#include "ObjectDatabase\DatabaseConfig.hpp"
-#include "ObjectDatabase\ProgCounter.hpp"
+#include "ObjectDatabase/Mods/CustomGameSwitch.hpp"
+#include "ObjectDatabase/DatabaseConfig.hpp"
+#include "ObjectDatabase/ProgCounter.hpp"
 
-#include "Converter\ConvertSettings.hpp"
-#include "Converter\MtlFileWriter.hpp"
+#include "Converter/ConvertSettings.hpp"
+#include "Converter/MtlFileWriter.hpp"
 
-#include "Utils\Console.hpp"
-#include "Utils\File.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/File.hpp"
 
 SM_UNMANAGED_CODE
 

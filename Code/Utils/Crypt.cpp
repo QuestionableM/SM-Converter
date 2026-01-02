@@ -1,9 +1,9 @@
 #include "Crypt.hpp"
 
-#include "UStd\UnmanagedSstream.hpp"
-#include "UStd\UnmanagedVector.hpp"
+#include "UStd/UnmanagedSstream.hpp"
+#include "UStd/UnmanagedVector.hpp"
 
-#include "Utils\WinInclude.hpp"
+#include "Utils/WinInclude.hpp"
 
 SM_UNMANAGED_CODE
 

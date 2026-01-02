@@ -1,6 +1,6 @@
-#include "Utils\WinInclude.hpp"
-#include "Utils\Console.hpp"
-#include "Gui\MainGui.h"
+#include "Utils/WinInclude.hpp"
+#include "Utils/Console.hpp"
+#include "Gui/MainGui.h"
 
 SM_UNMANAGED_CODE
 #include <locale>

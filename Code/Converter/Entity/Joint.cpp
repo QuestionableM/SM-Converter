@@ -1,10 +1,10 @@
 #include "Joint.hpp"
 
-#include "ObjectDatabase\ObjectRotations.hpp"
-#include "ObjectDatabase\MaterialManager.hpp"
-#include "ObjectDatabase\ObjectData.hpp"
+#include "ObjectDatabase/ObjectRotations.hpp"
+#include "ObjectDatabase/MaterialManager.hpp"
+#include "ObjectDatabase/ObjectData.hpp"
 
-#include "Utils\Console.hpp"
+#include "Utils/Console.hpp"
 
 SM_UNMANAGED_CODE
 

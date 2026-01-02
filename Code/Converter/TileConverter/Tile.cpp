@@ -19,7 +19,7 @@
 
 SM_UNMANAGED_CODE
 
-#include <PerlinNoise\PerlinNoise.hpp>
+#include <PerlinNoise/PerlinNoise.hpp>
 #include <FreeImage.h>
 
 Tile::Tile() :

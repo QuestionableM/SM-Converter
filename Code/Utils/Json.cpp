@@ -1,11 +1,11 @@
 #include "Json.hpp"
 
-#include "UStd\UnmanagedFstream.hpp"
-#include "UStd\UnmanagedIomanip.hpp"
+#include "UStd/UnmanagedFstream.hpp"
+#include "UStd/UnmanagedIomanip.hpp"
 
-#include "Utils\Console.hpp"
-#include "Utils\String.hpp"
-#include "Utils\File.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/String.hpp"
+#include "Utils/File.hpp"
 
 SM_UNMANAGED_CODE
 

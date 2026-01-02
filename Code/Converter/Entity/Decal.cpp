@@ -1,10 +1,10 @@
 #include "Decal.hpp"
 
-#include "ObjectDatabase\MaterialManager.hpp"
-#include "ObjectDatabase\ModelStorage.hpp"
-#include "ObjectDatabase\ProgCounter.hpp"
+#include "ObjectDatabase/MaterialManager.hpp"
+#include "ObjectDatabase/ModelStorage.hpp"
+#include "ObjectDatabase/ProgCounter.hpp"
 
-#include "Utils\Console.hpp"
+#include "Utils/Console.hpp"
 
 SM_UNMANAGED_CODE
 

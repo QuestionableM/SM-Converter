@@ -1,10 +1,10 @@
 #include "ModelStorage.hpp"
 
-#include "Converter\ConvertSettings.hpp"
-#include "Converter\Entity\Entity.hpp"
+#include "Converter/ConvertSettings.hpp"
+#include "Converter/Entity/Entity.hpp"
 
-#include "Utils\Console.hpp"
-#include "Utils\String.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/String.hpp"
 
 SM_UNMANAGED_CODE
 

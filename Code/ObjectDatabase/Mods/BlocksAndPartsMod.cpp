@@ -1,10 +1,10 @@
 #include "BlocksAndPartsMod.hpp"
 
-#include "ObjectDatabase\KeywordReplacer.hpp"
+#include "ObjectDatabase/KeywordReplacer.hpp"
 
-#include "Utils\Console.hpp"
-#include "Utils\String.hpp"
-#include "Utils\File.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/String.hpp"
+#include "Utils/File.hpp"
 
 SM_UNMANAGED_CODE
 

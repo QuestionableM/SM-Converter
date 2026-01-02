@@ -1,10 +1,10 @@
 #include "DecalsetReader.hpp"
 
-#include "ObjectDatabase\KeywordReplacer.hpp"
+#include "ObjectDatabase/KeywordReplacer.hpp"
 
-#include "Utils\Console.hpp"
-#include "Utils\String.hpp"
-#include "Utils\Json.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/String.hpp"
+#include "Utils/Json.hpp"
 
 SM_UNMANAGED_CODE
 

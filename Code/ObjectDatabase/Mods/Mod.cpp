@@ -1,25 +1,25 @@
 #include "Mod.hpp"
 
-#include "ObjectDatabase\Readers\HarvestableListLoader.hpp"
-#include "ObjectDatabase\Readers\KinematicListLoader.hpp"
-#include "ObjectDatabase\Readers\DecalsetListReader.hpp"
-#include "ObjectDatabase\Readers\ClutterListLoader.hpp"
-#include "ObjectDatabase\Readers\GarmentListLoader.hpp"
-#include "ObjectDatabase\Readers\AssetListLoader.hpp"
-#include "ObjectDatabase\Readers\BlockListLoader.hpp"
-#include "ObjectDatabase\Readers\WedgeListLoader.hpp"
-#include "ObjectDatabase\Readers\PartListLoader.hpp"
-#include "ObjectDatabase\KeywordReplacer.hpp"
+#include "ObjectDatabase/Readers/HarvestableListLoader.hpp"
+#include "ObjectDatabase/Readers/KinematicListLoader.hpp"
+#include "ObjectDatabase/Readers/DecalsetListReader.hpp"
+#include "ObjectDatabase/Readers/ClutterListLoader.hpp"
+#include "ObjectDatabase/Readers/GarmentListLoader.hpp"
+#include "ObjectDatabase/Readers/AssetListLoader.hpp"
+#include "ObjectDatabase/Readers/BlockListLoader.hpp"
+#include "ObjectDatabase/Readers/WedgeListLoader.hpp"
+#include "ObjectDatabase/Readers/PartListLoader.hpp"
+#include "ObjectDatabase/KeywordReplacer.hpp"
 
-#include "ObjectDatabase\Mods\BlocksAndPartsMod.hpp"
-#include "ObjectDatabase\Mods\TerrainAssetsMod.hpp"
-#include "ObjectDatabase\Mods\CustomGameMod.hpp"
+#include "ObjectDatabase/Mods/BlocksAndPartsMod.hpp"
+#include "ObjectDatabase/Mods/TerrainAssetsMod.hpp"
+#include "ObjectDatabase/Mods/CustomGameMod.hpp"
 
-#include "UStd\UnmanagedFilesystem.hpp"
+#include "UStd/UnmanagedFilesystem.hpp"
 
-#include "Utils\Console.hpp"
-#include "Utils\String.hpp"
-#include "Utils\File.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/String.hpp"
+#include "Utils/File.hpp"
 
 SM_UNMANAGED_CODE
 

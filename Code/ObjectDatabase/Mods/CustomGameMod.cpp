@@ -1,7 +1,7 @@
 #include "CustomGameMod.hpp"
 
-#include "ObjectDatabase\KeywordReplacer.hpp"
-#include "Utils\Json.hpp"
+#include "ObjectDatabase/KeywordReplacer.hpp"
+#include "Utils/Json.hpp"
 
 SM_UNMANAGED_CODE
 

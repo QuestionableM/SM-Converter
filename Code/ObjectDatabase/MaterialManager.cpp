@@ -1,10 +1,10 @@
 #include "MaterialManager.hpp"
 
-#include "ObjectDatabase\DatabaseConfig.hpp"
+#include "ObjectDatabase/DatabaseConfig.hpp"
 
-#include "Utils\Console.hpp"
-#include "Utils\String.hpp"
-#include "Utils\Json.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/String.hpp"
+#include "Utils/Json.hpp"
 
 SM_UNMANAGED_CODE
 

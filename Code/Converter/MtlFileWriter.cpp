@@ -1,7 +1,7 @@
 #include "MtlFileWriter.hpp"
 
-#include "ObjectDatabase\ProgCounter.hpp"
-#include "UStd\UnmanagedFstream.hpp"
+#include "ObjectDatabase/ProgCounter.hpp"
+#include "UStd/UnmanagedFstream.hpp"
 
 SM_UNMANAGED_CODE
 

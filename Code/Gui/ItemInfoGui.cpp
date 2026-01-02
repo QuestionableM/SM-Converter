@@ -1,17 +1,17 @@
 #include "ItemInfoGui.h"
 
-#include "UStd\UnmanagedUnorderedMap.hpp"
-#include "UStd\UnmanagedVector.hpp"
+#include "UStd/UnmanagedUnorderedMap.hpp"
+#include "UStd/UnmanagedVector.hpp"
 
-#include "ObjectDatabase\UserDataReaders\ItemModCounter.hpp"
-#include "ObjectDatabase\Mods\CustomGameSwitch.hpp"
-#include "ObjectDatabase\DatabaseConfig.hpp"
-#include "ObjectDatabase\Mods\Mod.hpp"
+#include "ObjectDatabase/UserDataReaders/ItemModCounter.hpp"
+#include "ObjectDatabase/Mods/CustomGameSwitch.hpp"
+#include "ObjectDatabase/DatabaseConfig.hpp"
+#include "ObjectDatabase/Mods/Mod.hpp"
 
-#include "Converter\WorldConverter\World.hpp"
-#include "Converter\Entity\Blueprint.hpp"
-#include "Utils\Console.hpp"
-#include "Utils\File.hpp"
+#include "Converter/WorldConverter/World.hpp"
+#include "Converter/Entity/Blueprint.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/File.hpp"
 
 namespace SMConverter
 {
