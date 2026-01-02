@@ -62,15 +62,15 @@ void BlueprintConv::WriteToFileInternal(SMBlueprint* pBlueprint, const std::wstr
 	{
 		ProgCounter::SetState(ProgState::WritingMtlFile, 0);
 
-		std::unordered_map<std::string, ObjectTexData> v_tex_map;
+		SMEntity::EntityTextureMap v_textureMap;
 
 		for (const SMEntity* v_entity : pBlueprint->m_objects)
 		{
-			v_entity->FillTextureMap(v_tex_map);
-			ProgCounter::ProgressMax = v_tex_map.size();
+			v_entity->FillTextureMap(v_textureMap);
+			ProgCounter::ProgressMax = v_textureMap.size();
 		}
 
-		MtlFileWriter::Write(v_bp_output_path + L".mtl", v_tex_map);
+		MtlFileWriter::Write(v_bp_output_path + L".mtl", v_textureMap);
 	}
 }
 

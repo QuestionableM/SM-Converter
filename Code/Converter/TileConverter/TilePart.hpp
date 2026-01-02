@@ -38,7 +38,7 @@ public:
 		std::size_t worldSz,
 		char rotation);
 
-	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tData) const;
+	void FillTextureMap(SMEntity::EntityTextureMap& textureMap) const;
 	std::size_t GetAmountOfObjects() const;
 
 public:

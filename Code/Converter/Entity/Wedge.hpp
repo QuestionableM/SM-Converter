@@ -23,13 +23,13 @@ public:
 	SMWedge(SMWedge&) = delete;
 	~SMWedge() = default;
 
-	inline std::size_t GetIndex() const override { return m_index; }
-	inline SMColor GetColor() const override { return m_color; }
-	inline EntityType Type() const noexcept override { return EntityType::Wedge; }
-	char* GetMtlNameCStr(const std::string& matName, std::size_t idx, char* ptr) const override;
-	std::string GetMtlName(std::size_t idx) const override;
-	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& outTexMap) const override;
-	void WriteObjectToFile(std::ofstream& file, WriterOffsetData& offset, const glm::mat4& transformMatrix) const override;
+	std::size_t GetIndex() const override;
+	SMColor GetColor() const override;
+	EntityType Type() const override;
+	char* GetMtlNameCStr(const std::string_view& material, const std::size_t idx, char* pCString) const override;
+	std::string GetMtlName(const std::size_t idx) const override;
+	void FillTextureMap(EntityTextureMap& textureMap) const override;
+	void WriteObjectToFile(std::ofstream& file, WriterOffsetData& offset, const glm::mat4& transform) const override;
 	glm::mat4 GetTransformMatrix() const override;
 
 private:

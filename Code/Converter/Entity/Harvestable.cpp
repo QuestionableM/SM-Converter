@@ -8,33 +8,46 @@ SMHarvestable::SMHarvestable(
 	const HarvestableData* pParent,
 	const SMEntityTransform& transform,
 	Model* pModel,
-	SMColor color
+	const SMColor color
 )
 	: SMEntityWithModelAndUuid(pParent->m_uuid, pModel, transform)
 	, m_parent(pParent)
 	, m_color(color)
 {}
 
-char* SMHarvestable::GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, char* v_ptr) const
+SMColor SMHarvestable::GetColor() const
 {
-	v_ptr = m_uuid.toCString(v_ptr);
-	*v_ptr++ = ' ';
-	v_ptr = m_color.StringHexCStr(v_ptr);
-	*v_ptr++ = ' ';
-	v_ptr = String::FromInteger<std::size_t>(v_idx + 1, v_ptr);
-	*v_ptr++ = ' ';
-
-	const SMTextureList* v_tex_list = m_parent->m_textures->getTexList(v_mat_name, v_idx);
-	if (v_tex_list)
-		return MaterialManager::GetMaterialACStr(v_tex_list->m_material, v_ptr);
-
-	*v_ptr++ = 'm';
-	*v_ptr++ = '1';
-
-	return v_ptr;
+	return m_color;
 }
 
-void SMHarvestable::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
+EntityType SMHarvestable::Type() const
+{
+	return EntityType::Harvestable;
+}
+
+char* SMHarvestable::GetMtlNameCStr(
+	const std::string_view& material,
+	const std::size_t idx,
+	char* pCString) const
+{
+	pCString = m_uuid.toCString(pCString);
+	*pCString++ = ' ';
+	pCString = m_color.StringHexCStr(pCString);
+	*pCString++ = ' ';
+	pCString = String::FromInteger<std::size_t>(idx + 1, pCString);
+	*pCString++ = ' ';
+
+	const SMTextureList* v_pTexList = m_parent->m_textures->getTexList(material, idx);
+	if (v_pTexList)
+		return MaterialManager::GetMaterialACStr(v_pTexList->m_material, pCString);
+
+	*pCString++ = 'm';
+	*pCString++ = '1';
+
+	return pCString;
+}
+
+void SMHarvestable::FillTextureMap(EntityTextureMap& textureMap) const
 {
 	std::string v_mtlFirstPart(m_uuid.toString());
 	v_mtlFirstPart.append(1, ' ');
@@ -54,16 +67,21 @@ void SMHarvestable::FillTextureMap(std::unordered_map<std::string, ObjectTexData
 		String::AppendIntegerToString(v_matName, a + 1);
 		MaterialManager::AppendMaterialIdx(v_matName, v_pTexList->m_material);
 
-		if (tex_map.contains(v_matName)) continue;
+		if (textureMap.contains(v_matName)) continue;
 
-		tex_map.emplace(std::move(v_matName), ObjectTexDataConstructInfo(*v_pTexList, m_color));
+		textureMap.emplace(
+			std::move(v_matName),
+			ObjectTexDataConstructInfo(*v_pTexList, m_color)
+		);
 	}
 }
 
-bool SMHarvestable::GetCanWrite(const std::string& name, std::size_t v_idx) const
+bool SMHarvestable::GetCanWrite(
+	const std::string_view& name,
+	const std::size_t idx) const
 {
-	const SMTextureList* v_tex_list = m_parent->m_textures->getTexList(name, v_idx);
-	if (!v_tex_list) return false;
+	const SMTextureList* v_pTexList = m_parent->m_textures->getTexList(name, idx);
+	if (!v_pTexList) return false;
 
-	return !v_tex_list->m_shadowOnly;
+	return !v_pTexList->m_shadowOnly;
 }

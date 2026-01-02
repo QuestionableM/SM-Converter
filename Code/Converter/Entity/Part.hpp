@@ -15,22 +15,22 @@ public:
 		const PartData* pParent,
 		const glm::vec3& pos,
 		Model* pModel,
-		SMColor color,
-		unsigned char rotation,
-		std::size_t index
+		const SMColor color,
+		const std::uint8_t rotation,
+		const std::size_t index
 	);
 
 	SMPart(const SMPart&) = delete;
 	SMPart(SMPart&) = delete;
 	~SMPart() = default;
 
-	inline std::size_t GetIndex() const override { return m_index; }
-	inline SMColor GetColor() const override { return this->m_color; }
-	inline EntityType Type() const noexcept override { return EntityType::Part; }
-	char* GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, char* v_ptr) const override;
-	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const override;
+	std::size_t GetIndex() const override;
+	SMColor GetColor() const override;
+	EntityType Type() const override;
+	char* GetMtlNameCStr(const std::string_view& material, const std::size_t idx, char* pCString) const override;
+	void FillTextureMap(EntityTextureMap& textureMap) const override;
 	glm::mat4 GetTransformMatrix() const override;
-	bool GetCanWrite(const std::string& name, std::size_t v_idx) const override;
+	bool GetCanWrite(const std::string_view& name, const std::size_t idx) const override;
 
 private:
 	const PartData* m_parent;

@@ -370,15 +370,15 @@ void SMWorld::WriteMtlFile(const std::wstring& path) const
 
 	ProgCounter::SetState(ProgState::WritingMtlFile, 0);
 
-	std::unordered_map<std::string, ObjectTexData> v_texData = {};
+	SMEntity::EntityTextureMap v_textureMap;
 
 	for (const WorldCellData& v_cell : m_cellMap)
 	{
 		const TilePart* v_part = v_cell.part;
 		if (!v_part) continue;
 
-		v_part->FillTextureMap(v_texData);
-		ProgCounter::ProgressMax = v_texData.size();
+		v_part->FillTextureMap(v_textureMap);
+		ProgCounter::ProgressMax = v_textureMap.size();
 	}
 
 	{
@@ -391,10 +391,10 @@ void SMWorld::WriteMtlFile(const std::wstring& path) const
 			v_tileGroundTextureData.m_textures.m_nor = L"./GroundTexture_Nor.jpg";
 		}
 
-		v_texData["TileGroundTerrain"] = std::move(v_tileGroundTextureData);
+		v_textureMap["TileGroundTerrain"] = std::move(v_tileGroundTextureData);
 	}
 
-	MtlFileWriter::Write(path, v_texData);
+	MtlFileWriter::Write(path, v_textureMap);
 }
 
 bool SMWorld::WriteObjFile(const std::wstring& dir_path, const std::wstring& file_name, const std::wstring& mtl_name) const

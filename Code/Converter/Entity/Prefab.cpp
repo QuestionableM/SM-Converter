@@ -21,17 +21,17 @@ SMPrefab::~SMPrefab()
 		delete v_pEntity;
 }
 
-const std::wstring& SMPrefab::getPath() const
+const std::wstring& SMPrefab::getPath() const noexcept
 {
 	return m_path;
 }
 
-const std::wstring& SMPrefab::getFlag() const
+const std::wstring& SMPrefab::getFlag() const noexcept
 {
 	return m_flag;
 }
 
-const std::vector<SMEntity*>& SMPrefab::getObjects() const
+const std::vector<SMEntity*>& SMPrefab::getObjects() const noexcept
 {
 	return m_objects;
 }
@@ -44,21 +44,26 @@ void SMPrefab::addObject(SMEntity* object)
 	m_objects.push_back(object);
 }
 
-void SMPrefab::WriteObjectToFile(
-	std::ofstream& file,
-	WriterOffsetData& mOffset,
-	const glm::mat4& transform_matrix) const
+EntityType SMPrefab::Type() const
 {
-	const glm::mat4 v_prefabMatrix = transform_matrix * this->GetTransformMatrix();
-
-	for (const SMEntity* pEntity : m_objects)
-		pEntity->WriteObjectToFile(file, mOffset, v_prefabMatrix);
+	return EntityType::Prefab;
 }
 
-void SMPrefab::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
+void SMPrefab::WriteObjectToFile(
+	std::ofstream& file,
+	WriterOffsetData& offset,
+	const glm::mat4& transform) const
+{
+	const glm::mat4 v_prefabMatrix = transform * this->GetTransformMatrix();
+
+	for (const SMEntity* pEntity : m_objects)
+		pEntity->WriteObjectToFile(file, offset, v_prefabMatrix);
+}
+
+void SMPrefab::FillTextureMap(EntityTextureMap& textureMap) const
 {
 	for (const SMEntity* pEntity : m_objects)
-		pEntity->FillTextureMap(tex_map);
+		pEntity->FillTextureMap(textureMap);
 }
 
 std::size_t SMPrefab::GetAmountOfObjects() const

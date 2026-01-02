@@ -11,9 +11,9 @@ SMPart::SMPart(
 	const PartData* pParent,
 	const glm::vec3& pos,
 	Model* pModel,
-	SMColor color,
-	unsigned char rotation,
-	std::size_t index
+	const SMColor color,
+	const std::uint8_t rotation,
+	const std::size_t index
 )
 	: SMEntityWithModelAndUuid(pParent->m_uuid, pModel, pos)
 	, m_parent(pParent)
@@ -22,26 +22,44 @@ SMPart::SMPart(
 	, m_xzRotation(rotation)
 {}
 
-char* SMPart::GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, char* v_ptr) const
+std::size_t SMPart::GetIndex() const
 {
-	v_ptr = m_uuid.toCString(v_ptr);
-	*v_ptr++ = ' ';
-	v_ptr = m_color.StringHexCStr(v_ptr);
-	*v_ptr++ = ' ';
-	v_ptr = String::FromInteger<std::size_t>(v_idx + 1, v_ptr);
-	*v_ptr++ = ' ';
-
-	const SMTextureList* v_tex_data = m_parent->m_textures->getTexList(v_mat_name, v_idx);
-	if (v_tex_data)
-		return MaterialManager::GetMaterialACStr(v_tex_data->m_material, v_ptr);
-
-	*v_ptr++ = 'm';
-	*v_ptr++ = '1';
-
-	return v_ptr;
+	return m_index;
 }
 
-void SMPart::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
+SMColor SMPart::GetColor() const
+{
+	return this->m_color;
+}
+
+EntityType SMPart::Type() const
+{
+	return EntityType::Part;
+}
+
+char* SMPart::GetMtlNameCStr(
+	const std::string_view& material,
+	const std::size_t idx,
+	char* pCString) const
+{
+	pCString = m_uuid.toCString(pCString);
+	*pCString++ = ' ';
+	pCString = m_color.StringHexCStr(pCString);
+	*pCString++ = ' ';
+	pCString = String::FromInteger<std::size_t>(idx + 1, pCString);
+	*pCString++ = ' ';
+
+	const SMTextureList* v_pTexData = m_parent->m_textures->getTexList(material, idx);
+	if (v_pTexData)
+		return MaterialManager::GetMaterialACStr(v_pTexData->m_material, pCString);
+
+	*pCString++ = 'm';
+	*pCString++ = '1';
+
+	return pCString;
+}
+
+void SMPart::FillTextureMap(EntityTextureMap& textureMap) const
 {
 	std::string v_mtlFirstPart(m_uuid.toString());
 	v_mtlFirstPart.append(1, ' ');
@@ -61,10 +79,13 @@ void SMPart::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_
 		String::AppendIntegerToString(v_mtlName, a + 1);
 		MaterialManager::AppendMaterialIdx(v_mtlName, v_pTexList->m_material);
 
-		if (tex_map.find(v_mtlName) != tex_map.end())
+		if (textureMap.find(v_mtlName) != textureMap.end())
 			continue;
 
-		tex_map.emplace(std::move(v_mtlName), ObjectTexDataConstructInfo(*v_pTexList, m_color));
+		textureMap.emplace(
+			std::move(v_mtlName),
+			ObjectTexDataConstructInfo(*v_pTexList, m_color)
+		);
 	}
 }
 
@@ -80,9 +101,9 @@ glm::mat4 SMPart::GetTransformMatrix() const
 	return model_matrix;
 }
 
-bool SMPart::GetCanWrite(const std::string& name, std::size_t v_idx) const
+bool SMPart::GetCanWrite(const std::string_view& name, const std::size_t idx) const
 {
-	const SMTextureList* v_pTexList = m_parent->m_textures->getTexList(name, v_idx);
+	const SMTextureList* v_pTexList = m_parent->m_textures->getTexList(name, idx);
 	if (!v_pTexList) return false;
 
 	return !v_pTexList->m_shadowOnly;

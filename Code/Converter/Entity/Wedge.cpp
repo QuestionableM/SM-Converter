@@ -26,19 +26,37 @@ SMWedge::SMWedge(
 	, m_xzRotation(rotation)
 {}
 
-char* SMWedge::GetMtlNameCStr(const std::string& matName, std::size_t idx, char* ptr) const
+std::size_t SMWedge::GetIndex() const
 {
-	ptr = m_uuid.toCString(ptr);
-	*ptr++ = ' ';
-	ptr = m_color.StringHexCStr(ptr);
-	*ptr++ = ' ';
-	ptr = String::FromInteger<std::size_t>(idx + 1, ptr);
-	*ptr++ = ' ';
-
-	return MaterialManager::GetMaterialACStr(m_parentBlock->m_textures.m_material, ptr);
+	return m_index;
 }
 
-std::string SMWedge::GetMtlName(std::size_t idx) const
+SMColor SMWedge::GetColor() const
+{
+	return m_color;
+}
+
+EntityType SMWedge::Type() const
+{
+	return EntityType::Wedge;
+}
+
+char* SMWedge::GetMtlNameCStr(
+	const std::string_view& material,
+	const std::size_t idx,
+	char* pCString) const
+{
+	pCString = m_uuid.toCString(pCString);
+	*pCString++ = ' ';
+	pCString = m_color.StringHexCStr(pCString);
+	*pCString++ = ' ';
+	pCString = String::FromInteger<std::size_t>(idx + 1, pCString);
+	*pCString++ = ' ';
+
+	return MaterialManager::GetMaterialACStr(m_parentBlock->m_textures.m_material, pCString);
+}
+
+std::string SMWedge::GetMtlName(const std::size_t idx) const
 {
 	std::string v_mtlName(m_uuid.toString());
 	v_mtlName.append(1, ' ');
@@ -50,16 +68,23 @@ std::string SMWedge::GetMtlName(std::size_t idx) const
 	return v_mtlName;
 }
 
-void SMWedge::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& outTexMap) const
+void SMWedge::FillTextureMap(EntityTextureMap& textureMap) const
 {
 	std::string v_mtlName = this->GetMtlName(0);
-	if (outTexMap.find(v_mtlName) != outTexMap.end())
+	if (textureMap.find(v_mtlName) != textureMap.end())
 		return;
 
-	outTexMap.emplace(std::move(v_mtlName), ObjectTexDataConstructInfo(m_parentBlock->m_textures, m_color));
+	textureMap.emplace(
+		std::move(v_mtlName),
+		ObjectTexDataConstructInfo(m_parentBlock->m_textures, m_color)
+	);
 }
 
-static void GenerateUVs(Model& model, const glm::vec3& bounds, const glm::vec3& position, const int tiling)
+static void GenerateUVs(
+	Model& model,
+	const glm::vec3& bounds,
+	const glm::vec3& position,
+	const int tiling)
 {
 	model.m_uvs.resize(24);
 
@@ -93,7 +118,11 @@ static void GenerateUVs(Model& model, const glm::vec3& bounds, const glm::vec3& 
 	}
 }
 
-static void FillCustomCube(Model& model, const glm::vec3& bounds, const glm::vec3& position, const int tiling)
+static void FillCustomCube(
+	Model& model,
+	const glm::vec3& bounds,
+	const glm::vec3& position,
+	const int tiling)
 {
 	model.m_vertices =
 	{
@@ -172,13 +201,16 @@ static void FillCustomCube(Model& model, const glm::vec3& bounds, const glm::vec
 		GenerateUVs(model, bounds, position, tiling);
 }
 
-void SMWedge::WriteObjectToFile(std::ofstream& file, WriterOffsetData& offset, const glm::mat4& transformMatrix) const
+void SMWedge::WriteObjectToFile(
+	std::ofstream& file,
+	WriterOffsetData& offset,
+	const glm::mat4& transform) const
 {
 	Model v_newWedge;
 	FillCustomCube(v_newWedge, m_size * 0.5f, m_position, m_parentBlock->m_tiling);
 
-	const glm::mat4 v_wedgeMatrix = transformMatrix * this->GetTransformMatrix();
-	v_newWedge.WriteToFile(v_wedgeMatrix, offset, file, this);
+	const glm::mat4 v_wedgeTransform = transform * this->GetTransformMatrix();
+	v_newWedge.WriteToFile(v_wedgeTransform, offset, file, this);
 
 	ProgCounter::ProgressValue++;
 }

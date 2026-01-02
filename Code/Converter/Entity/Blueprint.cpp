@@ -106,7 +106,10 @@ void SMBlueprint::CountFromJsonString(const std::string_view& str)
 	}
 }
 
-SMBlueprint* SMBlueprint::LoadAutomatic(const std::string& str, const glm::vec3& pos, const glm::quat& rot)
+SMBlueprint* SMBlueprint::LoadAutomatic(
+	const std::string_view& str,
+	const glm::vec3& pos,
+	const glm::quat& rot)
 {
 	const std::size_t v_secretIdx = str.find("?JB:");
 	if (v_secretIdx != std::string::npos)
@@ -125,7 +128,10 @@ SMBlueprint* SMBlueprint::LoadAutomatic(const std::string& str, const glm::vec3&
 	return SMBlueprint::FromFile(v_bpPath, pos, rot);
 }
 
-SMBlueprint* SMBlueprint::FromFile(const std::wstring& path, const glm::vec3& pos, const glm::quat& rot)
+SMBlueprint* SMBlueprint::FromFile(
+	const std::wstring_view& path,
+	const glm::vec3& pos,
+	const glm::quat& rot)
 {
 	std::string v_fileString;
 	if (!File::ReadToString(path, v_fileString))
@@ -138,7 +144,7 @@ SMBlueprint* SMBlueprint::FromFile(const std::wstring& path, const glm::vec3& po
 }
 
 SMBlueprint* SMBlueprint::FromFileWithStatus(
-	const std::wstring& path,
+	const std::wstring_view& path,
 	SMBlueprint::AddObjectFunction v_addObjFunc,
 	ConvertError& error)
 {
@@ -191,18 +197,26 @@ SMBlueprint* SMBlueprint::FromJsonString(const std::string_view& json_str, const
 	return nBlueprint;
 }
 
-void SMBlueprint::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
+EntityType SMBlueprint::Type() const
 {
-	for (const SMEntity* pEntity : m_objects)
-		pEntity->FillTextureMap(tex_map);
+	return EntityType::Blueprint;
 }
 
-void SMBlueprint::WriteObjectToFile(std::ofstream& file, WriterOffsetData& mOffset, const glm::mat4& transform_matrix) const
+void SMBlueprint::FillTextureMap(EntityTextureMap& textureMap) const
 {
-	const glm::mat4 blueprint_matrix = transform_matrix * this->GetTransformMatrix();
-
 	for (const SMEntity* pEntity : m_objects)
-		pEntity->WriteObjectToFile(file, mOffset, blueprint_matrix);
+		pEntity->FillTextureMap(textureMap);
+}
+
+void SMBlueprint::WriteObjectToFile(
+	std::ofstream& file,
+	WriterOffsetData& offset,
+	const glm::mat4& transform) const
+{
+	const glm::mat4 v_blueprintTransform = transform * this->GetTransformMatrix();
+
+	for (const SMEntity* v_pCurEntity : m_objects)
+		v_pCurEntity->WriteObjectToFile(file, offset, v_blueprintTransform);
 }
 
 std::size_t SMBlueprint::GetAmountOfObjects() const
@@ -215,10 +229,10 @@ std::size_t SMBlueprint::GetAmountOfObjects() const
 	return v_output;
 }
 
-void SMBlueprint::CalculateCenterPoint(glm::vec3& v_input) const
+void SMBlueprint::CalculateCenterPoint(glm::vec3& outInput) const
 {
-	for (const SMEntity* v_entity : m_objects)
-		v_entity->CalculateCenterPoint(v_input);
+	for (const SMEntity* v_pCurEntity : m_objects)
+		v_pCurEntity->CalculateCenterPoint(outInput);
 }
 
 void SMBlueprint::AddObject_Default(SMBlueprint* self, SMEntity* pEntity)

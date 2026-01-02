@@ -8,32 +8,32 @@ SM_UNMANAGED_CODE
 class SMGroundTerrainData final : public SMEntity
 {
 public:
-	inline EntityType Type() const noexcept override { return EntityType::GroundTerrain; }
+	EntityType Type() const override { return EntityType::GroundTerrain; }
 
-	inline char* GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, char* v_ptr) const override
+	char* GetMtlNameCStr(const std::string_view& material, const std::size_t idx, char* pCString) const override
 	{
-		*v_ptr++ = 'T';
-		*v_ptr++ = 'i';
-		*v_ptr++ = 'l';
-		*v_ptr++ = 'e';
-		*v_ptr++ = 'G';
-		*v_ptr++ = 'r';
-		*v_ptr++ = 'o';
-		*v_ptr++ = 'u';
-		*v_ptr++ = 'n';
-		*v_ptr++ = 'd';
-		*v_ptr++ = 'T';
-		*v_ptr++ = 'e';
-		*v_ptr++ = 'r';
-		*v_ptr++ = 'r';
-		*v_ptr++ = 'a';
-		*v_ptr++ = 'i';
-		*v_ptr++ = 'n';
+		*pCString++ = 'T';
+		*pCString++ = 'i';
+		*pCString++ = 'l';
+		*pCString++ = 'e';
+		*pCString++ = 'G';
+		*pCString++ = 'r';
+		*pCString++ = 'o';
+		*pCString++ = 'u';
+		*pCString++ = 'n';
+		*pCString++ = 'd';
+		*pCString++ = 'T';
+		*pCString++ = 'e';
+		*pCString++ = 'r';
+		*pCString++ = 'r';
+		*pCString++ = 'a';
+		*pCString++ = 'i';
+		*pCString++ = 'n';
 
-		return v_ptr;
+		return pCString;
 	}
 
-	inline void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const override {}
+	void FillTextureMap(EntityTextureMap& textureMap) const override {}
 };
 
 SM_MANAGED_CODE

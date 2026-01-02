@@ -812,12 +812,12 @@ void Tile::WriteMtlFile(const std::wstring& path) const
 	DebugOutL("Writing an mtl file...");
 	ProgCounter::SetState(ProgState::WritingMtlFile, 0);
 
-	std::unordered_map<std::string, ObjectTexData> v_texData = {};
+	SMEntity::EntityTextureMap v_textureMap;
 
 	for (const TilePart* v_tPart : m_tiles)
 	{
-		v_tPart->FillTextureMap(v_texData);
-		ProgCounter::ProgressMax = v_texData.size();
+		v_tPart->FillTextureMap(v_textureMap);
+		ProgCounter::ProgressMax = v_textureMap.size();
 	}
 
 	{
@@ -830,8 +830,8 @@ void Tile::WriteMtlFile(const std::wstring& path) const
 			v_tileGroundTextureData.m_textures.m_nor = L"./GroundTexture_Nor.jpg";
 		}
 
-		v_texData["TileGroundTerrain"] = std::move(v_tileGroundTextureData);
+		v_textureMap["TileGroundTerrain"] = std::move(v_tileGroundTextureData);
 	}
 
-	MtlFileWriter::Write(path, v_texData);
+	MtlFileWriter::Write(path, v_textureMap);
 }

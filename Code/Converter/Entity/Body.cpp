@@ -29,21 +29,21 @@ SMEntity** SMBody::ResizeAdd(const std::size_t objCount)
 	return m_objects.data() + v_prevSize;
 }
 
-EntityType SMBody::Type() const noexcept
+EntityType SMBody::Type() const
 {
 	return EntityType::Body;
 }
 
-void SMBody::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
+void SMBody::FillTextureMap(EntityTextureMap& textureMap) const
 {
 	for (const SMEntity* v_entity : m_objects)
-		v_entity->FillTextureMap(tex_map);
+		v_entity->FillTextureMap(textureMap);
 }
 
 void SMBody::WriteObjectToFile(
 	std::ofstream& file,
-	WriterOffsetData& mOffset,
-	const glm::mat4& transform_matrix) const
+	WriterOffsetData& offset,
+	const glm::mat4& transform) const
 {
 	std::string v_groupName = "o ";
 	v_groupName.append(m_bodyName);
@@ -52,7 +52,8 @@ void SMBody::WriteObjectToFile(
 	{
 		std::string v_finalName;
 
-		for (std::size_t a = 0; a < m_objects.size(); a++)
+		const std::size_t v_objectCount = m_objects.size();
+		for (std::size_t a = 0; a < v_objectCount; a++)
 		{
 			v_finalName.assign(v_groupName);
 			v_finalName.append(1, '_');
@@ -60,7 +61,7 @@ void SMBody::WriteObjectToFile(
 			v_finalName.append(1, '\n');
 			file.write(v_finalName.c_str(), v_finalName.size());
 
-			m_objects[a]->WriteObjectToFile(file, mOffset, transform_matrix);
+			m_objects[a]->WriteObjectToFile(file, offset, transform);
 		}
 	}
 	else
@@ -69,14 +70,14 @@ void SMBody::WriteObjectToFile(
 		file.write(v_groupName.c_str(), v_groupName.size());
 
 		for (const SMEntity* v_entity : m_objects)
-			v_entity->WriteObjectToFile(file, mOffset, transform_matrix);
+			v_entity->WriteObjectToFile(file, offset, transform);
 	}
 }
 
-void SMBody::CalculateCenterPoint(glm::vec3& v_input) const
+void SMBody::CalculateCenterPoint(glm::vec3& outInput) const
 {
 	for (const SMEntity* v_entity : m_objects)
-		v_entity->CalculateCenterPoint(v_input);
+		v_entity->CalculateCenterPoint(outInput);
 }
 
 std::size_t SMBody::GetAmountOfObjects() const

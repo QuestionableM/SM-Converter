@@ -99,16 +99,16 @@ void TilePart::WriteToFileWorld(
 			v_pCurEntity->WriteObjectToFile(model, offset, v_transform);
 }
 
-void TilePart::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tData) const
+void TilePart::FillTextureMap(SMEntity::EntityTextureMap& textureMap) const
 {
 	for (const std::vector<SMEntity*>& v_curEntitiesVec : m_objects)
 		for (const SMEntity* v_pCurEntity : v_curEntitiesVec)
-			v_pCurEntity->FillTextureMap(tData);
+			v_pCurEntity->FillTextureMap(textureMap);
 
 	for (const SMTileClutter* v_pCurClutter : m_clutterMap)
 	{
 		if (v_pCurClutter)
-			v_pCurClutter->FillTextureMap(tData);
+			v_pCurClutter->FillTextureMap(textureMap);
 	}
 }
 
@@ -116,9 +116,9 @@ std::size_t TilePart::GetAmountOfObjects() const
 {
 	std::size_t v_output = 0;
 
-	for (const std::vector<SMEntity*>& tEntityVec : m_objects)
-		for (const SMEntity* tEntity : tEntityVec)
-			v_output += tEntity->GetAmountOfObjects();
+	for (const auto& v_vecEntities : m_objects)
+		for (const SMEntity* v_pCurEntity : v_vecEntities)
+			v_output += v_pCurEntity->GetAmountOfObjects();
 
 	return v_output;
 }
