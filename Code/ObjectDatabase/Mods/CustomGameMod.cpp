@@ -1,27 +1,27 @@
 #include "CustomGameMod.hpp"
 
-#include "ObjectDatabase\KeywordReplacer.hpp"
-#include "Utils\Json.hpp"
+#include "ObjectDatabase/KeywordReplacer.hpp"
+#include "Utils/Json.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 CustomGame::CustomGame(
-	const std::wstring& name,
-	const std::wstring& directory,
+	const std::wstring_view& name,
+	const std::wstring_view& directory,
 	const SMUuid& uuid,
 	std::uint64_t workshop_id,
 	bool isLocal
-) :
-	SMMod(
+)
+	: SMMod(
 		name,
 		directory,
 		uuid,
 		workshop_id,
 		isLocal
-	),
-	m_shouldUseGameContent(false),
-	m_shouldUseUserMods(false),
-	m_id(SMMod::CustomGameVector.size())
+	)
+	, m_shouldUseGameContent(false)
+	, m_shouldUseUserMods(false)
+	, m_id(SMMod::CustomGameVector.size())
 {
 	SMMod::CustomGameStorage.emplace(m_Uuid, this);
 	SMMod::CustomGameVector.push_back(this);

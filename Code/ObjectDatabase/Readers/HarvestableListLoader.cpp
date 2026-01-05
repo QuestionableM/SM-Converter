@@ -1,12 +1,12 @@
 #include "HarvestableListLoader.hpp"
 
-#include "ObjectDatabase\Readers\DefaultLoader.hpp"
-#include "ObjectDatabase\ProgCounter.hpp"
-#include "ObjectDatabase\Mods\Mod.hpp"
+#include "ObjectDatabase/Readers/DefaultLoader.hpp"
+#include "ObjectDatabase/ProgCounter.hpp"
+#include "ObjectDatabase/Mods/Mod.hpp"
 
-#include "Utils\Console.hpp"
+#include "Utils/Console.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 void HarvestableListLoader::Load(const simdjson::dom::element& fHarvestables, SMMod* mod, bool add_to_global_db)
 {

@@ -44,6 +44,8 @@
  *  NOMCX             - Modem Configuration Extensions
  */
 
+#define SMC_NOVTABLE __declspec(novtable)
+
 #define NOHELP
 #define NOMCX
 #define NOSERVICE

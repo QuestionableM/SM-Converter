@@ -1,13 +1,13 @@
 #include "ClutterListLoader.hpp"
 
-#include "ObjectDatabase\KeywordReplacer.hpp"
-#include "ObjectDatabase\ProgCounter.hpp"
-#include "ObjectDatabase\Mods\Mod.hpp"
+#include "ObjectDatabase/KeywordReplacer.hpp"
+#include "ObjectDatabase/ProgCounter.hpp"
+#include "ObjectDatabase/Mods/Mod.hpp"
 
-#include "Utils\Console.hpp"
-#include "Utils\String.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/String.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 bool ClutterListLoader::LoadTextureData(const simdjson::dom::element& fClutter, SMTextureList& tList, std::wstring& mesh)
 {

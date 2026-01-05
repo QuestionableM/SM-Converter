@@ -114,8 +114,8 @@ public:
 	template<bool t_mod_counter>
 	inline static SMPrefab* Read(
 		const std::vector<Byte>& bytes,
-		const std::wstring& ppath,
-		const std::wstring& pflag,
+		const std::wstring_view& ppath,
+		const std::wstring_view& pflag,
 		const SMEntityTransform& transform,
 		ConvertError& error)
 	{

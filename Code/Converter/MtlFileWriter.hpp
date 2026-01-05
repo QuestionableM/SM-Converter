@@ -11,7 +11,7 @@ SM_UNMANAGED_CODE
 class MtlFileWriter
 {
 public:
-	static void Write(const std::wstring& path, const std::unordered_map<std::string, ObjectTexData>& v_data);
+	static void Write(const std::wstring_view& path, const SMEntity::EntityTextureMap& textureMap);
 
 private:
 	MtlFileWriter() = default;

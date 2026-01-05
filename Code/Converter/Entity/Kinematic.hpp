@@ -15,18 +15,18 @@ public:
 		const KinematicData* pParent,
 		const SMEntityTransform& transform,
 		Model* pModel,
-		SMColor color
+		const SMColor color
 	);
 
 	SMKinematic(const SMKinematic&) = delete;
 	SMKinematic(SMKinematic&) = delete;
 	~SMKinematic() = default;
 
-	inline SMColor GetColor() const override { return m_color; }
-	inline EntityType Type() const noexcept override { return EntityType::Kinematic; }
-	char* GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, char* v_ptr) const override;
-	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const override;
-	bool GetCanWrite(const std::string& name, std::size_t v_idx) const override;
+	SMColor GetColor() const override;
+	EntityType Type() const override;
+	char* GetMtlNameCStr(const std::string_view& material, const std::size_t idx, char* pCString) const override;
+	void FillTextureMap(EntityTextureMap& textureMap) const override;
+	bool GetCanWrite(const std::string_view& name, const std::size_t idx) const override;
 
 private:
 	const KinematicData* m_parent;

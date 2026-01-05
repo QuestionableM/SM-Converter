@@ -1,42 +1,44 @@
 #pragma once
 
-#include "ObjectDatabase/ModelStorage.hpp"
 #include "Entity.hpp"
-
-#include "Utils/clr_include.hpp"
-#include "Utils/Color.hpp"
 
 SM_UNMANAGED_CODE
 
-class SMPart final : public SMEntityWithModelAndUuid
+class SMWedge final : public SMEntityWithUuid
 {
+	friend class BlueprintConv;
+
 public:
-	SMPart(
-		const PartData* pParent,
+	SMWedge(
+		const WedgeData* pParent,
+		const BlockData* pBlockParent,
 		const glm::vec3& pos,
-		Model* pModel,
+		const glm::vec3& scale,
 		const SMColor color,
 		const std::uint8_t rotation,
 		const std::size_t index
 	);
 
-	SMPart(const SMPart&) = delete;
-	SMPart(SMPart&) = delete;
-	~SMPart() = default;
+	SMWedge(const SMWedge&) = delete;
+	SMWedge(SMWedge&) = delete;
+	~SMWedge() = default;
 
 	std::size_t GetIndex() const override;
 	SMColor GetColor() const override;
 	EntityType Type() const override;
 	char* GetMtlNameCStr(const std::string_view& material, const std::size_t idx, char* pCString) const override;
+	std::string GetMtlName(const std::size_t idx) const override;
 	void FillTextureMap(EntityTextureMap& textureMap) const override;
+	void WriteObjectToFile(std::ofstream& file, WriterOffsetData& offset, const glm::mat4& transform) const override;
 	glm::mat4 GetTransformMatrix() const override;
-	bool GetCanWrite(const std::string_view& name, const std::size_t idx) const override;
 
 private:
-	const PartData* m_parent;
+	const WedgeData* m_parent;
+	const BlockData* m_parentBlock;
+
 	std::size_t m_index;
 	SMColor m_color;
-	unsigned char m_xzRotation;
+	std::uint8_t m_xzRotation;
 };
 
 SM_MANAGED_CODE

@@ -12,12 +12,14 @@
 
 SM_UNMANAGED_CODE
 
+struct Model;
+
 // A fast in place constructor for unordered_maps
 struct ObjectTexDataConstructInfo
 {
-	inline ObjectTexDataConstructInfo(const SMTextureList& texList, const SMColor color) :
-		m_texturesRef(texList),
-		m_texColor(color)
+	inline ObjectTexDataConstructInfo(const SMTextureList& texList, const SMColor color)
+		: m_texturesRef(texList)
+		, m_texColor(color)
 	{}
 
 	const SMTextureList& m_texturesRef;
@@ -27,40 +29,18 @@ struct ObjectTexDataConstructInfo
 struct ObjectTexData
 {
 	ObjectTexData() = default;
-
-	inline ObjectTexData(const SMColor color) :
-		m_textures(),
-		m_texColor(color)
-	{}
-
-	inline ObjectTexData(const SMTextureList& texList, const SMColor color) :
-		m_textures(texList),
-		m_texColor(color)
-	{}
-
-	inline ObjectTexData(const ObjectTexDataConstructInfo& info) :
-		m_textures(info.m_texturesRef),
-		m_texColor(info.m_texColor)
-	{}
-
-	inline ObjectTexData(ObjectTexData&& other) noexcept :
-		m_textures(std::move(other.m_textures)),
-		m_texColor(other.m_texColor)
-	{}
-
-	inline void operator=(ObjectTexData&& other) noexcept
-	{
-		m_textures = std::move(other.m_textures);
-		m_texColor = other.m_texColor;
-	}
+	ObjectTexData(const SMColor color);
+	ObjectTexData(const SMTextureList& texList, const SMColor color);
+	ObjectTexData(const ObjectTexDataConstructInfo& info);
 
 	ObjectTexData(const ObjectTexData& other) = default;
+	ObjectTexData(ObjectTexData&& other) noexcept;
+
+	void operator=(ObjectTexData&& other) noexcept;
 
 	SMTextureList m_textures;
 	SMColor m_texColor;
 };
-
-struct Model;
 
 enum class EntityType : unsigned short
 {
@@ -75,6 +55,7 @@ enum class EntityType : unsigned short
 	Decal       = (1 << 8),
 	Body        = (1 << 9),
 	Kinematic   = (1 << 10),
+	Wedge       = (1 << 11),
 
 	//Is not used anywhere except the GroundTerrainData class
 	GroundTerrain = 0
@@ -87,125 +68,91 @@ struct SMEntityTransform
 	glm::vec3 scale;
 };
 
-class SMEntity
+class SMC_NOVTABLE SMEntity
 {
 public:
+	using EntityTextureMap = std::unordered_map<std::string, ObjectTexData, Hashing::StringHasher, std::equal_to<>>;
+
+	SMEntity();
+	SMEntity(const glm::vec3& pos, const glm::quat& rot, const glm::vec3& scale);
+	SMEntity(const SMEntityTransform& transform);
 	virtual ~SMEntity() = default;
 
 	SMEntity(const SMEntity&) = delete;
 	SMEntity(SMEntity&&) = delete;
 
-	SMEntity()
-		: m_position(0.0f), m_rotation(), m_size(1.0f) {}
+	glm::vec3 GetPosition() const noexcept;
+	glm::quat GetRotation() const noexcept;
+	glm::vec3 GetSize() const noexcept;
 
-	SMEntity(const glm::vec3& pos, const glm::quat& rot, const glm::vec3& scale)
-		: m_position(pos), m_rotation(rot), m_size(scale) {}
+	void SetPosition(const glm::vec3& pos) noexcept;
+	void SetRotation(const glm::quat& rot) noexcept;
+	void SetSize(const glm::vec3& size) noexcept;
 
-	SMEntity(const SMEntityTransform& transform)
-		: m_position(transform.position), m_rotation(transform.rotation), m_size(transform.scale) {}
+	virtual glm::mat4 GetTransformMatrix() const;
+	virtual const SMUuid& GetUuid() const;
 
-	inline virtual glm::mat4 GetTransformMatrix() const
-	{
-		glm::mat4 transform(1.0f);
-
-		transform *= glm::translate(this->m_position);
-		transform *= glm::toMat4(this->m_rotation);
-		transform *= glm::scale(this->m_size);
-
-		return transform;
-	}
-
-	inline glm::vec3 GetPosition() const { return this->m_position; }
-	inline glm::quat GetRotation() const { return this->m_rotation; }
-	inline glm::vec3 GetSize() const { return this->m_size; }
-
-	inline void SetPosition(const glm::vec3& pos) { this->m_position = pos; }
-	inline void SetRotation(const glm::quat& rot) { this->m_rotation = rot; }
-	inline void SetSize(const glm::vec3& size) { this->m_size = size; }
-
-	virtual const SMUuid& GetUuid() const { return SMUuid::Null; }
-
-	virtual EntityType Type() const noexcept = 0;
-	virtual std::size_t GetIndex() const { return -1; }
-	virtual char* GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, char* v_ptr) const { return v_ptr; }
-	virtual std::string GetMtlName(std::size_t v_idx) const { return ""; }
-	virtual void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const = 0;
-	virtual void WriteObjectToFile(std::ofstream& file, WriterOffsetData& mOffset, const glm::mat4& transform_matrix) const {}
-	inline virtual void CalculateCenterPoint(glm::vec3& v_input) const { v_input += m_position; }
-	inline virtual std::size_t GetAmountOfObjects() const { return 1; }
-	inline virtual SMColor GetColor() const { return static_cast<int>(0x000000ff); }
-	//This option can help you to discard unwanted sub meshes (like shadow only sub meshes)
-	inline virtual bool GetCanWrite(const std::string& name, std::size_t v_idx) const { return true; }
+	virtual EntityType Type() const = 0;
+	virtual std::size_t GetIndex() const;
+	virtual char* GetMtlNameCStr(const std::string_view& material, const std::size_t idx, char* pCString) const;
+	virtual std::string GetMtlName(const std::size_t idx) const;
+	virtual void FillTextureMap(EntityTextureMap& textureMap) const = 0;
+	virtual void WriteObjectToFile(std::ofstream& file, WriterOffsetData& offset, const glm::mat4& transform) const;
+	virtual void CalculateCenterPoint(glm::vec3& outInput) const;
+	virtual std::size_t GetAmountOfObjects() const;
+	virtual SMColor GetColor() const;
+	// This option can help you to discard unwanted sub meshes (like shadow only sub meshes)
+	virtual bool GetCanWrite(const std::string_view& name, const std::size_t idx) const;
 
 protected:
-	glm::vec3 m_position = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::quat m_rotation = glm::quat(0.0f, 0.0f, 0.0f, 0.0f);
-	glm::vec3 m_size = glm::vec3(1.0f, 1.0f, 1.0f);
+	glm::vec3 m_position;
+	glm::quat m_rotation;
+	glm::vec3 m_size;
 };
 
-class SMEntityWithUuid : public SMEntity
+class SMC_NOVTABLE SMEntityWithUuid : public SMEntity
 {
 public:
 	using SMEntity::SMEntity;
 
+	SMEntityWithUuid(const SMUuid& uuid);
+	SMEntityWithUuid(const SMUuid& uuid, const glm::vec3& pos, const glm::vec3& scale);
+	SMEntityWithUuid(const SMUuid& uuid, const glm::vec3& pos, const glm::quat& rot, const glm::vec3& scale);
+	SMEntityWithUuid(const SMUuid& uuid, const SMEntityTransform& transform);
 	virtual ~SMEntityWithUuid() = default;
 
-	SMEntityWithUuid(const SMUuid& uuid)
-		: m_uuid(uuid) {}
-
-	SMEntityWithUuid(const SMUuid& uuid, const glm::vec3& pos, const glm::vec3& scale)
-		: SMEntity(pos, glm::quat(), scale), m_uuid(uuid) {}
-	
-	SMEntityWithUuid(const SMUuid& uuid, const glm::vec3& pos, const glm::quat& rot, const glm::vec3& scale)
-		: SMEntity(pos, rot, scale), m_uuid(uuid) {}
-
-	SMEntityWithUuid(const SMUuid& uuid, const SMEntityTransform& transform)
-		: SMEntity(transform), m_uuid(uuid) {}
-
-	virtual const SMUuid& GetUuid() const override { return m_uuid; }
+	const SMUuid& GetUuid() const final override;
 
 protected:
 	SMUuid m_uuid;
 };
 
-class SMEntityWithModel : public SMEntity
+class SMC_NOVTABLE SMEntityWithModel : public SMEntity
 {
 public:
+	SMEntityWithModel(Model* pModel);
+	SMEntityWithModel(Model* pModel, const glm::vec3& pos);
+	SMEntityWithModel(Model* pModel, const SMEntityTransform& transform);
 	virtual ~SMEntityWithModel() = default;
 
-	SMEntityWithModel(Model* pModel)
-		: m_model(pModel) {}
-
-	SMEntityWithModel(Model* pModel, const glm::vec3& pos)
-		: SMEntity(pos, glm::quat(), glm::vec3(1.0f)), m_model(pModel) {}
-
-	SMEntityWithModel(Model* pModel, const SMEntityTransform& transform)
-		: SMEntity(transform), m_model(pModel) {}
-
-	virtual void WriteObjectToFile(
+	void WriteObjectToFile(
 		std::ofstream& file,
-		WriterOffsetData& mOffset,
-		const glm::mat4& transform_matrix) const override;
+		WriterOffsetData& offset,
+		const glm::mat4& transform) const override;
 
 protected:
 	Model* m_model;
 };
 
-class SMEntityWithModelAndUuid : public SMEntityWithModel
+class SMC_NOVTABLE SMEntityWithModelAndUuid : public SMEntityWithModel
 {
 public:
+	SMEntityWithModelAndUuid(const SMUuid& uuid, Model* pModel);
+	SMEntityWithModelAndUuid(const SMUuid& uuid, Model* pModel, const glm::vec3& pos);
+	SMEntityWithModelAndUuid(const SMUuid& uuid, Model* pModel, const SMEntityTransform& transform);
 	virtual ~SMEntityWithModelAndUuid() = default;
 
-	SMEntityWithModelAndUuid(const SMUuid& uuid, Model* pModel)
-		: SMEntityWithModel(pModel), m_uuid(uuid) {}
-
-	SMEntityWithModelAndUuid(const SMUuid& uuid, Model* pModel, const glm::vec3& pos)
-		: SMEntityWithModel(pModel, pos), m_uuid(uuid) {}
-
-	SMEntityWithModelAndUuid(const SMUuid& uuid, Model* pModel, const SMEntityTransform& transform)
-		: SMEntityWithModel(pModel, transform), m_uuid(uuid) {}
-
-	virtual const SMUuid& GetUuid() const override { return m_uuid; }
+	const SMUuid& GetUuid() const override;
 
 protected:
 	SMUuid m_uuid;

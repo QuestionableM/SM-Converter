@@ -1,16 +1,16 @@
 #include "BlueprintConverter.hpp"
 
-#include "ObjectDatabase\Mods\CustomGameSwitch.hpp"
-#include "ObjectDatabase\DatabaseConfig.hpp"
-#include "ObjectDatabase\ProgCounter.hpp"
+#include "ObjectDatabase/Mods/CustomGameSwitch.hpp"
+#include "ObjectDatabase/DatabaseConfig.hpp"
+#include "ObjectDatabase/ProgCounter.hpp"
 
-#include "Converter\ConvertSettings.hpp"
-#include "Converter\MtlFileWriter.hpp"
+#include "Converter/ConvertSettings.hpp"
+#include "Converter/MtlFileWriter.hpp"
 
-#include "Utils\Console.hpp"
-#include "Utils\File.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/File.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 void BlueprintConv::WriteToFileInternal(SMBlueprint* pBlueprint, const std::wstring& bp_name, ConvertError& error)
 {
@@ -62,15 +62,15 @@ void BlueprintConv::WriteToFileInternal(SMBlueprint* pBlueprint, const std::wstr
 	{
 		ProgCounter::SetState(ProgState::WritingMtlFile, 0);
 
-		std::unordered_map<std::string, ObjectTexData> v_tex_map;
+		SMEntity::EntityTextureMap v_textureMap;
 
 		for (const SMEntity* v_entity : pBlueprint->m_objects)
 		{
-			v_entity->FillTextureMap(v_tex_map);
-			ProgCounter::ProgressMax = v_tex_map.size();
+			v_entity->FillTextureMap(v_textureMap);
+			ProgCounter::ProgressMax = v_textureMap.size();
 		}
 
-		MtlFileWriter::Write(v_bp_output_path + L".mtl", v_tex_map);
+		MtlFileWriter::Write(v_bp_output_path + L".mtl", v_textureMap);
 	}
 }
 

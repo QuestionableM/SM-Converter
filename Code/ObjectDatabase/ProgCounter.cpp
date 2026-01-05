@@ -1,6 +1,6 @@
 #include "ProgCounter.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 std::atomic<ProgState> ProgCounter::State = ProgState::None;
 std::atomic_size_t ProgCounter::ProgressMax   = 0;

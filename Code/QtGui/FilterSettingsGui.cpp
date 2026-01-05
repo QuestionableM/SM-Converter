@@ -1,7 +1,6 @@
 #include "FilterSettingsGui.hpp"
 
-#include "ObjectDatabase\UserDataReaders\FilterSettingsData.hpp"
-
+#include "ObjectDatabase/UserDataReaders/FilterSettingsData.hpp"
 #include "Utils/Console.hpp"
 
 inline static void SetBit(std::uint8_t& byte_ref, std::uint8_t value, bool is_enabled) noexcept

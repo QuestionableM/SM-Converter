@@ -5,8 +5,8 @@
 #include "WorldFolderReader.hpp"
 #include "TileFolderReader.hpp"
 
-#include "ObjectDatabase\DatabaseConfig.hpp"
-#include "UStd\UnmanagedFilesystem.hpp"
+#include "ObjectDatabase/DatabaseConfig.hpp"
+#include "UStd/UnmanagedFilesystem.hpp"
 
 void UserObjectFolderReader::ReadItemFromDirectory(const std::wstring& path)
 {

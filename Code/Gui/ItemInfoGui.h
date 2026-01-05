@@ -1,8 +1,8 @@
 #pragma once
 
-#include "ObjectDatabase\UserDataReaders\BlueprintFolderReader.hpp"
-#include "ObjectDatabase\UserDataReaders\WorldFolderReader.hpp"
-#include "ObjectDatabase\UserDataReaders\TileFolderReader.hpp"
+#include "ObjectDatabase/UserDataReaders/BlueprintFolderReader.hpp"
+#include "ObjectDatabase/UserDataReaders/WorldFolderReader.hpp"
+#include "ObjectDatabase/UserDataReaders/TileFolderReader.hpp"
 
 namespace SMConverter 
 {

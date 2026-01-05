@@ -1,14 +1,14 @@
 #include "UserCharacterData.hpp"
 
-#include "UStd\UnmanagedFstream.hpp"
+#include "UStd/UnmanagedFstream.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
-UserCharacterData::UserCharacterData() :
-	version(0),
-	is_female(false),
-	garments(),
-	colors()
+UserCharacterData::UserCharacterData()
+	: version(0)
+	, is_female(false)
+	, garments()
+	, colors()
 {}
 
 template<typename T>

@@ -1,11 +1,11 @@
 #include "SettingsGui.h"
 
-#include "ObjectDatabase\DatabaseConfig.hpp"
+#include "ObjectDatabase/DatabaseConfig.hpp"
 
-#include "Utils\String.hpp"
-#include "Utils\File.hpp"
+#include "Utils/String.hpp"
+#include "Utils/File.hpp"
 
-#include <msclr\marshal_cppstd.h>
+#include <msclr/marshal_cppstd.h>
 
 #define WF_SETTINGS_WARNING(title, message) \
 	System::Windows::Forms::MessageBox::Show( \

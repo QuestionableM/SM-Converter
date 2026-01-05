@@ -1,16 +1,16 @@
 #include "TileFolderReader.hpp"
 
-#include "Converter\TileConverter\Readers\TileReader.hpp"
-#include "Converter\TileConverter\TileHeader.hpp"
+#include "Converter/TileConverter/Readers/TileReader.hpp"
+#include "Converter/TileConverter/TileHeader.hpp"
 
-#include "ObjectDatabase\DatabaseConfig.hpp"
+#include "ObjectDatabase/DatabaseConfig.hpp"
 
-#include "Utils\Console.hpp"
-#include "Utils\String.hpp"
-#include "Utils\Json.hpp"
-#include "Utils\File.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/String.hpp"
+#include "Utils/Json.hpp"
+#include "Utils/File.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 TileInstance::TileInstance(
 	const SMUuid& tile_uuid,
@@ -21,17 +21,17 @@ TileInstance::TileInstance(
 	std::uint64_t tile_workshop_id,
 	std::uint64_t tile_creator_id,
 	std::uint8_t size
-) :
-	uuid(tile_uuid),
-	name(tile_name),
-	lower_name(tile_name),
-	path(tile_path),
-	directory(tile_directory),
-	preview_image(tile_image),
-	workshop_id(tile_workshop_id),
-	creator_id(tile_creator_id),
-	filter(FilterSettingsData::GetUserDataFilter(path)),
-	size_filter(size)
+)
+	: uuid(tile_uuid)
+	, name(tile_name)
+	, lower_name(tile_name)
+	, path(tile_path)
+	, directory(tile_directory)
+	, preview_image(tile_image)
+	, workshop_id(tile_workshop_id)
+	, creator_id(tile_creator_id)
+	, filter(FilterSettingsData::GetUserDataFilter(path))
+	, size_filter(size)
 {
 	String::ToLowerR(lower_name);
 }

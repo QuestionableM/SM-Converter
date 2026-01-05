@@ -14,13 +14,13 @@ public:
 	~SMTileClutter() = default;
 
 	float ScaleVariance() const noexcept;
-	void SetColor(SMColor color);
+	void SetColor(const SMColor color) noexcept;
 
 	const SMUuid& GetUuid() const override;
-	EntityType Type() const noexcept override;
-	char* GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, char* v_ptr) const override;
-	std::string GetMtlName(std::size_t mIdx) const override;
-	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const override;
+	EntityType Type() const override;
+	char* GetMtlNameCStr(const std::string_view& material, const std::size_t idx, char* pCString) const override;
+	std::string GetMtlName(const std::size_t idx) const override;
+	void FillTextureMap(EntityTextureMap& textureMap) const override;
 
 private:
 	class ClutterData* m_parent;

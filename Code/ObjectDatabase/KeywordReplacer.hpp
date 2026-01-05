@@ -14,9 +14,9 @@ class KeywordReplacer
 
 public:
 	//Creates $CONTENT_<uuid> key
-	static void CreateContentKey(const SMUuid& v_uuid, const std::wstring& v_replacement);
+	static void CreateContentKey(const SMUuid& uuid, const std::wstring_view& replacement);
 	//Sets any keyword replacement
-	static void SetReplacement(const std::wstring& key, const std::wstring& replacement);
+	static void SetReplacement(const std::wstring_view& key, const std::wstring_view& replacement);
 	//Sets $CONTENT_DATA, $MOD_DATA and $CONTENT_<mod_uuid> keys
 	static void SetModData(const std::wstring& path, const SMUuid& uuid);
 	//Clears $CONTENT_DATA and $MOD_DATA keys

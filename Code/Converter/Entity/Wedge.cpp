@@ -1,0 +1,200 @@
+﻿#include "Wedge.hpp"
+
+#include "ObjectDatabase/ObjectRotations.hpp"
+#include "ObjectDatabase/MaterialManager.hpp"
+#include "ObjectDatabase/ModelStorage.hpp"
+#include "ObjectDatabase/ProgCounter.hpp"
+
+#include "Converter/ConvertSettings.hpp"
+
+SM_UNMANAGED_CODE
+
+SMWedge::SMWedge(
+	const WedgeData* pParent,
+	const BlockData* pBlockParent,
+	const glm::vec3& pos,
+	const glm::vec3& scale,
+	const SMColor color,
+	const std::uint8_t rotation,
+	const std::size_t index
+)
+	: SMEntityWithUuid(pParent->m_uuid, pos, scale)
+	, m_parent(pParent)
+	, m_parentBlock(pBlockParent)
+	, m_index(index)
+	, m_color(color)
+	, m_xzRotation(rotation)
+{}
+
+std::size_t SMWedge::GetIndex() const
+{
+	return m_index;
+}
+
+SMColor SMWedge::GetColor() const
+{
+	return m_color;
+}
+
+EntityType SMWedge::Type() const
+{
+	return EntityType::Wedge;
+}
+
+char* SMWedge::GetMtlNameCStr(
+	const std::string_view& material,
+	const std::size_t idx,
+	char* pCString) const
+{
+	pCString = m_uuid.toCString(pCString);
+	*pCString++ = ' ';
+	pCString = m_color.StringHexCStr(pCString);
+	*pCString++ = ' ';
+	pCString = String::FromInteger<std::size_t>(idx + 1, pCString);
+	*pCString++ = ' ';
+
+	return MaterialManager::GetMaterialACStr(m_parentBlock->m_textures.m_material, pCString);
+}
+
+std::string SMWedge::GetMtlName(const std::size_t idx) const
+{
+	std::string v_mtlName(m_uuid.toString());
+	v_mtlName.append(1, ' ');
+	m_color.appendStringHex(v_mtlName);
+	v_mtlName.append(1, ' ');
+	String::AppendIntegerToString(v_mtlName, idx + 1);
+	MaterialManager::AppendMaterialIdx(v_mtlName, m_parentBlock->m_textures.m_material);
+
+	return v_mtlName;
+}
+
+void SMWedge::FillTextureMap(EntityTextureMap& textureMap) const
+{
+	std::string v_mtlName = this->GetMtlName(0);
+	if (textureMap.find(v_mtlName) != textureMap.end())
+		return;
+
+	textureMap.emplace(
+		std::move(v_mtlName),
+		ObjectTexDataConstructInfo(m_parentBlock->m_textures, m_color)
+	);
+}
+
+static void GenerateUVs(
+	Model& model,
+	const glm::mat4& transform,
+	const int tiling)
+{
+	model.m_uvs.resize(24);
+
+	struct {
+		glm::vec3 u;
+		glm::vec3 v;
+	} v_wedgeTextureTangents[] = {
+		{ { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
+		{ { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
+		{ { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f } },
+		{ { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f } },
+		{ { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.414f, 0.0f } }
+	};
+
+	const float v_tilingAdj = 1.0f / static_cast<float>(tiling);
+	const glm::mat3 v_rotation(transform);
+
+	for (const SubMeshData& v_curSubMesh : model.m_subMeshData)
+	{
+		for (const auto& v_curFace : v_curSubMesh.m_dataIdx)
+		{
+			for (const VertexData& v_curVertData : v_curFace)
+			{
+				const glm::vec3 v_vertPos = transform * glm::vec4(model.m_vertices[v_curVertData.m_vert], 1.0f);
+
+				const auto& v_curTangents = v_wedgeTextureTangents[v_curVertData.m_norm];
+				const glm::vec3 v_finalUTangent = v_rotation * v_curTangents.u;
+				const glm::vec3 v_finalVTangent = v_rotation * v_curTangents.v;
+
+				const float v_uComponent = glm::dot(v_vertPos, v_finalUTangent);
+				const float v_vComponent = glm::dot(v_vertPos, v_finalVTangent);
+
+				model.m_uvs[v_curVertData.m_uv] = glm::vec2(v_uComponent, v_vComponent) * v_tilingAdj;
+			}
+		}
+	}
+}
+
+static void FillCustomCube(
+	Model& model,
+	const glm::mat4& uvTransform,
+	const glm::vec3& bounds,
+	const glm::vec3& position,
+	const int tiling)
+{
+	model.m_vertices =
+	{
+		{ -bounds.x, -bounds.y, -bounds.z },
+		{ -bounds.x,  bounds.y, -bounds.z },
+		{  bounds.x, -bounds.y, -bounds.z },
+		{  bounds.x,  bounds.y, -bounds.z },
+		{ -bounds.x, -bounds.y,  bounds.z },
+		{  bounds.x, -bounds.y,  bounds.z }
+	};
+
+	if (SharedConverterSettings::ExportNormals)
+	{
+		model.m_normals =
+		{
+			{  0.0f,  0.0f   , -1.0f    },
+			{  0.0f, -1.0f   ,  0.0f    },
+			{ -1.0f,  0.0f   ,  0.0f    },
+			{  1.0f,  0.0f   ,  0.0f    },
+			{  0.0f,  0.7071f,  0.7071f }
+		};
+	}
+
+	model.m_subMeshData.emplace_back(
+		0,
+		SharedConverterSettings::ExportNormals,
+		SharedConverterSettings::ExportUvs,
+		std::initializer_list<std::initializer_list<VertexData>>{
+			{ { 1, 0 , 0 }, { 2, 1 , 0 }, { 0, 2 , 0 } },
+			{ { 5, 3 , 1 }, { 0, 4 , 1 }, { 2, 5 , 1 } },
+			{ { 1, 6 , 2 }, { 0, 7 , 2 }, { 4, 8 , 2 } },
+			{ { 2, 9 , 3 }, { 3, 10, 3 }, { 5, 11, 3 } },
+			{ { 1, 12, 4 }, { 5, 13, 4 }, { 3, 14, 4 } },
+			{ { 1, 15, 0 }, { 3, 16, 0 }, { 2, 17, 0 } },
+			{ { 5, 18, 1 }, { 4, 19, 1 }, { 0, 20, 1 } },
+			{ { 1, 21, 4 }, { 4, 22, 4 }, { 5, 23, 4 } }
+		}
+	);
+
+	if (SharedConverterSettings::ExportUvs)
+		GenerateUVs(model, uvTransform, tiling);
+}
+
+void SMWedge::WriteObjectToFile(
+	std::ofstream& file,
+	WriterOffsetData& offset,
+	const glm::mat4& transform) const
+{
+	Model v_newWedge;
+
+	const glm::mat4 v_localTransform = this->GetTransformMatrix();
+	FillCustomCube(v_newWedge, v_localTransform, m_size * 0.5f, m_position, m_parentBlock->m_tiling);
+
+	const glm::mat4 v_wedgeTransform = transform * v_localTransform;
+	v_newWedge.WriteToFile(v_wedgeTransform, offset, file, this);
+
+	ProgCounter::ProgressValue++;
+}
+
+glm::mat4 SMWedge::GetTransformMatrix() const
+{
+	const glm::mat4 v_wedgeMatrix = Rotations::GetRotationMatrix(m_xzRotation);
+
+	glm::mat4 v_transformMatrix(1.0f);
+	v_transformMatrix *= glm::translate(m_position);
+	v_transformMatrix *= v_wedgeMatrix;
+	v_transformMatrix *= glm::translate(m_size * 0.5f);
+
+	return v_transformMatrix;
+}

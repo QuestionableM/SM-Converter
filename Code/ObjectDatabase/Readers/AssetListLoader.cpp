@@ -1,13 +1,13 @@
 #include "AssetListLoader.hpp"
 
-#include "ObjectDatabase\Readers\DefaultLoader.hpp"
-#include "ObjectDatabase\ProgCounter.hpp"
-#include "ObjectDatabase\Mods\Mod.hpp"
+#include "ObjectDatabase/Readers/DefaultLoader.hpp"
+#include "ObjectDatabase/ProgCounter.hpp"
+#include "ObjectDatabase/Mods/Mod.hpp"
 
-#include "Utils\Console.hpp"
-#include "Utils\String.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/String.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 void AssetListLoader::LoadDefaultColors(
 	const simdjson::dom::element& jAsset,

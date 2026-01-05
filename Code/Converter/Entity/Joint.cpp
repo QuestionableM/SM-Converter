@@ -1,48 +1,66 @@
 #include "Joint.hpp"
 
-#include "ObjectDatabase\ObjectRotations.hpp"
-#include "ObjectDatabase\MaterialManager.hpp"
-#include "ObjectDatabase\ObjectData.hpp"
+#include "ObjectDatabase/ObjectRotations.hpp"
+#include "ObjectDatabase/MaterialManager.hpp"
+#include "ObjectDatabase/ObjectData.hpp"
 
-#include "Utils\Console.hpp"
+#include "Utils/Console.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 SMJoint::SMJoint(
 	const PartData* pParent,
 	const glm::vec3& pos,
 	Model* pModel,
-	SMColor color,
-	unsigned char rotation,
-	std::size_t index
-) :
-	SMEntityWithModelAndUuid(pParent->m_uuid, pModel, pos),
-	m_parent(pParent),
-	m_index(index),
-	m_color(color),
-	m_xzRotation(rotation)
+	const SMColor color,
+	const std::uint32_t rotation,
+	const std::size_t index
+)
+	: SMEntityWithModelAndUuid(pParent->m_uuid, pModel, pos)
+	, m_parent(pParent)
+	, m_index(index)
+	, m_color(color)
+	, m_xzRotation(rotation)
 {}
 
-char* SMJoint::GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, char* v_ptr) const
+std::size_t SMJoint::GetIndex() const
 {
-	v_ptr = m_uuid.toCString(v_ptr);
-	*v_ptr++ = ' ';
-	v_ptr = m_color.StringHexCStr(v_ptr);
-	*v_ptr++ = ' ';
-	v_ptr = String::FromInteger<std::size_t>(v_idx + 1, v_ptr);
-	*v_ptr++ = ' ';
-
-	const SMTextureList* v_tex_data = m_parent->m_textures->getTexList(v_mat_name, v_idx);
-	if (v_tex_data)
-		return MaterialManager::GetMaterialACStr(v_tex_data->m_material, v_ptr);
-
-	*v_ptr++ = 'm';
-	*v_ptr++ = '1';
-
-	return v_ptr;
+	return m_index;
 }
 
-void SMJoint::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const
+SMColor SMJoint::GetColor() const
+{
+	return m_color;
+}
+
+EntityType SMJoint::Type() const
+{
+	return EntityType::Joint;
+}
+
+char* SMJoint::GetMtlNameCStr(
+	const std::string_view& material,
+	const std::size_t idx,
+	char* pCString) const
+{
+	pCString = m_uuid.toCString(pCString);
+	*pCString++ = ' ';
+	pCString = m_color.StringHexCStr(pCString);
+	*pCString++ = ' ';
+	pCString = String::FromInteger<std::size_t>(idx + 1, pCString);
+	*pCString++ = ' ';
+
+	const SMTextureList* v_tex_data = m_parent->m_textures->getTexList(material, idx);
+	if (v_tex_data)
+		return MaterialManager::GetMaterialACStr(v_tex_data->m_material, pCString);
+
+	*pCString++ = 'm';
+	*pCString++ = '1';
+
+	return pCString;
+}
+
+void SMJoint::FillTextureMap(EntityTextureMap& textureMap) const
 {
 	std::string v_mtlFirstPart(m_uuid.toString());
 	v_mtlFirstPart.append(1, ' ');
@@ -62,30 +80,35 @@ void SMJoint::FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex
 		String::AppendIntegerToString(v_mtlName, a + 1);
 		MaterialManager::AppendMaterialIdx(v_mtlName, v_pTexList->m_material);
 
-		if (tex_map.find(v_mtlName) != tex_map.end())
+		if (textureMap.find(v_mtlName) != textureMap.end())
 			continue;
 
-		tex_map.emplace(std::move(v_mtlName), ObjectTexDataConstructInfo(*v_pTexList, m_color));
+		textureMap.emplace(
+			std::move(v_mtlName),
+			ObjectTexDataConstructInfo(*v_pTexList, m_color)
+		);
 	}
 }
 
 glm::mat4 SMJoint::GetTransformMatrix() const
 {
-	const glm::mat4 joint_rotation = Rotations::GetRotationMatrix(m_xzRotation);
-	const glm::vec3 pos_offset = Rotations::GetOffsetPosition(m_xzRotation);
+	const glm::mat4 v_jointRotation = Rotations::GetRotationMatrix(m_xzRotation);
+	const glm::vec3 v_positionOffset = Rotations::GetOffsetPosition(m_xzRotation);
 
-	glm::mat4 model_matrix(1.0f);
-	model_matrix *= glm::translate(m_position + pos_offset);
-	model_matrix *= joint_rotation;
-	model_matrix *= glm::translate(m_parent->m_bounds / 2.0f);
+	glm::mat4 v_modelMatrix(1.0f);
+	v_modelMatrix *= glm::translate(m_position + v_positionOffset);
+	v_modelMatrix *= v_jointRotation;
+	v_modelMatrix *= glm::translate(m_parent->m_bounds / 2.0f);
 
-	return model_matrix;
+	return v_modelMatrix;
 }
 
-bool SMJoint::GetCanWrite(const std::string& name, std::size_t v_idx) const
+bool SMJoint::GetCanWrite(
+	const std::string_view& name,
+	const std::size_t idx) const
 {
-	const SMTextureList* v_tex_list = m_parent->m_textures->getTexList(name, v_idx);
-	if (!v_tex_list) return false;
+	const SMTextureList* v_pTexList = m_parent->m_textures->getTexList(name, idx);
+	if (!v_pTexList) return false;
 
-	return !v_tex_list->m_shadowOnly;
+	return !v_pTexList->m_shadowOnly;
 }

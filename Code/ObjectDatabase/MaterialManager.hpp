@@ -15,10 +15,10 @@ public:
 	static void Initialize();
 
 	//Returns the end of the material string
-	static char* GetMaterialACStr(const std::string& mat_name, char* v_ptr);
+	static char* GetMaterialACStr(const std::string_view& material, char* pCString);
+	static std::size_t GetMaterialIdx(const std::string_view& material);
 
-	static std::size_t GetMaterialIdx(const std::string& mat_name);
-	static void AppendMaterialIdx(std::string& outStr, const std::string& mat_name);
+	static void AppendMaterialIdx(std::string& outStr, const std::string_view& material);
 
 private:
 	static MaterialMap m_materialStorage;

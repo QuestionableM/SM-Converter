@@ -1,20 +1,21 @@
 #include "BlocksAndPartsMod.hpp"
 
-#include "ObjectDatabase\KeywordReplacer.hpp"
+#include "ObjectDatabase/KeywordReplacer.hpp"
 
-#include "Utils\Console.hpp"
-#include "Utils\String.hpp"
-#include "Utils\File.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/String.hpp"
+#include "Utils/File.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 BlocksAndPartsMod::BlocksAndPartsMod(
-	const std::wstring& name,
-	const std::wstring& directory,
+	const std::wstring_view& name,
+	const std::wstring_view& directory,
 	const SMUuid& uuid,
 	std::uint64_t workshop_id,
 	bool isLocal
-) : SMMod(
+)
+	: SMMod(
 		name,
 		directory,
 		uuid,
@@ -32,13 +33,13 @@ bool BlocksAndPartsMod::GetShapeSetDatabaseFile(const std::wstring& mod_folder, 
 	const std::wstring v_nearFullPath = mod_folder + L"/Objects/Database/shapesets.";
 	std::wstring v_fullShapeDbPath;
 
-	for (std::uint8_t a = 0; a < 2; a++)
+	for (const std::wstring_view& v_curShapeDbExtension : g_shapeSetDbExtensions)
 	{
 		v_fullShapeDbPath = v_nearFullPath;
-		v_fullShapeDbPath.append(g_shapeSetDbExtensions[a]);
+		v_fullShapeDbPath.append(v_curShapeDbExtension);
 		if (!File::Exists(v_fullShapeDbPath)) continue;
 
-		r_shapedb_path = v_fullShapeDbPath;
+		r_shapedb_path = std::move(v_fullShapeDbPath);
 		return true;
 	}
 

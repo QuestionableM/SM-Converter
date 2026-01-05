@@ -1,26 +1,27 @@
 #include "Mod.hpp"
 
-#include "ObjectDatabase\Readers\HarvestableListLoader.hpp"
-#include "ObjectDatabase\Readers\KinematicListLoader.hpp"
-#include "ObjectDatabase\Readers\DecalsetListReader.hpp"
-#include "ObjectDatabase\Readers\ClutterListLoader.hpp"
-#include "ObjectDatabase\Readers\GarmentListLoader.hpp"
-#include "ObjectDatabase\Readers\AssetListLoader.hpp"
-#include "ObjectDatabase\Readers\BlockListLoader.hpp"
-#include "ObjectDatabase\Readers\PartListLoader.hpp"
-#include "ObjectDatabase\KeywordReplacer.hpp"
+#include "ObjectDatabase/Readers/HarvestableListLoader.hpp"
+#include "ObjectDatabase/Readers/KinematicListLoader.hpp"
+#include "ObjectDatabase/Readers/DecalsetListReader.hpp"
+#include "ObjectDatabase/Readers/ClutterListLoader.hpp"
+#include "ObjectDatabase/Readers/GarmentListLoader.hpp"
+#include "ObjectDatabase/Readers/AssetListLoader.hpp"
+#include "ObjectDatabase/Readers/BlockListLoader.hpp"
+#include "ObjectDatabase/Readers/WedgeListLoader.hpp"
+#include "ObjectDatabase/Readers/PartListLoader.hpp"
+#include "ObjectDatabase/KeywordReplacer.hpp"
 
-#include "ObjectDatabase\Mods\BlocksAndPartsMod.hpp"
-#include "ObjectDatabase\Mods\TerrainAssetsMod.hpp"
-#include "ObjectDatabase\Mods\CustomGameMod.hpp"
+#include "ObjectDatabase/Mods/BlocksAndPartsMod.hpp"
+#include "ObjectDatabase/Mods/TerrainAssetsMod.hpp"
+#include "ObjectDatabase/Mods/CustomGameMod.hpp"
 
-#include "UStd\UnmanagedFilesystem.hpp"
+#include "UStd/UnmanagedFilesystem.hpp"
 
-#include "Utils\Console.hpp"
-#include "Utils\String.hpp"
-#include "Utils\File.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/String.hpp"
+#include "Utils/File.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 void SMMod::ClearModStorage()
 {
@@ -31,6 +32,7 @@ void SMMod::ClearModStorage()
 	SMModObjectStorage<ClutterData>::Clear();
 	SMModObjectStorage<DecalData>::Clear();
 	SMModObjectStorage<KinematicData>::Clear();
+	SMModObjectStorage<WedgeData>::Clear();
 
 	SMMod::ClutterVector.clear();
 
@@ -187,7 +189,8 @@ static const std::unordered_map<std::string_view, ListLoaderFunc> g_dataLoaders 
 	{ "clutterList"        , ClutterListLoader::Load     },
 	{ "decalSetList"       , DecalsetListReader::Load    },
 	{ "kinematicList"      , KinematicListLoader::Load   },
-	{ "categoryList"       , GarmentListLoader::Load     }
+	{ "categoryList"       , GarmentListLoader::Load     },
+	{ "wedgeList"          , WedgeListLoader::Load       }
 };
 
 void SMMod::LoadFile(const std::wstring& path, bool add_to_global_db)
@@ -359,15 +362,15 @@ void SMMod::SetContentKey() const
 }
 
 SMMod::SMMod(
-	const std::wstring& name,
-	const std::wstring& directory,
+	const std::wstring_view& name,
+	const std::wstring_view& directory,
 	const SMUuid& uuid,
-	std::uint64_t workshop_id,
-	bool isLocal
-) :
-	m_Uuid(uuid),
-	m_Name(name),
-	m_Directory(directory),
-	m_WorkshopId(workshop_id),
-	m_isLocal(isLocal)
+	const std::uint64_t workshop_id,
+	const bool isLocal
+)
+	: m_Uuid(uuid)
+	, m_Name(name)
+	, m_Directory(directory)
+	, m_WorkshopId(workshop_id)
+	, m_isLocal(isLocal)
 {}

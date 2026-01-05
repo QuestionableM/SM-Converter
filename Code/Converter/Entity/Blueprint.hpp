@@ -2,6 +2,7 @@
 
 #include "Converter/Entity/Entity.hpp"
 #include "Converter/Entity/Block.hpp"
+#include "Converter/Entity/Wedge.hpp"
 #include "Converter/Entity/Joint.hpp"
 #include "Converter/Entity/Part.hpp"
 #include "Converter/ConvertError.hpp"
@@ -28,17 +29,17 @@ public:
 	static void CountFromJsonString(const std::string_view& str);
 
 	//For object loader
-	static SMBlueprint* LoadAutomatic(const std::string& str, const glm::vec3& pos, const glm::quat& rot);
-	static SMBlueprint* FromFile(const std::wstring& path, const glm::vec3& pos, const glm::quat& rot);
+	static SMBlueprint* LoadAutomatic(const std::string_view& str, const glm::vec3& pos, const glm::quat& rot);
+	static SMBlueprint* FromFile(const std::wstring_view& path, const glm::vec3& pos, const glm::quat& rot);
 	//Used by blueprint converter as it reports the conversion status
-	static SMBlueprint* FromFileWithStatus(const std::wstring& path, AddObjectFunction v_addObjFunc, ConvertError& v_error);
+	static SMBlueprint* FromFileWithStatus(const std::wstring_view& path, AddObjectFunction v_addObjFunc, ConvertError& v_error);
 	static SMBlueprint* FromJsonString(const std::string_view& json_str, const glm::vec3& pos, const glm::quat& rot);
 
-	inline EntityType Type() const noexcept override { return EntityType::Blueprint; }
-	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const override;
-	void WriteObjectToFile(std::ofstream& file, WriterOffsetData& mOffset, const glm::mat4& transform_matrix) const override;
+	EntityType Type() const override;
+	void FillTextureMap(EntityTextureMap& textureMap) const override;
+	void WriteObjectToFile(std::ofstream& file, WriterOffsetData& offset, const glm::mat4& transform) const override;
 	std::size_t GetAmountOfObjects() const override;
-	void CalculateCenterPoint(glm::vec3& v_input) const override;
+	void CalculateCenterPoint(glm::vec3& outInput) const override;
 
 	/*
 		This vector contains blocks, parts and joints

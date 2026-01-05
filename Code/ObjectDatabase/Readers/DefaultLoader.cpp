@@ -1,11 +1,11 @@
 #include "DefaultLoader.hpp"
 
-#include "ObjectDatabase\KeywordReplacer.hpp"
+#include "ObjectDatabase/KeywordReplacer.hpp"
 
-#include "Utils\Console.hpp"
-#include "Utils\String.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/String.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 void DefaultLoader::LoadTextureList(const simdjson::dom::array& texList, SMTextureList* v_tex_list)
 {

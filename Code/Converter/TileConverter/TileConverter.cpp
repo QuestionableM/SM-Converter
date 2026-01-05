@@ -1,12 +1,12 @@
 #include "TileConverter.hpp"
 
-#include "ObjectDatabase\Mods\CustomGameSwitch.hpp"
-#include "ObjectDatabase\DatabaseConfig.hpp"
+#include "ObjectDatabase/Mods/CustomGameSwitch.hpp"
+#include "ObjectDatabase/DatabaseConfig.hpp"
 
-#include "Readers\TileReader.hpp"
-#include "Utils\File.hpp"
+#include "Readers/TileReader.hpp"
+#include "Utils/File.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 void TileConv::WriteToFileInternal(const Tile& tile, const std::wstring& tile_name, ConvertError& error)
 {

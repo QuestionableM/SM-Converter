@@ -1,13 +1,13 @@
 #include "CharacterConverter.hpp"
 
-#include "ObjectDatabase\Mods\Mod.hpp"
+#include "ObjectDatabase/Mods/Mod.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
-#include <assimp\postprocess.h>
-#include <assimp\Exporter.hpp>
-#include <assimp\Importer.hpp>
-#include <assimp\scene.h>
+#include <assimp/postprocess.h>
+#include <assimp/Exporter.hpp>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
 
 void CharacterConverter::ConvertToModel(const UserCharacterData& v_data, const std::wstring& filename, ConvertError& v_error)
 {

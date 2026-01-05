@@ -10,21 +10,20 @@ SM_UNMANAGED_CODE
 class SMPrefab final : public SMEntity
 {
 public:
+	SMPrefab(const std::wstring_view& path, const std::wstring_view& flag, const SMEntityTransform& transform);
 	SMPrefab(const SMPrefab&) = delete;
 	SMPrefab(SMPrefab&) = delete;
-
-	SMPrefab(const std::wstring& path, const std::wstring& flag, const SMEntityTransform& transform);
 	~SMPrefab();
 
-	const std::wstring& getPath() const;
-	const std::wstring& getFlag() const;
-	const std::vector<SMEntity*>& getObjects() const;
+	const std::wstring& getPath() const noexcept;
+	const std::wstring& getFlag() const noexcept;
+	const std::vector<SMEntity*>& getObjects() const noexcept;
 
 	void addObject(SMEntity* object);
 
-	inline EntityType Type() const noexcept override { return EntityType::Prefab; }
-	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const override;
-	void WriteObjectToFile(std::ofstream& file, WriterOffsetData& mOffset, const glm::mat4& transform_matrix) const override;
+	EntityType Type() const override;
+	void FillTextureMap(EntityTextureMap& textureMap) const override;
+	void WriteObjectToFile(std::ofstream& file, WriterOffsetData& offset, const glm::mat4& transform) const override;
 	std::size_t GetAmountOfObjects() const override;
 
 private:

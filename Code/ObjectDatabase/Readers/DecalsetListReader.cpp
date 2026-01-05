@@ -1,12 +1,12 @@
 #include "DecalsetListReader.hpp"
 
-#include "ObjectDatabase\Readers\DecalsetReader.hpp"
-#include "ObjectDatabase\KeywordReplacer.hpp"
+#include "ObjectDatabase/Readers/DecalsetReader.hpp"
+#include "ObjectDatabase/KeywordReplacer.hpp"
 
-#include "Utils\Console.hpp"
-#include "Utils\String.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/String.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 void DecalsetListReader::Load(const simdjson::dom::element& j_data, SMMod* mod, bool add_to_global_db)
 {

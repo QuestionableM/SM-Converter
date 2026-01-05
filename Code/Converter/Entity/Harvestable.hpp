@@ -15,18 +15,18 @@ public:
 		const HarvestableData* pParent,
 		const SMEntityTransform& transform,
 		Model* pModel,
-		SMColor color
+		const SMColor color
 	);
 
 	SMHarvestable(const SMHarvestable&) = delete;
 	SMHarvestable(SMHarvestable&) = delete;
 	~SMHarvestable() = default;
 
-	inline SMColor GetColor() const override { return m_color; }
-	inline EntityType Type() const noexcept override { return EntityType::Harvestable; }
-	char* GetMtlNameCStr(const std::string& v_mat_name, std::size_t v_idx, char* v_ptr) const override;
-	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const override;
-	bool GetCanWrite(const std::string& name, std::size_t v_idx) const override;
+	SMColor GetColor() const override;
+	EntityType Type() const override;
+	char* GetMtlNameCStr(const std::string_view& material, const std::size_t idx, char* pCString) const override;
+	void FillTextureMap(EntityTextureMap& textureMap) const override;
+	bool GetCanWrite(const std::string_view& name, const std::size_t idx) const override;
 
 private:
 	const HarvestableData* m_parent;

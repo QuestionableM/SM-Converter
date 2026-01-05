@@ -21,16 +21,16 @@ public:
 	// Returns the pointer to the beginning of added area for fast insertion
 	SMEntity** ResizeAdd(const std::size_t objCount);
 
-	EntityType Type() const noexcept override;
+	EntityType Type() const override;
 
-	void FillTextureMap(std::unordered_map<std::string, ObjectTexData>& tex_map) const override;
-	void WriteObjectToFile(std::ofstream& file, WriterOffsetData& mOffset, const glm::mat4& transform_matrix) const override;
+	void FillTextureMap(EntityTextureMap& textureMap) const override;
+	void WriteObjectToFile(std::ofstream& file, WriterOffsetData& offset, const glm::mat4& transform) const override;
 
-	void CalculateCenterPoint(glm::vec3& v_input) const override;
+	void CalculateCenterPoint(glm::vec3& outInput) const override;
 	std::size_t GetAmountOfObjects() const override;
 
 private:
-	std::vector<SMEntity*> m_objects = {};
+	std::vector<SMEntity*> m_objects;
 	std::string m_bodyName;
 };
 

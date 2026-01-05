@@ -1,14 +1,14 @@
 #include "BlockListLoader.hpp"
 
-#include "ObjectDatabase\KeywordReplacer.hpp"
-#include "ObjectDatabase\ProgCounter.hpp"
-#include "ObjectDatabase\Mods\Mod.hpp"
+#include "ObjectDatabase/KeywordReplacer.hpp"
+#include "ObjectDatabase/ProgCounter.hpp"
+#include "ObjectDatabase/Mods/Mod.hpp"
 
-#include "Utils\Console.hpp"
-#include "Utils\String.hpp"
-#include "Utils\Uuid.hpp"
+#include "Utils/Console.hpp"
+#include "Utils/String.hpp"
+#include "Utils/Uuid.hpp"
 
-#pragma unmanaged
+SM_UNMANAGED_CODE
 
 static const std::string_view g_blkTexNames[3] = { "dif", "asg", "nor" };
 bool BlockListLoader::GetBlockTextures(const simdjson::dom::element& block, SMTextureList& tex)

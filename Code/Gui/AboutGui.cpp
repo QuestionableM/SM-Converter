@@ -1,6 +1,6 @@
 #include "AboutGui.h"
 
-#include "Utils\WinInclude.hpp"
+#include "Utils/WinInclude.hpp"
 #include "BuildInfo.hpp"
 
 #define STR_INDIR(x) #x

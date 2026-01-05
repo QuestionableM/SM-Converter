@@ -1,13 +1,12 @@
 #include "GameDataMod.hpp"
 
-#include "ObjectDatabase\DatabaseConfig.hpp"
+#include "ObjectDatabase/DatabaseConfig.hpp"
+#include "UStd/UnmanagedFilesystem.hpp"
 
-#include "UStd\UnmanagedFilesystem.hpp"
+SM_UNMANAGED_CODE
 
-#pragma unmanaged
-
-GameDataMod::GameDataMod() :
-	SMMod(
+GameDataMod::GameDataMod()
+	: SMMod(
 		L"Vanilla Data",
 		DatabaseConfig::GamePath,
 		SMUuid(0x45157449ee614269, 0xa6ab3137e2945fca),
