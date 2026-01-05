@@ -10,8 +10,8 @@ class BlocksAndPartsMod : public SMMod
 public:
 	~BlocksAndPartsMod() = default;
 	BlocksAndPartsMod(
-		const std::wstring& name,
-		const std::wstring& directory,
+		const std::wstring_view& name,
+		const std::wstring_view& directory,
 		const SMUuid& uuid,
 		std::uint64_t workshop_id,
 		bool isLocal

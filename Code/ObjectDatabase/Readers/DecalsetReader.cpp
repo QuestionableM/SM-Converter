@@ -8,13 +8,16 @@
 
 SM_UNMANAGED_CODE
 
-inline void GetWstringFromDecalset(const simdjson::dom::element& obj, const std::string& key, std::wstring& r_output)
+inline void GetWstringFromDecalset(
+	const simdjson::dom::element& obj,
+	const std::string_view& key,
+	std::wstring& outPath)
 {
-	const auto v_json_str = obj[key];
-	if (v_json_str.is_string())
+	const auto v_jsonStr = obj[key];
+	if (v_jsonStr.is_string())
 	{
-		String::ToWideRef(v_json_str.get_string().value_unsafe(), r_output);
-		KeywordReplacer::ReplaceKeyR(r_output);
+		String::ToWideRef(v_jsonStr.get_string().value_unsafe(), outPath);
+		KeywordReplacer::ReplaceKeyR(outPath);
 	}
 }
 
