@@ -84,6 +84,15 @@ public:
 		return true;
 	}
 
+	inline static bool Attach()
+	{
+		if (DebugConsole::Handle != NULL)
+			return false;
+
+		DebugConsole::Handle = GetStdHandle(STD_OUTPUT_HANDLE);
+		return true;
+	}
+
 	inline static void Destroy()
 	{
 		if (DebugConsole::Handle == NULL) return;
@@ -217,6 +226,7 @@ public:
 };
 
 #define CreateDebugConsole(ConName) DebugConsole::Create(ConName)
+#define AttachDebugConsole()        DebugConsole::Attach()
 #define DebugOutL(...)              DebugConsole::Out(__VA_ARGS__, 0b1110_fg, "\n")
 #define DebugOut(...)               DebugConsole::Out(__VA_ARGS__)
 #define DebugErrorL(...)            DebugConsole::Out(0b1001_fg, "ERROR: "  , __FUNCTION__, "(", __LINE__, ") -> ", __VA_ARGS__, 0b1110_fg, "\n")
@@ -226,6 +236,7 @@ SM_MANAGED_CODE
 
 #else
 #define CreateDebugConsole(ConName) ((void*)0)
+#define AttachDebugConsole()        ((void*)0)
 #define DebugOutL(...)              ((void*)0)
 #define DebugOut(...)               ((void*)0)
 #define DebugErrorL(...)            ((void*)0)
