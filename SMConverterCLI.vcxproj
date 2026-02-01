@@ -84,10 +84,12 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)Code;$(SolutionDir)Dependencies\nlohmann_json;$(SolutionDir)Dependencies\simdjson;$(SolutionDir)Dependencies\ValveVDF\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\FreeImage\Include;$(SolutionDir)Dependencies\emhash;$(SolutionDir)Dependencies\Assimp\Include;$(SolutionDir)Dependencies\PerlinNoise;$(SolutionDir)Dependencies\lz4\Include</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\FreeImage\Lib\$(PlatformShortName);$(SolutionDIr)Dependencies\Assimp\Lib;$(SolutionDir)Build\libs-$(Configuration);$(SolutionDir)Dependencies\lz4\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>FreeImage.lib;simdjson.lib;assimp$(PlatformArchitecture).lib;lz4_$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>

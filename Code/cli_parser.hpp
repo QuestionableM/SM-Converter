@@ -112,6 +112,8 @@ struct ArgumentParser
 	bool anyActionFlagSet(const ConverterActionFlag flag) const noexcept;
 	bool exportFlagSet(const ConverterExportSettings flag) const noexcept;
 
+	void applySettings() const;
+
 	template<ConverterActionFlag t_flag>
 	bool actionFlagSetter()
 	{

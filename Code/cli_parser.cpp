@@ -1,6 +1,7 @@
 #include "cli_parser.hpp"
 
 #include "Converter/BlueprintConverter/BlueprintConverter.hpp"
+#include "Converter/ConvertSettings.hpp"
 #include "Utils/String.hpp"
 
 static ArgumentParserCallback g_callbacks[] =
@@ -103,6 +104,26 @@ bool ArgumentParser::anyActionFlagSet(const ConverterActionFlag flag) const noex
 bool ArgumentParser::exportFlagSet(const ConverterExportSettings flag) const noexcept
 {
 	return (m_exportSettings & flag) == flag;
+}
+
+void ArgumentParser::applySettings() const
+{
+	SharedConverterSettings::ExportMaterials     = this->exportFlagSet(ConverterExportSettings::ExportMaterials);
+	SharedConverterSettings::ExportUvs           = this->exportFlagSet(ConverterExportSettings::ExportUvs);
+	SharedConverterSettings::ExportNormals       = this->exportFlagSet(ConverterExportSettings::ExportNormals);
+	SharedConverterSettings::DeduplicateVertices = this->exportFlagSet(ConverterExportSettings::DeduplicateVertices);
+
+	TileConverterSettings::ExportClutter          = this->exportFlagSet(ConverterExportSettings::ExportClutter);
+	TileConverterSettings::ExportAssets           = this->exportFlagSet(ConverterExportSettings::ExportAssets);
+	TileConverterSettings::ExportPrefabs          = this->exportFlagSet(ConverterExportSettings::ExportPrefabs);
+	TileConverterSettings::ExportBlueprints       = this->exportFlagSet(ConverterExportSettings::ExportBlueprints);
+	TileConverterSettings::ExportKinematics       = this->exportFlagSet(ConverterExportSettings::ExportKinematics);
+	TileConverterSettings::ExportHarvestables     = this->exportFlagSet(ConverterExportSettings::ExportHarvestables);
+	TileConverterSettings::ExportDecals           = this->exportFlagSet(ConverterExportSettings::ExportDecals);
+	TileConverterSettings::ExportGroundTextures   = this->exportFlagSet(ConverterExportSettings::ExportGroundTextures);
+	TileConverterSettings::Export8kGroundTextures = this->exportFlagSet(ConverterExportSettings::Export8KGroundTextures);
+	
+	BlueprintConverterSettings::SeparationType = m_separationType;
 }
 
 bool ArgumentParser::argType()

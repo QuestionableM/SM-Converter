@@ -104,22 +104,6 @@ int main(const int argc, const char* argv[])
 		CustomGame* v_pCustomGame = nullptr;
 		ConvertError v_convError;
 
-		SharedConverterSettings::ExportMaterials     = v_parser.exportFlagSet(ConverterExportSettings::ExportMaterials);
-		SharedConverterSettings::ExportUvs           = v_parser.exportFlagSet(ConverterExportSettings::ExportUvs);
-		SharedConverterSettings::ExportNormals       = v_parser.exportFlagSet(ConverterExportSettings::ExportNormals);
-		SharedConverterSettings::DeduplicateVertices = v_parser.exportFlagSet(ConverterExportSettings::DeduplicateVertices);
-
-		TileConverterSettings::ExportClutter          = v_parser.exportFlagSet(ConverterExportSettings::ExportClutter);
-		TileConverterSettings::ExportAssets           = v_parser.exportFlagSet(ConverterExportSettings::ExportAssets);
-		TileConverterSettings::ExportPrefabs          = v_parser.exportFlagSet(ConverterExportSettings::ExportPrefabs);
-		TileConverterSettings::ExportBlueprints       = v_parser.exportFlagSet(ConverterExportSettings::ExportBlueprints);
-		TileConverterSettings::ExportKinematics       = v_parser.exportFlagSet(ConverterExportSettings::ExportKinematics);
-		TileConverterSettings::ExportHarvestables     = v_parser.exportFlagSet(ConverterExportSettings::ExportHarvestables);
-		TileConverterSettings::ExportDecals           = v_parser.exportFlagSet(ConverterExportSettings::ExportDecals);
-		TileConverterSettings::ExportGroundTextures   = v_parser.exportFlagSet(ConverterExportSettings::ExportGroundTextures);
-		TileConverterSettings::Export8kGroundTextures = v_parser.exportFlagSet(ConverterExportSettings::Export8KGroundTextures);
-
-		BlueprintConverterSettings::SeparationType = v_parser.m_separationType;
 
 		if (v_parser.actionFlagSet(ConverterActionFlag::CustomgameUuidSpecified))
 		{
@@ -132,6 +116,9 @@ int main(const int argc, const char* argv[])
 				return -1;
 			}
 		}
+
+		// Apply the converter settings to the converter context
+		v_parser.applySettings();
 
 		switch (v_parser.m_convType)
 		{
@@ -161,24 +148,6 @@ int main(const int argc, const char* argv[])
 		DebugOutL("Specify the object type with \"-type\" argument");
 		return -1;
 	}
-
-	AttachDebugConsole();
-
-	// Debug test
-	DebugOutL("Flags specified: ");
-
-#define EpicMacro(enumName) \
-	if ((v_parser.m_actionFlags & ConverterActionFlag::enumName) == ConverterActionFlag::enumName) \
-		DebugOutL("\t" #enumName)
-
-	EpicMacro(DebugFlag);
-	EpicMacro(NameSpecified);
-	EpicMacro(PathSpecified);
-	EpicMacro(TypeSpecified);
-	EpicMacro(ListBlueprints);
-	EpicMacro(ListTiles);
-	EpicMacro(ListWorlds);
-	EpicMacro(ListCustomGames);
 
 	return 0;
 }
