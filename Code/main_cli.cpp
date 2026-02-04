@@ -10,13 +10,10 @@
 #include "ObjectDatabase/DatabaseConfig.hpp"
 #include "ObjectDatabase/ObjectDatabase.hpp"
 
-#include "Utils/WinInclude.hpp"
 #include "Utils/Console.hpp"
-
 #include "cli_parser.hpp"
 
-#include <iostream>
-#include <string>
+#include "BuildInfo.hpp"
 
 template<typename T>
 static void handleUserItemListPrinter()
@@ -33,7 +30,7 @@ static void handleUserItemListPrinter()
 		DebugOutL("Path: ", v_pCurItem->path, ", Name: ", v_pCurItem->name);
 }
 
-void handleCustomGameList()
+static void handleCustomGameList()
 {
 	DatabaseLoader::LoadDatabase();
 	AttachDebugConsole();
@@ -48,12 +45,82 @@ void handleCustomGameList()
 		DebugOutL("UUID: ", v_pCurItem->GetUuid().toString(), ", Name: ", v_pCurItem->GetName(), ", Path: ", v_pCurItem->GetDirectory());
 }
 
+static void printMainArguments(const bool printHeader)
+{
+	DebugOutL(0b1101_fg, "\t-type          ", 0b1110_fg, " [Blueprint | Tile | World] - specifies the converter type");
+	DebugOutL(0b1101_fg, "\t-path          ", 0b1110_fg, " <path to file> - path to the file that will be converted");
+	DebugOutL(0b1101_fg, "\t-name          ", 0b1110_fg, " <output name> - the name of the output file");
+	DebugOutL(0b1101_fg, "\t-customgameuuid", 0b1110_fg, " <uuid> - custom game content uuid to use (use -customgamelist to find the custom game uuid you need)");
+}
+
+static void printGenericArguments(const bool printHeader)
+{
+	if (printHeader)
+		DebugOutL("\nGeneric arguments (Applicable to Blueprint, Tile, and World converter):");
+
+	DebugOutL(0b1101_fg, "\t-exportmaterials ", 0b1110_fg, " - enables textures for the output model.");
+	DebugOutL(0b1101_fg, "\t-exportuvs       ", 0b1110_fg, " - enables texture UVs for the output model.");
+	DebugOutL(0b1101_fg, "\t-exportnormals   ", 0b1110_fg, " - enables normals for the output model.");
+	DebugOutL(0b1101_fg, "\t-deduplicateverts", 0b1110_fg, " - joins the vertices that are close to each other to save space. (breaks normals for blender 5.0+)");
+}
+
+static void printTileOrWorldArguments(const bool printHeader)
+{
+	if (printHeader)
+		DebugOutL("\nArguments for Tile and World converter:");
+
+	DebugOutL(0b1101_fg, "\t-exportclutter         ", 0b1110_fg, " - enables clutter (grass, small rocks, etc.)");
+	DebugOutL(0b1101_fg, "\t-exportassets          ", 0b1110_fg, " - enables assets (old trees, rocks, bushes, etc.)");
+	DebugOutL(0b1101_fg, "\t-exportprefabs         ", 0b1110_fg, " - enables prefabs");
+	DebugOutL(0b1101_fg, "\t-exportblueprints      ", 0b1110_fg, " - enables blueprints");
+	DebugOutL(0b1101_fg, "\t-exportkinematics      ", 0b1110_fg, " - enables kinematics");
+	DebugOutL(0b1101_fg, "\t-exportharvestables    ", 0b1110_fg, " - enables harvestables (destructible trees, rocks, etc.)");
+	DebugOutL(0b1101_fg, "\t-exportdecals          ", 0b1110_fg, " - enables decals (WIP)");
+	DebugOutL(0b1101_fg, "\t-exportgroundtextures  ", 0b1110_fg, " - enables ground textures");
+	DebugOutL(0b1101_fg, "\t-export8kgroundtextures", 0b1110_fg, " - enables high resolution ground textures");
+}
+
+static void printBlueprintArguments(const bool printHeader)
+{
+	if (printHeader)
+		DebugOutL("\nArguments for Blueprint converter:");
+
+	DebugOutL(0b1101_fg, "\t-septype", 0b1110_fg, " [none | all | shapes | joints | uuid | color | uuidandcolor] (default is none) - object separation type");
+	DebugOutL(0b1101_fg, "\t\tnone        ", 0b1110_fg, " - no object separation");
+	DebugOutL(0b1101_fg, "\t\tall         ", 0b1110_fg, " - puts every single shape into a unique group");
+	DebugOutL(0b1101_fg, "\t\tshapes      ", 0b1110_fg, " - puts every single shape (groups of objects) into a unqiue group");
+	DebugOutL(0b1101_fg, "\t\tjoints      ", 0b1110_fg, " - puts every single shape connected with a joint into a unique group");
+	DebugOutL(0b1101_fg, "\t\tuuid        ", 0b1110_fg, " - groups all the shapes by uuid");
+	DebugOutL(0b1101_fg, "\t\tcolor       ", 0b1110_fg, " - groups all the shapes by color");
+	DebugOutL(0b1101_fg, "\t\tuuidandcolor", 0b1110_fg, " - groups all the shapes by uuid and color");
+}
+
+static void printOtherArguments(const bool printHeader)
+{
+	if (printHeader)
+		DebugOutL("\nOther arguments:");
+
+	DebugOutL(0b1101_fg, "\t-debug         ", 0b1110_fg, " - enables additional console output");
+	DebugOutL(0b1101_fg, "\t-blueprintlist ", 0b1110_fg, " - lists all the blueprints accessible in the game");
+	DebugOutL(0b1101_fg, "\t-tilelist      ", 0b1110_fg, " - lists all the tiles accessible in the game");
+	DebugOutL(0b1101_fg, "\t-worldlist     ", 0b1110_fg, " - lists all the worlds accessible in the game");
+	DebugOutL(0b1101_fg, "\t-customgamelist", 0b1110_fg, " - lists all the custom games accessible to the converter");
+}
+
 int main(const int argc, const char* argv[])
 {
 	if (argc < 2)
 	{
-		std::cout << "SMConverterCLI -type [Blueprint|Tile|World]\n";
-		std::cout << "Type -help for more info\n";
+		AttachDebugConsole();
+
+		DebugOutL("SMConverterCLI Version: ", SM_CONVERTER_BUILD_VERSION);
+
+		printMainArguments(true);
+		printGenericArguments(true);
+		printTileOrWorldArguments(true);
+		printBlueprintArguments(true);
+		printOtherArguments(true);
+
 		return -1;
 	}
 
