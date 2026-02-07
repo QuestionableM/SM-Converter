@@ -106,6 +106,7 @@ struct Model
 	Model(Model&) = delete;
 
 	void WriteToFile(const glm::mat4& model_mat, WriterOffsetData& offset, std::ofstream& file, const class SMEntity* pEntity);
+	void WriteToFileGltf(GltfWriterContext& context, const glm::mat4& modelMatrix, const class SMEntity* pEntity);
 
 	inline bool IsEmpty() const noexcept
 	{

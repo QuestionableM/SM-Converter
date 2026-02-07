@@ -417,6 +417,238 @@ void Model::WriteToFile(
 		offset.Vertex += m_vertices.size();
 }
 
+void Model::WriteToFileGltf(
+	GltfWriterContext& context,
+	const glm::mat4& modelMatrix,
+	const SMEntity* pEntity)
+{
+	auto& v_newObject = context.m_vecObjects.emplace_back();
+	v_newObject.m_matrix = modelMatrix;
+
+	auto v_iter = context.m_mapPathToMeshIndex.find(m_path);
+	if (v_iter != context.m_mapPathToMeshIndex.end())
+	{
+		v_newObject.m_meshIdx = v_iter->second;
+		return;
+	}
+
+	const std::size_t v_newMeshIndex = context.m_vecMeshes.size();
+	context.m_mapPathToMeshIndex.emplace(m_path, v_newMeshIndex);
+
+	const std::size_t v_meshBufferViewIndex = context.m_vecBufferViews.size();
+	// The length is deterined at the end of the function
+	auto& v_newMeshBufferView = context.createNewView(context.m_bytesWritten, 0);
+	
+	v_newObject.m_meshIdx = v_newMeshIndex;
+
+	auto& v_newMesh = context.m_vecMeshes.emplace_back();
+	v_newMesh.m_materialName = L"";
+	v_newMesh.m_name = L"";
+
+	{
+		v_newMesh.m_vertexAccessorIdx = context.m_vecBufferAccessors.size();
+
+		auto& v_vtxView = context.createNewAccessor(
+			v_meshBufferViewIndex,
+			context.m_bytesWritten - v_newMeshBufferView.m_byteOffset,
+			GltfComponentType::FLOAT,
+			m_vertices.size(),
+			GltfAccessorType::VEC3);
+		
+		context.writeToFile(m_vertices.data(), m_vertices.size() * sizeof(glm::vec3));
+	}
+
+	if (SharedConverterSettings::ExportUvs)
+	{
+		v_newMesh.m_uvAccessorIdx = context.m_vecBufferAccessors.size();
+
+		context.createNewAccessor(
+			v_meshBufferViewIndex,
+			context.m_bytesWritten - v_newMeshBufferView.m_byteOffset,
+			GltfComponentType::FLOAT,
+			m_uvs.size(),
+			GltfAccessorType::VEC2
+		);
+
+		context.writeToFile(m_uvs.data(), m_uvs.size() * sizeof(glm::vec2));
+	}
+
+	if (SharedConverterSettings::ExportNormals)
+	{
+		v_newMesh.m_normalAccessorIdx = context.m_vecBufferAccessors.size();
+
+		context.createNewAccessor(
+			v_meshBufferViewIndex,
+			context.m_bytesWritten - v_newMeshBufferView.m_byteOffset,
+			GltfComponentType::FLOAT,
+			m_normals.size(),
+			GltfAccessorType::VEC3
+		);
+
+		context.writeToFile(m_normals.data(), m_normals.size() * sizeof(glm::vec3));
+	}
+
+	v_newMesh.m_indexAccessorIdx = context.m_vecBufferAccessors.size();
+
+	auto& v_indexAccessor = context.createNewAccessor(
+		v_meshBufferViewIndex,
+		context.m_bytesWritten - v_newMeshBufferView.m_byteOffset,
+		GltfComponentType::UNSIGNED_SHORT,
+		0,
+		GltfAccessorType::SCALAR
+	);
+
+	const std::size_t v_subMeshDataCount = m_subMeshData.size();
+	for (std::size_t v_idx = 0; v_idx < v_subMeshDataCount; v_idx++)
+	{
+		const SubMeshData& v_curSubMesh = m_subMeshData[v_idx];
+
+		if (pEntity != nullptr)
+		{
+			// Skip writing the sub mesh if entity doesn't allow it
+			if (!pEntity->GetCanWrite(v_curSubMesh.m_materialName, v_idx))
+				continue;
+		}
+
+		const std::size_t v_quadCount = v_curSubMesh.m_dataIdx.size();
+		for (std::size_t a = 0; a < v_quadCount; a++)
+		{
+			const auto& v_vecVertices = v_curSubMesh.m_dataIdx[a];
+			v_indexAccessor.m_itemCount += v_vecVertices.size();
+
+			for (const VertexData& v_curVert : v_vecVertices)
+			{
+				const std::uint16_t v_shortIdx = v_curVert.m_vert;
+				context.writeToFile(&v_shortIdx, sizeof(v_shortIdx));
+			}
+		}
+		/*
+		v_idxWriterArgs.m_subMesh = &v_curSubMesh;
+
+		SubMeshData::IndexWriterFunction v_pWriterFunc = v_curSubMesh.getWriterFunction();
+
+		const std::size_t v_quadCount = v_curSubMesh.m_dataIdx.size();
+		for (std::size_t a = 0; a < v_quadCount; a++)
+		{
+			//Put the pointer back to the beginning of the buffer
+			g_modelWriterPtr = g_modelWriterBuf;
+			*g_modelWriterPtr++ = 'f';
+
+			const std::vector<VertexData>& v_vecVerts = v_curSubMesh.m_dataIdx[a];
+			const std::size_t v_vecVertsSz = v_vecVerts.size();
+
+			if (v_vecVertsSz > 30) //The N-Gon is too big to be handled with a fast for loop
+			{
+				for (std::size_t b = 0; b < 30; b++)
+					v_pWriterFunc(v_idxWriterArgs, v_vecVerts[b]);
+
+				for (std::size_t b = 30; b < v_vecVertsSz; b++)
+				{
+					v_pWriterFunc(v_idxWriterArgs, v_vecVerts[b]);
+
+					//never let the writer reach the end of the buffer
+					if ((g_modelWriterBufferEnd - g_modelWriterPtr) < 100)
+					{
+						DebugOutL("Reaching the end of the model writer buffer, resetting... (Remaining space: ", std::size_t(g_modelWriterBufferEnd - g_modelWriterPtr), ")");
+
+						file.write(g_modelWriterBuf, g_modelWriterPtr - g_modelWriterBuf);
+						g_modelWriterPtr = g_modelWriterBuf;
+					}
+				}
+			}
+			else
+			{
+				for (std::size_t b = 0; b < v_vecVertsSz; b++)
+					v_pWriterFunc(v_idxWriterArgs, v_vecVerts[b]);
+			}
+
+			*g_modelWriterPtr++ = '\n';
+
+			file.write(g_modelWriterBuf, g_modelWriterPtr - g_modelWriterBuf);
+		*/
+	}
+
+	v_newMeshBufferView.m_byteLength = context.m_bytesWritten - v_newMeshBufferView.m_byteOffset;
+	/*
+
+	IndexWriterArguments v_idxWriterArgs(this, offset, v_translatedVertices, v_translatedNormals);
+
+	const std::size_t v_subMeshDataCount = m_subMeshData.size();
+	for (std::size_t mIdx = 0; mIdx < v_subMeshDataCount; mIdx++)
+	{
+		const SubMeshData& v_curSubMesh = m_subMeshData[mIdx];
+
+		if (pEntity != nullptr)
+		{
+			//Skip writing the sub mesh if entity doesn't allow it
+			if (!pEntity->GetCanWrite(v_curSubMesh.m_materialName, mIdx))
+				continue;
+
+			if (SharedConverterSettings::ExportMaterials)
+			{
+				g_modelWriterPtr = g_modelWriterBuf;
+				*g_modelWriterPtr++ = 'u';
+				*g_modelWriterPtr++ = 's';
+				*g_modelWriterPtr++ = 'e';
+				*g_modelWriterPtr++ = 'm';
+				*g_modelWriterPtr++ = 't';
+				*g_modelWriterPtr++ = 'l';
+				*g_modelWriterPtr++ = ' ';
+
+				g_modelWriterPtr = pEntity->GetMtlNameCStr(v_curSubMesh.m_materialName, mIdx, g_modelWriterPtr);
+				*g_modelWriterPtr++ = '\n';
+
+				file.write(g_modelWriterBuf, g_modelWriterPtr - g_modelWriterBuf);
+			}
+		}
+
+		v_idxWriterArgs.m_subMesh = &v_curSubMesh;
+
+		SubMeshData::IndexWriterFunction v_pWriterFunc = v_curSubMesh.getWriterFunction();
+
+		const std::size_t v_quadCount = v_curSubMesh.m_dataIdx.size();
+		for (std::size_t a = 0; a < v_quadCount; a++)
+		{
+			//Put the pointer back to the beginning of the buffer
+			g_modelWriterPtr = g_modelWriterBuf;
+			*g_modelWriterPtr++ = 'f';
+
+			const std::vector<VertexData>& v_vecVerts = v_curSubMesh.m_dataIdx[a];
+			const std::size_t v_vecVertsSz = v_vecVerts.size();
+
+			if (v_vecVertsSz > 30) //The N-Gon is too big to be handled with a fast for loop
+			{
+				for (std::size_t b = 0; b < 30; b++)
+					v_pWriterFunc(v_idxWriterArgs, v_vecVerts[b]);
+
+				for (std::size_t b = 30; b < v_vecVertsSz; b++)
+				{
+					v_pWriterFunc(v_idxWriterArgs, v_vecVerts[b]);
+
+					//never let the writer reach the end of the buffer
+					if ((g_modelWriterBufferEnd - g_modelWriterPtr) < 100)
+					{
+						DebugOutL("Reaching the end of the model writer buffer, resetting... (Remaining space: ", std::size_t(g_modelWriterBufferEnd - g_modelWriterPtr), ")");
+
+						file.write(g_modelWriterBuf, g_modelWriterPtr - g_modelWriterBuf);
+						g_modelWriterPtr = g_modelWriterBuf;
+					}
+				}
+			}
+			else
+			{
+				for (std::size_t b = 0; b < v_vecVertsSz; b++)
+					v_pWriterFunc(v_idxWriterArgs, v_vecVerts[b]);
+			}
+
+			*g_modelWriterPtr++ = '\n';
+
+			file.write(g_modelWriterBuf, g_modelWriterPtr - g_modelWriterBuf);
+		}
+	}
+	*/
+}
+
 ////////////////// MODEL STORAGE ///////////////////////
 
 const aiScene* ModelStorage::LoadScene(const std::wstring_view& path)
@@ -426,7 +658,8 @@ const aiScene* ModelStorage::LoadScene(const std::wstring_view& path)
 		aiProcess_FindInvalidData |
 		aiProcess_RemoveComponent |
 		aiProcess_JoinIdenticalVertices |
-		aiProcess_FindDegenerates
+		aiProcess_FindDegenerates |
+		aiProcess_Triangulate
 	);
 }
 

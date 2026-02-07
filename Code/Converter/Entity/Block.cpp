@@ -188,6 +188,13 @@ void SMBlock::WriteObjectToFile(
 	ProgCounter::ProgressValue++;
 }
 
+void SMBlock::WriteObjectToFileGltf(
+	GltfWriterContext& context,
+	const glm::mat4& transform) const
+{
+	DebugOutL("TODO -> SMBlock writer for GLTF");
+}
+
 glm::mat4 SMBlock::GetTransformMatrix() const
 {
 	const glm::mat4 v_blockRotation = Rotations::GetRotationMatrix(m_xzRotation);

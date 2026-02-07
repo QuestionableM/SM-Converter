@@ -38,6 +38,7 @@ public:
 	std::string GetMtlName(const std::size_t idx) const override;
 	void FillTextureMap(EntityTextureMap& textureMap) const override;
 	void WriteObjectToFile(std::ofstream& file, WriterOffsetData& offset, const glm::mat4& transform) const override;
+	void WriteObjectToFileGltf(GltfWriterContext& context, const glm::mat4& transform) const override;
 	glm::mat4 GetTransformMatrix() const override;
 
 private:

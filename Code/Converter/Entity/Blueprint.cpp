@@ -219,6 +219,16 @@ void SMBlueprint::WriteObjectToFile(
 		v_pCurEntity->WriteObjectToFile(file, offset, v_blueprintTransform);
 }
 
+void SMBlueprint::WriteObjectToFileGltf(
+	GltfWriterContext& context,
+	const glm::mat4& transform) const
+{
+	const glm::mat4 v_blueprintTransform = transform * this->GetTransformMatrix();
+
+	for (const SMEntity* v_pCurEntity : m_objects)
+		v_pCurEntity->WriteObjectToFileGltf(context, v_blueprintTransform);
+}
+
 std::size_t SMBlueprint::GetAmountOfObjects() const
 {
 	std::size_t v_output = 0;
