@@ -53,6 +53,7 @@ public:
 	}
 
 	static CustomGame* GetCustomGameFromPath(const std::wstring& v_path);
+	static CustomGame* GetCustomGameFromUuid(const SMUuid& uuid);
 
 	template<bool t_check_blocks = true>
 	inline static SMMod* GetModFromBlocksAndParts(const SMUuid& uuid)

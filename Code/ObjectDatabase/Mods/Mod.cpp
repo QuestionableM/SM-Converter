@@ -179,6 +179,17 @@ CustomGame* SMMod::GetCustomGameFromPath(const std::wstring& v_path)
 	return nullptr;
 }
 
+CustomGame* SMMod::GetCustomGameFromUuid(const SMUuid& uuid)
+{
+	for (CustomGame* v_pCurCg : SMMod::CustomGameVector)
+	{
+		if (v_pCurCg->GetUuid() == uuid)
+			return v_pCurCg;
+	}
+
+	return nullptr;
+}
+
 using ListLoaderFunc = void(*)(const simdjson::dom::element&, SMMod*, bool);
 static const std::unordered_map<std::string_view, ListLoaderFunc> g_dataLoaders =
 {

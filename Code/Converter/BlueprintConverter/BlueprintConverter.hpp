@@ -12,7 +12,7 @@
 
 SM_UNMANAGED_CODE
 
-enum : int
+enum : std::uint8_t
 {
 	BPObjectSep_None         = 0,
 	BPObjectSep_All          = 1,
