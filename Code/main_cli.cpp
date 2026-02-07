@@ -154,14 +154,14 @@ int main(const int argc, const char* argv[])
 		if (!v_parser.actionFlagSet(ConverterActionFlag::PathSpecified))
 		{
 			AttachDebugConsole();
-			DebugOutL("You must specify the path to an object you want to convert\n");
+			DebugOutL("You must specify the path to an object you want to convert with the -path <path to file> argument\n");
 			return -1;
 		}
 
 		if (!v_parser.actionFlagSet(ConverterActionFlag::NameSpecified))
 		{
 			AttachDebugConsole();
-			DebugOutL("You must specify the output name of an object\n");
+			DebugOutL("You must specify the output name of an object with -name <output name>\n");
 			return -1;
 		}
 
