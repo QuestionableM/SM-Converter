@@ -162,6 +162,7 @@ xcopy /y /d "$(SolutionDir)Media\icon.ico" "$(SolutionDir)Build\$(ProjectName)-$
     <ClCompile Include="Code\Converter\TileConverter\TilePart.cpp" />
     <ClCompile Include="Code\Converter\WorldConverter\World.cpp" />
     <ClCompile Include="Code\Converter\WorldConverter\WorldConverter.cpp" />
+    <ClCompile Include="Code\Converter\WriterOffset.cpp" />
     <ClCompile Include="Code\Gui\SettingsGuiChangeDetector.cpp" />
     <ClCompile Include="Code\ObjectDatabase\DatabaseConfig.cpp" />
     <ClCompile Include="Code\ObjectDatabase\GroundTextureDatabase.cpp" />

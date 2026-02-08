@@ -20,6 +20,7 @@ SubMeshData::SubMeshData(
 	: m_materialName()
 	, m_dataIdx()
 	, m_subMeshIdx(idx)
+	, m_indexBufferIdx(std::size_t(-1))
 	, m_hasNormals(hasNormals)
 	, m_hasUvs(hasUvs)
 {}
@@ -33,6 +34,7 @@ SubMeshData::SubMeshData(
 	: m_materialName()
 	, m_dataIdx(dataIdx.begin(), dataIdx.end())
 	, m_subMeshIdx(idx)
+	, m_indexBufferIdx(std::size_t(-1))
 	, m_hasNormals(hasNormals)
 	, m_hasUvs(hasUvs)
 {}
@@ -41,6 +43,7 @@ SubMeshData::SubMeshData(SubMeshData&& other) noexcept
 	: m_materialName(std::move(other.m_materialName))
 	, m_dataIdx(std::move(other.m_dataIdx))
 	, m_subMeshIdx(other.m_subMeshIdx)
+	, m_indexBufferIdx(other.m_indexBufferIdx)
 	, m_hasNormals(other.m_hasNormals)
 	, m_hasUvs(other.m_hasUvs)
 {}
@@ -193,7 +196,7 @@ Model::Model(const std::wstring_view& mesh_path)
 	, m_normals()
 	, m_uvs()
 	, m_subMeshData()
-	, m_bUvsCached(false)
+	, m_uvCacheIdx(std::size_t(-1))
 {}
 
 Model::Model()
@@ -202,7 +205,7 @@ Model::Model()
 	, m_normals()
 	, m_uvs()
 	, m_subMeshData()
-	, m_bUvsCached(false)
+	, m_uvCacheIdx(std::size_t(-1))
 {}
 
 // This is actually faster than sprintf("%g %g %g")
@@ -263,9 +266,9 @@ void Model::WriteToFile(
 		}
 	}
 
-	if (SharedConverterSettings::ExportUvs && !m_bUvsCached)
+	if (SharedConverterSettings::ExportUvs && m_uvCacheIdx == std::size_t(-1))
 	{
-		m_bUvsCached = true;
+		m_uvCacheIdx = 0;
 
 		g_modelWriterBuf[1] = 't';
 		g_modelWriterBuf[2] = ' ';
@@ -422,60 +425,58 @@ void Model::WriteToFileGltf(
 	const glm::mat4& modelMatrix,
 	const SMEntity* pEntity)
 {
-	auto& v_newObject = context.m_vecObjects.emplace_back();
-	v_newObject.m_matrix = modelMatrix;
-
-	auto v_iter = context.m_mapPathToMeshIndex.find(m_path);
-	if (v_iter != context.m_mapPathToMeshIndex.end())
-	{
-		v_newObject.m_meshIdx = v_iter->second;
-		return;
-	}
-
-	const std::size_t v_newMeshIndex = context.m_vecMeshes.size();
-	context.m_mapPathToMeshIndex.emplace(m_path, v_newMeshIndex);
+	std::size_t v_vertexAccessorIdx = std::size_t(-1);
+	std::size_t v_uvAccessorIdx = std::size_t(-1);
+	std::size_t v_normalAccessorIdx = std::size_t(-1);
 
 	const std::size_t v_meshBufferViewIndex = context.m_vecBufferViews.size();
 	// The length is deterined at the end of the function
 	auto& v_newMeshBufferView = context.createNewView(context.m_bytesWritten, 0);
-	
-	v_newObject.m_meshIdx = v_newMeshIndex;
-
-	auto& v_newMesh = context.m_vecMeshes.emplace_back();
-	v_newMesh.m_materialName = L"";
-	v_newMesh.m_name = L"";
 
 	{
-		v_newMesh.m_vertexAccessorIdx = context.m_vecBufferAccessors.size();
-
-		auto& v_vtxView = context.createNewAccessor(
-			v_meshBufferViewIndex,
-			context.m_bytesWritten - v_newMeshBufferView.m_byteOffset,
-			GltfComponentType::FLOAT,
-			m_vertices.size(),
-			GltfAccessorType::VEC3);
-		
-		context.writeToFile(m_vertices.data(), m_vertices.size() * sizeof(glm::vec3));
-	}
-
-	if (SharedConverterSettings::ExportUvs)
-	{
-		v_newMesh.m_uvAccessorIdx = context.m_vecBufferAccessors.size();
+		v_vertexAccessorIdx = context.m_vecBufferAccessors.size();
 
 		context.createNewAccessor(
 			v_meshBufferViewIndex,
 			context.m_bytesWritten - v_newMeshBufferView.m_byteOffset,
 			GltfComponentType::FLOAT,
-			m_uvs.size(),
-			GltfAccessorType::VEC2
+			m_vertices.size(),
+			GltfAccessorType::VEC3
 		);
 
-		context.writeToFile(m_uvs.data(), m_uvs.size() * sizeof(glm::vec2));
+		for (const glm::vec3& v_curVtx : m_vertices)
+		{
+			const glm::vec3 v_vertex = modelMatrix * glm::vec4(v_curVtx, 1.0f);
+			context.writeToFile(&v_vertex, sizeof(v_vertex));
+		}
+	}
+
+	if (SharedConverterSettings::ExportUvs)
+	{
+		if (m_uvCacheIdx == std::size_t(-1))
+		{
+			v_uvAccessorIdx = context.m_vecBufferAccessors.size();
+			m_uvCacheIdx = v_uvAccessorIdx;
+
+			context.createNewAccessor(
+				v_meshBufferViewIndex,
+				context.m_bytesWritten - v_newMeshBufferView.m_byteOffset,
+				GltfComponentType::FLOAT,
+				m_uvs.size(),
+				GltfAccessorType::VEC2
+			);
+
+			context.writeToFile(m_uvs.data(), m_uvs.size() * sizeof(glm::vec2));
+		}
+		else
+		{
+			v_uvAccessorIdx = m_uvCacheIdx;
+		}
 	}
 
 	if (SharedConverterSettings::ExportNormals)
 	{
-		v_newMesh.m_normalAccessorIdx = context.m_vecBufferAccessors.size();
+		v_normalAccessorIdx = context.m_vecBufferAccessors.size();
 
 		context.createNewAccessor(
 			v_meshBufferViewIndex,
@@ -485,87 +486,57 @@ void Model::WriteToFileGltf(
 			GltfAccessorType::VEC3
 		);
 
-		context.writeToFile(m_normals.data(), m_normals.size() * sizeof(glm::vec3));
+		const glm::mat3 v_rotMatrix(modelMatrix);
+
+		for (const glm::vec3& v_curNormal : m_normals)
+		{
+			const glm::vec3 v_normal = v_rotMatrix * v_curNormal;
+			context.writeToFile(&v_normal, sizeof(v_normal));
+		}
 	}
 
-	v_newMesh.m_indexAccessorIdx = context.m_vecBufferAccessors.size();
-
-	auto& v_indexAccessor = context.createNewAccessor(
-		v_meshBufferViewIndex,
-		context.m_bytesWritten - v_newMeshBufferView.m_byteOffset,
-		GltfComponentType::UNSIGNED_SHORT,
-		0,
-		GltfAccessorType::SCALAR
-	);
+	GltfMesh& v_curMesh = context.m_vecMeshes[context.m_selectedMeshIdx];
 
 	const std::size_t v_subMeshDataCount = m_subMeshData.size();
 	for (std::size_t v_idx = 0; v_idx < v_subMeshDataCount; v_idx++)
 	{
-		const SubMeshData& v_curSubMesh = m_subMeshData[v_idx];
+		SubMeshData& v_curSubMesh = m_subMeshData[v_idx];
+		// Skip writing the sub mesh if entity doesn't allow it
+		if (pEntity != nullptr && !pEntity->GetCanWrite(v_curSubMesh.m_materialName, v_idx))
+			continue;
 
-		if (pEntity != nullptr)
+		auto& v_newPrimitive = v_curMesh.m_vecPrimitives.emplace_back();
+		v_newPrimitive.m_vertexAccessorIdx = v_vertexAccessorIdx;
+		v_newPrimitive.m_uvAccessorIdx = v_uvAccessorIdx;
+		v_newPrimitive.m_normalAccessorIdx = v_normalAccessorIdx;
+
+		if (v_curSubMesh.m_indexBufferIdx != std::size_t(-1))
 		{
-			// Skip writing the sub mesh if entity doesn't allow it
-			if (!pEntity->GetCanWrite(v_curSubMesh.m_materialName, v_idx))
-				continue;
+			v_newPrimitive.m_indexAccessorIdx = v_curSubMesh.m_indexBufferIdx;
+			continue;
 		}
 
-		const std::size_t v_quadCount = v_curSubMesh.m_dataIdx.size();
-		for (std::size_t a = 0; a < v_quadCount; a++)
-		{
-			const auto& v_vecVertices = v_curSubMesh.m_dataIdx[a];
-			v_indexAccessor.m_itemCount += v_vecVertices.size();
+		v_newPrimitive.m_indexAccessorIdx = context.m_vecBufferAccessors.size();
+		v_curSubMesh.m_indexBufferIdx = v_newPrimitive.m_indexAccessorIdx;
 
-			for (const VertexData& v_curVert : v_vecVertices)
+		auto& v_indexAccessor = context.createNewAccessor(
+			v_meshBufferViewIndex,
+			context.m_bytesWritten - v_newMeshBufferView.m_byteOffset,
+			GltfComponentType::UNSIGNED_SHORT,
+			0,
+			GltfAccessorType::SCALAR
+		);
+
+		for (const auto& v_curVertices : v_curSubMesh.m_dataIdx)
+		{
+			v_indexAccessor.m_itemCount += v_curVertices.size();
+
+			for (const VertexData& v_curVertex : v_curVertices)
 			{
-				const std::uint16_t v_shortIdx = v_curVert.m_vert;
+				const std::uint16_t v_shortIdx = static_cast<std::uint16_t>(v_curVertex.m_vert);
 				context.writeToFile(&v_shortIdx, sizeof(v_shortIdx));
 			}
 		}
-		/*
-		v_idxWriterArgs.m_subMesh = &v_curSubMesh;
-
-		SubMeshData::IndexWriterFunction v_pWriterFunc = v_curSubMesh.getWriterFunction();
-
-		const std::size_t v_quadCount = v_curSubMesh.m_dataIdx.size();
-		for (std::size_t a = 0; a < v_quadCount; a++)
-		{
-			//Put the pointer back to the beginning of the buffer
-			g_modelWriterPtr = g_modelWriterBuf;
-			*g_modelWriterPtr++ = 'f';
-
-			const std::vector<VertexData>& v_vecVerts = v_curSubMesh.m_dataIdx[a];
-			const std::size_t v_vecVertsSz = v_vecVerts.size();
-
-			if (v_vecVertsSz > 30) //The N-Gon is too big to be handled with a fast for loop
-			{
-				for (std::size_t b = 0; b < 30; b++)
-					v_pWriterFunc(v_idxWriterArgs, v_vecVerts[b]);
-
-				for (std::size_t b = 30; b < v_vecVertsSz; b++)
-				{
-					v_pWriterFunc(v_idxWriterArgs, v_vecVerts[b]);
-
-					//never let the writer reach the end of the buffer
-					if ((g_modelWriterBufferEnd - g_modelWriterPtr) < 100)
-					{
-						DebugOutL("Reaching the end of the model writer buffer, resetting... (Remaining space: ", std::size_t(g_modelWriterBufferEnd - g_modelWriterPtr), ")");
-
-						file.write(g_modelWriterBuf, g_modelWriterPtr - g_modelWriterBuf);
-						g_modelWriterPtr = g_modelWriterBuf;
-					}
-				}
-			}
-			else
-			{
-				for (std::size_t b = 0; b < v_vecVertsSz; b++)
-					v_pWriterFunc(v_idxWriterArgs, v_vecVerts[b]);
-			}
-
-			*g_modelWriterPtr++ = '\n';
-
-			file.write(g_modelWriterBuf, g_modelWriterPtr - g_modelWriterBuf);
-		*/
 	}
 
 	v_newMeshBufferView.m_byteLength = context.m_bytesWritten - v_newMeshBufferView.m_byteOffset;

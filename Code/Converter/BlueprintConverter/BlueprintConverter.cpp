@@ -77,169 +77,19 @@ void BlueprintConv::WriteToFileInternal(SMBlueprint* pBlueprint, const std::wstr
 	ProgCounter::SetState(ProgState::WritingObjects, pBlueprint->GetAmountOfObjects());
 
 	const std::wstring v_bpBinaryPath = v_bpDirPath + L"/mesh_data.bin";
-
 	GltfWriterContext v_writerContext(v_bpBinaryPath);
+
 	if (!v_writerContext.m_outFile.is_open())
 	{
 		error.setError(1, "Couldn't create an object file");
 		return;
 	}
 
+	v_writerContext.getOrCreateNewGroup(L"Main");
 	pBlueprint->WriteObjectToFileGltf(v_writerContext, glm::mat4(1.0f));
 
-	// Write the gltf file itself
-	nlohmann::json v_root = nlohmann::json::object();
-	v_root["scene"] = 0;
-
-	{
-		nlohmann::json v_asset = nlohmann::json::object();
-		v_asset["generator"] = "Khronos glTF SM-Converter";
-		v_asset["version"] = "2.0";
-
-		v_root["asset"] = std::move(v_asset);
-	}
-
-	{
-		nlohmann::json v_scenes = nlohmann::json::array();
-
-		{
-			nlohmann::json v_sceneObject = nlohmann::json::object();
-			v_sceneObject["name"] = "Scene";
-		
-			{
-				nlohmann::json v_nodesArray = nlohmann::json::array();
-
-				for (std::size_t a = 0; a < v_writerContext.m_vecObjects.size(); a++)
-					v_nodesArray.push_back(a);
-
-				v_sceneObject["nodes"] = std::move(v_nodesArray);
-			}
-			
-			v_scenes.push_back(std::move(v_sceneObject));
-		}
-		
-		v_root["scenes"] = std::move(v_scenes);
-	}
-
-	{
-		nlohmann::json v_nodesArray = nlohmann::json::array();
-
-		for (const auto& v_curObject : v_writerContext.m_vecObjects)
-		{
-			nlohmann::json v_curObjectJson = nlohmann::json::object();
-			v_curObjectJson["mesh"] = v_curObject.m_meshIdx;
-			// v_curObjectJson["name"] = v_curObject.m_name;
-
-			nlohmann::json v_matrixArray = nlohmann::json::array();
-			for (std::size_t a = 0; a < 4; a++)
-			{
-				v_matrixArray.push_back(v_curObject.m_matrix[a].x);
-				v_matrixArray.push_back(v_curObject.m_matrix[a].y);
-				v_matrixArray.push_back(v_curObject.m_matrix[a].z);
-				v_matrixArray.push_back(v_curObject.m_matrix[a].w);
-			}
-
-			v_curObjectJson["matrix"] = std::move(v_matrixArray);
-
-			v_nodesArray.push_back(std::move(v_curObjectJson));
-		}
-
-		v_root["nodes"] = std::move(v_nodesArray);
-	}
-
-	{
-		nlohmann::json v_accessorArray = nlohmann::json::array();
-
-		for (const auto& v_curAccessor : v_writerContext.m_vecBufferAccessors)
-		{
-			nlohmann::json v_curAccessorJson = nlohmann::json::object();
-			v_curAccessorJson["componentType"] = static_cast<std::uint32_t>(v_curAccessor.m_componentType);
-			v_curAccessorJson["byteOffset"] = v_curAccessor.m_bufferOffset;
-			v_curAccessorJson["bufferView"] = v_curAccessor.m_bufferViewIdx;
-			v_curAccessorJson["count"] = v_curAccessor.m_itemCount;
-			v_curAccessorJson["type"] = GltfAccessorTypeToString(v_curAccessor.m_type);
-
-			v_accessorArray.push_back(std::move(v_curAccessorJson));
-		}
-
-		v_root["accessors"] = std::move(v_accessorArray);
-	}
-
-	{
-		nlohmann::json v_meshesArray = nlohmann::json::array();
-
-		for (const auto& v_curMesh : v_writerContext.m_vecMeshes)
-		{
-			nlohmann::json v_curMeshJson = nlohmann::json::object();
-			v_curMeshJson["name"] = "Test";
-
-			{
-				nlohmann::json v_primitivesArray = nlohmann::json::array();
-
-				{
-					nlohmann::json v_primitiveObject = nlohmann::json::object();
-					v_primitiveObject["indices"] = v_curMesh.m_indexAccessorIdx;
-					v_primitiveObject["material"] = 0;
-
-					{
-						nlohmann::json v_attributesObject = nlohmann::json::object();
-						
-						if (v_curMesh.m_vertexAccessorIdx != std::size_t(-1))
-							v_attributesObject["POSITION"] = v_curMesh.m_vertexAccessorIdx;
-
-						if (v_curMesh.m_uvAccessorIdx != std::size_t(-1))
-							v_attributesObject["TEXTURE_0"] = v_curMesh.m_uvAccessorIdx;
-
-						if (v_curMesh.m_normalAccessorIdx != std::size_t(-1))
-							v_attributesObject["NORMAL"] = v_curMesh.m_normalAccessorIdx;
-
-						v_primitiveObject["attributes"] = std::move(v_attributesObject);
-					}
-
-					v_primitivesArray.push_back(std::move(v_primitiveObject));
-				}
-
-				v_curMeshJson["primitives"] = std::move(v_primitivesArray);
-			}
-
-			v_meshesArray.push_back(std::move(v_curMeshJson));
-		}
-
-		v_root["meshes"] = std::move(v_meshesArray);
-	}
-
-	{
-		nlohmann::json v_bufferViewArray = nlohmann::json::array();
-
-		for (const auto& v_curView : v_writerContext.m_vecBufferViews)
-		{
-			nlohmann::json v_curViewObject = nlohmann::json::object();
-			v_curViewObject["buffer"] = 0;
-			v_curViewObject["byteLength"] = v_curView.m_byteLength;
-			v_curViewObject["byteOffset"] = v_curView.m_byteOffset;
-			v_curViewObject["target"] = v_curView.m_target;
-
-			v_bufferViewArray.push_back(std::move(v_curViewObject));
-		}
-
-		v_root["bufferViews"] = std::move(v_bufferViewArray);
-	}
-
-	{
-		nlohmann::json v_bufferArray = nlohmann::json::array();
-
-		nlohmann::json v_bufferObject = nlohmann::json::object();
-		v_bufferObject["byteLength"] = v_writerContext.m_bytesWritten;
-		v_bufferObject["uri"] = "mesh_data.bin";
-
-		v_bufferArray.push_back(std::move(v_bufferObject));
-
-		v_root["buffers"] = std::move(v_bufferArray);
-	}
-
-	std::ofstream v_gltfOutput(v_bpOutputPath + L".gltf");
-	if (v_gltfOutput.is_open())
-		v_gltfOutput << std::setfill('\t') << std::setw(1) << v_root;
+	ProgCounter::SetState(ProgState::WritingMtlFile, 0);
+	v_writerContext.writeGltfToFile(v_bpOutputPath + L".gltf");
 #endif
 }
 

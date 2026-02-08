@@ -96,7 +96,14 @@ static void GenerateUVs(Model& model, const glm::vec3& bounds, const glm::vec3& 
 {
 	model.m_uvs.resize(24);
 
-	const static glm::vec4 v_blockTextureNormals[6] =
+	const static glm::vec4 v_blockUvNormal1( 0.0f, 0.0f, 1.0f,  1.0f);
+	const static glm::vec4 v_blockUvNormal2( 1.0f, 1.0f, 0.0f,  0.0f);
+	const static glm::vec4 v_blockUvNormal3( 0.0f, 0.0f, 1.0f, -1.0f);
+	const static glm::vec4 v_blockUvNormal4( 1.0f, 1.0f, 0.0f,  0.0f);
+	const static glm::vec4 v_blockUvNormal5( 1.0f, 0.0f, 0.0f, -1.0f);
+	const static glm::vec4 v_blockUvNormal6(-1.0f, 0.0f, 0.0f, -1.0f);
+
+	/*const static glm::vec4 v_blockTextureNormals[6] =
 	{
 		{  0.0f,  0.0f,  1.0f,  1.0f },
 		{  1.0f,  1.0f,  0.0f,  0.0f },
@@ -104,6 +111,18 @@ static void GenerateUVs(Model& model, const glm::vec3& bounds, const glm::vec3& 
 		{  1.0f,  1.0f,  0.0f,  0.0f },
 		{  1.0f,  0.0f,  0.0f, -1.0f },
 		{ -1.0f,  0.0f,  0.0f, -1.0f }
+	};*/
+
+	const static glm::vec4 v_blockTextureNormals[24] =
+	{
+		v_blockUvNormal1, v_blockUvNormal2, v_blockUvNormal3,
+		v_blockUvNormal1, v_blockUvNormal4, v_blockUvNormal3,
+		v_blockUvNormal5, v_blockUvNormal2, v_blockUvNormal3,
+		v_blockUvNormal5, v_blockUvNormal4, v_blockUvNormal3,
+		v_blockUvNormal1, v_blockUvNormal2, v_blockUvNormal6,
+		v_blockUvNormal1, v_blockUvNormal4, v_blockUvNormal6,
+		v_blockUvNormal5, v_blockUvNormal2, v_blockUvNormal6,
+		v_blockUvNormal5, v_blockUvNormal4, v_blockUvNormal6
 	};
 
 	const float v_tilingAdj = 1.0f / (float)tiling;
@@ -130,6 +149,32 @@ static void FillCustomCube(Model& model, const glm::vec3& bounds, const glm::vec
 {
 	model.m_vertices =
 	{
+		{  bounds.x,  bounds.y, -bounds.z },
+		{  bounds.x,  bounds.y, -bounds.z },
+		{  bounds.x,  bounds.y, -bounds.z },
+		{  bounds.x, -bounds.y, -bounds.z },
+		{  bounds.x, -bounds.y, -bounds.z },
+		{  bounds.x, -bounds.y, -bounds.z },
+		{  bounds.x,  bounds.y,  bounds.z },
+		{  bounds.x,  bounds.y,  bounds.z },
+		{  bounds.x,  bounds.y,  bounds.z },
+		{  bounds.x, -bounds.y,  bounds.z },
+		{  bounds.x, -bounds.y,  bounds.z },
+		{  bounds.x, -bounds.y,  bounds.z },
+		{ -bounds.x,  bounds.y, -bounds.z },
+		{ -bounds.x,  bounds.y, -bounds.z },
+		{ -bounds.x,  bounds.y, -bounds.z },
+		{ -bounds.x, -bounds.y, -bounds.z },
+		{ -bounds.x, -bounds.y, -bounds.z },
+		{ -bounds.x, -bounds.y, -bounds.z },
+		{ -bounds.x,  bounds.y,  bounds.z },
+		{ -bounds.x,  bounds.y,  bounds.z },
+		{ -bounds.x,  bounds.y,  bounds.z },
+		{ -bounds.x, -bounds.y,  bounds.z },
+		{ -bounds.x, -bounds.y,  bounds.z },
+		{ -bounds.x, -bounds.y,  bounds.z }
+
+		/*
 		{ -bounds.x,  bounds.y,  bounds.z },
 		{ -bounds.x, -bounds.y, -bounds.z },
 		{ -bounds.x, -bounds.y,  bounds.z },
@@ -138,15 +183,28 @@ static void FillCustomCube(Model& model, const glm::vec3& bounds, const glm::vec
 		{  bounds.x,  bounds.y, -bounds.z },
 		{  bounds.x, -bounds.y,  bounds.z },
 		{  bounds.x,  bounds.y,  bounds.z }
+		*/
 	};
 
 	if (SharedConverterSettings::ExportNormals)
 	{
 		model.m_normals =
 		{
-			{ -1.0f,  0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f },
-			{  1.0f,  0.0f, 0.0f }, { 0.0f, 0.0f,  1.0f },
-			{  0.0f, -1.0f, 0.0f }, { 0.0f, 1.0f,  0.0f }
+			{ 0.0f, 0.0f, -1.0f }, { 0.0f,  1.0f, 0.0f }, {  1.0f, 0.0f, 0.0f },
+			{ 0.0f, 0.0f, -1.0f }, { 0.0f, -1.0f, 0.0f }, {  1.0f, 0.0f, 0.0f },
+			{ 0.0f, 0.0f,  1.0f }, { 0.0f,  1.0f, 0.0f }, {  1.0f, 0.0f, 0.0f },
+			{ 0.0f, 0.0f,  1.0f }, { 0.0f, -1.0f, 0.0f }, {  1.0f, 0.0f, 0.0f },
+			{ 0.0f, 0.0f, -1.0f }, { 0.0f,  1.0f, 0.0f }, { -1.0f, 0.0f, 0.0f },
+			{ 0.0f, 0.0f, -1.0f }, { 0.0f, -1.0f, 0.0f }, { -1.0f, 0.0f, 0.0f },
+			{ 0.0f, 0.0f,  1.0f }, { 0.0f,  1.0f, 0.0f }, { -1.0f, 0.0f, 0.0f },
+			{ 0.0f, 0.0f,  1.0f }, { 0.0f, -1.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }
+
+			/*{ -1.0f,  0.0f, 0.0f },
+			{ 0.0f, 0.0f, -1.0f },
+			{  1.0f,  0.0f, 0.0f },
+			{ 0.0f, 0.0f,  1.0f },
+			{  0.0f, -1.0f, 0.0f },
+			{ 0.0f, 1.0f,  0.0f }*/
 		};
 	}
 
@@ -155,7 +213,19 @@ static void FillCustomCube(Model& model, const glm::vec3& bounds, const glm::vec
 		SharedConverterSettings::ExportNormals,
 		SharedConverterSettings::ExportUvs,
 		std::initializer_list<std::initializer_list<VertexData>>{
-			{ { 0, 0 , 0 }, { 1, 1 , 0 }, { 2, 2 , 0 } },
+			{ { 13, 13, 13 }, {  7,  7,  7 }, {  1,  1,  1 } },
+			{ {  6,  6,  6 }, { 21, 21, 21 }, {  9,  9,  9 } },
+			{ { 20, 20, 20 }, { 17, 17, 17 }, { 23, 23, 23 } },
+			{ {  4,  4,  4 }, { 22, 22, 22 }, { 16, 16, 16 } },
+			{ {  2,  2,  2 }, { 11, 11, 11 }, {  5,  5,  5 } },
+			{ { 12, 12, 12 }, {  3,  3,  3 }, { 15, 15, 15 } },
+			{ { 13, 13, 13 }, { 19, 19, 19 }, {  7,  7,  7 } },
+			{ {  6,  6,  6 }, { 18, 18, 18 }, { 21, 21, 21 } },
+			{ { 20, 20, 20 }, { 14, 14, 14 }, { 17, 17, 17 } },
+			{ {  4,  4,  4 }, { 10, 10, 10 }, { 22, 22, 22 } },
+			{ {  2,  2,  2 }, {  8,  8,  8 }, { 11, 11, 11 } },
+			{ { 12, 12, 12 }, {  0,  0,  0 }, {  3,  3,  3 } }
+			/*{ { 0, 0 , 0 }, { 1, 1 , 0 }, { 2, 2 , 0 } },
 			{ { 3, 3 , 1 }, { 4, 4 , 1 }, { 1, 5 , 1 } },
 			{ { 5, 6 , 2 }, { 6, 7 , 2 }, { 4, 8 , 2 } },
 			{ { 7, 9 , 3 }, { 2, 10, 3 }, { 6, 11, 3 } },
@@ -166,7 +236,7 @@ static void FillCustomCube(Model& model, const glm::vec3& bounds, const glm::vec
 			{ { 5, 6 , 2 }, { 7, 20, 2 }, { 6, 7 , 2 } },
 			{ { 7, 9 , 3 }, { 0, 21, 3 }, { 2, 10, 3 } },
 			{ { 4, 12, 4 }, { 6, 22, 4 }, { 2, 13, 4 } },
-			{ { 3, 15, 5 }, { 0, 23, 5 }, { 7, 16, 5 } }
+			{ { 3, 15, 5 }, { 0, 23, 5 }, { 7, 16, 5 } }*/
 		}
 	);
 
@@ -192,7 +262,13 @@ void SMBlock::WriteObjectToFileGltf(
 	GltfWriterContext& context,
 	const glm::mat4& transform) const
 {
-	DebugOutL("TODO -> SMBlock writer for GLTF");
+	Model v_blockModel;
+	FillCustomCube(v_blockModel, m_size / 2.0f, m_position, m_parent->m_tiling);
+
+	const glm::mat4 v_blockTransform = transform * this->GetTransformMatrix();
+	v_blockModel.WriteToFileGltf(context, v_blockTransform, this);
+
+	ProgCounter::ProgressValue++;
 }
 
 glm::mat4 SMBlock::GetTransformMatrix() const

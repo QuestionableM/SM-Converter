@@ -93,6 +93,7 @@ struct SubMeshData
 	std::vector<std::vector<VertexData>> m_dataIdx;
 
 	std::uint32_t m_subMeshIdx;
+	std::size_t m_indexBufferIdx;
 	bool m_hasNormals;
 	bool m_hasUvs;
 };
@@ -120,7 +121,7 @@ struct Model
 	std::vector<glm::vec2> m_uvs;
 	std::vector<SubMeshData> m_subMeshData;
 
-	bool m_bUvsCached;
+	std::size_t m_uvCacheIdx;
 };
 
 class ModelStorage
