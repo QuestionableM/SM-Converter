@@ -127,6 +127,11 @@ void SMEntity::WriteObjectToFile(
 	const glm::mat4& transform) const
 {}
 
+void SMEntity::WriteObjectToFileGltf(
+	GltfWriterContext& context,
+	const glm::mat4& transform) const
+{}
+
 void SMEntity::CalculateCenterPoint(glm::vec3& outInput) const
 {
 	outInput += m_position;
@@ -219,9 +224,18 @@ void SMEntityWithModel::WriteObjectToFile(
 	WriterOffsetData& offset,
 	const glm::mat4& transform) const
 {
-	const glm::mat4 model_matrix = transform * this->GetTransformMatrix();
+	const glm::mat4 v_modelMatrix = transform * this->GetTransformMatrix();
+	m_model->WriteToFile(v_modelMatrix, offset, file, this);
 
-	m_model->WriteToFile(model_matrix, offset, file, this);
+	ProgCounter::ProgressValue++;
+}
+
+void SMEntityWithModel::WriteObjectToFileGltf(
+	GltfWriterContext& context,
+	const glm::mat4& transform) const
+{
+	const glm::mat4 v_modelMatrix = transform * this->GetTransformMatrix();
+	m_model->WriteToFileGltf(context, v_modelMatrix, this);
 
 	ProgCounter::ProgressValue++;
 }

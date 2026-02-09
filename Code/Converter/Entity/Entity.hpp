@@ -98,6 +98,7 @@ public:
 	virtual std::string GetMtlName(const std::size_t idx) const;
 	virtual void FillTextureMap(EntityTextureMap& textureMap) const = 0;
 	virtual void WriteObjectToFile(std::ofstream& file, WriterOffsetData& offset, const glm::mat4& transform) const;
+	virtual void WriteObjectToFileGltf(GltfWriterContext& context, const glm::mat4& transform) const;
 	virtual void CalculateCenterPoint(glm::vec3& outInput) const;
 	virtual std::size_t GetAmountOfObjects() const;
 	virtual SMColor GetColor() const;
@@ -138,6 +139,9 @@ public:
 	void WriteObjectToFile(
 		std::ofstream& file,
 		WriterOffsetData& offset,
+		const glm::mat4& transform) const override;
+	void WriteObjectToFileGltf(
+		GltfWriterContext& context,
 		const glm::mat4& transform) const override;
 
 protected:
