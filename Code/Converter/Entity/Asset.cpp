@@ -42,14 +42,14 @@ char* SMAsset::GetMtlNameCStr(
 	pCString = m_uuid.toCString(pCString);
 	*pCString++ = ' ';
 
-	const SMTextureList* v_tex_list = m_parent->m_textures->getTexList(material, idx);
-	if (v_tex_list)
+	const SMTextureList* v_pTexList = m_parent->m_textures->getTexList(material, idx);
+	if (v_pTexList)
 	{
-		pCString = this->GetColor(v_tex_list->m_defColorIdx).StringHexCStr(pCString);
+		pCString = this->GetColor(v_pTexList->m_defColorIdx).StringHexCStr(pCString);
 		*pCString++ = ' ';
 		pCString = String::FromInteger<std::size_t>(idx + 1, pCString);
 		*pCString++ = ' ';
-		return MaterialManager::GetMaterialACStr(v_tex_list->m_material, pCString);
+		return MaterialManager::GetMaterialACStr(v_pTexList->m_material, pCString);
 	}
 
 	pCString = SMColor::WriteEmptyHex(pCString);

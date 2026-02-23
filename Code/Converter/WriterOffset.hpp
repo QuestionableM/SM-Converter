@@ -3,6 +3,7 @@
 #include "Utils/GlmUnmanaged.hpp"
 #include "Utils/clr_include.hpp"
 #include "Utils/Hashing.hpp"
+#include "Utils/Color.hpp"
 
 SM_UNMANAGED_CODE
 
@@ -72,6 +73,14 @@ struct GltfMeshPrimitive
 {
 	GltfMeshPrimitive() noexcept;
 
+	GltfMeshPrimitive(
+		const std::size_t vtxAccessorIdx,
+		const std::size_t uvAccessorIdx,
+		const std::size_t normAccessorIdx,
+		const std::size_t idxAccessorIdx,
+		const std::size_t matAccessorIdx
+	) noexcept;
+
 	std::size_t m_vertexAccessorIdx;
 	std::size_t m_uvAccessorIdx;
 	std::size_t m_normalAccessorIdx;
@@ -96,6 +105,12 @@ struct GltfObject
 	glm::mat4 m_matrix;
 };
 
+struct GltfMaterial
+{
+	const class SMTextureList* m_pTextures;
+	SMColor m_color;
+};
+
 struct GltfWriterContext
 {
 	GltfWriterContext(const std::wstring& outputFile);
@@ -109,6 +124,7 @@ struct GltfWriterContext
 		const GltfAccessorType type);
 
 	GltfMesh& getOrCreateNewGroup(const std::wstring_view& name);
+	bool getOrCreateMaterial(const std::string_view& name, std::size_t& outMatIdx);
 
 	void writeToFile(const void* buffer, const std::size_t bufferSize);
 	void writeGltfToFile(const std::wstring& filePath);
@@ -121,9 +137,11 @@ struct GltfWriterContext
 	std::vector<GltfBufferAccessor> m_vecBufferAccessors;
 	std::vector<GltfMesh> m_vecMeshes;
 	std::vector<GltfObject> m_vecObjects;
+	std::vector<GltfMaterial> m_vecMaterials;
 
 	emhash8::HashMap<std::wstring, std::size_t, Hashing::WstringHasher, std::equal_to<>> m_mapPathToMeshIndex;
 	emhash8::HashMap<std::wstring, std::size_t, Hashing::WstringHasher, std::equal_to<>> m_mapGroupNameToIndex;
+	emhash8::HashMap<std::string , std::size_t, Hashing::StringHasher , std::equal_to<>> m_mapMaterials;
 };
 
 struct WriterOffsetData

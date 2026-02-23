@@ -496,19 +496,29 @@ void Model::WriteToFileGltf(
 	}
 
 	GltfMesh& v_curMesh = context.m_vecMeshes[context.m_selectedMeshIdx];
+	std::size_t v_subMeshMatIdx = std::size_t(-1);
 
 	const std::size_t v_subMeshDataCount = m_subMeshData.size();
 	for (std::size_t v_idx = 0; v_idx < v_subMeshDataCount; v_idx++)
 	{
 		SubMeshData& v_curSubMesh = m_subMeshData[v_idx];
 		// Skip writing the sub mesh if entity doesn't allow it
-		if (pEntity != nullptr && !pEntity->GetCanWrite(v_curSubMesh.m_materialName, v_idx))
-			continue;
+		if (pEntity != nullptr)
+		{
+			if (!pEntity->GetCanWrite(v_curSubMesh.m_materialName, v_idx))
+				continue;
 
-		auto& v_newPrimitive = v_curMesh.m_vecPrimitives.emplace_back();
-		v_newPrimitive.m_vertexAccessorIdx = v_vertexAccessorIdx;
-		v_newPrimitive.m_uvAccessorIdx = v_uvAccessorIdx;
-		v_newPrimitive.m_normalAccessorIdx = v_normalAccessorIdx;
+			if (SharedConverterSettings::ExportMaterials)
+				v_subMeshMatIdx = pEntity->GetGltfMaterialEntry(context, v_curSubMesh.m_materialName, v_idx);
+		}
+
+		auto& v_newPrimitive = v_curMesh.m_vecPrimitives.emplace_back(
+			v_vertexAccessorIdx,
+			v_uvAccessorIdx,
+			v_normalAccessorIdx,
+			std::size_t(-1),
+			v_subMeshMatIdx
+		);
 
 		if (v_curSubMesh.m_indexBufferIdx != std::size_t(-1))
 		{

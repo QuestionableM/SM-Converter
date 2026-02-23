@@ -116,6 +116,20 @@ char* SMEntity::GetMtlNameCStr(
 	return pCString;
 }
 
+void SMEntity::GetMtlNameString(
+	std::string& outString,
+	const std::string_view& material,
+	const std::size_t idx) const
+{}
+
+std::size_t SMEntity::GetGltfMaterialEntry(
+	GltfWriterContext& context,
+	const std::string_view& material,
+	const std::size_t idx) const
+{
+	return std::size_t(-1);
+}
+
 std::string SMEntity::GetMtlName(const std::size_t idx) const
 {
 	return "";

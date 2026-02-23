@@ -129,6 +129,15 @@ wchar_t* SMUuid::toCStringW(wchar_t* v_beginning) const
 	return String::FromIntegerW<unsigned char, 16>(m_Data8[15], v_beginning);
 }
 
+void SMUuid::appendToString(std::string& outStr) const
+{
+	char v_buffer[37];
+	v_buffer[36] = '\0';
+	this->toCString(v_buffer);
+
+	outStr.append(v_buffer, 36);
+}
+
 std::string SMUuid::toString() const
 {
 	char v_buffer[37];

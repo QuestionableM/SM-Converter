@@ -121,6 +121,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClCompile Include="Code\Converter\TileConverter\TilePart.cpp" />
     <ClCompile Include="Code\Converter\WorldConverter\World.cpp" />
     <ClCompile Include="Code\Converter\WorldConverter\WorldConverter.cpp" />
+    <ClCompile Include="Code\Converter\WriterOffset.cpp" />
     <ClCompile Include="Code\main_cli.cpp" />
     <ClCompile Include="Code\ObjectDatabase\DatabaseConfig.cpp" />
     <ClCompile Include="Code\ObjectDatabase\GroundTextureDatabase.cpp" />

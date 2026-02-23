@@ -67,6 +67,39 @@ char* SMBlock::GetMtlNameCStr(
 	return MaterialManager::GetMaterialACStr(m_parent->m_textures.m_material, pCString);
 }
 
+void SMBlock::GetMtlNameString(
+	std::string& outString,
+	const std::string_view& material,
+	const std::size_t idx) const
+{
+	m_uuid.appendToString(outString);
+	outString.append(1, ' ');
+	m_color.appendStringHex(outString);
+	outString.append(1, ' ');
+	String::AppendIntegerToString(outString, idx + 1);
+	MaterialManager::AppendMaterialIdx(outString, m_parent->m_textures.m_material);
+}
+
+std::size_t SMBlock::GetGltfMaterialEntry(
+	GltfWriterContext& context,
+	const std::string_view& material,
+	const std::size_t idx) const
+{
+	std::string v_matName;
+	GetMtlNameString(v_matName, material, idx);
+
+	std::size_t v_matIdx;
+	if (context.getOrCreateMaterial(v_matName, v_matIdx))
+	{
+		GltfMaterial& v_curMaterial = context.m_vecMaterials[v_matIdx];
+
+		v_curMaterial.m_color = m_color;
+		v_curMaterial.m_pTextures = &m_parent->m_textures;
+	}
+
+	return v_matIdx;
+}
+
 std::string SMBlock::GetMtlName(const std::size_t idx) const
 {
 	std::string v_mtlName(m_uuid.toString());

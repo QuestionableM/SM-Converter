@@ -63,6 +63,20 @@ GltfMeshPrimitive::GltfMeshPrimitive() noexcept
 	, m_materialIdx(std::size_t(-1))
 {}
 
+GltfMeshPrimitive::GltfMeshPrimitive(
+	const std::size_t vtxAccessorIdx,
+	const std::size_t uvAccessorIdx,
+	const std::size_t normAccessorIdx,
+	const std::size_t idxAccessorIdx,
+	const std::size_t matAccessorIdx
+) noexcept
+	: m_vertexAccessorIdx(vtxAccessorIdx)
+	, m_uvAccessorIdx(uvAccessorIdx)
+	, m_normalAccessorIdx(normAccessorIdx)
+	, m_indexAccessorIdx(idxAccessorIdx)
+	, m_materialIdx(matAccessorIdx)
+{}
+
 ////////////// GLTF MESH ////////////////
 
 GltfMesh::GltfMesh()
@@ -88,6 +102,7 @@ GltfWriterContext::GltfWriterContext(
 	, m_vecObjects()
 	, m_mapPathToMeshIndex()
 	, m_mapGroupNameToIndex()
+	, m_mapMaterials()
 {}
 
 GltfBufferView& GltfWriterContext::createNewView(
@@ -125,6 +140,25 @@ GltfMesh& GltfWriterContext::getOrCreateNewGroup(
 	v_newObject.m_name = name;
 
 	return m_vecMeshes.emplace_back();
+}
+
+bool GltfWriterContext::getOrCreateMaterial(
+	const std::string_view& name,
+	std::size_t& outMatIdx)
+{
+	auto v_iter = m_mapMaterials.find(name);
+	if (v_iter != m_mapMaterials.end())
+	{
+		outMatIdx = v_iter->second;
+		return false;
+	}
+
+	outMatIdx = m_vecMaterials.size();
+
+	m_vecMaterials.emplace_back();
+	m_mapMaterials.emplace(name, outMatIdx);
+
+	return true;
 }
 
 void GltfWriterContext::writeToFile(const void* buffer, const std::size_t bufferSize)
