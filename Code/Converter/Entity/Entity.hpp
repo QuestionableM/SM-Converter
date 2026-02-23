@@ -95,9 +95,12 @@ public:
 	virtual EntityType Type() const = 0;
 	virtual std::size_t GetIndex() const;
 	virtual char* GetMtlNameCStr(const std::string_view& material, const std::size_t idx, char* pCString) const;
+	virtual void GetMtlNameString(std::string& outString, const std::string_view& material, const std::size_t idx) const;
+	virtual std::size_t GetGltfMaterialEntry(GltfWriterContext& context, const std::string_view& material, const std::size_t idx) const;
 	virtual std::string GetMtlName(const std::size_t idx) const;
 	virtual void FillTextureMap(EntityTextureMap& textureMap) const = 0;
 	virtual void WriteObjectToFile(std::ofstream& file, WriterOffsetData& offset, const glm::mat4& transform) const;
+	virtual void WriteObjectToFileGltf(GltfWriterContext& context, const glm::mat4& transform) const;
 	virtual void CalculateCenterPoint(glm::vec3& outInput) const;
 	virtual std::size_t GetAmountOfObjects() const;
 	virtual SMColor GetColor() const;
@@ -138,6 +141,9 @@ public:
 	void WriteObjectToFile(
 		std::ofstream& file,
 		WriterOffsetData& offset,
+		const glm::mat4& transform) const override;
+	void WriteObjectToFileGltf(
+		GltfWriterContext& context,
 		const glm::mat4& transform) const override;
 
 protected:

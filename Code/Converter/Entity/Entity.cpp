@@ -116,6 +116,20 @@ char* SMEntity::GetMtlNameCStr(
 	return pCString;
 }
 
+void SMEntity::GetMtlNameString(
+	std::string& outString,
+	const std::string_view& material,
+	const std::size_t idx) const
+{}
+
+std::size_t SMEntity::GetGltfMaterialEntry(
+	GltfWriterContext& context,
+	const std::string_view& material,
+	const std::size_t idx) const
+{
+	return std::size_t(-1);
+}
+
 std::string SMEntity::GetMtlName(const std::size_t idx) const
 {
 	return "";
@@ -124,6 +138,11 @@ std::string SMEntity::GetMtlName(const std::size_t idx) const
 void SMEntity::WriteObjectToFile(
 	std::ofstream& file,
 	WriterOffsetData& offset,
+	const glm::mat4& transform) const
+{}
+
+void SMEntity::WriteObjectToFileGltf(
+	GltfWriterContext& context,
 	const glm::mat4& transform) const
 {}
 
@@ -219,9 +238,18 @@ void SMEntityWithModel::WriteObjectToFile(
 	WriterOffsetData& offset,
 	const glm::mat4& transform) const
 {
-	const glm::mat4 model_matrix = transform * this->GetTransformMatrix();
+	const glm::mat4 v_modelMatrix = transform * this->GetTransformMatrix();
+	m_model->WriteToFile(v_modelMatrix, offset, file, this);
 
-	m_model->WriteToFile(model_matrix, offset, file, this);
+	ProgCounter::ProgressValue++;
+}
+
+void SMEntityWithModel::WriteObjectToFileGltf(
+	GltfWriterContext& context,
+	const glm::mat4& transform) const
+{
+	const glm::mat4 v_modelMatrix = transform * this->GetTransformMatrix();
+	m_model->WriteToFileGltf(context, v_modelMatrix, this);
 
 	ProgCounter::ProgressValue++;
 }

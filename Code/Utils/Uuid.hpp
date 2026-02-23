@@ -32,6 +32,7 @@ public:
 	char* toCString(char* buff) const;
 	wchar_t* toCStringW(wchar_t* buff) const;
 
+	void appendToString(std::string& outStr) const;
 	std::string toString() const;
 	std::wstring toWstring() const;
 

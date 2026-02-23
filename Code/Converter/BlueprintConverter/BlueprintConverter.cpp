@@ -12,29 +12,30 @@
 
 SM_UNMANAGED_CODE
 
-void BlueprintConv::WriteToFileInternal(SMBlueprint* pBlueprint, const std::wstring& bp_name, ConvertError& error)
+void BlueprintConv::WriteToFileInternal(SMBlueprint* pBlueprint, const std::wstring& blueprintName, ConvertError& error)
 {
 	if (error) return;
 
-	const std::wstring v_bp_out_dir(DatabaseConfig::BlueprintOutputFolder);
-	if (!File::CreateDirectorySafe(v_bp_out_dir))
+	const std::wstring v_bpOutDir(DatabaseConfig::BlueprintOutputFolder);
+	if (!File::CreateDirectorySafe(v_bpOutDir))
 	{
 		error.setError(1, "Couldn't create the main output directory");
 		return;
 	}
 
-	const std::wstring v_bp_dir_path = v_bp_out_dir + L"/" + bp_name;
-	if (!File::CreateDirectorySafe(v_bp_dir_path))
+	const std::wstring v_bpDirPath = v_bpOutDir + L"/" + blueprintName;
+	if (!File::CreateDirectorySafe(v_bpDirPath))
 	{
 		error.setError(1, "Couldn't create the blueprint output directory");
 		return;
 	}
 
-	const std::wstring v_bp_output_path = v_bp_dir_path + L"/" + bp_name;
+	const std::wstring v_bpOutputPath = v_bpDirPath + L"/" + blueprintName;
 
+#if 0 // OBJ implementation
 	{
 		//Write object file
-		std::ofstream v_obj_writer(v_bp_output_path + L".obj");
+		std::ofstream v_obj_writer(v_bpOutputPath + L".obj");
 		if (!v_obj_writer.is_open())
 		{
 			error.setError(1, "Couldn't create an object file");
@@ -70,8 +71,26 @@ void BlueprintConv::WriteToFileInternal(SMBlueprint* pBlueprint, const std::wstr
 			ProgCounter::ProgressMax = v_textureMap.size();
 		}
 
-		MtlFileWriter::Write(v_bp_output_path + L".mtl", v_textureMap);
+		MtlFileWriter::Write(v_bpOutputPath + L".mtl", v_textureMap);
 	}
+#else
+	ProgCounter::SetState(ProgState::WritingObjects, pBlueprint->GetAmountOfObjects());
+
+	const std::wstring v_bpBinaryPath = v_bpDirPath + L"/mesh_data.bin";
+	GltfWriterContext v_writerContext(v_bpBinaryPath);
+
+	if (!v_writerContext.m_outFile.is_open())
+	{
+		error.setError(1, "Couldn't create an object file");
+		return;
+	}
+
+	v_writerContext.getOrCreateNewGroup(L"Main");
+	pBlueprint->WriteObjectToFileGltf(v_writerContext, glm::mat4(1.0f));
+
+	ProgCounter::SetState(ProgState::WritingMtlFile, 0);
+	v_writerContext.writeGltfToFile(v_bpOutputPath + L".gltf");
+#endif
 }
 
 SMBody* BlueprintConv::CreateCollection(

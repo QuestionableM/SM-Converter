@@ -38,6 +38,7 @@ public:
 	EntityType Type() const override;
 	void FillTextureMap(EntityTextureMap& textureMap) const override;
 	void WriteObjectToFile(std::ofstream& file, WriterOffsetData& offset, const glm::mat4& transform) const override;
+	void WriteObjectToFileGltf(GltfWriterContext& context, const glm::mat4& transform) const override;
 	std::size_t GetAmountOfObjects() const override;
 	void CalculateCenterPoint(glm::vec3& outInput) const override;
 
