@@ -113,9 +113,7 @@ static glm::mat4 ComputePistonTransform(
 {
 	const glm::mat4 v_rotMat = Rotations::GetRotationMatrix(xzRotation);
 	const glm::vec3 v_dir = glm::vec3(v_rotMat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f));
-	const float v_offset = settingNotches * 0.25f;
-
-	return glm::translate(v_dir * v_offset);
+	return glm::translate(v_dir * settingNotches);
 }
 
 std::vector<JointConnection> ControllerParser::BuildBodyGraph(
