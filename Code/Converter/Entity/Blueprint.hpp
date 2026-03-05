@@ -10,6 +10,8 @@
 #include "Utils/clr_include.hpp"
 #include "Utils/Json.hpp"
 
+#include <unordered_map>
+
 SM_UNMANAGED_CODE
 
 class SMBlueprint final : public SMEntity
@@ -32,7 +34,7 @@ public:
 	static SMBlueprint* LoadAutomatic(const std::string_view& str, const glm::vec3& pos, const glm::quat& rot);
 	static SMBlueprint* FromFile(const std::wstring_view& path, const glm::vec3& pos, const glm::quat& rot);
 	//Used by blueprint converter as it reports the conversion status
-	static SMBlueprint* FromFileWithStatus(const std::wstring_view& path, AddObjectFunction v_addObjFunc, ConvertError& v_error);
+	static SMBlueprint* FromFileWithStatus(const std::wstring_view& path, AddObjectFunction v_addObjFunc, ConvertError& v_error, simdjson::dom::document* pDocOut = nullptr);
 	static SMBlueprint* FromJsonString(const std::string_view& json_str, const glm::vec3& pos, const glm::quat& rot);
 
 	EntityType Type() const override;
@@ -40,6 +42,8 @@ public:
 	void WriteObjectToFile(std::ofstream& file, WriterOffsetData& offset, const glm::mat4& transform) const override;
 	std::size_t GetAmountOfObjects() const override;
 	void CalculateCenterPoint(glm::vec3& outInput) const override;
+
+	static glm::vec3 JsonToVector(const simdjson::simdjson_result<simdjson::dom::element>& vec_json);
 
 	/*
 		This vector contains blocks, parts and joints
@@ -52,8 +56,6 @@ private:
 
 	static void AddObject_Default(SMBlueprint* self, SMEntity* pEntity);
 
-	static glm::vec3 JsonToVector(const simdjson::simdjson_result<simdjson::dom::element>& vec_json);
-
 	void LoadChild(const simdjson::dom::element& v_child);
 	void LoadJoint(const simdjson::dom::element& v_jnt);
 
@@ -65,6 +67,10 @@ private:
 
 	std::size_t m_objectIndex;
 	std::size_t m_bodyIndex;
+
+public:
+	// child index -> body index (for controller presets)
+	std::unordered_map<std::size_t, std::size_t> m_childToBodyIndex;
 };
 
 SM_MANAGED_CODE

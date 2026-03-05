@@ -4,6 +4,8 @@
 #include "ObjectDatabase/DatabaseConfig.hpp"
 #include "ObjectDatabase/ProgCounter.hpp"
 
+#include "Converter/Entity/ControllerParser.hpp"
+#include "Converter/Entity/ControllerTransform.hpp"
 #include "Converter/ConvertSettings.hpp"
 #include "Converter/MtlFileWriter.hpp"
 
@@ -259,20 +261,34 @@ void BlueprintConv::ConvertToModel(
 	SMBlueprint::AddObjectFunction v_add_obj_func = BlueprintConv::GetAddObjectFunction();
 	SMBlueprint* v_pBlueprint = nullptr;
 
+	// Reuse parsed DOM for controller presets to avoid double-parsing
+	const bool v_needPresets = BlueprintConverterSettings::ApplyControllerPresets;
+	simdjson::dom::document v_bpDoc;
+	simdjson::dom::document* v_pDocOut = v_needPresets ? &v_bpDoc : nullptr;
+
 	if (pCustomGame)
 	{
 		SMModCustomGameSwitch<true, false> v_content_switch;
 		v_content_switch.MergeContent(pCustomGame);
 
-		v_pBlueprint = SMBlueprint::FromFileWithStatus(bp_path, v_add_obj_func, error);
+		v_pBlueprint = SMBlueprint::FromFileWithStatus(bp_path, v_add_obj_func, error, v_pDocOut);
 	}
 	else
 	{
-		v_pBlueprint = SMBlueprint::FromFileWithStatus(bp_path, v_add_obj_func, error);
+		v_pBlueprint = SMBlueprint::FromFileWithStatus(bp_path, v_add_obj_func, error, v_pDocOut);
 	}
 
 	if (v_pBlueprint)
 	{
+		if (v_needPresets && !error)
+		{
+			const auto v_bpRoot = v_bpDoc.root();
+			ControllerPresetData v_presetData = ControllerParser::ExtractPresets(v_bpRoot);
+			auto v_bodyGraph = ControllerParser::BuildBodyGraph(
+				v_bpRoot, v_presetData, v_pBlueprint->m_childToBodyIndex);
+			ControllerTransform::Apply(v_pBlueprint, v_bodyGraph, v_pBlueprint->m_childToBodyIndex);
+		}
+
 		BlueprintConv::WriteToFileInternal(v_pBlueprint, bp_name, error);
 
 		//Since all the sorted groups are attached to the blueprint, the blueprint takes care of all the allocated memory

@@ -146,11 +146,13 @@ SMBlueprint* SMBlueprint::FromFile(
 SMBlueprint* SMBlueprint::FromFileWithStatus(
 	const std::wstring_view& path,
 	SMBlueprint::AddObjectFunction v_addObjFunc,
-	ConvertError& error)
+	ConvertError& error,
+	simdjson::dom::document* pDocOut)
 {
 	ProgCounter::SetState(ProgState::ParsingBlueprint, 0);
 
-	simdjson::dom::document v_bp_doc;
+	simdjson::dom::document v_localDoc;
+	simdjson::dom::document& v_bp_doc = pDocOut ? *pDocOut : v_localDoc;
 	if (!JsonReader::LoadParseSimdjsonC(path, v_bp_doc, simdjson::dom::element_type::OBJECT))
 	{
 		error.setError(1, "Couldn't read the specified blueprint file. Possible reason: Invalid file, Parse error, Invalid path");
@@ -408,6 +410,7 @@ void SMBlueprint::LoadBodiesWithCounter(const simdjson::dom::element& v_blueprin
 
 		for (const auto v_child : v_childs_array)
 		{
+			m_childToBodyIndex[m_objectIndex] = m_bodyIndex;
 			this->LoadChild(v_child);
 
 			ProgCounter::ProgressValue++;
@@ -447,6 +450,7 @@ void SMBlueprint::LoadBodies(const simdjson::dom::element& pJson)
 
 		for (const auto v_child : v_childs_array.get_array().value_unsafe())
 		{
+			m_childToBodyIndex[m_objectIndex] = m_bodyIndex;
 			this->LoadChild(v_child);
 			m_objectIndex++;
 		}

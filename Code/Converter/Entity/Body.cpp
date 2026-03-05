@@ -84,3 +84,20 @@ std::size_t SMBody::GetAmountOfObjects() const
 {
 	return m_objects.size();
 }
+
+void SMBody::ApplyPreTransformByBodyMap(
+	const std::unordered_map<std::size_t, glm::mat4>& bodyTransforms,
+	const std::unordered_map<std::size_t, std::size_t>& childToBodyMap)
+{
+	for (SMEntity* v_pEntity : m_objects)
+	{
+		const std::size_t v_entityIdx = v_pEntity->GetIndex();
+		const auto v_bodyIt = childToBodyMap.find(v_entityIdx);
+		if (v_bodyIt == childToBodyMap.end()) continue;
+
+		const auto v_transformIt = bodyTransforms.find(v_bodyIt->second);
+		if (v_transformIt == bodyTransforms.end()) continue;
+
+		v_pEntity->SetPreTransform(v_transformIt->second);
+	}
+}

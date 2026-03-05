@@ -182,7 +182,7 @@ void SMBlock::WriteObjectToFile(
 	Model v_blockModel;
 	FillCustomCube(v_blockModel, m_size / 2.0f, m_position, m_parent->m_tiling);
 
-	const glm::mat4 v_blockTransform = transform * this->GetTransformMatrix();
+	const glm::mat4 v_blockTransform = transform * m_preTransform * this->GetTransformMatrix();
 	v_blockModel.WriteToFile(v_blockTransform, offset, file, this);
 
 	ProgCounter::ProgressValue++;

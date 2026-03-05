@@ -181,7 +181,7 @@ void SMWedge::WriteObjectToFile(
 	const glm::mat4 v_localTransform = this->GetTransformMatrix();
 	FillCustomCube(v_newWedge, v_localTransform, m_size * 0.5f, m_position, m_parentBlock->m_tiling);
 
-	const glm::mat4 v_wedgeTransform = transform * v_localTransform;
+	const glm::mat4 v_wedgeTransform = transform * m_preTransform * v_localTransform;
 	v_newWedge.WriteToFile(v_wedgeTransform, offset, file, this);
 
 	ProgCounter::ProgressValue++;

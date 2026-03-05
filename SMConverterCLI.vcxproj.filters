@@ -147,6 +147,12 @@
     <ClCompile Include="Code\Converter\Entity\Body.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Code\Converter\Entity\ControllerParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Converter\Entity\ControllerTransform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Code\Converter\Entity\Decal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -345,6 +351,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Code\Converter\Entity\Body.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Converter\Entity\ControllerData.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Converter\Entity\ControllerParser.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Converter\Entity\ControllerTransform.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Code\Converter\Entity\Decal.hpp">

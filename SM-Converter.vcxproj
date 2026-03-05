@@ -180,6 +180,8 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='ReleaseDebugInfo|x64'">true</CompileAsManaged>
     </ClCompile>
     <ClCompile Include="Code\Converter\Entity\Body.cpp" />
+    <ClCompile Include="Code\Converter\Entity\ControllerParser.cpp" />
+    <ClCompile Include="Code\Converter\Entity\ControllerTransform.cpp" />
     <ClCompile Include="Code\Converter\Entity\Decal.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</CompileAsManaged>
@@ -400,6 +402,9 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\Converter\Entity\Block.hpp" />
     <ClInclude Include="Code\Converter\Entity\Blueprint.hpp" />
     <ClInclude Include="Code\Converter\Entity\Body.hpp" />
+    <ClInclude Include="Code\Converter\Entity\ControllerData.hpp" />
+    <ClInclude Include="Code\Converter\Entity\ControllerParser.hpp" />
+    <ClInclude Include="Code\Converter\Entity\ControllerTransform.hpp" />
     <ClInclude Include="Code\Converter\Entity\Decal.hpp" />
     <ClInclude Include="Code\Converter\Entity\GroundTerrainData.hpp" />
     <ClInclude Include="Code\Converter\Entity\Harvestable.hpp" />
