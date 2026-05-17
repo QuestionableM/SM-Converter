@@ -37,7 +37,8 @@ static ArgumentParserCallback g_callbacks[] =
 
 	// Blueprint specific settings
 
-	{ "-septype", &ArgumentParser::argSepType }
+	{ "-septype"       , &ArgumentParser::argSepType },
+	{ "-applyrotations", &ArgumentParser::exportFlagSetter<ConverterType::Blueprint, ConverterExportSettings::ApplyControllerRotations> }
 };
 
 ArgumentParser::ArgumentParser(
@@ -123,6 +124,7 @@ void ArgumentParser::applySettings() const
 	TileConverterSettings::ExportGroundTextures   = this->exportFlagSet(ConverterExportSettings::ExportGroundTextures);
 	TileConverterSettings::Export8kGroundTextures = this->exportFlagSet(ConverterExportSettings::Export8KGroundTextures);
 	
+	BlueprintConverterSettings::ApplyControllerPresets = this->exportFlagSet(ConverterExportSettings::ApplyControllerRotations);
 	BlueprintConverterSettings::SeparationType = m_separationType;
 }
 

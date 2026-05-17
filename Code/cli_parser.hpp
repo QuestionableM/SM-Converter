@@ -26,7 +26,7 @@ enum class ConverterActionFlag : std::uint16_t
 	ListWorlds              = (1 << 6),
 	ListCustomGames         = (1 << 7),
 	SepTypeSpecified        = (1 << 8),
-	CustomgameUuidSpecified = (1 << 9),
+	CustomgameUuidSpecified = (1 << 10),
 
 	List = ListBlueprints | ListTiles | ListWorlds | ListCustomGames
 };
@@ -52,7 +52,11 @@ enum class ConverterExportSettings : std::uint16_t
 	ExportHarvestables     = (1 << 9),
 	ExportDecals           = (1 << 10),
 	ExportGroundTextures   = (1 << 11),
-	Export8KGroundTextures = (1 << 12)
+	Export8KGroundTextures = (1 << 12),
+
+	// Blueprint settings
+
+	ApplyControllerRotations = (1 << 13)
 };
 
 template<typename T>
