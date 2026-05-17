@@ -25,6 +25,27 @@ SMBlueprint::~SMBlueprint()
 		delete v_pCurObject;
 }
 
+glm::vec3 SMBlueprint::JsonToVector(const simdjson::simdjson_result<simdjson::dom::element>& vec_json)
+{
+	if (vec_json.is_object())
+	{
+		const auto v_x = vec_json["x"];
+		const auto v_y = vec_json["y"];
+		const auto v_z = vec_json["z"];
+
+		if (v_x.is_number() && v_y.is_number() && v_z.is_number())
+		{
+			return glm::vec3(
+				JsonReader::GetNumber<float>(v_x.value_unsafe()),
+				JsonReader::GetNumber<float>(v_y.value_unsafe()),
+				JsonReader::GetNumber<float>(v_z.value_unsafe())
+			);
+		}
+	}
+
+	return glm::vec3(0.0f, 0.0f, 0.0f);
+}
+
 void SMBlueprint::LoadAndCountAutomatic(const std::string_view& str)
 {
 	const std::size_t v_secretIdx = str.find("?JB:");
@@ -153,6 +174,7 @@ SMBlueprint* SMBlueprint::FromFileWithStatus(
 
 	simdjson::dom::document v_localDoc;
 	simdjson::dom::document& v_bp_doc = pDocOut ? *pDocOut : v_localDoc;
+
 	if (!JsonReader::LoadParseSimdjsonC(path, v_bp_doc, simdjson::dom::element_type::OBJECT))
 	{
 		error.setError(1, "Couldn't read the specified blueprint file. Possible reason: Invalid file, Parse error, Invalid path");
@@ -160,26 +182,25 @@ SMBlueprint* SMBlueprint::FromFileWithStatus(
 	}
 
 	const auto v_root = v_bp_doc.root();
+	const bool v_hasBodies = v_root["bodies"].error() == simdjson::SUCCESS;
+	const bool v_hasJoints = v_root["joints"].error() == simdjson::SUCCESS;
 
-	const bool has_bodies = v_root["bodies"].error() == simdjson::SUCCESS;
-	const bool has_joints = v_root["joints"].error() == simdjson::SUCCESS;
-
-	if (!has_bodies && !has_joints)
+	if (!v_hasBodies && !v_hasJoints)
 	{
 		error.setError(1, "The specified blueprint has no objects to convert");
 		return nullptr;
 	}
 
-	SMBlueprint* v_blueprint = new SMBlueprint(glm::vec3(0.0f), glm::quat());
+	SMBlueprint* v_pBlueprint = new SMBlueprint(glm::vec3(0.0f), glm::quat());
 
-	//Bind the custom function if it has been passed
+	// Bind the custom function if it has been passed
 	if (v_addObjFunc)
-		v_blueprint->m_addObjectFunction = v_addObjFunc;
+		v_pBlueprint->m_addObjectFunction = v_addObjFunc;
 
-	v_blueprint->LoadBodiesWithCounter(v_root);
-	v_blueprint->LoadJointsWithCounter(v_root);
+	v_pBlueprint->LoadBodiesWithCounter(v_root);
+	v_pBlueprint->LoadJointsWithCounter(v_root);
 
-	return v_blueprint;
+	return v_pBlueprint;
 }
 
 SMBlueprint* SMBlueprint::FromJsonString(const std::string_view& json_str, const glm::vec3& pos, const glm::quat& rot)
@@ -240,27 +261,6 @@ void SMBlueprint::CalculateCenterPoint(glm::vec3& outInput) const
 void SMBlueprint::AddObject_Default(SMBlueprint* self, SMEntity* pEntity)
 {
 	self->m_objects.push_back(pEntity);
-}
-
-glm::vec3 SMBlueprint::JsonToVector(const simdjson::simdjson_result<simdjson::dom::element>& vec_json)
-{
-	if (vec_json.is_object())
-	{
-		const auto v_x = vec_json["x"];
-		const auto v_y = vec_json["y"];
-		const auto v_z = vec_json["z"];
-
-		if (v_x.is_number() && v_y.is_number() && v_z.is_number())
-		{
-			return glm::vec3(
-				JsonReader::GetNumber<float>(v_x.value_unsafe()),
-				JsonReader::GetNumber<float>(v_y.value_unsafe()),
-				JsonReader::GetNumber<float>(v_z.value_unsafe())
-			);
-		}
-	}
-
-	return glm::vec3(0.0f, 0.0f, 0.0f);
 }
 
 void SMBlueprint::LoadChild(const simdjson::dom::element& v_child)

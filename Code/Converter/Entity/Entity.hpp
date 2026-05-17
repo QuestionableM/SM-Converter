@@ -81,10 +81,12 @@ public:
 	SMEntity(const SMEntity&) = delete;
 	SMEntity(SMEntity&&) = delete;
 
+	const glm::mat4& GetPreTransform() const noexcept;
 	glm::vec3 GetPosition() const noexcept;
 	glm::quat GetRotation() const noexcept;
 	glm::vec3 GetSize() const noexcept;
 
+	void SetPreTransform(const glm::mat4& t) noexcept;
 	void SetPosition(const glm::vec3& pos) noexcept;
 	void SetRotation(const glm::quat& rot) noexcept;
 	void SetSize(const glm::vec3& size) noexcept;
@@ -104,14 +106,11 @@ public:
 	// This option can help you to discard unwanted sub meshes (like shadow only sub meshes)
 	virtual bool GetCanWrite(const std::string_view& name, const std::size_t idx) const;
 
-	void SetPreTransform(const glm::mat4& t) noexcept { m_preTransform = t; }
-	const glm::mat4& GetPreTransform() const noexcept { return m_preTransform; }
-
 protected:
 	glm::vec3 m_position;
 	glm::quat m_rotation;
 	glm::vec3 m_size;
-	glm::mat4 m_preTransform{ 1.0f };
+	glm::mat4 m_preTransform;
 };
 
 class SMC_NOVTABLE SMEntityWithUuid : public SMEntity

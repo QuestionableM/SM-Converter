@@ -25,15 +25,19 @@ public:
 
 	using AddObjectFunction = void (*)(SMBlueprint*, SMEntity*);
 
-	//For object counter
+	// Helper function
+	static glm::vec3 JsonToVector(const simdjson::simdjson_result<simdjson::dom::element>& vec_json);
+
+	// For object counter
 	static void LoadAndCountAutomatic(const std::string_view& str);
 	static void CountFromFile(const std::wstring& path);
 	static void CountFromJsonString(const std::string_view& str);
 
-	//For object loader
+	// For object loader
 	static SMBlueprint* LoadAutomatic(const std::string_view& str, const glm::vec3& pos, const glm::quat& rot);
 	static SMBlueprint* FromFile(const std::wstring_view& path, const glm::vec3& pos, const glm::quat& rot);
-	//Used by blueprint converter as it reports the conversion status
+
+	// Used by blueprint converter as it reports the conversion status
 	static SMBlueprint* FromFileWithStatus(const std::wstring_view& path, AddObjectFunction v_addObjFunc, ConvertError& v_error, simdjson::dom::document* pDocOut = nullptr);
 	static SMBlueprint* FromJsonString(const std::string_view& json_str, const glm::vec3& pos, const glm::quat& rot);
 
@@ -42,8 +46,6 @@ public:
 	void WriteObjectToFile(std::ofstream& file, WriterOffsetData& offset, const glm::mat4& transform) const override;
 	std::size_t GetAmountOfObjects() const override;
 	void CalculateCenterPoint(glm::vec3& outInput) const override;
-
-	static glm::vec3 JsonToVector(const simdjson::simdjson_result<simdjson::dom::element>& vec_json);
 
 	/*
 		This vector contains blocks, parts and joints

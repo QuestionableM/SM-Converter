@@ -14,7 +14,10 @@
 
 SM_UNMANAGED_CODE
 
-void BlueprintConv::WriteToFileInternal(SMBlueprint* pBlueprint, const std::wstring& bp_name, ConvertError& error)
+void BlueprintConv::WriteToFileInternal(
+	SMBlueprint* pBlueprint,
+	const std::wstring& bp_name,
+	ConvertError& error)
 {
 	if (error) return;
 
@@ -113,58 +116,59 @@ void BlueprintConv::CreateAndAddObjToCollectionNI(
 	BlueprintConv::CreateCollection(self, name)->Add(pEntity);
 }
 
-void BlueprintConv::BlueprintAddObject_SeparateAll(SMBlueprint* self, SMEntity* pEntity)
+void BlueprintConv::BlueprintAddObject_SeparateAll(
+	SMBlueprint* self,
+	SMEntity* pEntity)
 {
-	if (pEntity->Type() == EntityType::Block)
+	if (pEntity->Type() != EntityType::Block)
 	{
-		SMBlock* v_block = reinterpret_cast<SMBlock*>(pEntity);
+		BlueprintConv::CreateAndAddObjToCollectionNI(self, "Object", pEntity);
+		return;
+	}
 
-		const std::size_t v_bounds_x = static_cast<std::size_t>(v_block->m_size.x);
-		const std::size_t v_bounds_y = static_cast<std::size_t>(v_block->m_size.y);
-		const std::size_t v_bounds_z = static_cast<std::size_t>(v_block->m_size.z);
+	SMBlock* v_block = reinterpret_cast<SMBlock*>(pEntity);
 
-		std::string v_collName("Object_");
-		String::AppendIntegerToString(v_collName, self->m_objectIndex + 1);
+	const std::size_t v_bounds_x = static_cast<std::size_t>(v_block->m_size.x);
+	const std::size_t v_bounds_y = static_cast<std::size_t>(v_block->m_size.y);
+	const std::size_t v_bounds_z = static_cast<std::size_t>(v_block->m_size.z);
 
-		const std::string_view v_collNameView(v_collName);
+	std::string v_collName("Object_");
+	String::AppendIntegerToString(v_collName, self->m_objectIndex + 1);
 
-		if (v_bounds_x == 1 && v_bounds_y == 1 && v_bounds_z == 1)
-		{
-			BlueprintConv::CreateAndAddObjToCollectionNI(self, v_collNameView, pEntity);
-		}
-		else
-		{
-			SMBody* v_pCollection = BlueprintConv::CreateCollection(self, v_collNameView);
-			SMEntity** v_addIter = v_pCollection->ResizeAdd(v_bounds_x * v_bounds_y * v_bounds_z);
+	const std::string_view v_collNameView(v_collName);
 
-			glm::vec3 v_blk_pos;
-
-			for (std::size_t x = 0; x < v_bounds_x; x++)
-			{
-				v_blk_pos.x = static_cast<float>(x);
-				for (std::size_t y = 0; y < v_bounds_y; y++)
-				{
-					v_blk_pos.y = static_cast<float>(y);
-					for (std::size_t z = 0; z < v_bounds_z; z++)
-					{
-						v_blk_pos.z = static_cast<float>(z);
-
-						(*v_addIter++) = new SMBlock(
-							v_block,
-							v_block->m_position + v_blk_pos,
-							v_block->m_rotation,
-							glm::vec3(1.0f)
-						);
-					}
-				}
-			}
-
-			delete v_block;
-		}
+	if (v_bounds_x == 1 && v_bounds_y == 1 && v_bounds_z == 1)
+	{
+		BlueprintConv::CreateAndAddObjToCollectionNI(self, v_collNameView, pEntity);
 	}
 	else
 	{
-		BlueprintConv::CreateAndAddObjToCollectionNI(self, "Object", pEntity);
+		SMBody* v_pCollection = BlueprintConv::CreateCollection(self, v_collNameView);
+		SMEntity** v_addIter = v_pCollection->ResizeAdd(v_bounds_x * v_bounds_y * v_bounds_z);
+
+		glm::vec3 v_blkPos;
+
+		for (std::size_t x = 0; x < v_bounds_x; x++)
+		{
+			v_blkPos.x = static_cast<float>(x);
+			for (std::size_t y = 0; y < v_bounds_y; y++)
+			{
+				v_blkPos.y = static_cast<float>(y);
+				for (std::size_t z = 0; z < v_bounds_z; z++)
+				{
+					v_blkPos.z = static_cast<float>(z);
+
+					(*v_addIter++) = new SMBlock(
+						v_block,
+						v_block->m_position + v_blkPos,
+						v_block->m_rotation,
+						glm::vec3(1.0f)
+					);
+				}
+			}
+		}
+
+		delete v_block;
 	}
 }
 
@@ -291,7 +295,7 @@ void BlueprintConv::ConvertToModel(
 
 		BlueprintConv::WriteToFileInternal(v_pBlueprint, bp_name, error);
 
-		//Since all the sorted groups are attached to the blueprint, the blueprint takes care of all the allocated memory
+		// Since all the sorted groups are attached to the blueprint, the blueprint takes care of all the allocated memory
 		delete v_pBlueprint;
 	}
 

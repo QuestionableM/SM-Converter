@@ -39,6 +39,7 @@ SMEntity::SMEntity()
 	: m_position(0.0f)
 	, m_rotation()
 	, m_size(1.0f)
+	, m_preTransform(1.0f)
 {}
 
 SMEntity::SMEntity(const SMEntityTransform& transform)
@@ -57,6 +58,11 @@ SMEntity::SMEntity(
 	, m_size(scale)
 {}
 
+const glm::mat4& SMEntity::GetPreTransform() const noexcept
+{
+	return m_preTransform;
+}
+
 glm::vec3 SMEntity::GetPosition() const noexcept
 {
 	return m_position;
@@ -70,6 +76,11 @@ glm::quat SMEntity::GetRotation() const noexcept
 glm::vec3 SMEntity::GetSize() const noexcept
 {
 	return m_size;
+}
+
+void SMEntity::SetPreTransform(const glm::mat4& t) noexcept
+{
+	m_preTransform = t;
 }
 
 void SMEntity::SetPosition(const glm::vec3& pos) noexcept

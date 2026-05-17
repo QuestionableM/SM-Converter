@@ -85,6 +85,7 @@ static void printBlueprintArguments(const bool printHeader)
 	if (printHeader)
 		DebugOutL("\nArguments for Blueprint converter:");
 
+	DebugOutL(0b1101_fg, "\t-applyrotations", 0b1110_fg, " - applies rotations from controllers to joints");
 	DebugOutL(0b1101_fg, "\t-septype", 0b1110_fg, " [none | all | shapes | joints | uuid | color | uuidandcolor] (default is none) - object separation type");
 	DebugOutL(0b1101_fg, "\t\tnone        ", 0b1110_fg, " - no object separation");
 	DebugOutL(0b1101_fg, "\t\tall         ", 0b1110_fg, " - puts every single shape into a unique group");
