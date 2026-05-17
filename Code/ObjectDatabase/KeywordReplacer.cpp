@@ -10,7 +10,7 @@ SM_UNMANAGED_CODE
 void KeywordReplacer::CreateKey(std::wstring& key, std::wstring& replacement)
 {
 	String::ToLowerR(key);
-	String::ToLowerR(replacement);
+	// String::ToLowerR(replacement); - value is not lowered for Linux filesystem compatibility
 
 	String::ReplaceAllR(key,         L'\\', L'/');
 	String::ReplaceAllR(replacement, L'\\', L'/');
@@ -124,10 +124,11 @@ void KeywordReplacer::UpgradeResource(const std::wstring& mPath, std::wstring& m
 
 void KeywordReplacer::UpgradeResourceR(std::wstring& out_path)
 {
-	String::ToLowerR(out_path);
-	String::ReplaceAllR(out_path, L'\\', L'/');
+	std::wstring v_searchString(out_path);
+	String::ToLowerR(v_searchString);
+	String::ReplaceAllR(v_searchString, L'\\', L'/');
 
-	const auto v_iter = m_ResourceUpgrades.find(out_path);
+	const auto v_iter = m_ResourceUpgrades.find(v_searchString);
 	if (v_iter != m_ResourceUpgrades.end())
 		out_path.assign(v_iter->second);
 }
@@ -144,7 +145,8 @@ std::wstring KeywordReplacer::ReplaceKey(const std::wstring& path)
 	const wchar_t* v_keyPtr = std::wcschr(v_keyBeg, L'/');
 	if (v_keyPtr == nullptr) return v_output;
 
-	const std::wstring_view v_keyChunk(v_keyBeg, v_keyPtr);
+	std::wstring v_keyChunk(v_keyBeg, v_keyPtr);
+	String::ToLowerR(v_keyChunk);
 
 	const auto v_iter = m_KeyReplacements.find(v_keyChunk);
 	if (v_iter == m_KeyReplacements.end()) return v_output;
@@ -170,7 +172,8 @@ void KeywordReplacer::ReplaceKeyR(std::wstring& path)
 	const wchar_t* v_keyPtr = std::wcschr(v_keyBeg, L'/');
 	if (v_keyPtr == nullptr) return;
 
-	const std::wstring_view v_keyChunk(v_keyBeg, v_keyPtr);
+	std::wstring v_keyChunk(v_keyBeg, v_keyPtr);
+	String::ToLowerR(v_keyChunk);
 
 	const auto v_iter = m_KeyReplacements.find(v_keyChunk);
 	if (v_iter == m_KeyReplacements.end()) return;
@@ -194,10 +197,12 @@ bool KeywordReplacer::ReplaceKeyRLua(std::wstring& path)
 	const wchar_t* v_keyPtr = std::wcschr(v_keyBeg, L'/');
 	if (v_keyPtr == nullptr) return true;
 
-	const std::wstring_view v_keyChunk(v_keyBeg, v_keyPtr);
+	std::wstring v_keyChunk(v_keyBeg, v_keyPtr);
+	String::ToLowerR(v_keyChunk);
+
 	if (v_keyChunk == L"$content_data")
 	{
-		//Throw key error if $CONTENT_DATA doesn't exist
+		// Throw key error if $CONTENT_DATA doesn't exist
 		if (m_KeyReplacements.find(std::wstring_view(L"$content_data")) == m_KeyReplacements.end() &&
 			m_KeyReplacements.find(std::wstring_view(L"$mod_data")) == m_KeyReplacements.end())
 		{

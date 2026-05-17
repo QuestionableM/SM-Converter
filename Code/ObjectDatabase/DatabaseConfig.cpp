@@ -40,7 +40,7 @@ void DatabaseConfig::WstrMapToJson(
 bool DatabaseConfig::AddToStrVec(std::vector<std::wstring>& v_vec, PathChecker& v_path_checker, const std::wstring& v_new_str)
 {
 	std::wstring v_full_path;
-	if (!File::GetFullFilePathLower(v_new_str, v_full_path))
+	if (!File::GetFullFilePath(v_new_str, v_full_path))
 		return false;
 
 	if (v_full_path == DatabaseConfig::WorkshopFolder)
@@ -65,7 +65,7 @@ bool DatabaseConfig::AddToStrVec(std::vector<std::wstring>& v_vec, PathChecker& 
 bool DatabaseConfig::AddToStrMap(PathChecker& v_map, const std::wstring& v_new_str)
 {
 	std::wstring v_full_path;
-	if (!File::GetFullFilePathLower(v_new_str, v_full_path))
+	if (!File::GetFullFilePath(v_new_str, v_full_path))
 		return false;
 
 	if (v_full_path == DatabaseConfig::WorkshopFolder)
@@ -174,7 +174,7 @@ bool DatabaseConfig::GetSteamPaths(std::wstring& r_game_path, std::wstring& r_wo
 
 	DebugOutL("Found a steam path: ", v_steamPath);
 
-	const std::wstring v_guessedGamePath = v_steamPath + L"/steamapps/common/scrap mechanic";
+	const std::wstring v_guessedGamePath = v_steamPath + L"/steamapps/common/Scrap Mechanic";
 	const std::wstring v_guessedWorkshopPath = v_steamPath + L"/steamapps/workshop/content/387990";
 
 	if (File::Exists(v_guessedGamePath) && File::Exists(v_guessedWorkshopPath))
@@ -224,7 +224,7 @@ bool DatabaseConfig::GetSteamPaths(std::wstring& r_game_path, std::wstring& r_wo
 				continue;
 
 			const std::wstring v_libraryPathWstr = String::ToWide(v_attribIter->second);
-			const std::wstring v_librarySmPath = v_libraryPathWstr + L"/steamapps/common/scrap mechanic";
+			const std::wstring v_librarySmPath = v_libraryPathWstr + L"/steamapps/common/Scrap Mechanic";
 			const std::wstring v_libraryWsPath = v_libraryPathWstr + L"/steamapps/workshop/content/387990";
 
 			const bool v_librarySmExists = File::Exists(v_librarySmPath);
@@ -261,7 +261,7 @@ void DatabaseConfig::FindLocalUsers()
 	if (!File::GetAppDataPath(v_smLocalData))
 		return;
 
-	v_smLocalData.append(L"\\Axolot Games\\Scrap Mechanic\\User");
+	v_smLocalData.append(L"/Axolot Games/Scrap Mechanic/User");
 	if (!File::Exists(v_smLocalData))
 		return;
 
@@ -280,28 +280,28 @@ void DatabaseConfig::FindLocalUsers()
 
 		const std::wstring v_cur_dir_path = v_curDir.path().wstring();
 
-		const std::wstring v_local_mods_dir = v_cur_dir_path + L"\\Mods";
+		const std::wstring v_local_mods_dir = v_cur_dir_path + L"/Mods";
 		if (File::Exists(v_local_mods_dir))
 		{
 			DebugOutL("Found a new path to local mods: ", 0b01101_fg, v_local_mods_dir);
 			DatabaseConfig::AddToStrVec(DatabaseConfig::LocalModFolders, DatabaseConfig::ModPathChecker, v_local_mods_dir);
 		}
 
-		const std::wstring v_local_blueprints_dir = v_cur_dir_path + L"\\Blueprints";
+		const std::wstring v_local_blueprints_dir = v_cur_dir_path + L"/Blueprints";
 		if (File::Exists(v_local_blueprints_dir))
 		{
 			DebugOutL("Found a new path to local blueprints: ", 0b01101_fg, v_local_blueprints_dir);
 			DatabaseConfig::AddToStrMap(DatabaseConfig::UserItemFolders, v_local_blueprints_dir);
 		}
 
-		const std::wstring v_local_tiles_dir = v_cur_dir_path + L"\\Tiles";
+		const std::wstring v_local_tiles_dir = v_cur_dir_path + L"/Tiles";
 		if (File::Exists(v_local_tiles_dir))
 		{
 			DebugOutL("Found a new path to local tiles: ", 0b01101_fg, v_local_tiles_dir);
 			DatabaseConfig::AddToStrMap(DatabaseConfig::UserItemFolders, v_local_tiles_dir);
 		}
 
-		const std::wstring v_local_worlds_dir = v_cur_dir_path + L"\\Worlds";
+		const std::wstring v_local_worlds_dir = v_cur_dir_path + L"/Worlds";
 		if (File::Exists(v_local_worlds_dir))
 		{
 			DebugOutL("Found a new path to local worlds: ", 0b01101_fg, v_local_worlds_dir);
@@ -339,7 +339,7 @@ inline static void ReadJsonDirectory(
 		return;
 
 	std::wstring v_dir = String::ToWide(v_dir_json.get_ref<const std::string&>());
-	if (!File::GetFullFilePathLower(v_dir, v_dir))
+	if (!File::GetFullFilePath(v_dir, v_dir))
 	{
 		DebugErrorL("Couldn't get the full path for: ", v_dir);
 		return;

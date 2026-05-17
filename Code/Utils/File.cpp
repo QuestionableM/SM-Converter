@@ -145,20 +145,22 @@ bool File::CreateDirectorySafe(const std::wstring& path)
 	return (exists_correct || file_correct);
 }
 
-static wchar_t g_fullPathBuffer[512] = {};
-
 bool File::GetFullFilePath(const std::wstring& path, std::wstring& v_output)
 {
+	wchar_t v_fullPathBuffer[512];
+
 	const DWORD v_pathNameSz = GetFullPathNameW(
 		path.c_str(),
-		sizeof(g_fullPathBuffer) / sizeof(wchar_t),
-		g_fullPathBuffer,
+		sizeof(v_fullPathBuffer) / sizeof(wchar_t),
+		v_fullPathBuffer,
 		nullptr
 	);
 
 	if (v_pathNameSz == 0) return false;
 
-	v_output.assign(g_fullPathBuffer, v_pathNameSz);
+	v_output.assign(v_fullPathBuffer, v_pathNameSz);
+	String::ReplaceAllR(v_output, '\\', '/');
+
 	return true;
 }
 
@@ -269,6 +271,7 @@ bool File::GetAppDataPath(std::wstring& mPath)
 	if (SUCCEEDED(SHGetFolderPathW(NULL, CSIDL_APPDATA, NULL, 0, szPath)))
 	{
 		mPath.assign(szPath);
+		String::ReplaceAllR(mPath, '\\', '/');
 		return true;
 	}
 
