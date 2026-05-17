@@ -26,6 +26,7 @@ private:
 struct BlueprintConverterSettings
 {
 	inline static int SeparationType = 0;
+	inline static bool ApplyControllerPresets = false;
 
 private:
 	BlueprintConverterSettings() = default;

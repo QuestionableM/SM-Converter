@@ -9,6 +9,8 @@
 #include "UStd/UnmanagedString.hpp"
 #include "UStd/UnmanagedVector.hpp"
 
+#include <unordered_map>
+
 SM_UNMANAGED_CODE
 
 class SMBody : public SMEntity
@@ -28,6 +30,10 @@ public:
 
 	void CalculateCenterPoint(glm::vec3& outInput) const override;
 	std::size_t GetAmountOfObjects() const override;
+
+	void ApplyPreTransformByBodyMap(
+		const std::unordered_map<std::size_t, glm::mat4>& bodyTransforms,
+		const std::unordered_map<std::size_t, std::size_t>& childToBodyMap);
 
 private:
 	std::vector<SMEntity*> m_objects;

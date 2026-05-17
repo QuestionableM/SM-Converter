@@ -106,6 +106,8 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClCompile Include="Code\Converter\Entity\Block.cpp" />
     <ClCompile Include="Code\Converter\Entity\Blueprint.cpp" />
     <ClCompile Include="Code\Converter\Entity\Body.cpp" />
+    <ClCompile Include="Code\Converter\Entity\ControllerParser.cpp" />
+    <ClCompile Include="Code\Converter\Entity\ControllerTransform.cpp" />
     <ClCompile Include="Code\Converter\Entity\Decal.cpp" />
     <ClCompile Include="Code\Converter\Entity\Entity.cpp" />
     <ClCompile Include="Code\Converter\Entity\Harvestable.cpp" />
@@ -172,6 +174,9 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\Converter\Entity\Block.hpp" />
     <ClInclude Include="Code\Converter\Entity\Blueprint.hpp" />
     <ClInclude Include="Code\Converter\Entity\Body.hpp" />
+    <ClInclude Include="Code\Converter\Entity\ControllerData.hpp" />
+    <ClInclude Include="Code\Converter\Entity\ControllerParser.hpp" />
+    <ClInclude Include="Code\Converter\Entity\ControllerTransform.hpp" />
     <ClInclude Include="Code\Converter\Entity\Decal.hpp" />
     <ClInclude Include="Code\Converter\Entity\Entity.hpp" />
     <ClInclude Include="Code\Converter\Entity\GroundTerrainData.hpp" />

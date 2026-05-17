@@ -219,7 +219,7 @@ void SMEntityWithModel::WriteObjectToFile(
 	WriterOffsetData& offset,
 	const glm::mat4& transform) const
 {
-	const glm::mat4 model_matrix = transform * this->GetTransformMatrix();
+	const glm::mat4 model_matrix = transform * m_preTransform * this->GetTransformMatrix();
 
 	m_model->WriteToFile(model_matrix, offset, file, this);
 

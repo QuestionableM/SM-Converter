@@ -22,6 +22,7 @@ public:
 public:
 	CustomGameIndex custom_game_idx;
 	int separation_type;
+	bool apply_controller_presets = false;
 };
 
 class BlueprintConverterSettingsGui : public ConverterSettingsGuiBase
@@ -37,6 +38,8 @@ public:
 
 private:
 	NamedComboBox m_cbSeparationType;
+	AlignedGroupBox m_blueprintOptions;
+	QCheckBox* m_bApplyControllerPresets;
 	ModelSettingsBox m_modelSettings;
 	CustomGameSelector m_cbCustomGameContent;
 };

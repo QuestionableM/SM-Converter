@@ -104,10 +104,14 @@ public:
 	// This option can help you to discard unwanted sub meshes (like shadow only sub meshes)
 	virtual bool GetCanWrite(const std::string_view& name, const std::size_t idx) const;
 
+	void SetPreTransform(const glm::mat4& t) noexcept { m_preTransform = t; }
+	const glm::mat4& GetPreTransform() const noexcept { return m_preTransform; }
+
 protected:
 	glm::vec3 m_position;
 	glm::quat m_rotation;
 	glm::vec3 m_size;
+	glm::mat4 m_preTransform{ 1.0f };
 };
 
 class SMC_NOVTABLE SMEntityWithUuid : public SMEntity
