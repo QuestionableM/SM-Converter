@@ -1,6 +1,7 @@
 #include "QtUtil.hpp"
 
 #include "ObjectDatabase/DatabaseConfig.hpp"
+#include "Utils/String.hpp"
 
 #include <QDesktopServices>
 #include <QMessageBox>
@@ -13,8 +14,11 @@
 
 bool QtUtil::openDirInExplorer(const std::wstring_view& pathIn)
 {
+	std::wstring v_fixedPath(pathIn);
+	String::ReplaceAllR(v_fixedPath, '/', '\\');
+
 	return QProcess::startDetached("explorer.exe",
-		QStringList{ QString::fromWCharArray(pathIn.data(), pathIn.size()) });
+		QStringList{ QString::fromWCharArray(v_fixedPath.data(), v_fixedPath.size()) });
 }
 
 bool QtUtil::showFileInExplorer(const std::wstring_view& pathIn)

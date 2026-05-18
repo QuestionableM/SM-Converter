@@ -23,6 +23,20 @@
 
 SM_UNMANAGED_CODE
 
+SMMod::SMMod(
+	const std::wstring_view& name,
+	const std::wstring_view& directory,
+	const SMUuid& uuid,
+	const std::uint64_t workshop_id,
+	const bool isLocal
+)
+	: m_Uuid(uuid)
+	, m_Name(name)
+	, m_Directory(directory)
+	, m_WorkshopId(workshop_id)
+	, m_isLocal(isLocal)
+{}
+
 void SMMod::ClearModStorage()
 {
 	SMModObjectStorage<BlockData>::Clear();
@@ -168,6 +182,30 @@ SMMod* SMMod::LoadFromDescription(const std::wstring& mod_folder, bool is_local)
 	return v_new_mod;
 }
 
+ClutterData* SMMod::GetGlobalClutterById(const std::size_t idx)
+{
+	if (SMMod::ClutterVector.size() <= idx)
+	{
+		DebugErrorL("The clutter index is out of bounds! (Size: ", SMMod::ClutterVector.size(), ", Index: ", idx, ")");
+		return nullptr;
+	}
+
+	return SMMod::ClutterVector[idx];
+}
+
+GarmentData* SMMod::GetGarment(const std::string_view& category, const SMUuid& uuid)
+{
+	const auto v_categoryIter = SMMod::GarmentStorage.find(category);
+	if (v_categoryIter == SMMod::GarmentStorage.end())
+		return nullptr;
+
+	const auto v_curItem = v_categoryIter->second.find(uuid);
+	if (v_curItem == v_categoryIter->second.end())
+		return nullptr;
+
+	return v_curItem->second;
+}
+
 CustomGame* SMMod::GetCustomGameFromPath(const std::wstring& v_path)
 {
 	for (CustomGame* v_cur_cg : SMMod::CustomGameVector)
@@ -188,6 +226,78 @@ CustomGame* SMMod::GetCustomGameFromUuid(const SMUuid& uuid)
 	}
 
 	return nullptr;
+}
+
+SMMod* SMMod::GetModFromBlocksAndParts(const SMUuid& uuid, const bool checkBlocks)
+{
+	const PrecomputedUuidHash v_uuidHash(uuid);
+
+	{
+		const auto v_partIter = SMModObjectStorage<PartData>::StaticStorage.find(v_uuidHash);
+		if (v_partIter != SMModObjectStorage<PartData>::StaticStorage.end())
+			return v_partIter->second->m_mod;
+	}
+
+	{
+		const auto v_wedgeIter = SMModObjectStorage<WedgeData>::StaticStorage.find(v_uuidHash);
+		if (v_wedgeIter != SMModObjectStorage<WedgeData>::StaticStorage.end())
+			return v_wedgeIter->second->m_mod;
+	}
+
+	if (checkBlocks)
+	{
+		const auto v_blockIter = SMModObjectStorage<BlockData>::StaticStorage.find(v_uuidHash);
+		if (v_blockIter != SMModObjectStorage<BlockData>::StaticStorage.end())
+			return v_blockIter->second->m_mod;
+	}
+
+	return nullptr;
+}
+
+SMMod* SMMod::GetModFromTileParts(const SMUuid& uuid)
+{
+	const PrecomputedUuidHash v_uuidHash(uuid);
+
+	{
+		const auto v_assetIter = SMModObjectStorage<AssetData>::StaticStorage.find(v_uuidHash);
+		if (v_assetIter != SMModObjectStorage<AssetData>::StaticStorage.end())
+			return v_assetIter->second->m_mod;
+	}
+
+	{
+		const auto v_hvsIter = SMModObjectStorage<HarvestableData>::StaticStorage.find(v_uuidHash);
+		if (v_hvsIter != SMModObjectStorage<HarvestableData>::StaticStorage.end())
+			return v_hvsIter->second->m_mod;
+	}
+
+	{
+		const auto v_clutterIter = SMModObjectStorage<ClutterData>::StaticStorage.find(v_uuidHash);
+		if (v_clutterIter != SMModObjectStorage<ClutterData>::StaticStorage.end())
+			return v_clutterIter->second->m_mod;
+	}
+
+	{
+		const auto v_decalIter = SMModObjectStorage<DecalData>::StaticStorage.find(v_uuidHash);
+		if (v_decalIter != SMModObjectStorage<DecalData>::StaticStorage.end())
+			return v_decalIter->second->m_mod;
+	}
+
+	{
+		const auto v_kmIter = SMModObjectStorage<KinematicData>::StaticStorage.find(v_uuidHash);
+		if (v_kmIter != SMModObjectStorage<KinematicData>::StaticStorage.end())
+			return v_kmIter->second->m_mod;
+	}
+
+	return nullptr;
+}
+
+SMMod* SMMod::GetModFromUuid(const SMUuid& modUuid)
+{
+	auto v_iter = SMMod::ModStorage.find(modUuid);
+	if (v_iter != SMMod::ModStorage.end())
+		return v_iter->second;
+	else
+		return nullptr;
 }
 
 using ListLoaderFunc = void(*)(const simdjson::dom::element&, SMMod*, bool);
@@ -371,17 +481,3 @@ void SMMod::SetContentKey() const
 {
 	KeywordReplacer::SetModData(m_Directory, m_Uuid);
 }
-
-SMMod::SMMod(
-	const std::wstring_view& name,
-	const std::wstring_view& directory,
-	const SMUuid& uuid,
-	const std::uint64_t workshop_id,
-	const bool isLocal
-)
-	: m_Uuid(uuid)
-	, m_Name(name)
-	, m_Directory(directory)
-	, m_WorkshopId(workshop_id)
-	, m_isLocal(isLocal)
-{}

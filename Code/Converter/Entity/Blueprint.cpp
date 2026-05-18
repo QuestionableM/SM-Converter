@@ -88,6 +88,40 @@ void SMBlueprint::CountFromJsonString(const std::string_view& str)
 	const auto v_root = v_bp_doc.root();
 	if (!v_root.is_object()) return;
 
+	// Read the dependencies first
+	const auto v_dependenciesObj = v_root["dependencies"];
+	if (v_dependenciesObj.is_array())
+	{
+		for (const auto v_dependency : v_dependenciesObj.get_array().value_unsafe())
+		{
+			if (!v_dependency.is_object()) continue;
+
+			const auto v_modUuidObj = v_dependency["contentId"];
+			if (!v_modUuidObj.is_string()) continue;
+
+			const auto v_modNameObj = v_dependency["name"];
+			if (!v_modNameObj.is_string()) continue;
+
+			const auto v_modSteamIdObj = v_dependency["steamFileId"];
+			if (!v_modSteamIdObj.is_number()) continue;
+
+			const SMUuid v_modUuid = v_modUuidObj.get_string().value_unsafe();
+			const std::uint64_t v_modSteamId = JsonReader::GetNumber<std::uint64_t>(v_modSteamIdObj.value_unsafe());
+			const std::wstring v_modName = String::ToWide(v_modNameObj.get_string().value_unsafe());
+
+			ItemModInstance* v_pNewMod = ItemModStats::RegisterNewModDependency(v_modUuid, v_modSteamId, L"", v_modName);
+			if (!v_pNewMod) continue;
+
+			const auto v_shapeUuids = v_dependency["shapeIds"];
+			if (v_shapeUuids.is_array())
+			{
+				for (const auto v_shapeUuid : v_shapeUuids.get_array().value_unsafe())
+					if (v_shapeUuid.is_string())
+						v_pNewMod->m_modParts.insert(v_shapeUuid.get_string().value_unsafe());
+			}
+		}
+	}
+
 	const auto v_bodies_obj = v_root["bodies"];
 	if (v_bodies_obj.is_array())
 	{
@@ -103,9 +137,7 @@ void SMBlueprint::CountFromJsonString(const std::string_view& str)
 				const auto v_uuid_obj = v_child["shapeId"];
 				if (!v_uuid_obj.is_string()) continue;
 
-				const SMUuid v_uuid = v_uuid_obj.get_string().value_unsafe();
-				SMMod* v_cur_mod = SMMod::GetModFromBlocksAndParts(v_uuid);
-				ItemModStats::IncrementModPart(v_cur_mod);
+				ItemModStats::CountPart(v_uuid_obj.get_string().value_unsafe(), true);
 			}
 		}
 	}
@@ -120,9 +152,7 @@ void SMBlueprint::CountFromJsonString(const std::string_view& str)
 			const auto v_uuid_obj = v_joint["shapeId"];
 			if (!v_uuid_obj.is_string()) continue;
 
-			const SMUuid v_uuid = v_uuid_obj.get_string().value_unsafe();
-			SMMod* v_cur_mod = SMMod::GetModFromBlocksAndParts<false>(v_uuid);
-			ItemModStats::IncrementModPart(v_cur_mod);
+			ItemModStats::CountPart(v_uuid_obj.get_string().value_unsafe(), true);
 		}
 	}
 }

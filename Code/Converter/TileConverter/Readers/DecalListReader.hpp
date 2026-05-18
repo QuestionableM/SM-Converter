@@ -94,17 +94,17 @@ public:
 				index += 0x40;
 			}
 
-			const DecalData* v_decalData = SMMod::GetGlobalObject<DecalData>(v_uuid);
+			const DecalData* v_pDecalData = SMMod::GetGlobalObject<DecalData>(v_uuid);
 
 			if constexpr (t_mod_counter)
 			{
-				ItemModStats::IncrementModPart((v_decalData != nullptr) ? v_decalData->m_mod : nullptr);
+				ItemModStats::CountPart((v_pDecalData != nullptr) ? v_pDecalData->m_uuid : SMUuid::Null, false);
 			}
 			else
 			{
-				if (!v_decalData) continue;
+				if (!v_pDecalData) continue;
 
-				SMDecal* v_newDecal = new SMDecal(v_decalData, v_transform, v_color);
+				SMDecal* v_newDecal = new SMDecal(v_pDecalData, v_transform, v_color);
 				pPart->AddObject(v_newDecal);
 			}
 		}

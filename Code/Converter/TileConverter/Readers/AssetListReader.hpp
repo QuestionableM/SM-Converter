@@ -148,20 +148,20 @@ public:
 				index++;
 			}
 
-			const AssetData* asset_data = SMMod::GetGlobalObject<AssetData>(f_uuid);
+			const AssetData* v_pAssetData = SMMod::GetGlobalObject<AssetData>(f_uuid);
 
 			if constexpr (t_mod_counter)
 			{
-				ItemModStats::IncrementModPart((asset_data != nullptr) ? asset_data->m_mod : nullptr);
+				ItemModStats::CountPart((v_pAssetData != nullptr) ? v_pAssetData->m_uuid : SMUuid::Null, false);
 			}
 			else
 			{
-				if (!asset_data) continue;
+				if (!v_pAssetData) continue;
 
-				Model* pModel = ModelStorage::LoadModel(asset_data->m_mesh);
+				Model* pModel = ModelStorage::LoadModel(v_pAssetData->m_mesh);
 				if (!pModel) continue;
 
-				SMAsset* pNewAsset = new SMAsset(asset_data, v_transform, pModel, std::move(color_map));
+				SMAsset* pNewAsset = new SMAsset(v_pAssetData, v_transform, pModel, std::move(color_map));
 				pPart->AddObject(pNewAsset, asset_idx);
 			}
 		}

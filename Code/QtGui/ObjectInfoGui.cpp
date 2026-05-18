@@ -41,27 +41,33 @@ ModListWidget::ModListWidget(QWidget* parent) :
 		this, &ModListWidget::openModInExplorer);
 }
 
-SMMod* ModListWidget::getSelectedMod() const
+ItemModInstance* ModListWidget::getSelectedMod() const
 {
 	const int v_curIdx = this->currentIndex().row();
 	if (v_curIdx < 0 || v_curIdx > int(ItemModStats::ModVector.size()))
 		return nullptr;
 
-	return ItemModStats::ModVector[v_curIdx]->m_pMod;
+	return ItemModStats::ModVector[v_curIdx];
 }
 
 void ModListWidget::updateContextMenu()
 {
-	SMMod* v_cur_mod = this->getSelectedMod();
-	if (!v_cur_mod)
+	ItemModInstance* v_pCurInstance = this->getSelectedMod();
+	bool v_dirExists, v_hasWorkshopId;
+
+	if (v_pCurInstance)
 	{
-		m_contextMenu->m_openInSteamWorkshopAction->setEnabled(false);
-		m_contextMenu->m_openInExplorerAction->setEnabled(false);
-		return;
+		v_dirExists = File::Exists(v_pCurInstance->m_modPath);
+		v_hasWorkshopId = v_pCurInstance->m_modWorkshopId != 0;
+	}
+	else
+	{
+		v_dirExists = false;
+		v_hasWorkshopId = false;
 	}
 
-	m_contextMenu->m_openInSteamWorkshopAction->setEnabled(v_cur_mod->GetWorkshopId() != 0);
-	m_contextMenu->m_openInExplorerAction->setEnabled(File::Exists(v_cur_mod->GetDirectory()));
+	m_contextMenu->m_openInSteamWorkshopAction->setEnabled(v_hasWorkshopId);
+	m_contextMenu->m_openInExplorerAction->setEnabled(v_dirExists);
 }
 
 void ModListWidget::updateModList()
@@ -75,11 +81,7 @@ void ModListWidget::updateModList()
 
 	for (const ItemModInstance* v_curMod : ItemModStats::ModVector)
 	{
-		const std::wstring_view v_modNameView = (v_curMod->m_pMod != nullptr)
-			? std::wstring_view(v_curMod->m_pMod->GetName())
-			: L"UNKNOWN_MOD";
-
-		v_modName.assign(v_modNameView);
+		v_modName.assign(v_curMod->m_modName);
 		v_modName.append(L" (");
 		v_modName.append(std::to_wstring(v_curMod->m_partCount));
 		v_modName.append(L")");
@@ -93,21 +95,21 @@ void ModListWidget::updateModList()
 
 void ModListWidget::openModInWorkshop()
 {
-	SMMod* v_cur_mod = this->getSelectedMod();
-	if (v_cur_mod)
-		QtUtil::openItemInSteam(v_cur_mod->GetWorkshopId());
+	ItemModInstance* v_pCurMod = this->getSelectedMod();
+	if (v_pCurMod)
+		QtUtil::openItemInSteam(v_pCurMod->m_modWorkshopId);
 }
 
 void ModListWidget::openModInExplorer()
 {
-	SMMod* v_cur_mod = this->getSelectedMod();
-	if (!(v_cur_mod && File::Exists(v_cur_mod->GetDirectory())))
+	ItemModInstance* v_pCurMod = this->getSelectedMod();
+	if (!v_pCurMod || !File::Exists(v_pCurMod->m_modPath))
 	{
 		QtUtil::warningWithSound(this, "Invalid Mod", "Mod Folder doesn't exist!");
 		return;
 	}
 
-	QtUtil::openDirInExplorer(v_cur_mod->GetDirectory());
+	QtUtil::openDirInExplorer(v_pCurMod->m_modPath);
 }
 
 void ModListWidget::contextMenuEvent(QContextMenuEvent* event)

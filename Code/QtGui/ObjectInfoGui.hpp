@@ -29,7 +29,7 @@ public:
 	ModListWidget(QWidget* parent = nullptr);
 	~ModListWidget() = default;
 
-	class SMMod* getSelectedMod() const;
+	struct ItemModInstance* getSelectedMod() const;
 	void updateContextMenu();
 	void updateModList();
 

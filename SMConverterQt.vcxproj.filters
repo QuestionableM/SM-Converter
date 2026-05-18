@@ -278,6 +278,9 @@
     <ClCompile Include="Code\Utils\WineDetect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Code\ObjectDatabase\UserDataReaders\ItemModCounter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\QtGui\MainGui.hpp">

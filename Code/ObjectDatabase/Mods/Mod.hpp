@@ -26,8 +26,29 @@ class CustomGame;
 class SMC_NOVTABLE SMMod
 {
 public:
+	SMMod(
+		const std::wstring_view& name,
+		const std::wstring_view& directory,
+		const SMUuid& uuid,
+		const std::uint64_t workshop_id,
+		const bool isLocal);
+
+	SMMod(const SMMod&) = delete;
+	SMMod(SMMod&&) = delete;
+
+	virtual ~SMMod() = default;
+
 	static void ClearModStorage();
 	static SMMod* LoadFromDescription(const std::wstring& mod_folder, bool is_local);
+
+	static ClutterData* GetGlobalClutterById(const std::size_t idx);
+	static GarmentData* GetGarment(const std::string_view& category, const SMUuid& uuid);
+
+	static CustomGame* GetCustomGameFromPath(const std::wstring& v_path);
+	static CustomGame* GetCustomGameFromUuid(const SMUuid& uuid);
+	static SMMod* GetModFromBlocksAndParts(const SMUuid& uuid, const bool checkBlocks);
+	static SMMod* GetModFromTileParts(const SMUuid& uuid);
+	static SMMod* GetModFromUuid(const SMUuid& modUuid);
 
 	template<typename T>
 	inline static const T* GetGlobalObject(const SMUuid& uuid)
@@ -39,38 +60,6 @@ public:
 			return v_iter->second;
 		else
 			return nullptr;
-	}
-
-	inline static ClutterData* GetGlobalClutterById(std::size_t idx)
-	{
-		if (SMMod::ClutterVector.size() <= idx)
-		{
-			DebugErrorL("The clutter index is out of bounds! (Size: ", SMMod::ClutterVector.size(), ", Index: ", idx, ")");
-			return nullptr;
-		}
-
-		return SMMod::ClutterVector[idx];
-	}
-
-	static CustomGame* GetCustomGameFromPath(const std::wstring& v_path);
-	static CustomGame* GetCustomGameFromUuid(const SMUuid& uuid);
-
-	template<bool t_check_blocks = true>
-	inline static SMMod* GetModFromBlocksAndParts(const SMUuid& uuid)
-	{
-		const PrecomputedUuidHash v_uuidHash(uuid);
-
-		const auto v_partIter = SMModObjectStorage<PartData>::StaticStorage.find(v_uuidHash);
-		if (v_partIter != SMModObjectStorage<PartData>::StaticStorage.end())
-			return v_partIter->second->m_mod;
-
-		if constexpr (t_check_blocks) {
-			const auto v_blockIter = SMModObjectStorage<BlockData>::StaticStorage.find(v_uuidHash);
-			if (v_blockIter != SMModObjectStorage<BlockData>::StaticStorage.end())
-				return v_blockIter->second->m_mod;
-		}
-
-		return nullptr;
 	}
 
 	template<typename T, bool t_allow_replacements>
@@ -94,22 +83,8 @@ public:
 		}
 	}
 
-
 	inline static std::vector<CustomGame*>& GetCustomGames() noexcept { return SMMod::CustomGameVector; }
 	inline static const std::vector<SMMod*>& GetAllMods() noexcept { return SMMod::ModVector; }
-
-	inline static GarmentData* GetGarment(const std::string& category, const SMUuid& uuid)
-	{
-		const auto v_categoryIter = SMMod::GarmentStorage.find(category);
-		if (v_categoryIter == SMMod::GarmentStorage.end())
-			return nullptr;
-
-		const auto v_curItem = v_categoryIter->second.find(uuid);
-		if (v_curItem == v_categoryIter->second.end())
-			return nullptr;
-
-		return v_curItem->second;
-	}
 
 	inline static std::size_t GetAmountOfMods() noexcept { return SMMod::ModVector.size(); }
 	inline static std::size_t GetAmountOfObjects() noexcept
@@ -142,19 +117,6 @@ public:
 
 	virtual ModType Type() const noexcept = 0;
 	virtual void LoadObjectDatabase() = 0;
-
-	SMMod(
-		const std::wstring_view& name,
-		const std::wstring_view& directory,
-		const SMUuid& uuid,
-		const std::uint64_t workshop_id,
-		const bool isLocal
-	);
-
-	SMMod(const SMMod&) = delete;
-	SMMod(SMMod&&) = delete;
-
-	virtual ~SMMod() = default;
 
 	SMModObjectStorage<BlockData> m_Blocks;
 	SMModObjectStorage<PartData> m_Parts;

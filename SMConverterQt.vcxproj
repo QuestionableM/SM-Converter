@@ -192,6 +192,7 @@ xcopy /y /d "$(SolutionDir)Media\icon.ico" "$(SolutionDir)Build\$(ProjectName)-$
     <ClCompile Include="Code\ObjectDatabase\SubMeshData.cpp" />
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\BlueprintFolderReader.cpp" />
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\FilterSettingsData.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\UserDataReaders\ItemModCounter.cpp" />
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\TileFolderReader.cpp" />
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\UserCharacterData.cpp" />
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\UserCharacterReader.cpp" />

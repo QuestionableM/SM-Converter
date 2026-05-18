@@ -113,20 +113,20 @@ public:
 			//DebugOutL("Json String: ", v_json_str);
 			index += 0x1; //NULL BYTE
 
-			const KinematicData* v_km_data = SMMod::GetGlobalObject<KinematicData>(v_uuid);
+			const KinematicData* v_pKmData = SMMod::GetGlobalObject<KinematicData>(v_uuid);
 
 			if constexpr (t_mod_counter)
 			{
-				ItemModStats::IncrementModPart((v_km_data != nullptr) ? v_km_data->m_mod : nullptr);
+				ItemModStats::CountPart((v_pKmData != nullptr) ? v_pKmData->m_uuid : SMUuid::Null, false);
 			}
 			else
 			{
-				if (!v_km_data) continue;
+				if (!v_pKmData) continue;
 
-				Model* v_km_model = ModelStorage::LoadModel(v_km_data->m_mesh);
+				Model* v_km_model = ModelStorage::LoadModel(v_pKmData->m_mesh);
 				if (!v_km_model) continue;
 
-				SMKinematic* v_new_kinematic = new SMKinematic(v_km_data, v_transform, v_km_model, v_color);
+				SMKinematic* v_new_kinematic = new SMKinematic(v_pKmData, v_transform, v_km_model, v_color);
 				pPart->AddObject(v_new_kinematic, kinematic_idx);
 			}
 		}

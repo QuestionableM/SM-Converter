@@ -107,20 +107,20 @@ public:
 			if (version >= 12) { index += 0x5; }
 			else if (version >= 11) { index += 0x4; }
 
-			const HarvestableData* hvs_data = SMMod::GetGlobalObject<HarvestableData>(f_uuid);
+			const HarvestableData* v_pHvsData = SMMod::GetGlobalObject<HarvestableData>(f_uuid);
 
 			if constexpr (t_mod_counter)
 			{
-				ItemModStats::IncrementModPart((hvs_data != nullptr) ? hvs_data->m_mod : nullptr);
+				ItemModStats::CountPart((v_pHvsData != nullptr) ? v_pHvsData->m_uuid : SMUuid::Null, false);
 			}
 			else
 			{
-				if (!hvs_data) continue;
+				if (!v_pHvsData) continue;
 
-				Model* hvs_model = ModelStorage::LoadModel(hvs_data->m_mesh);
+				Model* hvs_model = ModelStorage::LoadModel(v_pHvsData->m_mesh);
 				if (!hvs_model) continue;
 
-				SMHarvestable* pNewHvs = new SMHarvestable(hvs_data, v_transform, hvs_model, f_color);
+				SMHarvestable* pNewHvs = new SMHarvestable(v_pHvsData, v_transform, hvs_model, f_color);
 				pPart->AddObject(pNewHvs, hvs_index);
 			}
 		}

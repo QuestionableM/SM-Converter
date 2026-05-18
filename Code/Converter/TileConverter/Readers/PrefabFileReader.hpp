@@ -345,20 +345,20 @@ public:
 			if (version >= 10)
 				stream.ReadByte();
 
-			const AssetData* v_asset_data = SMMod::GetGlobalObject<AssetData>(uuid);
+			const AssetData* v_pAssetData = SMMod::GetGlobalObject<AssetData>(uuid);
 
 			if constexpr (t_mod_counter)
 			{
-				ItemModStats::IncrementModPart((v_asset_data != nullptr) ? v_asset_data->m_mod : nullptr);
+				ItemModStats::CountPart((v_pAssetData != nullptr) ? v_pAssetData->m_uuid : SMUuid::Null, false);
 			}
 			else
 			{
-				if (!v_asset_data) continue;
+				if (!v_pAssetData) continue;
 
-				Model* pModel = ModelStorage::LoadModel(v_asset_data->m_mesh);
+				Model* pModel = ModelStorage::LoadModel(v_pAssetData->m_mesh);
 				if (!pModel) continue;
 
-				SMAsset* nAsset = new SMAsset(v_asset_data, v_transform, pModel, std::move(color_map));
+				SMAsset* nAsset = new SMAsset(v_pAssetData, v_transform, pModel, std::move(color_map));
 				prefab->addObject(nAsset);
 			}
 		}
@@ -395,17 +395,17 @@ public:
 			//Read a random 4 byte value
 			stream.ReadInt();
 
-			const DecalData* v_decal_data = SMMod::GetGlobalObject<DecalData>(v_uuid);
+			const DecalData* v_pDecalData = SMMod::GetGlobalObject<DecalData>(v_uuid);
 
 			if constexpr (t_mod_counter)
 			{
-				ItemModStats::IncrementModPart((v_decal_data != nullptr) ? v_decal_data->m_mod : nullptr);
+				ItemModStats::CountPart((v_pDecalData != nullptr) ? v_pDecalData->m_uuid : SMUuid::Null, false);
 			}
 			else
 			{
-				if (!v_decal_data) continue;
+				if (!v_pDecalData) continue;
 
-				SMDecal* v_newDecal = new SMDecal(v_decal_data, v_transform, v_color);
+				SMDecal* v_newDecal = new SMDecal(v_pDecalData, v_transform, v_color);
 				prefab->addObject(v_newDecal);
 			}
 		}
@@ -465,22 +465,22 @@ public:
 			//Read the null byte
 			const Byte test = stream.ReadByte();
 
-			const KinematicData* v_kinematic_data = SMMod::GetGlobalObject<KinematicData>(v_uuid);
+			const KinematicData* v_pKmData = SMMod::GetGlobalObject<KinematicData>(v_uuid);
 
 			if constexpr (t_mod_counter)
 			{
-				ItemModStats::IncrementModPart((v_kinematic_data != nullptr) ? v_kinematic_data->m_mod : nullptr);
+				ItemModStats::CountPart((v_pKmData != nullptr) ? v_pKmData->m_uuid : SMUuid::Null, false);
 			}
 			else
 			{
-				if (!v_kinematic_data) continue;
+				if (!v_pKmData) continue;
 
-				Model* v_km_model = ModelStorage::LoadModel(v_kinematic_data->m_mesh);
+				Model* v_km_model = ModelStorage::LoadModel(v_pKmData->m_mesh);
 				if (!v_km_model) continue;
 
 				prefab->addObject(
 					new SMKinematic(
-						v_kinematic_data,
+						v_pKmData,
 						v_transform,
 						v_km_model,
 						v_color
