@@ -2,11 +2,26 @@
 
 #include "ObjectDatabase/ProgCounter.hpp"
 #include "UStd/UnmanagedFstream.hpp"
+#include "ConvertSettings.hpp"
 
 #include "Utils/WineDetect.hpp"
 #include "Utils/File.hpp"
 
 SM_UNMANAGED_CODE
+
+void MtlFileWriter::AddGroundTextures(SMEntity::EntityTextureMap& textureMap)
+{
+	ObjectTexData v_tileGroundTextureData(0xffffff);
+
+	if (TileConverterSettings::ExportGroundTextures)
+	{
+		v_tileGroundTextureData.m_textures.m_dif = L"./GroundTexture_Dif.jpg";
+		v_tileGroundTextureData.m_textures.m_asg = L"./GroundTexture_Asg.jpg";
+		v_tileGroundTextureData.m_textures.m_nor = L"./GroundTexture_Nor.jpg";
+	}
+
+	textureMap["TileGroundTerrain"] = std::move(v_tileGroundTextureData);
+}
 
 void MtlFileWriter::FixPathsForLinux(SMEntity::EntityTextureMap& textureMap)
 {

@@ -371,29 +371,12 @@ void SMWorld::WriteMtlFile(const std::wstring& path) const
 	ProgCounter::SetState(ProgState::WritingMtlFile, 0);
 
 	SMEntity::EntityTextureMap v_textureMap;
-
 	for (const WorldCellData& v_cell : m_cellMap)
-	{
-		const TilePart* v_part = v_cell.part;
-		if (!v_part) continue;
+		if (v_cell.part) v_cell.part->FillTextureMap(v_textureMap);
 
-		v_part->FillTextureMap(v_textureMap);
-		ProgCounter::ProgressMax = v_textureMap.size();
-	}
+	ProgCounter::ProgressMax = v_textureMap.size();
 
-	{
-		ObjectTexData v_tileGroundTextureData(0xffffff);
-
-		if (TileConverterSettings::ExportGroundTextures)
-		{
-			v_tileGroundTextureData.m_textures.m_dif = L"./GroundTexture_Dif.jpg";
-			v_tileGroundTextureData.m_textures.m_asg = L"./GroundTexture_Asg.jpg";
-			v_tileGroundTextureData.m_textures.m_nor = L"./GroundTexture_Nor.jpg";
-		}
-
-		v_textureMap["TileGroundTerrain"] = std::move(v_tileGroundTextureData);
-	}
-
+	MtlFileWriter::AddGroundTextures(v_textureMap);
 	MtlFileWriter::Write(path, v_textureMap);
 }
 

@@ -818,18 +818,6 @@ void Tile::WriteMtlFile(const std::wstring& path) const
 
 	ProgCounter::ProgressMax = v_textureMap.size();
 
-	{
-		ObjectTexData v_tileGroundTextureData(0xffffff);
-
-		if (TileConverterSettings::ExportGroundTextures)
-		{
-			v_tileGroundTextureData.m_textures.m_dif = L"./GroundTexture_Dif.jpg";
-			v_tileGroundTextureData.m_textures.m_asg = L"./GroundTexture_Asg.jpg";
-			v_tileGroundTextureData.m_textures.m_nor = L"./GroundTexture_Nor.jpg";
-		}
-
-		v_textureMap["TileGroundTerrain"] = std::move(v_tileGroundTextureData);
-	}
-
+	MtlFileWriter::AddGroundTextures(v_textureMap);
 	MtlFileWriter::Write(path, v_textureMap);
 }

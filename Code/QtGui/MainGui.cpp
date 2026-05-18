@@ -88,11 +88,11 @@ void MainGui::initializeUI()
 	m_converterTypeBox->addItem("Blueprint Converter (.json, .blueprint)");
 	m_converterTypeBox->addItem("Tile Converter (.tile)");
 
-//#if defined(SMCONV_ENABLE_WORLD_CONVERTER) //Mostly finished
+//#if defined(SMCONV_ENABLE_WORLD_CONVERTER) // Mostly finished
 	m_converterTypeBox->addItem("World Converter (.json, .world)");
 //#endif
 
-#if defined(SMCONV_ENABLE_CHARACTER_CONVERTER) //WIP
+#if defined(SMCONV_ENABLE_CHARACTER_CONVERTER) // WIP
 	m_converterTypeBox->addItem("Character Converter");
 #endif
 
@@ -484,9 +484,10 @@ void MainGui::openDirectory(
 	const std::wstring_view& path_view,
 	const char* type_str)
 {
-	const std::wstring v_dir_wide(path_view.data());
+	std::wstring v_dirWide(path_view.data());
+	String::ReplaceAllR(v_dirWide, '/', '\\'); // explorer.exe doesn't like proper slashes
 
-	if (!(File::CreateDirectorySafe(v_dir_wide) && QtUtil::openDirInExplorer(v_dir_wide)))
+	if (!File::CreateDirectorySafe(v_dirWide) && !QtUtil::openDirInExplorer(v_dirWide))
 	{
 		const QString v_error_str = QString(
 			"Failed to show the %1 output directory!").arg(type_str);
