@@ -48,11 +48,11 @@ void TileConv::ConvertToModel(
 		SMModCustomGameSwitch<false, true> v_content_switch;
 		v_content_switch.MergeContent(pCustomGame);
 
-		TileReader::ReadTile<false>(tile_path, error, v_outputTile);
+		TileReader::ReadTile(tile_path, error, v_outputTile, false);
 	}
 	else
 	{
-		TileReader::ReadTile<false>(tile_path, error, v_outputTile);
+		TileReader::ReadTile(tile_path, error, v_outputTile, false);
 	}
 
 	TileConv::WriteToFileInternal(v_outputTile, tile_name, error);

@@ -49,22 +49,22 @@ public:
 	/* 0xdC */ int decalCompressedSize;
 	/* 0xe0 */ int decalSize;
 
-	/* 0xe4 */ std::array<int, 4> harvestableListCount;
-	/* 0xf4 */ std::array<int, 4> harvestableListIndex;
-	/* 0x104 */std::array<int, 4> harvestableListCompressedSize;
-	/* 0x114 */std::array<int, 4> harvestableListSize;
+	/* 0xe4 */  std::array<int, 4> harvestableListCount;
+	/* 0xf4 */  std::array<int, 4> harvestableListIndex;
+	/* 0x104 */ std::array<int, 4> harvestableListCompressedSize;
+	/* 0x114 */ std::array<int, 4> harvestableListSize;
 
-	/* 0x124 */std::array<int, 4> kinematicsListCount;
-	/* 0x134 */std::array<int, 4> kinematicsListIndex;
-	/* 0x144 */std::array<int, 4> kinematicsListCompressedSize;
-	/* 0x154 */std::array<int, 4> kinematicsListSize;
+	/* 0x124 */ std::array<int, 4> kinematicsListCount;
+	/* 0x134 */ std::array<int, 4> kinematicsListIndex;
+	/* 0x144 */ std::array<int, 4> kinematicsListCompressedSize;
+	/* 0x154 */ std::array<int, 4> kinematicsListSize;
 
-	/* 0x164 */std::array<int, 4> some_data;
+	/* 0x164 */ std::array<int, 4> some_data;
 
-	/* 0x174 */int voxelTerrainCount;
-	/* 0x178 */int voxelTerrainIndex;
-	/* 0x17C */int voxelTerrainCompressedSize;
-	/* 0x180 */int voxelTerrainSize;
+	/* 0x174 */ int voxelTerrainCount;
+	/* 0x178 */ int voxelTerrainIndex;
+	/* 0x17C */ int voxelTerrainCompressedSize;
+	/* 0x180 */ int voxelTerrainSize;
 
 	inline CellHeader(const Byte* buffer, std::size_t size)
 	{

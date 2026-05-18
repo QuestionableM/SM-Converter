@@ -118,6 +118,16 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClCompile Include="Code\Converter\Entity\TileClutter.cpp" />
     <ClCompile Include="Code\Converter\Entity\Wedge.cpp" />
     <ClCompile Include="Code\Converter\MtlFileWriter.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Readers\AssetListReader.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Readers\BlueprintListReader.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Readers\ClutterReader.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Readers\DecalListReader.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Readers\HarvestableListReader.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Readers\KinematicsListReader.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Readers\MipReader.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Readers\PrefabFileReader.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Readers\PrefabReader.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Readers\TileReader.cpp" />
     <ClCompile Include="Code\Converter\TileConverter\Tile.cpp" />
     <ClCompile Include="Code\Converter\TileConverter\TileConverter.cpp" />
     <ClCompile Include="Code\Converter\TileConverter\TilePart.cpp" />
@@ -151,6 +161,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClCompile Include="Code\ObjectDatabase\SubMeshData.cpp" />
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\BlueprintFolderReader.cpp" />
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\FilterSettingsData.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\UserDataReaders\ItemModCounter.cpp" />
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\TileFolderReader.cpp" />
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\UserCharacterData.cpp" />
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\UserCharacterReader.cpp" />
@@ -164,6 +175,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClCompile Include="Code\Utils\Lz4Lib.cpp" />
     <ClCompile Include="Code\Utils\MemoryMapped.cpp" />
     <ClCompile Include="Code\Utils\Uuid.cpp" />
+    <ClCompile Include="Code\Utils\WineDetect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\cli_parser.hpp" />
@@ -202,6 +214,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\Converter\TileConverter\Readers\TileReader.hpp" />
     <ClInclude Include="Code\Converter\TileConverter\Tile.hpp" />
     <ClInclude Include="Code\Converter\TileConverter\TileConverter.hpp" />
+    <ClInclude Include="Code\Converter\TileConverter\TileConverterContext.hpp" />
     <ClInclude Include="Code\Converter\TileConverter\TileHeader.hpp" />
     <ClInclude Include="Code\Converter\TileConverter\TilePart.hpp" />
     <ClInclude Include="Code\Converter\WorldConverter\World.hpp" />
@@ -252,6 +265,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\Utils\Lz4Lib.hpp" />
     <ClInclude Include="Code\Utils\MemoryMapped.h" />
     <ClInclude Include="Code\Utils\Uuid.hpp" />
+    <ClInclude Include="Code\Utils\WineDetect.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

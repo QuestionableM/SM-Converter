@@ -22,35 +22,35 @@ SM_UNMANAGED_CODE
 #include <PerlinNoise/PerlinNoise.hpp>
 #include <FreeImage.h>
 
-Tile::Tile() :
-	m_version(0),
-	m_hasTerrain(false),
-	m_creatorId(0),
-	m_width(0),
-	m_height(0),
-	m_tiles()
+Tile::Tile()
+	: m_version(0)
+	, m_hasTerrain(false)
+	, m_creatorId(0)
+	, m_width(0)
+	, m_height(0)
+	, m_tiles()
 {}
 
-Tile::Tile(const TileHeader& header) :
-	m_version(header.m_data.version),
-	m_hasTerrain(((header.m_data.type >> 0x18) & 1) == 0),
-	m_creatorId(header.m_data.creator_id),
-	m_width(header.m_data.width),
-	m_height(header.m_data.height),
-	m_tiles(std::size_t(m_width * m_height))
+Tile::Tile(const TileHeader& header)
+	: m_version(header.m_data.version)
+	, m_hasTerrain(((header.m_data.type >> 0x18) & 1) == 0)
+	, m_creatorId(header.m_data.creator_id)
+	, m_width(header.m_data.width)
+	, m_height(header.m_data.height)
+	, m_tiles(std::size_t(m_width * m_height))
 {
 	const std::size_t v_tileCount = m_tiles.size();
 	for (std::size_t a = 0; a < m_tiles.size(); a++)
 		m_tiles[a] = new TilePart();
 }
 
-Tile::Tile(Tile&& other) noexcept :
-	m_version(other.m_version),
-	m_hasTerrain(other.m_hasTerrain),
-	m_creatorId(other.m_creatorId),
-	m_width(other.m_width),
-	m_height(other.m_height),
-	m_tiles(std::move(other.m_tiles))
+Tile::Tile(Tile&& other) noexcept
+	: m_version(other.m_version)
+	, m_hasTerrain(other.m_hasTerrain)
+	, m_creatorId(other.m_creatorId)
+	, m_width(other.m_width)
+	, m_height(other.m_height)
+	, m_tiles(std::move(other.m_tiles))
 {}
 
 Tile::~Tile()

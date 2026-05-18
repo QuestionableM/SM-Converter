@@ -54,11 +54,11 @@ void WorldConverter::ConvertToModel(
 		SMModCustomGameSwitch<false, true> v_contentSwitch;
 		v_contentSwitch.MergeContent(pCustomGame);
 		
-		v_outputWorld = SMWorld::LoadFromFile<false>(path, error);
+		v_outputWorld = SMWorld::LoadFromFile(path, error, false);
 	}
 	else
 	{
-		v_outputWorld = SMWorld::LoadFromFile<false>(path, error);
+		v_outputWorld = SMWorld::LoadFromFile(path, error, false);
 	}
 
 	if (v_outputWorld)

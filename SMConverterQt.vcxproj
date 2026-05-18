@@ -159,6 +159,16 @@ xcopy /y /d "$(SolutionDir)Media\icon.ico" "$(SolutionDir)Build\$(ProjectName)-$
     <ClCompile Include="Code\Converter\Entity\TileClutter.cpp" />
     <ClCompile Include="Code\Converter\Entity\Wedge.cpp" />
     <ClCompile Include="Code\Converter\MtlFileWriter.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Readers\AssetListReader.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Readers\BlueprintListReader.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Readers\ClutterReader.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Readers\DecalListReader.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Readers\HarvestableListReader.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Readers\KinematicsListReader.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Readers\MipReader.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Readers\PrefabFileReader.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Readers\PrefabReader.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Readers\TileReader.cpp" />
     <ClCompile Include="Code\Converter\TileConverter\Tile.cpp" />
     <ClCompile Include="Code\Converter\TileConverter\TileConverter.cpp" />
     <ClCompile Include="Code\Converter\TileConverter\TilePart.cpp" />
@@ -265,6 +275,7 @@ xcopy /y /d "$(SolutionDir)Media\icon.ico" "$(SolutionDir)Build\$(ProjectName)-$
     <ClInclude Include="Code\Converter\TileConverter\Readers\TileReader.hpp" />
     <ClInclude Include="Code\Converter\TileConverter\Tile.hpp" />
     <ClInclude Include="Code\Converter\TileConverter\TileConverter.hpp" />
+    <ClInclude Include="Code\Converter\TileConverter\TileConverterContext.hpp" />
     <ClInclude Include="Code\Converter\TileConverter\TileHeader.hpp" />
     <ClInclude Include="Code\Converter\TileConverter\TilePart.hpp" />
     <ClInclude Include="Code\Converter\WorldConverter\World.hpp" />

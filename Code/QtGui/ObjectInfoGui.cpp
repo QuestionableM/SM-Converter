@@ -14,10 +14,10 @@
 
 #include <QContextMenuEvent>
 
-ModListContextMenu::ModListContextMenu(QWidget* parent) :
-	QMenu(parent),
-	m_openInSteamWorkshopAction(new QAction("Open in Steam Workshop", this)),
-	m_openInExplorerAction(new QAction("Open in File Explorer", this))
+ModListContextMenu::ModListContextMenu(QWidget* parent)
+	: QMenu(parent)
+	, m_openInSteamWorkshopAction(new QAction("Open in Steam Workshop", this))
+	, m_openInExplorerAction(new QAction("Open in File Explorer", this))
 {
 	this->addAction(m_openInSteamWorkshopAction);
 	this->addAction(m_openInExplorerAction);
@@ -25,10 +25,10 @@ ModListContextMenu::ModListContextMenu(QWidget* parent) :
 
 ////////////////////////MOD LIST WIDGET////////////////////////
 
-ModListWidget::ModListWidget(QWidget* parent) :
-	QListWidget(parent),
-	m_noModsLabel(new CenteredLabel("No Mods", this)),
-	m_contextMenu(new ModListContextMenu(this))
+ModListWidget::ModListWidget(QWidget* parent)
+	: QListWidget(parent)
+	, m_noModsLabel(new CenteredLabel("No Mods", this))
+	, m_contextMenu(new ModListContextMenu(this))
 {
 	this->setSelectionMode(QAbstractItemView::SingleSelection);
 
@@ -118,15 +118,19 @@ void ModListWidget::contextMenuEvent(QContextMenuEvent* event)
 	m_contextMenu->exec(event->globalPos());
 }
 
-/////////////////////////OBJECT INFO GUI//////////////////////////
+///////////////////////// OBJECT INFO GUI //////////////////////////
 
-ObjectInfoGui::ObjectInfoGui(const QString& title, const std::wstring& image, QWidget* parent) :
-	QDialog(parent),
-	m_mainLayout(new QVBoxLayout(this)),
-	m_mainInfoLayout(new QHBoxLayout(this)),
-	m_objectImage(new ImageBox(QString::fromStdWString(image))),
-	m_infoLayout(new QVBoxLayout(this)),
-	m_modList(new ModListWidget(this))
+ObjectInfoGui::ObjectInfoGui(
+	const QString& title,
+	const std::wstring& image,
+	QWidget* parent
+)
+	: QDialog(parent)
+	, m_mainLayout(new QVBoxLayout(this))
+	, m_mainInfoLayout(new QHBoxLayout(this))
+	, m_objectImage(new ImageBox(QString::fromStdWString(image)))
+	, m_infoLayout(new QVBoxLayout(this))
+	, m_modList(new ModListWidget(this))
 {
 	this->setWindowTitle(title);
 
@@ -171,11 +175,11 @@ static bool readWorldData(
 		SMModCustomGameSwitch<false, true> v_cg_switch;
 		v_cg_switch.MergeContent(v_cur_cg);
 
-		v_world = SMWorld::LoadFromFile<true>(world_path, v_error);
+		v_world = SMWorld::LoadFromFile(world_path, v_error, true);
 	}
 	else
 	{
-		v_world = SMWorld::LoadFromFile<true>(world_path, v_error);
+		v_world = SMWorld::LoadFromFile(world_path, v_error, true);
 	}
 
 	if (!v_world)
@@ -186,8 +190,8 @@ static bool readWorldData(
 	return true;
 }
 
-ObjectInfoGui::ObjectInfoGui(WorldInstance* world, QWidget* parent) :
-	ObjectInfoGui("World Info", world->preview_image, parent)
+ObjectInfoGui::ObjectInfoGui(WorldInstance* world, QWidget* parent)
+	: ObjectInfoGui("World Info", world->preview_image, parent)
 {
 	ConvertError v_error;
 	std::size_t v_world_width;

@@ -34,9 +34,9 @@ struct TileHeaderBaseInfo
 class TileHeader
 {
 public:
-	inline TileHeader() :
-		m_data(),
-		m_cellHeaders()
+	inline TileHeader()
+		: m_data()
+		, m_cellHeaders()
 	{}
 
 	static bool ReadTile(TileHeader* pHeader, const std::vector<Byte>& bytes, ConvertError& error)
