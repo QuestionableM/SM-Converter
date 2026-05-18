@@ -65,6 +65,7 @@ void MtlFileWriter::Write(
 		v_outputStr.append("\n\n");
 
 		v_mtlWriter.write(v_outputStr.c_str(), v_outputStr.size());
+		v_outputStr.clear();
 
 		ProgCounter::ProgressValue++;
 	}
