@@ -40,7 +40,7 @@ void DatabaseConfig::WstrMapToJson(
 bool DatabaseConfig::AddToStrVec(std::vector<std::wstring>& v_vec, PathChecker& v_path_checker, const std::wstring& v_new_str)
 {
 	std::wstring v_full_path;
-	if (!File::GetFullFilePath(v_new_str, v_full_path))
+	if (!File::GetFullFilePathLower(v_new_str, v_full_path))
 		return false;
 
 	if (v_full_path == DatabaseConfig::WorkshopFolder)
@@ -65,7 +65,7 @@ bool DatabaseConfig::AddToStrVec(std::vector<std::wstring>& v_vec, PathChecker& 
 bool DatabaseConfig::AddToStrMap(PathChecker& v_map, const std::wstring& v_new_str)
 {
 	std::wstring v_full_path;
-	if (!File::GetFullFilePath(v_new_str, v_full_path))
+	if (!File::GetFullFilePathLower(v_new_str, v_full_path))
 		return false;
 
 	if (v_full_path == DatabaseConfig::WorkshopFolder)
@@ -339,7 +339,7 @@ inline static void ReadJsonDirectory(
 		return;
 
 	std::wstring v_dir = String::ToWide(v_dir_json.get_ref<const std::string&>());
-	if (!File::GetFullFilePath(v_dir, v_dir))
+	if (!File::GetFullFilePathLower(v_dir, v_dir))
 	{
 		DebugErrorL("Couldn't get the full path for: ", v_dir);
 		return;

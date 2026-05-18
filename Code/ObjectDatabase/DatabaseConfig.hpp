@@ -16,9 +16,9 @@ public:
 	//Used to remove the same path entires
 	using PathChecker = std::unordered_set<std::wstring>;
 
-	constexpr static const std::wstring_view BlueprintOutputFolder = L".\\ConvertedBlueprints";
-	constexpr static const std::wstring_view TileOutputFolder = L".\\ConvertedTiles";
-	constexpr static const std::wstring_view WorldOutputFolder = L".\\ConvertedWorlds";
+	constexpr static const std::wstring_view BlueprintOutputFolder = L"./ConvertedBlueprints";
+	constexpr static const std::wstring_view TileOutputFolder = L"./ConvertedTiles";
+	constexpr static const std::wstring_view WorldOutputFolder = L"./ConvertedWorlds";
 
 	constexpr static const std::wstring_view ConfigPath = L"./Resources/Config.json";
 	constexpr static const std::wstring_view RotationsPath = L"./Resources/RotationSettings.json";

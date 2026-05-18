@@ -225,6 +225,7 @@ xcopy /y /d "$(SolutionDir)Media\icon.ico" "$(SolutionDir)Build\$(ProjectName)-$
     <ClCompile Include="Code\Utils\Lz4Lib.cpp" />
     <ClCompile Include="Code\Utils\MemoryMapped.cpp" />
     <ClCompile Include="Code\Utils\Uuid.cpp" />
+    <ClCompile Include="Code\Utils\WineDetect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\Converter\BlueprintConverter\BlueprintConverter.hpp" />
@@ -318,6 +319,7 @@ xcopy /y /d "$(SolutionDir)Media\icon.ico" "$(SolutionDir)Build\$(ProjectName)-$
     <ClInclude Include="Code\QtGui\FilterSettingsGui.hpp" />
     <ClInclude Include="Code\QtGui\MainGui.hpp" />
     <ClInclude Include="Code\Utils\Hashing.hpp" />
+    <ClInclude Include="Code\Utils\WineDetect.hpp" />
     <ClInclude Include="resource.h" />
     <QtMoc Include="Code\QtGui\CustomWidgets\PathListViewWidget.hpp" />
     <QtMoc Include="Code\QtGui\ProgramSettingsGui.hpp" />

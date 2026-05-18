@@ -24,8 +24,8 @@ public:
 
 	static void LoadResourceUpgrades(const std::wstring& path);
 	static void LoadResourceUpgradesFromConfig();
-	static void UpgradeResource(const std::wstring& mPath, std::wstring& mOutput);
-	static void UpgradeResourceR(std::wstring& out_path);
+	static void UpgradeResourceR(std::wstring& outPath);
+	static void UpgradeResource(const std::wstring& inputPath, std::wstring& outPath);
 
 	static std::wstring ReplaceKey(const std::wstring& path);
 	static void ReplaceKeyR(std::wstring& path);

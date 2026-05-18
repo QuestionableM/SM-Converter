@@ -215,6 +215,19 @@ bool File::Equivalent(const std::wstring& p1, const std::wstring& p2)
 	return (is_equivalent && !ec);
 }
 
+bool File::CanonicalR(std::wstring& path)
+{
+	std::error_code v_ec;
+	const auto v_canonicalPath = fs::canonical(path, v_ec);
+
+	if (v_ec) return false;
+
+	path = v_canonicalPath.wstring();
+	String::ReplaceAllR(path, '\\', '/');
+
+	return true;
+}
+
 std::wstring File::OpenFileDialog(
 	const std::wstring& title,
 	FILEOPENDIALOGOPTIONS options,

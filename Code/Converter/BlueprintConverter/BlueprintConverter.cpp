@@ -16,51 +16,51 @@ SM_UNMANAGED_CODE
 
 void BlueprintConv::WriteToFileInternal(
 	SMBlueprint* pBlueprint,
-	const std::wstring& bp_name,
+	const std::wstring& blueprintName,
 	ConvertError& error)
 {
 	if (error) return;
 
-	const std::wstring v_bp_out_dir(DatabaseConfig::BlueprintOutputFolder);
-	if (!File::CreateDirectorySafe(v_bp_out_dir))
+	const std::wstring v_bpOutDir(DatabaseConfig::BlueprintOutputFolder);
+	if (!File::CreateDirectorySafe(v_bpOutDir))
 	{
 		error.setError(1, "Couldn't create the main output directory");
 		return;
 	}
 
-	const std::wstring v_bp_dir_path = v_bp_out_dir + L"/" + bp_name;
-	if (!File::CreateDirectorySafe(v_bp_dir_path))
+	const std::wstring v_bpDirPath = v_bpOutDir + L"/" + blueprintName;
+	if (!File::CreateDirectorySafe(v_bpDirPath))
 	{
 		error.setError(1, "Couldn't create the blueprint output directory");
 		return;
 	}
 
-	const std::wstring v_bp_output_path = v_bp_dir_path + L"/" + bp_name;
+	const std::wstring v_bpOutputPath = v_bpDirPath + L"/" + blueprintName;
 
 	{
-		//Write object file
-		std::ofstream v_obj_writer(v_bp_output_path + L".obj");
+		// Write object file
+		std::ofstream v_obj_writer(v_bpOutputPath + L".obj");
 		if (!v_obj_writer.is_open())
 		{
 			error.setError(1, "Couldn't create an object file");
 			return;
 		}
 
-		glm::vec3 v_center_point(0.0f);
+		glm::vec3 v_centerPoint(0.0f);
 
 		const std::size_t v_bp_object_count = pBlueprint->GetAmountOfObjects();
 		if (v_bp_object_count > 0) //prevent division by 0 exception
 		{
-			pBlueprint->CalculateCenterPoint(v_center_point);
-			v_center_point /= static_cast<float>(v_bp_object_count);
+			pBlueprint->CalculateCenterPoint(v_centerPoint);
+			v_centerPoint /= static_cast<float>(v_bp_object_count);
 		}
 
-		v_center_point *= pBlueprint->m_size;
+		v_centerPoint *= pBlueprint->m_size;
 
 		ProgCounter::SetState(ProgState::WritingObjects, v_bp_object_count);
 
 		WriterOffsetData v_offset_data;
-		pBlueprint->WriteObjectToFile(v_obj_writer, v_offset_data, glm::translate(-v_center_point));
+		pBlueprint->WriteObjectToFile(v_obj_writer, v_offset_data, glm::translate(-v_centerPoint));
 		v_obj_writer.close();
 	}
 
@@ -68,14 +68,10 @@ void BlueprintConv::WriteToFileInternal(
 		ProgCounter::SetState(ProgState::WritingMtlFile, 0);
 
 		SMEntity::EntityTextureMap v_textureMap;
+		pBlueprint->FillTextureMap(v_textureMap);
+		ProgCounter::ProgressMax = v_textureMap.size();
 
-		for (const SMEntity* v_entity : pBlueprint->m_objects)
-		{
-			v_entity->FillTextureMap(v_textureMap);
-			ProgCounter::ProgressMax = v_textureMap.size();
-		}
-
-		MtlFileWriter::Write(v_bp_output_path + L".mtl", v_textureMap);
+		MtlFileWriter::Write(v_bpOutputPath + L".mtl", v_textureMap);
 	}
 }
 
@@ -251,12 +247,12 @@ SMBlueprint::AddObjectFunction BlueprintConv::GetAddObjectFunction()
 }
 
 void BlueprintConv::ConvertToModel(
-	const std::wstring& bp_path,
-	const std::wstring& bp_name,
+	const std::wstring& blueprintPath,
+	const std::wstring& blueprintName,
 	ConvertError& error,
 	CustomGame* pCustomGame)
 {
-	if (!File::IsRegularFile(bp_path))
+	if (!File::IsRegularFile(blueprintPath))
 	{
 		error.setError(1, "The specified path leads to a directory");
 		return;
@@ -275,11 +271,11 @@ void BlueprintConv::ConvertToModel(
 		SMModCustomGameSwitch<true, false> v_content_switch;
 		v_content_switch.MergeContent(pCustomGame);
 
-		v_pBlueprint = SMBlueprint::FromFileWithStatus(bp_path, v_add_obj_func, error, v_pDocOut);
+		v_pBlueprint = SMBlueprint::FromFileWithStatus(blueprintPath, v_add_obj_func, error, v_pDocOut);
 	}
 	else
 	{
-		v_pBlueprint = SMBlueprint::FromFileWithStatus(bp_path, v_add_obj_func, error, v_pDocOut);
+		v_pBlueprint = SMBlueprint::FromFileWithStatus(blueprintPath, v_add_obj_func, error, v_pDocOut);
 	}
 
 	if (v_pBlueprint)
@@ -293,7 +289,7 @@ void BlueprintConv::ConvertToModel(
 			ControllerTransform::Apply(v_pBlueprint, v_bodyGraph, v_pBlueprint->m_childToBodyIndex);
 		}
 
-		BlueprintConv::WriteToFileInternal(v_pBlueprint, bp_name, error);
+		BlueprintConv::WriteToFileInternal(v_pBlueprint, blueprintName, error);
 
 		// Since all the sorted groups are attached to the blueprint, the blueprint takes care of all the allocated memory
 		delete v_pBlueprint;

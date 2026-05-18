@@ -26,7 +26,7 @@ enum : std::uint8_t
 
 class BlueprintConv
 {
-	static void WriteToFileInternal(SMBlueprint* pBlueprint, const std::wstring& bp_name, ConvertError& error);
+	static void WriteToFileInternal(SMBlueprint* pBlueprint, const std::wstring& blueprintName, ConvertError& error);
 
 	static SMBody* CreateCollection(SMBlueprint* self, const std::string_view& name);
 
@@ -45,8 +45,8 @@ class BlueprintConv
 
 public:
 	static void ConvertToModel(
-		const std::wstring& bp_path,
-		const std::wstring& bp_name,
+		const std::wstring& blueprintPath,
+		const std::wstring& blueprintName,
 		ConvertError& error,
 		CustomGame* pCustomGame);
 

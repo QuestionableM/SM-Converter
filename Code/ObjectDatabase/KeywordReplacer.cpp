@@ -10,7 +10,7 @@ SM_UNMANAGED_CODE
 void KeywordReplacer::CreateKey(std::wstring& key, std::wstring& replacement)
 {
 	String::ToLowerR(key);
-	// String::ToLowerR(replacement); - value is not lowered for Linux filesystem compatibility
+	String::ToLowerR(replacement);
 
 	String::ReplaceAllR(key,         L'\\', L'/');
 	String::ReplaceAllR(replacement, L'\\', L'/');
@@ -110,27 +110,20 @@ void KeywordReplacer::LoadResourceUpgradesFromConfig()
 	m_ResourceUpgrades.emplace(std::wstring_view(L"$game_data/textures/nonor_nor.tga"), std::wstring_view()).first->second = L"";
 }
 
-void KeywordReplacer::UpgradeResource(const std::wstring& mPath, std::wstring& mOutput)
+void KeywordReplacer::UpgradeResourceR(std::wstring& outPath)
 {
-	std::wstring v_lowerPath = String::ToLower(mPath);
-	String::ReplaceAllR(v_lowerPath, L'\\', L'/');
+	String::ToLowerR(outPath);
+	String::ReplaceAllR(outPath, L'\\', L'/');
 
-	const auto v_iter = m_ResourceUpgrades.find(v_lowerPath);
+	const auto v_iter = m_ResourceUpgrades.find(outPath);
 	if (v_iter != m_ResourceUpgrades.end())
-		mOutput = v_iter->second;
-	else
-		mOutput = std::move(v_lowerPath);
+		outPath.assign(v_iter->second);
 }
 
-void KeywordReplacer::UpgradeResourceR(std::wstring& out_path)
+void KeywordReplacer::UpgradeResource(const std::wstring& inputPath, std::wstring& outPath)
 {
-	std::wstring v_searchString(out_path);
-	String::ToLowerR(v_searchString);
-	String::ReplaceAllR(v_searchString, L'\\', L'/');
-
-	const auto v_iter = m_ResourceUpgrades.find(v_searchString);
-	if (v_iter != m_ResourceUpgrades.end())
-		out_path.assign(v_iter->second);
+	outPath = inputPath;
+	KeywordReplacer::UpgradeResourceR(outPath);
 }
 
 std::wstring KeywordReplacer::ReplaceKey(const std::wstring& path)
@@ -145,8 +138,7 @@ std::wstring KeywordReplacer::ReplaceKey(const std::wstring& path)
 	const wchar_t* v_keyPtr = std::wcschr(v_keyBeg, L'/');
 	if (v_keyPtr == nullptr) return v_output;
 
-	std::wstring v_keyChunk(v_keyBeg, v_keyPtr);
-	String::ToLowerR(v_keyChunk);
+	const std::wstring_view v_keyChunk(v_keyBeg, v_keyPtr);
 
 	const auto v_iter = m_KeyReplacements.find(v_keyChunk);
 	if (v_iter == m_KeyReplacements.end()) return v_output;
@@ -172,8 +164,7 @@ void KeywordReplacer::ReplaceKeyR(std::wstring& path)
 	const wchar_t* v_keyPtr = std::wcschr(v_keyBeg, L'/');
 	if (v_keyPtr == nullptr) return;
 
-	std::wstring v_keyChunk(v_keyBeg, v_keyPtr);
-	String::ToLowerR(v_keyChunk);
+	const std::wstring_view v_keyChunk(v_keyBeg, v_keyPtr);
 
 	const auto v_iter = m_KeyReplacements.find(v_keyChunk);
 	if (v_iter == m_KeyReplacements.end()) return;
@@ -197,8 +188,7 @@ bool KeywordReplacer::ReplaceKeyRLua(std::wstring& path)
 	const wchar_t* v_keyPtr = std::wcschr(v_keyBeg, L'/');
 	if (v_keyPtr == nullptr) return true;
 
-	std::wstring v_keyChunk(v_keyBeg, v_keyPtr);
-	String::ToLowerR(v_keyChunk);
+	const std::wstring_view v_keyChunk(v_keyBeg, v_keyPtr);
 
 	if (v_keyChunk == L"$content_data")
 	{
