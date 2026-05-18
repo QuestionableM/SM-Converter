@@ -64,6 +64,7 @@ void BlueprintConv::WriteToFileInternal(
 		v_obj_writer.close();
 	}
 
+	if (SharedConverterSettings::ExportMaterials)
 	{
 		ProgCounter::SetState(ProgState::WritingMtlFile, 0);
 

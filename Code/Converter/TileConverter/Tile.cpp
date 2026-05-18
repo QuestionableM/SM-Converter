@@ -813,12 +813,10 @@ void Tile::WriteMtlFile(const std::wstring& path) const
 	ProgCounter::SetState(ProgState::WritingMtlFile, 0);
 
 	SMEntity::EntityTextureMap v_textureMap;
-
 	for (const TilePart* v_tPart : m_tiles)
-	{
 		v_tPart->FillTextureMap(v_textureMap);
-		ProgCounter::ProgressMax = v_textureMap.size();
-	}
+
+	ProgCounter::ProgressMax = v_textureMap.size();
 
 	{
 		ObjectTexData v_tileGroundTextureData(0xffffff);
