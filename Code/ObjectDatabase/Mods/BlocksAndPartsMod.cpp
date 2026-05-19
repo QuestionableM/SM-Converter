@@ -53,7 +53,7 @@ void BlocksAndPartsMod::LoadObjectDatabase()
 	std::wstring v_shapedbPath;
 	if (BlocksAndPartsMod::GetShapeSetDatabaseFile(m_Directory, v_shapedbPath))
 	{
-		SMMod::LoadShapeSetList(v_shapedbPath, this, true);
+		this->LoadShapeSetList(v_shapedbPath, true);
 	}
 	else
 	{

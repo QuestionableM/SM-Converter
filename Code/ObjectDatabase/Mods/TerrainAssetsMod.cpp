@@ -78,7 +78,7 @@ void TerrainAssetsMod::LoadObjectDatabase()
 	std::wstring v_assetdb_path;
 	if (TerrainAssetsMod::GetAssetSetDatabaseFile(v_database_dir, v_assetdb_path))
 	{
-		SMMod::LoadAssetSetList(v_assetdb_path, this, true);
+		this->LoadAssetSetList(v_assetdb_path, true);
 	}
 	else
 	{

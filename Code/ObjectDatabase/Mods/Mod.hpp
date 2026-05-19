@@ -50,6 +50,12 @@ public:
 	static SMMod* GetModFromTileParts(const SMUuid& uuid);
 	static SMMod* GetModFromUuid(const SMUuid& modUuid);
 
+	static std::vector<CustomGame*>& GetCustomGames() noexcept;
+	static const std::vector<SMMod*>& GetAllMods() noexcept;
+
+	static std::size_t GetAmountOfMods() noexcept;
+	static std::size_t GetAmountOfObjects() noexcept;
+
 	template<typename T>
 	inline static const T* GetGlobalObject(const SMUuid& uuid)
 	{
@@ -83,30 +89,14 @@ public:
 		}
 	}
 
-	inline static std::vector<CustomGame*>& GetCustomGames() noexcept { return SMMod::CustomGameVector; }
-	inline static const std::vector<SMMod*>& GetAllMods() noexcept { return SMMod::ModVector; }
+	void LoadFile(const std::wstring_view& path, const bool addToGlobalDb);
+	void LoadShapeSetList(const std::wstring_view& path, const bool addToGlobalDb);
+	void LoadAssetSetList(const std::wstring_view& path, const bool addToGlobalDb);
+	void LoadHarvestableSetList(const std::wstring_view& path, const bool addToGlobalDb);
+	void LoadKinematicSetList(const std::wstring_view& path, const bool addToGlobalDb);
 
-	inline static std::size_t GetAmountOfMods() noexcept { return SMMod::ModVector.size(); }
-	inline static std::size_t GetAmountOfObjects() noexcept
-	{
-		return SMModObjectStorage<BlockData>::StaticStorage.size()
-			+ SMModObjectStorage<PartData>::StaticStorage.size()
-			+ SMModObjectStorage<AssetData>::StaticStorage.size()
-			+ SMModObjectStorage<HarvestableData>::StaticStorage.size()
-			+ SMModObjectStorage<ClutterData>::StaticStorage.size()
-			+ SMModObjectStorage<DecalData>::StaticStorage.size()
-			+ SMModObjectStorage<KinematicData>::StaticStorage.size()
-			+ SMModObjectStorage<WedgeData>::StaticStorage.size();
-	}
-
-	void LoadFile(const std::wstring& path, bool add_to_global_db);
-	static void LoadShapeSetList(const std::wstring& path, SMMod* v_mod, bool add_to_global_db);
-	static void LoadAssetSetList(const std::wstring& path, SMMod* v_mod, bool add_to_global_db);
-	static void LoadHarvestableSetList(const std::wstring& path, SMMod* v_mod, bool add_to_global_db);
-	static void LoadKinematicSetList(const std::wstring& path, SMMod* v_mod, bool add_to_global_db);
-
-	void ScanDatabaseFolderRecursive(const std::wstring& folder, bool add_to_global_db);
-	void ScanDatabaseFolder(const std::wstring& folder, bool add_to_global_db);
+	void ScanDatabaseFolderRecursive(const std::wstring_view& folder, const bool addToGlobalDb);
+	void ScanDatabaseFolder(const std::wstring_view& folder, const bool addToGlobalDb);
 
 	void SetContentKey() const;
 
@@ -140,7 +130,7 @@ protected:
 	SMUuid m_Uuid;
 	std::wstring m_Name;
 	std::wstring m_Directory;
-	unsigned long long m_WorkshopId;
+	std::uint64_t m_WorkshopId;
 	bool m_isLocal;
 
 private:

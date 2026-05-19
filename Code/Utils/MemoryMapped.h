@@ -75,8 +75,6 @@ private:
   /// get OS page size (for remap)
   static int getpagesize();
 
-  /// file name
-  std::wstring _filename;
   /// file size
   uint64_t    _filesize;
   /// caching strategy

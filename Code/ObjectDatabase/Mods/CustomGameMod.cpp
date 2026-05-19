@@ -49,15 +49,8 @@ void CustomGame::LoadObjectDatabase()
 
 	m_shouldUseGameContent = this->CheckSurvivalContent();
 
-	const std::wstring v_shapedb_path = m_Directory + L"/Objects/Database/shapesets.shapedb";
-	SMMod::LoadShapeSetList(v_shapedb_path, this, false);
-
-	const std::wstring v_assetdb_path = m_Directory + L"/Terrain/Database/assetsets.assetdb";
-	SMMod::LoadAssetSetList(v_assetdb_path, this, false);
-
-	const std::wstring v_hvsdb_path = m_Directory + L"/Harvestables/Database/harvestablesets.harvestabledb";
-	SMMod::LoadHarvestableSetList(v_hvsdb_path, this, false);
-
-	const std::wstring v_kinematicdb_path = m_Directory + L"/Kinematics/Database/kinematicsets.kinematicdb";
-	SMMod::LoadKinematicSetList(v_kinematicdb_path, this, false);
+	this->LoadShapeSetList(m_Directory + L"/Objects/Database/shapesets.shapedb", false);
+	this->LoadAssetSetList(m_Directory + L"/Terrain/Database/assetsets.assetdb", false);
+	this->LoadHarvestableSetList(m_Directory + L"/Harvestables/Database/harvestablesets.harvestabledb", false);
+	this->LoadKinematicSetList(m_Directory + L"/Kinematics/Database/kinematicsets.kinematicdb", false);
 }

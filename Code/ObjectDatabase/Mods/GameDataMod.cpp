@@ -21,15 +21,15 @@ void GameDataMod::LoadObjectDatabase()
 
 	this->LoadFile(L"./Resources/ResourceReplacements.json", true);
 
-	for (const auto& db_item : DatabaseConfig::AssetListFolders)
+	for (const auto& v_dbItem : DatabaseConfig::AssetListFolders)
 	{
 		std::error_code v_error;
-		const bool is_regular_file = fs::is_regular_file(db_item, v_error);
+		const bool v_isRegularFile = fs::is_regular_file(v_dbItem, v_error);
 		if (v_error) continue;
 
-		if (is_regular_file)
-			this->LoadFile(db_item, true);
+		if (v_isRegularFile)
+			this->LoadFile(v_dbItem, true);
 		else
-			this->ScanDatabaseFolderRecursive(db_item, true);
+			this->ScanDatabaseFolderRecursive(v_dbItem, true);
 	}
 }

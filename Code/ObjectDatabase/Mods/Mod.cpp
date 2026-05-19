@@ -300,6 +300,33 @@ SMMod* SMMod::GetModFromUuid(const SMUuid& modUuid)
 		return nullptr;
 }
 
+std::vector<CustomGame*>& SMMod::GetCustomGames() noexcept
+{
+	return SMMod::CustomGameVector;
+}
+
+const std::vector<SMMod*>& SMMod::GetAllMods() noexcept
+{
+	return SMMod::ModVector;
+}
+
+std::size_t SMMod::GetAmountOfMods() noexcept
+{
+	return SMMod::ModVector.size();
+}
+
+std::size_t SMMod::GetAmountOfObjects() noexcept
+{
+	return SMModObjectStorage<BlockData>::StaticStorage.size()
+		+ SMModObjectStorage<PartData>::StaticStorage.size()
+		+ SMModObjectStorage<AssetData>::StaticStorage.size()
+		+ SMModObjectStorage<HarvestableData>::StaticStorage.size()
+		+ SMModObjectStorage<ClutterData>::StaticStorage.size()
+		+ SMModObjectStorage<DecalData>::StaticStorage.size()
+		+ SMModObjectStorage<KinematicData>::StaticStorage.size()
+		+ SMModObjectStorage<WedgeData>::StaticStorage.size();
+}
+
 using ListLoaderFunc = void(*)(const simdjson::dom::element&, SMMod*, bool);
 static const std::unordered_map<std::string_view, ListLoaderFunc> g_dataLoaders =
 {
@@ -314,7 +341,9 @@ static const std::unordered_map<std::string_view, ListLoaderFunc> g_dataLoaders 
 	{ "wedgeList"          , WedgeListLoader::Load       }
 };
 
-void SMMod::LoadFile(const std::wstring& path, bool add_to_global_db)
+void SMMod::LoadFile(
+	const std::wstring_view& path,
+	const bool addToGlobalDb)
 {
 	simdjson::dom::document v_doc;
 	if (!JsonReader::LoadParseSimdjsonCommentsC(path, v_doc, simdjson::dom::element_type::OBJECT))
@@ -331,11 +360,37 @@ void SMMod::LoadFile(const std::wstring& path, bool add_to_global_db)
 			continue;
 		}
 
-		v_iter->second(v_obj.value, this, add_to_global_db);
+		v_iter->second(v_obj.value, this, addToGlobalDb);
 	}
 }
 
-void SMMod::LoadAssetSetList(const std::wstring& path, SMMod* v_mod, bool add_to_global_db)
+void SMMod::LoadShapeSetList(
+	const std::wstring_view& path,
+	const bool addToGlobalDb)
+{
+	simdjson::dom::document v_shapedb_doc;
+	if (!JsonReader::LoadParseSimdjsonCommentsC(path, v_shapedb_doc, simdjson::dom::element_type::OBJECT))
+		return;
+
+	const auto v_shapeset_list = v_shapedb_doc.root()["shapeSetList"];
+	if (!v_shapeset_list.is_array()) return;
+
+	std::wstring v_shapeSetPath;
+
+	for (const auto v_shapeset : v_shapeset_list.get_array().value_unsafe())
+	{
+		if (!v_shapeset.is_string()) continue;
+
+		String::ToWideRef(v_shapeset.get_string().value_unsafe(), v_shapeSetPath);
+		KeywordReplacer::ReplaceKeyR(v_shapeSetPath);
+
+		this->LoadFile(v_shapeSetPath, addToGlobalDb);
+	}
+}
+
+void SMMod::LoadAssetSetList(
+	const std::wstring_view& path,
+	const bool addToGlobalDb)
 {
 	simdjson::dom::document v_assetset_doc;
 	if (!JsonReader::LoadParseSimdjsonCommentsC(path, v_assetset_doc, simdjson::dom::element_type::OBJECT))
@@ -356,33 +411,13 @@ void SMMod::LoadAssetSetList(const std::wstring& path, SMMod* v_mod, bool add_to
 		String::ToWideRef(v_assetSetPathObj.get_string().value_unsafe(), v_assetSetPath);
 		KeywordReplacer::ReplaceKeyR(v_assetSetPath);
 
-		v_mod->LoadFile(v_assetSetPath, add_to_global_db);
+		this->LoadFile(v_assetSetPath, addToGlobalDb);
 	}
 }
 
-void SMMod::LoadShapeSetList(const std::wstring& path, SMMod* v_mod, bool add_to_global_db)
-{
-	simdjson::dom::document v_shapedb_doc;
-	if (!JsonReader::LoadParseSimdjsonCommentsC(path, v_shapedb_doc, simdjson::dom::element_type::OBJECT))
-		return;
-
-	const auto v_shapeset_list = v_shapedb_doc.root()["shapeSetList"];
-	if (!v_shapeset_list.is_array()) return;
-
-	std::wstring v_shapeSetPath;
-
-	for (const auto v_shapeset : v_shapeset_list.get_array().value_unsafe())
-	{
-		if (!v_shapeset.is_string()) continue;
-
-		String::ToWideRef(v_shapeset.get_string().value_unsafe(), v_shapeSetPath);
-		KeywordReplacer::ReplaceKeyR(v_shapeSetPath);
-
-		v_mod->LoadFile(v_shapeSetPath, add_to_global_db);
-	}
-}
-
-void SMMod::LoadHarvestableSetList(const std::wstring& path, SMMod* v_mod, bool add_to_global_db)
+void SMMod::LoadHarvestableSetList(
+	const std::wstring_view& path,
+	const bool addToGlobalDb)
 {
 	simdjson::dom::document v_hvsdb_doc;
 	if (!JsonReader::LoadParseSimdjsonCommentsC(path, v_hvsdb_doc, simdjson::dom::element_type::OBJECT))
@@ -403,11 +438,13 @@ void SMMod::LoadHarvestableSetList(const std::wstring& path, SMMod* v_mod, bool 
 		String::ToWideRef(v_hvsset_path_obj.get_string().value_unsafe(), v_hvsSetPath);
 		KeywordReplacer::ReplaceKeyR(v_hvsSetPath);
 
-		v_mod->LoadFile(v_hvsSetPath, add_to_global_db);
+		this->LoadFile(v_hvsSetPath, addToGlobalDb);
 	}
 }
 
-void SMMod::LoadKinematicSetList(const std::wstring& path, SMMod* v_mod, bool add_to_global_db)
+void SMMod::LoadKinematicSetList(
+	const std::wstring_view& path,
+	const bool addToGlobalDb)
 {
 	simdjson::dom::document v_kinematicdb_doc;
 	if (!JsonReader::LoadParseSimdjsonCommentsC(path, v_kinematicdb_doc, simdjson::dom::element_type::OBJECT))
@@ -428,11 +465,11 @@ void SMMod::LoadKinematicSetList(const std::wstring& path, SMMod* v_mod, bool ad
 		String::ToWideRef(v_kinematicsetPathObj.get_string().value_unsafe(), v_kinematicSetPath);
 		KeywordReplacer::ReplaceKeyR(v_kinematicSetPath);
 
-		v_mod->LoadFile(v_kinematicSetPath, add_to_global_db);
+		this->LoadFile(v_kinematicSetPath, addToGlobalDb);
 	}
 }
 
-inline bool IsShapeSetExtensionValid(const std::string& extension)
+inline static bool IsShapeSetExtensionValid(const std::string_view& extension)
 {
 	if (extension == ".json") return true;
 	if (extension == ".shapeset") return true;
@@ -441,7 +478,9 @@ inline bool IsShapeSetExtensionValid(const std::string& extension)
 	return false;
 }
 
-void SMMod::ScanDatabaseFolderRecursive(const std::wstring& folder, bool add_to_global_db)
+void SMMod::ScanDatabaseFolderRecursive(
+	const std::wstring_view& folder,
+	const bool addToGlobalDb)
 {
 	namespace fs = std::filesystem;
 
@@ -455,11 +494,13 @@ void SMMod::ScanDatabaseFolderRecursive(const std::wstring& folder, bool add_to_
 		const fs::path& dPath = dir.path();
 
 		if (dPath.has_extension() && IsShapeSetExtensionValid(dPath.extension().string()))
-			this->LoadFile(dPath.wstring(), add_to_global_db);
+			this->LoadFile(dPath.wstring(), addToGlobalDb);
 	}
 }
 
-void SMMod::ScanDatabaseFolder(const std::wstring& folder, bool add_to_global_db)
+void SMMod::ScanDatabaseFolder(
+	const std::wstring_view& folder,
+	const bool addToGlobalDb)
 {
 	namespace fs = std::filesystem;
 
@@ -473,7 +514,7 @@ void SMMod::ScanDatabaseFolder(const std::wstring& folder, bool add_to_global_db
 		const fs::path& dir_path = cur_dir.path();
 
 		if (dir_path.has_extension() && IsShapeSetExtensionValid(dir_path.extension().string()))
-			this->LoadFile(dir_path.wstring(), add_to_global_db);
+			this->LoadFile(dir_path.wstring(), addToGlobalDb);
 	}
 }
 

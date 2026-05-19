@@ -34,22 +34,18 @@
 
 /// do nothing, must use open()
 MemoryMapped::MemoryMapped()
-: _filename   (),
-  _filesize   (0),
-  _hint       (Normal),
-  _mappedBytes(0),
-  _file       (0),
+	: _filesize   (0)
+	, _hint       (Normal)
+	, _mappedBytes(0)
+	, _file       (0)
 #ifdef _MSC_VER
-  _mappedFile (NULL),
+	, _mappedFile (NULL)
 #endif
-  _mappedView (NULL)
-{
-}
-
+	, _mappedView (NULL)
+{}
 
 /// open file, mappedBytes = 0 maps the whole file
 MemoryMapped::MemoryMapped(const std::wstring_view& filename, size_t mappedBytes, CacheHint hint) :
-  _filename   (filename),
   _filesize   (0),
   _hint       (hint),
   _mappedBytes(mappedBytes),
@@ -59,7 +55,7 @@ MemoryMapped::MemoryMapped(const std::wstring_view& filename, size_t mappedBytes
 #endif
   _mappedView (NULL)
 {
-  open(_filename, mappedBytes, hint);
+  open(filename, mappedBytes, hint);
 }
 
 
