@@ -487,7 +487,7 @@ void MainGui::openDirectory(
 	std::wstring v_dirWide(path_view.data());
 	String::ReplaceAllR(v_dirWide, '/', '\\'); // explorer.exe doesn't like proper slashes
 
-	if (!File::CreateDirectorySafe(v_dirWide) && !QtUtil::openDirInExplorer(v_dirWide))
+	if (!File::CreateDirectorySafe(v_dirWide) || !QtUtil::openDirInExplorer(v_dirWide))
 	{
 		const QString v_error_str = QString(
 			"Failed to show the %1 output directory!").arg(type_str);

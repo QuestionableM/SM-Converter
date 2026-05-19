@@ -124,7 +124,7 @@ bool File::ReadToStringED(const std::wstring_view& path, std::string& r_output)
 	return true;
 }
 
-bool File::Exists(const std::wstring& path)
+bool File::Exists(const std::wstring_view& path)
 {
 	std::error_code ec;
 	const bool exists = fs::exists(path, ec);
@@ -132,17 +132,17 @@ bool File::Exists(const std::wstring& path)
 	return (!ec && exists);
 }
 
-bool File::CreateDirectorySafe(const std::wstring& path)
+bool File::CreateDirectorySafe(const std::wstring_view& path)
 {
-	std::error_code e_error;
-	const bool exists = fs::exists(path, e_error);
-	const bool exists_correct = (!e_error && exists);
+	std::error_code v_error;
 
-	std::error_code f_error;
-	const bool file_created = fs::create_directory(path, f_error);
-	const bool file_correct = (!f_error && file_created);
+	if (fs::exists(path, v_error) && !v_error)
+		return true;
 
-	return (exists_correct || file_correct);
+	if (fs::create_directory(path, v_error) && !v_error)
+		return true;
+
+	return false;
 }
 
 bool File::GetFullFilePath(const std::wstring& path, std::wstring& v_output)

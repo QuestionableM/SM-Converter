@@ -22,8 +22,8 @@ namespace File
 	//File reader specifically designed to handle weird encodings
 	bool ReadToStringED(const std::wstring_view& path, std::string& r_output);
 
-	bool Exists(const std::wstring& path);
-	bool CreateDirectorySafe(const std::wstring& path);
+	bool Exists(const std::wstring_view& path);
+	bool CreateDirectorySafe(const std::wstring_view& path);
 
 	bool GetFullFilePath(const std::wstring& path, std::wstring& v_output);
 	bool GetFullFilePathLower(const std::wstring& path, std::wstring& v_output);
