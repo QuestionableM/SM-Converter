@@ -9,12 +9,12 @@
 #include <QPainter>
 
 PathEditorWidget::PathEditorWidget(QWidget* parent)
-	: QWidget(parent),
-	m_originalText(""),
-	m_currentIdx(-1),
-	m_path(new QLineEdit(this)),
-	m_selectPathButton(new QPushButton("...", this)),
-	m_layout(new QHBoxLayout(this))
+	: QWidget(parent)
+	, m_originalText("")
+	, m_currentIdx(-1)
+	, m_path(new QLineEdit(this))
+	, m_selectPathButton(new QPushButton("...", this))
+	, m_layout(new QHBoxLayout(this))
 {
 	QObject::connect(m_selectPathButton, &QPushButton::pressed, this,
 		[this]() -> void {
@@ -32,9 +32,6 @@ PathEditorWidget::PathEditorWidget(QWidget* parent)
 		}
 	);
 
-	QObject::connect(
-		qApp, SIGNAL(focusChanged(QWidget*, QWidget*)),
-		this, SLOT(onFocusChanged(QWidget*, QWidget*)));
 	m_path->setTextMargins(10, 0, 0, 0);
 
 	m_layout->setContentsMargins(0, 0, 0, 0);
@@ -65,25 +62,39 @@ void PathEditorWidget::open(int line_idx, const QString& current_path)
 	m_path->selectAll();
 }
 
-void PathEditorWidget::finish(bool apply_string)
+bool PathEditorWidget::finish(
+	const bool applyString,
+	const bool focusOnParent)
 {
-	if (apply_string && m_path->text() != m_originalText)
+	if (applyString && m_path->text() != m_originalText)
 	{
 		this->blockSignals(true);
 		const bool v_filter_valid = this->invokeInputFilter();
 		this->blockSignals(false);
 
 		if (!v_filter_valid)
-			return;
+		{
+			this->blockSignals(true);
+			m_path->setFocus();
+			this->blockSignals(false);
+			return false;
+		}
 
 		this->onStringApplied();
 	}
 
-	this->setVisible(false);
+	this->blockSignals(true);
 
-	QWidget* v_parent = this->parentWidget();
-	if (v_parent)
-		v_parent->setFocus();
+	this->setVisible(false);
+	if (focusOnParent)
+	{
+		QWidget* v_parent = this->parentWidget();
+		if (v_parent)
+			v_parent->setFocus();
+	}
+
+	this->blockSignals(false);
+	return true;
 }
 
 bool PathEditorWidget::invokeInputFilter()
@@ -114,10 +125,10 @@ void PathEditorWidget::keyPressEvent(QKeyEvent* event)
 	switch (event->key())
 	{
 	case Qt::Key::Key_Escape:
-		this->finish(false);
+		this->finish(false, true);
 		break;
 	case Qt::Key::Key_Return:
-		this->finish(true);
+		this->finish(true, true);
 		break;
 	default:
 		QWidget::keyPressEvent(event);
@@ -125,25 +136,13 @@ void PathEditorWidget::keyPressEvent(QKeyEvent* event)
 	}
 }
 
-void PathEditorWidget::onFocusChanged(QWidget* old, QWidget* now)
-{
-	if (this->signalsBlocked())
-		return;
-
-	const bool v_focus_old = this->isWidgetOwned(old);
-	const bool v_focus_now = this->isWidgetOwned(now);
-
-	if (v_focus_old && !v_focus_now)
-		this->setVisible(false);
-}
-
 ////////////////////PATH LIST VIEW CONTEXT MENU////////////////////
 
 PathListViewContextMenu::PathListViewContextMenu(QWidget* parent)
-	: QMenu(parent),
-	m_addNewElementAction(new QAction("Add", this)),
-	m_editElementAction(new QAction("Edit", this)),
-	m_removeElementAction(new QAction("Remove"))
+	: QMenu(parent)
+	, m_addNewElementAction(new QAction("Add", this))
+	, m_editElementAction(new QAction("Edit", this))
+	, m_removeElementAction(new QAction("Remove"))
 {
 	this->addAction(m_addNewElementAction);
 	this->addAction(m_editElementAction);
@@ -154,10 +153,10 @@ PathListViewContextMenu::PathListViewContextMenu(QWidget* parent)
 ///////////////////////PATH LIST VIEW WIDGET///////////////////////
 
 PathListViewWidget::PathListViewWidget(QWidget* parent)
-	: QWidget(parent),
-	m_contextMenu(this),
-	m_editor(new PathEditorWidget(this)),
-	m_scrollBar(new QScrollBar(Qt::Vertical, this))
+	: QWidget(parent)
+	, m_contextMenu(this)
+	, m_editor(new PathEditorWidget(this))
+	, m_scrollBar(new QScrollBar(Qt::Vertical, this))
 {
 	QSizePolicy v_policy;
 	v_policy.setControlType(QSizePolicy::ControlType::DefaultType);
@@ -228,11 +227,12 @@ void PathListViewWidget::moveSliderToIndex(int idx)
 
 void PathListViewWidget::selectItemFromMousePosition(QPoint pos)
 {
-	const int v_cur_idx = (pos.y() / m_itemHeight) + this->sliderPosition();
+	const int v_curIdx = (pos.y() / m_itemHeight) + this->sliderPosition();
+	const int v_adjustedIdx = this->isIdxValid(v_curIdx) ? v_curIdx : static_cast<int>(m_pathStorage.size());
 
-	if (this->isIdxValid(v_cur_idx) && v_cur_idx != m_currentIdx)
+	if (v_adjustedIdx != m_currentIdx)
 	{
-		m_currentIdx = v_cur_idx;
+		m_currentIdx = v_adjustedIdx;
 		this->repaint();
 	}
 
@@ -377,6 +377,7 @@ void PathListViewWidget::removeSelectedElement()
 
 void PathListViewWidget::clearItemsSilent()
 {
+	m_editor->setVisible(false);
 	m_pathStorage.clear();
 }
 
@@ -428,6 +429,12 @@ void PathListViewWidget::paintEvent(QPaintEvent* event)
 	QTextOption v_text_option(Qt::AlignVCenter);
 	v_text_option.setWrapMode(QTextOption::NoWrap);
 
+	if (v_elem_count == 0 && !m_editor->isVisible())
+	{
+		QTextOption v_helpTextOption(Qt::AlignCenter);
+		v_painter.drawText(this->rect(), "No Items\n\nClick RMB to add a new item", v_helpTextOption);
+	}
+
 	for (std::size_t a = 0; a < v_rem_lines; a++)
 	{
 		const int v_cur_idx = a + v_offset;
@@ -438,8 +445,7 @@ void PathListViewWidget::paintEvent(QPaintEvent* event)
 			if (m_editor->isVisible())
 				continue;
 
-			v_painter.fillRect(0, v_cur_item_height, v_item_width, m_itemHeight,
-				v_sel_color);
+			v_painter.fillRect(0, v_cur_item_height, v_item_width, m_itemHeight, v_sel_color);
 		}
 
 		if (v_cur_idx == v_elem_count)
@@ -466,6 +472,12 @@ void PathListViewWidget::resizeEvent(QResizeEvent* event)
 		m_editor->setVisible(false);
 }
 
+void PathListViewWidget::setVisible(bool visible)
+{
+	QWidget::setVisible(visible);
+	m_editor->setVisible(false);
+}
+
 void PathListViewWidget::wheelEvent(QWheelEvent* event)
 {
 	if (m_scrollBar->isVisible() && !m_editor->isVisible())
@@ -482,16 +494,29 @@ void PathListViewWidget::mouseMoveEvent(QMouseEvent* event)
 
 void PathListViewWidget::mousePressEvent(QMouseEvent* event)
 {
+	if (m_editor->isVisible())
+	{
+		if (!m_editor->finish(m_editor->text().length() > 0, false))
+			return;
+	}
+
 	this->selectItemFromMousePosition(event->pos());
 }
 
 void PathListViewWidget::mouseDoubleClickEvent(QMouseEvent* event)
 {
+	if (m_editor->isVisible())
+		return;
+
 	if (event->button() != Qt::MouseButton::LeftButton)
 		return;
 
-	const int v_global_idx = (event->pos().y() / m_itemHeight) + this->sliderPosition();
-	this->openEditor(v_global_idx);
+	const int v_globalIdx = (event->pos().y() / m_itemHeight) + this->sliderPosition();
+	const int v_adjustedIdx = this->isIdxValid(v_globalIdx)
+		? v_globalIdx
+		: static_cast<int>(m_pathStorage.size());
+
+	this->openEditor(v_adjustedIdx);
 }
 
 void PathListViewWidget::contextMenuEvent(QContextMenuEvent* event)

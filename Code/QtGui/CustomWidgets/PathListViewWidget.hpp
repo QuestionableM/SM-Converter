@@ -20,7 +20,7 @@ public:
 
 	bool isWidgetOwned(QWidget* widget) const;
 	void open(int line_idx, const QString& current_path);
-	void finish(bool apply_string);
+	bool finish(const bool applyString, const bool focusOnParent);
 
 	bool invokeInputFilter();
 	void setInputFilter(const std::function<bool(int, const QString&)>& filter);
@@ -28,9 +28,6 @@ public:
 	QString text() const;
 
 	void keyPressEvent(QKeyEvent* event) override;
-
-private slots:
-	void onFocusChanged(QWidget* old, QWidget* now);
 
 signals:
 	void onStringApplied();
@@ -107,6 +104,7 @@ public:
 private:
 	void paintEvent(QPaintEvent* event) override;
 	void resizeEvent(QResizeEvent* event) override;
+	void setVisible(bool visible) override;
 
 	void wheelEvent(QWheelEvent* event) override;
 	void mouseMoveEvent(QMouseEvent* event) override;

@@ -27,11 +27,14 @@ const unsigned char g_file_option_translation[] =
 
 ////////////////////////PATH GROUP BOX///////////////////
 
-PathGroupBox::PathGroupBox(const QString& title, QWidget* parent)
-	: AlignedGroupBox(parent, title),
-	m_path(new QLineEdit(this)),
-	m_selectPathButton(new QPushButton("...", this)),
-	m_hLayout(new QHBoxLayout(this))
+PathGroupBox::PathGroupBox(
+	const QString& title,
+	QWidget* parent
+)
+	: AlignedGroupBox(parent, title)
+	, m_path(new QLineEdit(this))
+	, m_selectPathButton(new QPushButton("...", this))
+	, m_hLayout(new QHBoxLayout(this))
 {
 	QObject::connect(m_selectPathButton, &QPushButton::pressed, this,
 		[this]() -> void {
@@ -56,13 +59,14 @@ PathGroupBox::PathGroupBox(const QString& title, QWidget* parent)
 
 SettingsGeneralTab::SettingsGeneralTab(
 	SettingsChangeDetector& detector,
-	QWidget* parent)
-	: SettingsTabBase(parent),
-	m_changeDetector(detector),
-	m_pathGroupBox(new PathGroupBox("Path to Scrap Mechanic Folder", this)),
-	m_bOpenLinksInSteam(new QCheckBox("Open Links in Steam", this)),
-	m_bDarkMode(new QCheckBox("Dark Mode (Restart required)", this)),
-	m_mainLayout(new QVBoxLayout(this))
+	QWidget* parent
+)
+	: SettingsTabBase(parent)
+	, m_changeDetector(detector)
+	, m_pathGroupBox(new PathGroupBox("Path to Scrap Mechanic Folder", this))
+	, m_bOpenLinksInSteam(new QCheckBox("Open Links in Steam", this))
+	, m_bDarkMode(new QCheckBox("Dark Mode (Restart required)", this))
+	, m_mainLayout(new QVBoxLayout(this))
 {
 	m_mainLayout->setAlignment(Qt::AlignTop);
 	m_mainLayout->addWidget(m_pathGroupBox);
@@ -116,12 +120,14 @@ void SettingsGeneralTab::onGamePathUpdate()
 ////////////////////SETTINGS PATHS TAB/////////////////////////
 
 SettingsPathsTab::SettingsPathsTab(
-	SettingsChangeDetector& detector, QWidget* parent)
-	: SettingsTabBase(parent),
-	m_changeDetector(detector),
-	m_pathListView(new PathListViewWidget(this)),
-	m_folderOptions(new QComboBox(this)),
-	m_mainLayout(new QVBoxLayout(this))
+	SettingsChangeDetector& detector,
+	QWidget* parent
+)
+	: SettingsTabBase(parent)
+	, m_changeDetector(detector)
+	, m_pathListView(new PathListViewWidget(this))
+	, m_folderOptions(new QComboBox(this))
+	, m_mainLayout(new QVBoxLayout(this))
 {
 	QObject::connect(
 		m_folderOptions, &QComboBox::currentIndexChanged,
@@ -235,15 +241,15 @@ bool SettingsPathsTab::onElementRemove(int idx)
 ////////////////////PROGRAM SETTINGS GUI////////////////////
 
 ProgramSettingsGui::ProgramSettingsGui(QWidget* parent)
-	: QDialog(parent),
-	m_changeDetector(),
-	m_generalTab(new SettingsGeneralTab(m_changeDetector, this)),
-	m_pathsTab(new SettingsPathsTab(m_changeDetector, this)),
-	m_tabBar(new QTabWidget(this)),
-	m_saveSettingsBtn(new QPushButton("Save Settings", this)),
-	m_layout(new QVBoxLayout(this)),
-	m_bReloadObjectDatabase(false),
-	m_bReloadUserObjects(false)
+	: QDialog(parent)
+	, m_changeDetector()
+	, m_generalTab(new SettingsGeneralTab(m_changeDetector, this))
+	, m_pathsTab(new SettingsPathsTab(m_changeDetector, this))
+	, m_tabBar(new QTabWidget(this))
+	, m_saveSettingsBtn(new QPushButton("Save Settings", this))
+	, m_layout(new QVBoxLayout(this))
+	, m_bReloadObjectDatabase(false)
+	, m_bReloadUserObjects(false)
 {
 	this->setWindowTitle("Program Settings");
 	this->setMinimumWidth(450);
