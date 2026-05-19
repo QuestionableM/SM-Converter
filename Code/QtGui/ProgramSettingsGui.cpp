@@ -64,12 +64,14 @@ SettingsGeneralTab::SettingsGeneralTab(
 	: SettingsTabBase(parent)
 	, m_changeDetector(detector)
 	, m_pathGroupBox(new PathGroupBox("Path to Scrap Mechanic Folder", this))
+	, m_workshopPathGroupBox(new PathGroupBox("Path to Scrap Mechanic Workshop Folder", this))
 	, m_bOpenLinksInSteam(new QCheckBox("Open Links in Steam", this))
 	, m_bDarkMode(new QCheckBox("Dark Mode (Restart required)", this))
 	, m_mainLayout(new QVBoxLayout(this))
 {
 	m_mainLayout->setAlignment(Qt::AlignTop);
 	m_mainLayout->addWidget(m_pathGroupBox);
+	m_mainLayout->addWidget(m_workshopPathGroupBox);
 	m_mainLayout->addWidget(m_bOpenLinksInSteam);
 	m_mainLayout->addWidget(m_bDarkMode);
 
@@ -78,6 +80,9 @@ SettingsGeneralTab::SettingsGeneralTab(
 
 	m_pathGroupBox->m_path->setText(
 		QString::fromStdWString(DatabaseConfig::GamePath));
+
+	m_workshopPathGroupBox->m_path->setText(
+		QString::fromStdWString(DatabaseConfig::WorkshopFolder));
 
 	QObject::connect(
 		m_bOpenLinksInSteam, &QCheckBox::stateChanged,
@@ -90,6 +95,10 @@ SettingsGeneralTab::SettingsGeneralTab(
 	QObject::connect(
 		m_pathGroupBox->m_path, &QLineEdit::textChanged,
 		this, &SettingsGeneralTab::onGamePathUpdate);
+
+	QObject::connect(
+		m_workshopPathGroupBox->m_path, &QLineEdit::textChanged,
+		this, &SettingsGeneralTab::onWorkshopPathUpdate);
 }
 
 void SettingsGeneralTab::onOpenLinksInSteamStateChange()
@@ -116,6 +125,13 @@ void SettingsGeneralTab::onGamePathUpdate()
 	this->onSettingChanged();
 }
 
+void SettingsGeneralTab::onWorkshopPathUpdate()
+{
+	m_changeDetector.m_workshopPath = m_workshopPathGroupBox->m_path->text().toStdWString();
+	m_changeDetector.UpdateChange(SettingsChangeDetector_WorkshopPath);
+
+	this->onSettingChanged();
+}
 
 ////////////////////SETTINGS PATHS TAB/////////////////////////
 
@@ -253,7 +269,7 @@ ProgramSettingsGui::ProgramSettingsGui(QWidget* parent)
 {
 	this->setWindowTitle("Program Settings");
 	this->setMinimumWidth(450);
-	this->setMinimumHeight(300);
+	this->setMinimumHeight(350);
 
 	QObject::connect(
 		m_pathsTab, &SettingsPathsTab::onSettingChanged,

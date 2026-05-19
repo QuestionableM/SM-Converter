@@ -10,14 +10,15 @@ SM_UNMANAGED_CODE
 
 #include <unordered_set>
 
-enum : unsigned char
+enum : std::uint8_t
 {
 	SettingsChangeDetector_LocalModList     = (1 << 0),
 	SettingsChangeDetector_WorkshopModList  = (1 << 1),
 	SettingsChangeDetector_UserItemFolder   = (1 << 2),
 	SettingsChangeDetector_OpenLinksInSteam = (1 << 3),
 	SettingsChangeDetector_GamePath         = (1 << 4),
-	SettingsChangeDetector_DarkMode         = (1 << 5)
+	SettingsChangeDetector_WorkshopPath     = (1 << 5),
+	SettingsChangeDetector_DarkMode         = (1 << 6)
 };
 
 class SettingsChangeDetector
@@ -29,36 +30,23 @@ public:
 	SettingsChangeDetector(SettingsChangeDetector&) = delete;
 	~SettingsChangeDetector() = default;
 
-	static void RemoveFromCheckedVec(
-		std::vector<std::wstring>& vec,
-		std::unordered_set<std::wstring>& map,
-		std::size_t idx);
 	static void RemoveFromMap(
 		std::unordered_set<std::wstring>& map,
 		const std::wstring& path);
+	static void RemoveFromCheckedVec(
+		std::vector<std::wstring>& vec,
+		std::unordered_set<std::wstring>& map,
+		const std::size_t idx);
 
-	inline void SetChangeBit(unsigned char bit, bool is_set)
-	{
-		if (is_set)
-			m_changeData |= bit;
-		else
-			m_changeData &= ~bit;
-	}
+	void SetChangeBit(const std::uint8_t bit, const bool isSet) noexcept;
+	bool IsAnyBitSet(const std::uint8_t bit) const noexcept;
+	bool HasAnyChanges() const noexcept;
 
-	inline bool IsAnyBitSet(const unsigned char& bit) const
-	{
-		return (m_changeData & bit) != 0;
-	}
-
-	inline bool HasAnyChanges() const
-	{
-		return (m_changeData != 0);
-	}
-
-	void UpdateChange(unsigned char op_id);
+	void UpdateChange(const std::uint8_t opId);
 	void ApplyChanges();
 
 	std::wstring m_gamePath;
+	std::wstring m_workshopPath;
 
 	std::vector<std::wstring> m_localModList;
 	std::vector<std::wstring> m_workshopModList;
@@ -69,7 +57,7 @@ public:
 	bool m_darkMode;
 
 private:
-	unsigned char m_changeData;
+	std::uint8_t m_changeData;
 };
 
 SM_MANAGED_CODE

@@ -48,11 +48,13 @@ public:
 	void onOpenLinksInSteamStateChange();
 	void onDarkModeStateChange();
 	void onGamePathUpdate();
+	void onWorkshopPathUpdate();
 
 public:
 	SettingsChangeDetector& m_changeDetector;
 
 	PathGroupBox* m_pathGroupBox;
+	PathGroupBox* m_workshopPathGroupBox;
 	QCheckBox* m_bOpenLinksInSteam;
 	QCheckBox* m_bDarkMode;
 
