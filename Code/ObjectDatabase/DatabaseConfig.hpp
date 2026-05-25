@@ -46,8 +46,8 @@ private:
 	static void WstrMapToJson(nlohmann::json& outObject, const char* key, const PathChecker& pathChecker);
 
 public:
-	static bool AddToStrVec(std::vector<std::wstring>& v_vec, PathChecker& v_path_checker, const std::wstring& v_new_str);
-	static bool AddToStrMap(PathChecker& v_map, const std::wstring& v_new_str);
+	static bool AddToStrVec(std::vector<std::wstring>& refVec, PathChecker& pathChecker, const std::wstring& newStr);
+	static bool AddToStrMap(PathChecker& refMap, const std::wstring& newStr);
 
 private:
 	static void JsonStrArrayToStrVec(const nlohmann::json& jsonData, const std::string_view& key, std::vector<std::wstring>& outVec, PathChecker& pathChecker, const bool shouldReplaceKeys);
@@ -64,7 +64,7 @@ private:
 	static void AddKeywordReplacement(const std::wstring_view& key, const std::wstring_view& path);
 	static void UpdateGamePathReplacement();
 
-	static bool ReplaceKeyAndAddToMap(const std::wstring& path, PathChecker& v_map);
+	static bool ReplaceKeyAndAddToMap(const std::wstring_view& path, PathChecker& map);
 	static void FillUserItems(bool should_fill, bool& should_write);
 
 public:

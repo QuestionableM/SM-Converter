@@ -520,5 +520,5 @@ void SMMod::ScanDatabaseFolder(
 
 void SMMod::SetContentKey() const
 {
-	KeywordReplacer::SetModData(m_Directory, m_Uuid);
+	KeywordReplacer::SetModData(m_Uuid, m_Directory);
 }

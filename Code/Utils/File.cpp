@@ -42,42 +42,42 @@ bool File::ReadFileBytes(const std::wstring_view& path, std::vector<Byte>& bytes
 	return !bytes.empty();
 }
 
-bool File::ReadToString(const std::wstring_view& path, std::string& r_output)
+bool File::ReadToString(const std::wstring_view& path, std::string& output)
 {
 #if defined(USE_MEM_MAPPED_FILES)
 	MemoryMapped v_inputFile(path, MemoryMapped::WholeFile, MemoryMapped::SequentialScan);
 	if (!v_inputFile.isValid()) return false;
 
-	r_output.resize(v_inputFile.size());
-	std::memcpy(r_output.data(), v_inputFile.getData(), r_output.size());
+	output.resize(v_inputFile.size());
+	std::memcpy(output.data(), v_inputFile.getData(), output.size());
 #else
 	std::ifstream input_file(path.data(), std::ios::binary | std::ios::ate);
 	if (!input_file.is_open()) return false;
 
-	r_output.resize(input_file.tellg());
+	output.resize(input_file.tellg());
 	input_file.seekg(0, std::ios::beg);
 
-	input_file.read(r_output.data(), r_output.size());
+	input_file.read(output.data(), output.size());
 #endif
 
 	return true;
 }
 
-bool File::ReadToStringNormal(const std::wstring_view& path, std::string& r_output)
+bool File::ReadToStringNormal(const std::wstring_view& path, std::string& output)
 {
 	std::ifstream v_input_file(path.data(), std::ios::ate);
 	if (!v_input_file.is_open()) return false;
 
-	r_output.resize(v_input_file.tellg());
+	output.resize(v_input_file.tellg());
 	v_input_file.seekg(0, std::ios::beg);
 
-	v_input_file.read(r_output.data(), r_output.size());
+	v_input_file.read(output.data(), output.size());
 	v_input_file.close();
 
 	return true;
 }
 
-bool File::ReadToStringED(const std::wstring_view& path, std::string& r_output)
+bool File::ReadToStringED(const std::wstring_view& path, std::string& output)
 {
 #if defined(USE_MEM_MAPPED_FILES)
 	MemoryMapped v_inputFile(path, MemoryMapped::WholeFile, MemoryMapped::SequentialScan);
@@ -88,8 +88,8 @@ bool File::ReadToStringED(const std::wstring_view& path, std::string& r_output)
 
 	if (v_fileOffset >= v_inputFile.size()) return false;
 
-	r_output.resize(v_inputFile.size() - v_fileOffset);
-	std::memcpy(r_output.data(), v_inputFile.getData() + v_fileOffset, r_output.size() - v_fileOffset);
+	output.resize(v_inputFile.size() - v_fileOffset);
+	std::memcpy(output.data(), v_inputFile.getData() + v_fileOffset, output.size() - v_fileOffset);
 #else
 	std::ifstream v_input_file(path.data(), std::ios::binary | std::ios::ate);
 	if (!v_input_file.is_open()) return false;
@@ -115,9 +115,9 @@ bool File::ReadToStringED(const std::wstring_view& path, std::string& r_output)
 	}
 
 	v_input_file.seekg(v_file_offset, std::ios::beg);
-	r_output.resize(v_file_size - v_file_offset);
+	output.resize(v_file_size - v_file_offset);
 
-	v_input_file.read(r_output.data(), r_output.size());
+	v_input_file.read(output.data(), output.size());
 	v_input_file.close();
 #endif
 
@@ -145,7 +145,7 @@ bool File::CreateDirectorySafe(const std::wstring_view& path)
 	return false;
 }
 
-bool File::GetFullFilePath(const std::wstring& path, std::wstring& v_output)
+bool File::GetFullFilePath(const std::wstring& path, std::wstring& output)
 {
 	wchar_t v_fullPathBuffer[512];
 
@@ -158,22 +158,22 @@ bool File::GetFullFilePath(const std::wstring& path, std::wstring& v_output)
 
 	if (v_pathNameSz == 0) return false;
 
-	v_output.assign(v_fullPathBuffer, v_pathNameSz);
-	String::ReplaceAllR(v_output, '\\', '/');
+	output.assign(v_fullPathBuffer, v_pathNameSz);
+	String::ReplaceAllR(output, '\\', '/');
 
 	return true;
 }
 
-bool File::GetFullFilePathLower(const std::wstring& path, std::wstring& v_output)
+bool File::GetFullFilePathLower(const std::wstring& path, std::wstring& output)
 {
-	if (!File::GetFullFilePath(path, v_output))
+	if (!File::GetFullFilePath(path, output))
 		return false;
 
-	String::ToLowerR(v_output);
+	String::ToLowerR(output);
 	return true;
 }
 
-bool File::IsDirectory(const std::wstring& path)
+bool File::IsDirectory(const std::wstring_view& path)
 {
 	std::error_code v_error;
 	const bool v_exists = fs::is_directory(path);
@@ -181,7 +181,7 @@ bool File::IsDirectory(const std::wstring& path)
 	return (!v_error && v_exists);
 }
 
-bool File::IsRegularFile(const std::wstring& path)
+bool File::IsRegularFile(const std::wstring_view& path)
 {
 	std::error_code v_error;
 	const bool v_exists = fs::is_regular_file(path);
@@ -189,7 +189,7 @@ bool File::IsRegularFile(const std::wstring& path)
 	return (!v_error && v_exists);
 }
 
-bool File::IsPathLegal(const std::wstring& path)
+bool File::IsPathLegal(const std::wstring_view& path)
 {
 	std::error_code v_error;
 	const bool v_exists = fs::exists(path, v_error);
@@ -197,17 +197,19 @@ bool File::IsPathLegal(const std::wstring& path)
 	return !v_error;
 }
 
-bool File::IsSubPath(const std::wstring& parent_dir, const std::wstring& sub_dir)
+bool File::IsSubPath(
+	const std::wstring_view& parentDir,
+	const std::wstring_view& subDir)
 {
 	std::error_code v_ec;
-	const std::wstring v_relative = std::filesystem::relative(sub_dir, parent_dir, v_ec);
+	const std::wstring v_relative = fs::relative(subDir, parentDir, v_ec);
 
 	if (v_ec) return false;
 
 	return v_relative.size() == 1 || (v_relative[0] != L'.' && v_relative[1] != L'.');
 }
 
-bool File::Equivalent(const std::wstring& p1, const std::wstring& p2)
+bool File::Equivalent(const std::wstring_view& p1, const std::wstring_view& p2)
 {
 	std::error_code ec;
 	const bool is_equivalent = fs::equivalent(p1, p2, ec);
@@ -229,7 +231,7 @@ bool File::CanonicalR(std::wstring& path)
 }
 
 std::wstring File::OpenFileDialog(
-	const std::wstring& title,
+	const wchar_t* title,
 	FILEOPENDIALOGOPTIONS options,
 	LPCWSTR filter,
 	HWND owner
@@ -249,7 +251,7 @@ std::wstring File::OpenFileDialog(
 		if (SUCCEEDED(hr))
 		{
 			pFileOpen->SetOptions(options);
-			pFileOpen->SetTitle(title.c_str());
+			pFileOpen->SetTitle(title);
 			hr = pFileOpen->Show(owner);
 
 			if (SUCCEEDED(hr))

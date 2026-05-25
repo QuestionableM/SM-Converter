@@ -66,7 +66,7 @@ bool TerrainAssetsMod::GetAssetSetDatabaseFile(const std::wstring& asset_db_dir,
 
 void TerrainAssetsMod::LoadObjectDatabase()
 {
-	KeywordReplacer::SetModData(m_Directory, m_Uuid);
+	KeywordReplacer::SetModData(m_Uuid, m_Directory);
 
 	std::wstring v_database_dir;
 	if (!TerrainAssetsMod::GetValidAssetDatabaseFolder(m_Directory, v_database_dir))

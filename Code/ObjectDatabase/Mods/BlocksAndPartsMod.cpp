@@ -48,7 +48,7 @@ bool BlocksAndPartsMod::GetShapeSetDatabaseFile(const std::wstring& mod_folder, 
 
 void BlocksAndPartsMod::LoadObjectDatabase()
 {
-	KeywordReplacer::SetModData(m_Directory, m_Uuid);
+	KeywordReplacer::SetModData(m_Uuid, m_Directory);
 
 	std::wstring v_shapedbPath;
 	if (BlocksAndPartsMod::GetShapeSetDatabaseFile(m_Directory, v_shapedbPath))

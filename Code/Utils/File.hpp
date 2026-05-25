@@ -16,28 +16,28 @@ namespace File
 	bool ReadFileBytes(const std::wstring_view& path, std::vector<Byte>& bytes);
 
 	//Reads binary string
-	bool ReadToString(const std::wstring_view& path, std::string& r_output);
+	bool ReadToString(const std::wstring_view& path, std::string& output);
 	//Reads normal string
-	bool ReadToStringNormal(const std::wstring_view& path, std::string& r_output);
+	bool ReadToStringNormal(const std::wstring_view& path, std::string& output);
 	//File reader specifically designed to handle weird encodings
-	bool ReadToStringED(const std::wstring_view& path, std::string& r_output);
+	bool ReadToStringED(const std::wstring_view& path, std::string& output);
 
 	bool Exists(const std::wstring_view& path);
 	bool CreateDirectorySafe(const std::wstring_view& path);
 
-	bool GetFullFilePath(const std::wstring& path, std::wstring& v_output);
-	bool GetFullFilePathLower(const std::wstring& path, std::wstring& v_output);
+	bool GetFullFilePath(const std::wstring& path, std::wstring& output);
+	bool GetFullFilePathLower(const std::wstring& path, std::wstring& output);
 
-	bool IsDirectory(const std::wstring& path);
-	bool IsRegularFile(const std::wstring& path);
-	bool IsPathLegal(const std::wstring& path);
-	bool IsSubPath(const std::wstring& parent_dir, const std::wstring& sub_dir);
+	bool IsDirectory(const std::wstring_view& path);
+	bool IsRegularFile(const std::wstring_view& path);
+	bool IsPathLegal(const std::wstring_view& path);
+	bool IsSubPath(const std::wstring_view& parentDir, const std::wstring_view& subDir);
 
-	bool Equivalent(const std::wstring& p1, const std::wstring& p2);
+	bool Equivalent(const std::wstring_view& p1, const std::wstring_view& p2);
 	bool CanonicalR(std::wstring& path);
 
 	std::wstring OpenFileDialog(
-		const std::wstring& title,
+		const wchar_t* title,
 		FILEOPENDIALOGOPTIONS options = 0,
 		LPCWSTR filter = L"All Files (*.*)\0*.*\0",
 		HWND owner = NULL

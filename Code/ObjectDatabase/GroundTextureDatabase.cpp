@@ -109,7 +109,8 @@ void GroundTexture::Clear()
 
 void GroundTexture::SetPath(const std::wstring& path)
 {
-	m_texturePath = KeywordReplacer::ReplaceKey(path);
+	m_texturePath = path;
+	KeywordReplacer::ReplaceKeyR(m_texturePath);
 	DebugOutL("TexPath: ", m_texturePath);
 }
 

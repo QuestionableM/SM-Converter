@@ -45,7 +45,7 @@ bool CustomGame::CheckSurvivalContent()
 
 void CustomGame::LoadObjectDatabase()
 {
-	KeywordReplacer::SetModData(m_Directory, m_Uuid);
+	KeywordReplacer::SetModData(m_Uuid, m_Directory);
 
 	m_shouldUseGameContent = this->CheckSurvivalContent();
 

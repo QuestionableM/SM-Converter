@@ -39,7 +39,7 @@ void KeywordReplacer::CreateContentKey(const SMUuid& uuid, const std::wstring_vi
 	KeywordReplacer::SetReplacement(std::wstring_view(v_buffer, sizeof(v_buffer) / sizeof(v_buffer[0]) - 1), replacement);
 }
 
-void KeywordReplacer::SetModData(const std::wstring& path, const SMUuid& uuid)
+void KeywordReplacer::SetModData(const SMUuid& uuid, const std::wstring_view& path)
 {
 	KeywordReplacer::CreateContentKey(uuid, path);
 	KeywordReplacer::SetReplacement(L"$mod_data"    , path);
@@ -124,33 +124,6 @@ void KeywordReplacer::UpgradeResource(const std::wstring& inputPath, std::wstrin
 {
 	outPath = inputPath;
 	KeywordReplacer::UpgradeResourceR(outPath);
-}
-
-std::wstring KeywordReplacer::ReplaceKey(const std::wstring& path)
-{
-	if (path.empty() || path[0] != L'$')
-		return path;
-
-	std::wstring v_output = path;
-	KeywordReplacer::UpgradeResourceR(v_output);
-
-	const wchar_t* v_keyBeg = v_output.data();
-	const wchar_t* v_keyPtr = std::wcschr(v_keyBeg, L'/');
-	if (v_keyPtr == nullptr) return v_output;
-
-	const std::wstring_view v_keyChunk(v_keyBeg, v_keyPtr);
-
-	const auto v_iter = m_KeyReplacements.find(v_keyChunk);
-	if (v_iter == m_KeyReplacements.end()) return v_output;
-
-	const auto v_pathBegin = v_output.begin();
-	v_output.replace(
-		v_pathBegin,
-		v_pathBegin + (v_keyPtr - v_keyBeg),
-		std::wstring_view(v_iter->second)
-	);
-
-	return v_output;
 }
 
 void KeywordReplacer::ReplaceKeyR(std::wstring& path)

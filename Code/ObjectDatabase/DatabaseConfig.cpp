@@ -37,50 +37,53 @@ void DatabaseConfig::WstrMapToJson(
 	outObject[key] = std::move(v_strArray);
 }
 
-bool DatabaseConfig::AddToStrVec(std::vector<std::wstring>& v_vec, PathChecker& v_path_checker, const std::wstring& v_new_str)
+bool DatabaseConfig::AddToStrVec(
+	std::vector<std::wstring>& refVec,
+	PathChecker& pathChecker,
+	const std::wstring& newStr)
 {
-	std::wstring v_full_path;
-	if (!File::GetFullFilePathLower(v_new_str, v_full_path))
+	std::wstring v_fullPath;
+	if (!File::GetFullFilePathLower(newStr.c_str(), v_fullPath))
 		return false;
 
-	if (v_full_path == DatabaseConfig::WorkshopFolder)
+	if (v_fullPath == DatabaseConfig::WorkshopFolder)
 	{
 		DebugWarningL("Cannot add a current workshop folder into the path list!");
 		return false;
 	}
 
-	const auto v_iter = v_path_checker.find(v_full_path);
-	if (v_iter != v_path_checker.end())
+	const auto v_iter = pathChecker.find(v_fullPath);
+	if (v_iter != pathChecker.end())
 	{
-		DebugWarningL("The specified path already exists: ", v_full_path);
+		DebugWarningL("The specified path already exists: ", v_fullPath);
 		return false;
 	}
 	
-	v_path_checker.emplace(v_full_path);
-	v_vec.push_back(std::move(v_full_path));
+	pathChecker.emplace(v_fullPath);
+	refVec.push_back(std::move(v_fullPath));
 
 	return true;
 }
 
-bool DatabaseConfig::AddToStrMap(PathChecker& v_map, const std::wstring& v_new_str)
+bool DatabaseConfig::AddToStrMap(PathChecker& refMap, const std::wstring& newStr)
 {
-	std::wstring v_full_path;
-	if (!File::GetFullFilePathLower(v_new_str, v_full_path))
+	std::wstring v_fullPath;
+	if (!File::GetFullFilePathLower(newStr.c_str(), v_fullPath))
 		return false;
 
-	if (v_full_path == DatabaseConfig::WorkshopFolder)
+	if (v_fullPath == DatabaseConfig::WorkshopFolder)
 	{
 		DebugWarningL("Cannot add a current workshop folder into the path list!");
 		return false;
 	}
 
-	if (v_map.find(v_full_path) != v_map.end())
+	if (refMap.contains(v_fullPath))
 	{
-		DebugWarningL("The specified path already exists: ", v_full_path);
+		DebugWarningL("The specified path already exists: ", v_fullPath);
 		return false;
 	}
 
-	v_map.emplace(std::move(v_full_path));
+	refMap.emplace(std::move(v_fullPath));
 	return true;
 }
 
@@ -465,12 +468,13 @@ void DatabaseConfig::UpdateGamePathReplacement()
 	DatabaseConfig::AddKeywordReplacement(L"$GAME_FOLDER", DatabaseConfig::GamePath);
 }
 
-bool DatabaseConfig::ReplaceKeyAndAddToMap(const std::wstring& path, PathChecker& v_map)
+bool DatabaseConfig::ReplaceKeyAndAddToMap(const std::wstring_view& path, PathChecker& map)
 {
-	const std::wstring v_replaced_path = KeywordReplacer::ReplaceKey(path);
-	if (!File::Exists(v_replaced_path)) return false;
+	std::wstring v_adjustedPath(path);
+	KeywordReplacer::ReplaceKeyR(v_adjustedPath);
+	if (!File::Exists(v_adjustedPath)) return false;
 
-	return DatabaseConfig::AddToStrMap(v_map, v_replaced_path);
+	return DatabaseConfig::AddToStrMap(map, v_adjustedPath);
 }
 
 void DatabaseConfig::FillUserItems(bool should_fill, bool& should_write)
@@ -479,7 +483,7 @@ void DatabaseConfig::FillUserItems(bool should_fill, bool& should_write)
 
 	DebugOutL("Filling user items with default paths...");
 
-	const static wchar_t* v_tilePaths[] =
+	const static std::wstring_view v_tilePaths[] =
 	{
 		L"$SURVIVAL_DATA/Terrain/Tiles/autumn_forest",
 		L"$SURVIVAL_DATA/Terrain/Tiles/burnt_forest",
@@ -498,7 +502,7 @@ void DatabaseConfig::FillUserItems(bool should_fill, bool& should_write)
 		L"$SURVIVAL_DATA/DungeonTiles"
 	};
 
-	for (const wchar_t* v_curTilePath : v_tilePaths)
+	for (const auto& v_curTilePath : v_tilePaths)
 		should_write |= DatabaseConfig::ReplaceKeyAndAddToMap(v_curTilePath, DatabaseConfig::UserItemFolders);
 }
 
