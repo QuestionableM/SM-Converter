@@ -50,12 +50,12 @@ namespace SMConverter
 			SMModCustomGameSwitch<false, true> v_cg_switch;
 			v_cg_switch.MergeContent(v_pCustomGame);
 
-			SMWorld* v_out_world = SMWorld::LoadFromFile<true>(worldPath, v_error);
+			SMWorld* v_out_world = SMWorld::LoadFromFile(worldPath, v_error, true);
 			return v_out_world;
 		}
 		else
 		{
-			return SMWorld::LoadFromFile<true>(worldPath, v_error);
+			return SMWorld::LoadFromFile(worldPath, v_error, true);
 		}
 	}
 
@@ -178,7 +178,7 @@ namespace SMConverter
 
 		for (const ItemModInstance* v_mod_data : ItemModStats::ModVector)
 		{
-			std::wstring v_mod_name = (v_mod_data->m_pMod != nullptr) ? v_mod_data->m_pMod->GetName() : L"UNKNOWN_MOD";
+			std::wstring v_mod_name(v_mod_data->m_modName);
 
 			v_mod_name.append(L" (");
 			v_mod_name.append(std::to_wstring(v_mod_data->m_partCount));
@@ -192,11 +192,11 @@ namespace SMConverter
 		this->UpdateContextMenuStrip();
 	}
 
-	SMMod* ItemInfoGui::GetCurrentMod()
+	ItemModInstance* ItemInfoGui::GetCurrentMod()
 	{
 		if (m_lb_modSelector->SelectedIndex == -1) return nullptr;
 
-		return ItemModStats::ModVector[m_lb_modSelector->SelectedIndex]->m_pMod;
+		return ItemModStats::ModVector[m_lb_modSelector->SelectedIndex];
 	}
 
 	void ItemInfoGui::ModSelector_MouseDown(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e)
@@ -211,28 +211,25 @@ namespace SMConverter
 
 	void ItemInfoGui::ModList_OpenInSteamWorkshop_Click(System::Object^ sender, System::EventArgs^ e)
 	{
-		SMMod* v_mod = this->GetCurrentMod();
-		if (!v_mod) return;
-
-		const unsigned long long& v_workshop_id = v_mod->GetWorkshopId();
-		if (v_workshop_id == 0) return;
+		ItemModInstance* v_mod = this->GetCurrentMod();
+		if (!v_mod || v_mod->m_modWorkshopId == 0) return;
 
 		std::wstring v_workshop_url;
 		if (DatabaseConfig::OpenLinksInSteam)
 			v_workshop_url.append(L"steam://openurl/");
 
 		v_workshop_url.append(L"https://steamcommunity.com/sharedfiles/filedetails/?id=");
-		v_workshop_url.append(std::to_wstring(v_workshop_id));
+		v_workshop_url.append(std::to_wstring(v_mod->m_modWorkshopId));
 
 		System::Diagnostics::Process::Start(gcnew System::String(v_workshop_url.c_str()));
 	}
 
 	void ItemInfoGui::ModList_OpenInExplorer_Click(System::Object^ sender, System::EventArgs^ e)
 	{
-		SMMod* v_mod = this->GetCurrentMod();
+		ItemModInstance* v_mod = this->GetCurrentMod();
 		if (!v_mod) return;
 
-		const std::wstring v_mod_dir = ::String::ReplaceAll(v_mod->GetDirectory(), L'/', L'\\');
+		const std::wstring v_mod_dir = ::String::ReplaceAll(v_mod->m_modPath, L'/', L'\\');
 		if (!File::Exists(v_mod_dir))
 		{
 			System::Windows::Forms::MessageBox::Show(
@@ -255,14 +252,18 @@ namespace SMConverter
 
 	void ItemInfoGui::UpdateContextMenuStrip()
 	{
-		bool v_has_workshop_id = false;
-		bool v_has_directory = false;
+		bool v_has_workshop_id, v_has_directory;
 
-		SMMod* v_mod = this->GetCurrentMod();
+		ItemModInstance* v_mod = this->GetCurrentMod();
 		if (v_mod)
 		{
-			v_has_workshop_id = (v_mod->GetWorkshopId() != 0);
-			v_has_directory = File::Exists(v_mod->GetDirectory());
+			v_has_workshop_id = (v_mod->m_modWorkshopId != 0);
+			v_has_directory = File::Exists(v_mod->m_modPath);
+		}
+		else
+		{
+			v_has_workshop_id = false;
+			v_has_directory = false;
 		}
 
 		m_btn_openInSteamWorkshop->Enabled = v_has_workshop_id;

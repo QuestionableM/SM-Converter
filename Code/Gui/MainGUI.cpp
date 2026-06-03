@@ -213,7 +213,7 @@ namespace SMConverter
 
 	void MainGui::FolderDialog_Click(System::Object^ sender, System::EventArgs^ e)
 	{
-		const std::wstring g_fileDialogTitles[] =
+		const wchar_t* g_fileDialogTitles[] =
 		{
 			L"Select a Blueprint",
 			L"Select a Tile",

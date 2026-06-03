@@ -3,6 +3,7 @@
 #include "ObjectDatabase/UserDataReaders/BlueprintFolderReader.hpp"
 #include "ObjectDatabase/UserDataReaders/WorldFolderReader.hpp"
 #include "ObjectDatabase/UserDataReaders/TileFolderReader.hpp"
+#include "ObjectDatabase/UserDataReaders/ItemModCounter.hpp"
 
 namespace SMConverter 
 {
@@ -233,7 +234,7 @@ namespace SMConverter
 #pragma endregion
 
 		System::Void UpdateModList();
-		SMMod* GetCurrentMod();
+		ItemModInstance* GetCurrentMod();
 
 		System::Void ModSelector_MouseDown(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e);
 		System::Void ModList_OpenInSteamWorkshop_Click(System::Object^ sender, System::EventArgs^ e);
