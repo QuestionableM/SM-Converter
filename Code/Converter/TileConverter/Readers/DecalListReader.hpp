@@ -1,19 +1,13 @@
 #pragma once
 
 #include "Converter/TileConverter/TileConverterContext.hpp"
-#include "Converter/TileConverter/CellHeader.hpp"
-#include "Converter/TileConverter/TilePart.hpp"
-#include "Converter/TileConverter/Tile.hpp"
-#include "Converter/Entity/Decal.hpp"
-
-#include "ObjectDatabase/UserDataReaders/ItemModCounter.hpp"
-#include "ObjectDatabase/Mods/Mod.hpp"
 
 #include "Utils/clr_include.hpp"
-#include "Utils/Memory.hpp"
-#include "Utils/Lz4Lib.hpp"
+#include "Utils/ByteImpl.hpp"
 
 SM_UNMANAGED_CODE
+
+#include <vector>
 
 class DecalListReader
 {

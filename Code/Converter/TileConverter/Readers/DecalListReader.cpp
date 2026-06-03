@@ -1,7 +1,19 @@
-#include "Converter/ConvertSettings.hpp"
 #include "DecalListReader.hpp"
 
+#include "Converter/TileConverter/CellHeader.hpp"
+#include "Converter/TileConverter/TilePart.hpp"
+#include "Converter/TileConverter/Tile.hpp"
+#include "Converter/Entity/Decal.hpp"
+
+#include "ObjectDatabase/UserDataReaders/ItemModCounter.hpp"
+#include "ObjectDatabase/Mods/Mod.hpp"
+
+#include "Converter/ConvertSettings.hpp"
+#include "Utils/Memory.hpp"
+
 SM_UNMANAGED_CODE
+
+#include <lz4/lz4.h>
 
 void DecalListReader::Read(TileReaderContext& context)
 {
@@ -26,15 +38,15 @@ void DecalListReader::Read(TileReaderContext& context)
 	}
 
 	std::vector<Byte> v_bytes(context.pCellHeader->decalSize);
-	int debugSize = Lz4::DecompressFast(
+	int debugSize = LZ4_decompress_safe(
 		reinterpret_cast<const char*>(context.pReader->getPointer(context.pCellHeader->decalIndex)),
 		reinterpret_cast<char*>(v_bytes.data()),
+		context.pCellHeader->decalCompressedSize,
 		context.pCellHeader->decalSize);
-
-	if (debugSize != context.pCellHeader->decalCompressedSize)
+	if (debugSize != context.pCellHeader->decalSize)
 	{
-		DebugErrorL("Debug Size: ", debugSize, ", header->decalCompressedSize: ", context.pCellHeader->decalCompressedSize);
-		context.pError->setError(1, "DecalListReader::Read -> debugSize != header->decalCompressedSize\nTile Version: ", context.tileVersion);
+		DebugErrorL("Debug Size: ", debugSize, ", header->decalSize: ", context.pCellHeader->decalSize);
+		context.pError->setError(1, "DecalListReader::Read -> debugSize != header->decalSize\nTile Version: ", context.tileVersion);
 		return;
 	}
 

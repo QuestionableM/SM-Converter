@@ -9,8 +9,6 @@
 
 #include "Utils/clr_include.hpp"
 #include "Utils/ByteImpl.hpp"
-#include "Utils/Memory.hpp"
-#include "Utils/Lz4Lib.hpp"
 
 SM_UNMANAGED_CODE
 

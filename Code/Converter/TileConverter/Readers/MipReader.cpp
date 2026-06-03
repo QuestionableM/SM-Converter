@@ -1,7 +1,10 @@
 #include "Converter/ConvertSettings.hpp"
+#include "Utils/Memory.hpp"
 #include "MipReader.hpp"
 
 SM_UNMANAGED_CODE
+
+#include <lz4/lz4.h>
 
 void MipReader::Read(TileReaderContext& context)
 {
@@ -31,15 +34,15 @@ bool MipReader::Read(
 	}
 
 	std::vector<Byte> v_bytes(context.pCellHeader->mipSize[mipOrLevel]);
-	const int debugSize = Lz4::DecompressFast(
+	const int debugSize = LZ4_decompress_safe(
 		reinterpret_cast<const char*>(context.pReader->getPointer(context.pCellHeader->mipIndex[mipOrLevel])),
 		reinterpret_cast<char*>(v_bytes.data()),
+		context.pCellHeader->mipCompressedSize[mipOrLevel],
 		context.pCellHeader->mipSize[mipOrLevel]);
-
-	if (debugSize != context.pCellHeader->mipCompressedSize[mipOrLevel])
+	if (debugSize != context.pCellHeader->mipSize[mipOrLevel])
 	{
-		DebugErrorL("Debug Size: ", debugSize, ", header->mipCompressedSize[mipOrLevel]: ", context.pCellHeader->mipCompressedSize[mipOrLevel]);
-		context.pError->setError(1, "MipReader::Read -> debugSize != header->mipCompressedSize[mipOrLevel]");
+		DebugErrorL("Debug Size: ", debugSize, ", header->mipSize[mipOrLevel]: ", context.pCellHeader->mipSize[mipOrLevel]);
+		context.pError->setError(1, "MipReader::Read -> debugSize != header->mipSize[mipOrLevel]");
 		return false;
 	}
 

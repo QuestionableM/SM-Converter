@@ -1,7 +1,12 @@
 #include "Converter/ConvertSettings.hpp"
+#include "ObjectDatabase/Mods/Mod.hpp"
+#include "Utils/Uuid.hpp"
+
 #include "ClutterReader.hpp"
 
 SM_UNMANAGED_CODE
+
+#include <lz4/lz4.h>
 
 void ClutterReader::Read(TileReaderContext& context)
 {
@@ -30,15 +35,15 @@ bool ClutterReader::Read(
 	}
 
 	std::vector<Byte> v_bytes(context.pCellHeader->clutterSize);
-	const int debugSize = Lz4::DecompressFast(
+	const int debugSize = LZ4_decompress_safe(
 		reinterpret_cast<const char*>(context.pReader->getPointer(context.pCellHeader->clutterIndex)),
 		reinterpret_cast<char*>(v_bytes.data()),
+		context.pCellHeader->clutterCompressedSize,
 		context.pCellHeader->clutterSize);
-
-	if (debugSize != context.pCellHeader->clutterCompressedSize)
+	if (debugSize != context.pCellHeader->clutterSize)
 	{
-		DebugErrorL("DebugSize: ", debugSize, ", header->clutterCompressedSize: ", context.pCellHeader->clutterCompressedSize);
-		context.pError->setError(1, "ClutterReader::Read -> debugSize != header->clutterCompressedSize");
+		DebugErrorL("DebugSize: ", debugSize, ", header->clutterSize: ", context.pCellHeader->clutterSize);
+		context.pError->setError(1, "ClutterReader::Read -> debugSize != header->clutterSize");
 		return false;
 	}
 

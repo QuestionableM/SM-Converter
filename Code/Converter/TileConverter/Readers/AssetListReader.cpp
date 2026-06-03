@@ -1,7 +1,15 @@
-#include "Converter/ConvertSettings.hpp"
 #include "AssetListReader.hpp"
 
+#include "ObjectDatabase/UserDataReaders/ItemModCounter.hpp"
+#include "ObjectDatabase/ObjectDatabase.hpp"
+#include "ObjectDatabase/Mods/Mod.hpp"
+
+#include "Converter/ConvertSettings.hpp"
+#include "Utils/String.hpp"
+
 SM_UNMANAGED_CODE
+
+#include <lz4/lz4.h>
 
 void AssetListReader::Read(TileReaderContext& context)
 {
@@ -29,15 +37,15 @@ void AssetListReader::Read(TileReaderContext& context)
 		}
 
 		std::vector<Byte> v_bytes(assetListSize);
-		int debugSize = Lz4::DecompressFast(
+		int debugSize = LZ4_decompress_safe(
 			reinterpret_cast<const char*>(context.pReader->getPointer(context.pCellHeader->assetListIndex[a])),
 			reinterpret_cast<char*>(v_bytes.data()),
+			assetListCompressedSize,
 			assetListSize);
-
-		if (debugSize != assetListCompressedSize)
+		if (debugSize != assetListSize)
 		{
-			DebugErrorL("Debug Size:", debugSize, ", assetListCompressedSize: ", assetListCompressedSize);
-			context.pError->setError(1, "AssetListReader::Read -> debugSize != assetListCompressedSize\nTile Version: ", context.tileVersion);
+			DebugErrorL("Debug Size:", debugSize, ", assetListSize: ", assetListSize);
+			context.pError->setError(1, "AssetListReader::Read -> debugSize != assetListSize\nTile Version: ", context.tileVersion);
 			return;
 		}
 

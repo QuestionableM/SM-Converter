@@ -5,13 +5,7 @@
 #include "Converter/TileConverter/Tile.hpp"
 #include "Converter/Entity/Asset.hpp"
 
-#include "ObjectDatabase/UserDataReaders/ItemModCounter.hpp"
-#include "ObjectDatabase/ObjectDatabase.hpp"
-#include "ObjectDatabase/Mods/Mod.hpp"
-
 #include "Utils/clr_include.hpp"
-#include "Utils/String.hpp"
-#include "Utils/Lz4Lib.hpp"
 
 SM_UNMANAGED_CODE
 

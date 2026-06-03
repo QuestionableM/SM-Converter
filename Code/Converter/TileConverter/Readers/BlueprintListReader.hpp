@@ -6,8 +6,6 @@
 #include "Converter/TileConverter/Tile.hpp"
 
 #include "Utils/clr_include.hpp"
-#include "Utils/Memory.hpp"
-#include "Utils/Lz4Lib.hpp"
 
 SM_UNMANAGED_CODE
 

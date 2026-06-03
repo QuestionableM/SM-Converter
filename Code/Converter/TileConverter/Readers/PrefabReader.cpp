@@ -1,7 +1,18 @@
-#include "Converter/ConvertSettings.hpp"
 #include "PrefabReader.hpp"
 
+#include "Converter/TileConverter/Readers/PrefabFileReader.hpp"
+#include "Converter/TileConverter/CellHeader.hpp"
+#include "Converter/TileConverter/TilePart.hpp"
+#include "Converter/TileConverter/Tile.hpp"
+#include "Converter/ConvertSettings.hpp"
+#include "Converter/Entity/Prefab.hpp"
+
+#include "ObjectDatabase/KeywordReplacer.hpp"
+#include "Utils/Memory.hpp"
+
 SM_UNMANAGED_CODE
+
+#include <lz4/lz4.h>
 
 void PrefabReader::Read(TileReaderContext& context)
 {
@@ -23,15 +34,15 @@ void PrefabReader::Read(TileReaderContext& context)
 	}
 
 	std::vector<Byte> v_bytes(context.pCellHeader->prefabSize);
-	int debugSize = Lz4::DecompressFast(
+	int debugSize = LZ4_decompress_safe(
 		reinterpret_cast<const char*>(context.pReader->getPointer(context.pCellHeader->prefabIndex)),
 		reinterpret_cast<char*>(v_bytes.data()),
+		context.pCellHeader->prefabCompressedSize,
 		context.pCellHeader->prefabSize);
-
-	if (debugSize != context.pCellHeader->prefabCompressedSize)
+	if (debugSize != context.pCellHeader->prefabSize)
 	{
-		DebugErrorL("DebugSize: ", debugSize, ", header->prefabCompressedSize: ", context.pCellHeader->prefabCompressedSize);
-		context.pError->setError(1, "PrefabReader::Read -> debugSize != header->prefabCompressedSize\nTile Version: ", context.tileVersion);
+		DebugErrorL("DebugSize: ", debugSize, ", header->prefabSize: ", context.pCellHeader->prefabSize);
+		context.pError->setError(1, "PrefabReader::Read -> debugSize != header->prefabSize\nTile Version: ", context.tileVersion);
 		return;
 	}
 

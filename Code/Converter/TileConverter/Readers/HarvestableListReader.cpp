@@ -1,7 +1,20 @@
-#include "Converter/ConvertSettings.hpp"
 #include "HarvestableListReader.hpp"
 
+#include "Converter/TileConverter/CellHeader.hpp"
+#include "Converter/TileConverter/TilePart.hpp"
+#include "Converter/TileConverter/Tile.hpp"
+#include "Converter/Entity/Harvestable.hpp"
+#include "Converter/ConvertSettings.hpp"
+
+#include "ObjectDatabase/UserDataReaders/ItemModCounter.hpp"
+#include "ObjectDatabase/Mods/Mod.hpp"
+
+#include "Utils/Console.hpp"
+#include "Utils/Memory.hpp"
+
 SM_UNMANAGED_CODE
+
+#include <lz4/lz4.h>
 
 void HarvestableListReader::Read(TileReaderContext& context)
 {
@@ -15,41 +28,41 @@ void HarvestableListReader::Read(TileReaderContext& context)
 
 	for (int a = 0; a < 4; a++)
 	{
-		const int v_hvs_list_compressed_sz = context.pCellHeader->harvestableListCompressedSize[a];
-		const int v_hvs_list_sz            = context.pCellHeader->harvestableListSize[a];
-		const int v_hvs_list_count         = context.pCellHeader->harvestableListCount[a];
+		const int v_hvsListCompressedSz = context.pCellHeader->harvestableListCompressedSize[a];
+		const int v_hvsListSz           = context.pCellHeader->harvestableListSize[a];
+		const int v_hvsListCount        = context.pCellHeader->harvestableListCount[a];
 
-		if (v_hvs_list_count == 0)
+		if (v_hvsListCount == 0)
 			continue;
 
-		DebugOutL("Harvestable[", a, "]: ", v_hvs_list_sz, ", ", v_hvs_list_compressed_sz);
+		DebugOutL("Harvestable[", a, "]: ", v_hvsListSz, ", ", v_hvsListCompressedSz);
 
 		if (!context.pReader->hasEnoughSpace(
 			context.pCellHeader->harvestableListIndex[a],
-			v_hvs_list_compressed_sz))
+			v_hvsListCompressedSz))
 		{
 			DebugErrorL("Not enough space!");
 			continue;
 		}
 
-		std::vector<Byte> v_bytes(v_hvs_list_sz);
-		int debugSize = Lz4::DecompressFast(
+		std::vector<Byte> v_bytes(v_hvsListSz);
+		int debugSize = LZ4_decompress_safe(
 			reinterpret_cast<const char*>(context.pReader->getPointer(context.pCellHeader->harvestableListIndex[a])),
 			reinterpret_cast<char*>(v_bytes.data()),
-			v_hvs_list_sz);
-
-		if (debugSize != v_hvs_list_compressed_sz)
+			v_hvsListCompressedSz,
+			v_hvsListSz);
+		if (debugSize != v_hvsListSz)
 		{
-			DebugErrorL("debugSize: ", debugSize, ", v_hvs_list_compressed_sz: ", v_hvs_list_compressed_sz);
-			context.pError->setError(1, "HarvestableListReader::Read -> debugSize != v_hvs_list_compressed_sz\nTile Version: ", context.tileVersion);
+			DebugErrorL("debugSize: ", debugSize, ", v_hvsListSz: ", v_hvsListSz);
+			context.pError->setError(1, "HarvestableListReader::Read -> debugSize != v_hvsListSz\nTile Version: ", context.tileVersion);
 			return;
 		}
 
-		debugSize = HarvestableListReader::Read(context, v_bytes, a, v_hvs_list_count);
-		if (debugSize != v_hvs_list_sz)
+		debugSize = HarvestableListReader::Read(context, v_bytes, a, v_hvsListCount);
+		if (debugSize != v_hvsListSz)
 		{
-			DebugErrorL("debugSize: ", debugSize, ", v_hvs_list_sz: ", v_hvs_list_sz);
-			context.pError->setError(1, "HarvestableListReader::Read -> debugSize != v_hvs_list_sz\nTile Version: ", context.tileVersion);
+			DebugErrorL("debugSize: ", debugSize, ", v_hvsListSz: ", v_hvsListSz);
+			context.pError->setError(1, "HarvestableListReader::Read -> debugSize != v_hvsListSz\nTile Version: ", context.tileVersion);
 			return;
 		}
 	}

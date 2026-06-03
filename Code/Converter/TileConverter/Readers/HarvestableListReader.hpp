@@ -1,23 +1,13 @@
 #pragma once
 
-#include "Converter/Entity/Harvestable.hpp"
-#include "Converter/ConvertSettings.hpp"
-#include "Converter/ConvertError.hpp"
-
 #include "Converter/TileConverter/TileConverterContext.hpp"
-#include "Converter/TileConverter/CellHeader.hpp"
-#include "Converter/TileConverter/TilePart.hpp"
-#include "Converter/TileConverter/Tile.hpp"
-
-#include "ObjectDatabase/UserDataReaders/ItemModCounter.hpp"
-#include "ObjectDatabase/Mods/Mod.hpp"
 
 #include "Utils/clr_include.hpp"
-#include "Utils/Console.hpp"
-#include "Utils/Memory.hpp"
-#include "Utils/Lz4Lib.hpp"
+#include "Utils/ByteImpl.hpp"
 
 SM_UNMANAGED_CODE
+
+#include <vector>
 
 class HarvestableListReader
 {

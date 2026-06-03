@@ -5,11 +5,7 @@
 #include "Converter/TileConverter/TilePart.hpp"
 #include "Converter/ConvertSettings.hpp"
 
-#include "ObjectDatabase/Mods/Mod.hpp"
-
 #include "Utils/clr_include.hpp"
-#include "Utils/Lz4Lib.hpp"
-#include "Utils/Uuid.hpp"
 
 SM_UNMANAGED_CODE
 

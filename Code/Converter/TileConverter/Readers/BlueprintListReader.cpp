@@ -1,7 +1,10 @@
 #include "Converter/ConvertSettings.hpp"
 #include "BlueprintListReader.hpp"
+#include "Utils/Memory.hpp"
 
 SM_UNMANAGED_CODE
+
+#include <lz4/lz4.h>
 
 void BlueprintListReader::Read(TileReaderContext& context)
 {
@@ -25,15 +28,15 @@ void BlueprintListReader::Read(TileReaderContext& context)
 	}
 
 	std::vector<Byte> v_bytes(context.pCellHeader->blueprintListSize);
-	int debugSize = Lz4::DecompressFast(
+	int debugSize = LZ4_decompress_safe(
 		reinterpret_cast<const char*>(context.pReader->getPointer(context.pCellHeader->blueprintListIndex)),
 		reinterpret_cast<char*>(v_bytes.data()),
+		context.pCellHeader->blueprintListCompressedSize,
 		context.pCellHeader->blueprintListSize);
-
-	if (debugSize != context.pCellHeader->blueprintListCompressedSize)
+	if (debugSize != context.pCellHeader->blueprintListSize)
 	{
-		DebugErrorL("DebugSize: ", debugSize, ", header->blueprintListCompressedSize: ", context.pCellHeader->blueprintListCompressedSize);
-		context.pError->setError(1, "BlueprintListReader::Read -> debugSize != header->blueprintListCompressedSize\nTile Version: ", context.tileVersion);
+		DebugErrorL("DebugSize: ", debugSize, ", header->blueprintListSize: ", context.pCellHeader->blueprintListSize);
+		context.pError->setError(1, "BlueprintListReader::Read -> debugSize != header->blueprintListSize\nTile Version: ", context.tileVersion);
 		return;
 	}
 

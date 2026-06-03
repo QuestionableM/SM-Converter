@@ -1,19 +1,13 @@
 #pragma once
 
-#include "Converter/TileConverter/Readers/PrefabFileReader.hpp"
 #include "Converter/TileConverter/TileConverterContext.hpp"
-#include "Converter/TileConverter/CellHeader.hpp"
-#include "Converter/TileConverter/TilePart.hpp"
-#include "Converter/TileConverter/Tile.hpp"
-#include "Converter/Entity/Prefab.hpp"
-
-#include "ObjectDatabase/KeywordReplacer.hpp"
 
 #include "Utils/clr_include.hpp"
-#include "Utils/Memory.hpp"
-#include "Utils/Lz4Lib.hpp"
+#include "Utils/ByteImpl.hpp"
 
 SM_UNMANAGED_CODE
+
+#include <vector>
 
 class PrefabReader
 {

@@ -1,7 +1,20 @@
-#include "Converter/ConvertSettings.hpp"
 #include "KinematicsListReader.hpp"
 
+#include "Converter/TileConverter/CellHeader.hpp"
+#include "Converter/TileConverter/Tile.hpp"
+#include "Converter/Entity/Kinematic.hpp"
+#include "Converter/ConvertSettings.hpp"
+
+#include "ObjectDatabase/UserDataReaders/ItemModCounter.hpp"
+#include "ObjectDatabase/ObjectDatabase.hpp"
+#include "ObjectDatabase/Mods/Mod.hpp"
+
+#include "Utils/BitStream.hpp"
+#include "Utils/String.hpp"
+
 SM_UNMANAGED_CODE
+
+#include <lz4/lz4.h>
 
 void KinematicsListReader::Read(TileReaderContext& context)
 {
@@ -33,15 +46,15 @@ void KinematicsListReader::Read(TileReaderContext& context)
 		}
 
 		std::vector<Byte> v_bytes(kinematicsListSize);
-		int debugSize = Lz4::DecompressFast(
+		int debugSize = LZ4_decompress_safe(
 			reinterpret_cast<const char*>(context.pReader->getPointer(context.pCellHeader->kinematicsListIndex[a])),
 			reinterpret_cast<char*>(v_bytes.data()),
+			kinematicsListCompressedSize,
 			kinematicsListSize);
-
-		if (debugSize != kinematicsListCompressedSize)
+		if (debugSize != kinematicsListSize)
 		{
-			DebugErrorL("Debug Size: ", debugSize, ", kinematicsListCompressedSize: ", kinematicsListCompressedSize);
-			context.pError->setError(1, "KinematicsListReader::Read -> debugSize != kinematicsListCompressedSize\nTile Version: ", context.tileVersion);
+			DebugErrorL("Debug Size: ", debugSize, ", kinematicsListSize: ", kinematicsListSize);
+			context.pError->setError(1, "KinematicsListReader::Read -> debugSize != kinematicsListSize\nTile Version: ", context.tileVersion);
 			return;
 		}
 
