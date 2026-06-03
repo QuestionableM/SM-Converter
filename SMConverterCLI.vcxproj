@@ -46,10 +46,16 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Build\$(ProjectName)-$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Build\Junk\$(ProjectName)-$(Configuration)\</IntDir>
+    <IncludePath>$(SolutionDir)Code;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <ExternalIncludePath>$(SolutionDir)Dependencies\nlohmann_json;$(SolutionDir)Dependencies\simdjson;$(SolutionDir)Dependencies\ValveVDF\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\FreeImage\Include;$(SolutionDir)Dependencies\emhash;$(SolutionDir)Dependencies\Assimp\Include;$(SolutionDir)Dependencies\PerlinNoise;$(SolutionDir)Dependencies\lz4\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
+    <LibraryPath>$(SolutionDir)Dependencies\FreeImage\Lib\$(PlatformShortName);$(SolutionDIr)Dependencies\Assimp\Lib;$(SolutionDir)Build\libs-$(Configuration);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Build\$(ProjectName)-$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Build\Junk\$(ProjectName)-$(Configuration)\</IntDir>
+    <IncludePath>$(SolutionDir)Code;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <ExternalIncludePath>$(SolutionDir)Dependencies\nlohmann_json;$(SolutionDir)Dependencies\simdjson;$(SolutionDir)Dependencies\ValveVDF\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\FreeImage\Include;$(SolutionDir)Dependencies\emhash;$(SolutionDir)Dependencies\Assimp\Include;$(SolutionDir)Dependencies\PerlinNoise;$(SolutionDir)Dependencies\lz4\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
+    <LibraryPath>$(SolutionDir)Dependencies\FreeImage\Lib\$(PlatformShortName);$(SolutionDIr)Dependencies\Assimp\Lib;$(SolutionDir)Build\libs-$(Configuration);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -58,14 +64,15 @@
       <PreprocessorDefinitions>SMC_ENABLE_DEBUG_CONSOLE;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Code;$(SolutionDir)Dependencies\nlohmann_json;$(SolutionDir)Dependencies\simdjson;$(SolutionDir)Dependencies\ValveVDF\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\FreeImage\Include;$(SolutionDir)Dependencies\emhash;$(SolutionDir)Dependencies\Assimp\Include;$(SolutionDir)Dependencies\PerlinNoise;$(SolutionDir)Dependencies\lz4\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\FreeImage\Lib\$(PlatformShortName);$(SolutionDIr)Dependencies\Assimp\Lib;$(SolutionDir)Build\libs-$(Configuration);$(SolutionDir)Dependencies\lz4\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>FreeImage.lib;simdjson.lib;assimp$(PlatformArchitecture).lib;lz4_$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>FreeImage.lib;simdjson.lib;assimp$(PlatformArchitecture).lib;lz4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y /d "$(SolutionDir)Resources" "$(SolutionDir)Build\$(ProjectName)-$(Configuration)\Resources" /I
@@ -82,7 +89,8 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
       <PreprocessorDefinitions>SMC_ENABLE_DEBUG_CONSOLE;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Code;$(SolutionDir)Dependencies\nlohmann_json;$(SolutionDir)Dependencies\simdjson;$(SolutionDir)Dependencies\ValveVDF\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\FreeImage\Include;$(SolutionDir)Dependencies\emhash;$(SolutionDir)Dependencies\Assimp\Include;$(SolutionDir)Dependencies\PerlinNoise;$(SolutionDir)Dependencies\lz4\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DebugInformationFormat>None</DebugInformationFormat>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -90,8 +98,8 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\FreeImage\Lib\$(PlatformShortName);$(SolutionDIr)Dependencies\Assimp\Lib;$(SolutionDir)Build\libs-$(Configuration);$(SolutionDir)Dependencies\lz4\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>FreeImage.lib;simdjson.lib;assimp$(PlatformArchitecture).lib;lz4_$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>FreeImage.lib;simdjson.lib;assimp$(PlatformArchitecture).lib;lz4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y /d "$(SolutionDir)Resources" "$(SolutionDir)Build\$(ProjectName)-$(Configuration)\Resources" /I
@@ -173,7 +181,6 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClCompile Include="Code\Utils\Crypt.cpp" />
     <ClCompile Include="Code\Utils\File.cpp" />
     <ClCompile Include="Code\Utils\Json.cpp" />
-    <ClCompile Include="Code\Utils\Lz4Lib.cpp" />
     <ClCompile Include="Code\Utils\MemoryMapped.cpp" />
     <ClCompile Include="Code\Utils\Uuid.cpp" />
     <ClCompile Include="Code\Utils\WineDetect.cpp" />

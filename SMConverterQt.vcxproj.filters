@@ -131,9 +131,6 @@
     <ClCompile Include="Code\Utils\Json.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Code\Utils\Lz4Lib.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Code\Utils\Uuid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

@@ -192,9 +192,6 @@
     <ClCompile Include="Code\Converter\MtlFileWriter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Code\Utils\Lz4Lib.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Code\Utils\Console.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

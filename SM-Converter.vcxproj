@@ -64,32 +64,42 @@
     <OutDir>$(SolutionDir)Build\$(SolutionName)-$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Build\Junk\$(SolutionName)-$(Configuration)\</IntDir>
     <CopyCppRuntimeToOutputDir>true</CopyCppRuntimeToOutputDir>
+    <LibraryPath>$(SolutionDir)Build\libs-$(Configuration);$(SolutionDir)Dependencies\FreeImage\Lib\x$(PlatformArchitecture);$(SolutionDir)Dependencies\Assimp\Lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)Code;</IncludePath>
+    <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)Dependencies\nlohmann_json;$(SolutionDir)Dependencies\simdjson;$(SolutionDir)Dependencies\ValveVDF\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\FreeImage\Include;$(SolutionDir)Dependencies\Assimp\Include;$(SolutionDir)Dependencies\lz4\Include;$(SolutionDir)Dependencies\PerlinNoise;$(SolutionDir)Dependencies\emhash;</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Build\$(SolutionName)-$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Build\Junk\$(SolutionName)-$(Configuration)\</IntDir>
     <CopyCppRuntimeToOutputDir>true</CopyCppRuntimeToOutputDir>
+    <LibraryPath>$(SolutionDir)Build\libs-$(Configuration);$(SolutionDir)Dependencies\FreeImage\Lib\x$(PlatformArchitecture);$(SolutionDir)Dependencies\Assimp\Lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)Code;</IncludePath>
+    <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)Dependencies\nlohmann_json;$(SolutionDir)Dependencies\simdjson;$(SolutionDir)Dependencies\ValveVDF\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\FreeImage\Include;$(SolutionDir)Dependencies\Assimp\Include;$(SolutionDir)Dependencies\lz4\Include;$(SolutionDir)Dependencies\PerlinNoise;$(SolutionDir)Dependencies\emhash;</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDebugInfo|x64'">
     <OutDir>$(SolutionDir)Build\$(SolutionName)-$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Build\Junk\$(SolutionName)-$(Configuration)\</IntDir>
     <CopyCppRuntimeToOutputDir>true</CopyCppRuntimeToOutputDir>
+    <LibraryPath>$(SolutionDir)Build\libs-$(Configuration);$(SolutionDir)Dependencies\FreeImage\Lib\x$(PlatformArchitecture);$(SolutionDir)Dependencies\Assimp\Lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)Code;</IncludePath>
+    <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)Dependencies\nlohmann_json;$(SolutionDir)Dependencies\simdjson;$(SolutionDir)Dependencies\ValveVDF\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\FreeImage\Include;$(SolutionDir)Dependencies\Assimp\Include;$(SolutionDir)Dependencies\lz4\Include;$(SolutionDir)Dependencies\PerlinNoise;$(SolutionDir)Dependencies\emhash;</ExternalIncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions);SMC_ENABLE_DEBUG_CONSOLE</PreprocessorDefinitions>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Code;$(SolutionDir)Dependencies\nlohmann_json;$(SolutionDir)Dependencies\simdjson;$(SolutionDir)Dependencies\ValveVDF\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\FreeImage\Include;$(SolutionDir)Dependencies\Assimp\Include;$(SolutionDir)Dependencies\lz4\Include;$(SolutionDir)Dependencies\PerlinNoise;$(SolutionDir)Dependencies\emhash;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <ConformanceMode>Default</ConformanceMode>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>user32.lib;FreeImage.lib;assimp$(PlatformArchitecture).lib;lz4_$(PlatformArchitecture).lib;simdjson.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\FreeImage\Lib\x$(PlatformArchitecture);$(SolutionDir)Dependencies\Assimp\Lib;$(SolutionDir)Dependencies\lz4\Lib;$(SolutionDir)Build\libs-$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>user32.lib;FreeImage.lib;simdjson.lib;lz4.lib;assimp$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
       <Command>"$(SolutionDir)Dependencies\Version Counter\VersionCounter.exe"</Command>
@@ -105,7 +115,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Code;$(SolutionDir)Dependencies\nlohmann_json;$(SolutionDir)Dependencies\simdjson;$(SolutionDir)Dependencies\ValveVDF\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\FreeImage\Include;$(SolutionDir)Dependencies\Assimp\Include;$(SolutionDir)Dependencies\lz4\Include;$(SolutionDir)Dependencies\PerlinNoise;$(SolutionDir)Dependencies\emhash;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -113,10 +123,11 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
       <DebugInformationFormat>None</DebugInformationFormat>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <WholeProgramOptimization>true</WholeProgramOptimization>
+      <ConformanceMode>Default</ConformanceMode>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>user32.lib;FreeImage.lib;assimp$(PlatformArchitecture).lib;lz4_$(PlatformArchitecture).lib;simdjson.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\FreeImage\Lib\x$(PlatformArchitecture);$(SolutionDir)Dependencies\Assimp\Lib;$(SolutionDir)Dependencies\lz4\Lib;$(SolutionDir)Build\libs-$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>user32.lib;FreeImage.lib;simdjson.lib;lz4.lib;assimp$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
@@ -134,17 +145,18 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions);SMC_ENABLE_DEBUG_CONSOLE</PreprocessorDefinitions>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Code;$(SolutionDir)Dependencies\nlohmann_json;$(SolutionDir)Dependencies\simdjson;$(SolutionDir)Dependencies\ValveVDF\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\FreeImage\Include;$(SolutionDir)Dependencies\Assimp\Include;$(SolutionDir)Dependencies\lz4\Include;$(SolutionDir)Dependencies\PerlinNoise;$(SolutionDir)Dependencies\emhash;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <ConformanceMode>Default</ConformanceMode>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>user32.lib;FreeImage.lib;assimp$(PlatformArchitecture).lib;lz4_$(PlatformArchitecture).lib;simdjson.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\FreeImage\Lib\x$(PlatformArchitecture);$(SolutionDir)Dependencies\Assimp\Lib;$(SolutionDir)Dependencies\lz4\Lib;$(SolutionDir)Build\libs-$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>user32.lib;FreeImage.lib;simdjson.lib;lz4.lib;assimp$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
     </Link>
@@ -218,11 +230,22 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='ReleaseDebugInfo|x64'">true</CompileAsManaged>
     </ClCompile>
+    <ClCompile Include="Code\Converter\Entity\Wedge.cpp" />
     <ClCompile Include="Code\Converter\MtlFileWriter.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='ReleaseDebugInfo|x64'">true</CompileAsManaged>
     </ClCompile>
+    <ClCompile Include="Code\Converter\TileConverter\Readers\AssetListReader.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Readers\BlueprintListReader.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Readers\ClutterReader.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Readers\DecalListReader.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Readers\HarvestableListReader.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Readers\KinematicsListReader.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Readers\MipReader.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Readers\PrefabFileReader.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Readers\PrefabReader.cpp" />
+    <ClCompile Include="Code\Converter\TileConverter\Readers\TileReader.cpp" />
     <ClCompile Include="Code\Converter\TileConverter\Tile.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</CompileAsManaged>
@@ -233,6 +256,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='ReleaseDebugInfo|x64'">true</CompileAsManaged>
     </ClCompile>
+    <ClCompile Include="Code\Converter\TileConverter\TileHeader.cpp" />
     <ClCompile Include="Code\Converter\TileConverter\TilePart.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</CompileAsManaged>
@@ -248,10 +272,12 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClCompile Include="Code\ObjectDatabase\Mods\CustomGameMod.cpp" />
     <ClCompile Include="Code\ObjectDatabase\Readers\GarmentListLoader.cpp" />
     <ClCompile Include="Code\ObjectDatabase\Readers\KinematicListLoader.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\Readers\WedgeListLoader.cpp" />
     <ClCompile Include="Code\ObjectDatabase\SubMeshData.cpp" />
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\BlueprintFolderReader.cpp" />
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\FilterSettingsData.cpp" />
     <ClCompile Include="Code\Gui\SettingsGuiChangeDetector.cpp" />
+    <ClCompile Include="Code\ObjectDatabase\UserDataReaders\ItemModCounter.cpp" />
     <ClCompile Include="Code\ObjectDatabase\UserDataReaders\TileFolderReader.cpp" />
     <ClCompile Include="Code\Gui\SettingsGui.cpp" />
     <ClCompile Include="Code\Gui\TileConvertSettings.cpp" />
@@ -381,9 +407,9 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='ReleaseDebugInfo|x64'">true</CompileAsManaged>
     </ClCompile>
-    <ClCompile Include="Code\Utils\Lz4Lib.cpp" />
     <ClCompile Include="Code\Utils\MemoryMapped.cpp" />
     <ClCompile Include="Code\Utils\Uuid.cpp" />
+    <ClCompile Include="Code\Utils\WineDetect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -414,6 +440,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\Converter\Entity\Prefab.hpp" />
     <ClInclude Include="Code\Converter\Entity\TileClutter.hpp" />
     <ClInclude Include="Code\Converter\Entity\Entity.hpp" />
+    <ClInclude Include="Code\Converter\Entity\Wedge.hpp" />
     <ClInclude Include="Code\Converter\MtlFileWriter.hpp" />
     <ClInclude Include="Code\Converter\TileConverter\CellHeader.hpp" />
     <ClInclude Include="Code\Converter\TileConverter\Readers\AssetListReader.hpp" />
@@ -429,6 +456,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\Converter\TileConverter\Readers\TileReader.hpp" />
     <ClInclude Include="Code\Converter\TileConverter\Tile.hpp" />
     <ClInclude Include="Code\Converter\TileConverter\TileConverter.hpp" />
+    <ClInclude Include="Code\Converter\TileConverter\TileConverterContext.hpp" />
     <ClInclude Include="Code\Converter\TileConverter\TileHeader.hpp" />
     <ClInclude Include="Code\Converter\TileConverter\TilePart.hpp" />
     <ClInclude Include="Code\Converter\WorldConverter\World.hpp" />
@@ -453,6 +481,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\ObjectDatabase\Mods\ModObjectStorage.hpp" />
     <ClInclude Include="Code\ObjectDatabase\Readers\GarmentListLoader.hpp" />
     <ClInclude Include="Code\ObjectDatabase\Readers\KinematicListLoader.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\Readers\WedgeListLoader.hpp" />
     <ClInclude Include="Code\ObjectDatabase\UserDataReaders\BlueprintFolderReader.hpp" />
     <ClInclude Include="Code\ObjectDatabase\UserDataReaders\FilterSettingsData.hpp" />
     <ClInclude Include="Code\Gui\SettingsGuiChangeDetector.hpp" />
@@ -488,11 +517,13 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\ObjectDatabase\SubMeshData.hpp" />
     <ClInclude Include="Code\ObjectDatabase\UserDataReaders\UserCharacterData.hpp" />
     <ClInclude Include="Code\ObjectDatabase\UserDataReaders\UserCharacterReader.hpp" />
+    <ClInclude Include="Code\ObjectDatabase\UserDataReaders\UserDataBase.hpp" />
     <ClInclude Include="Code\ObjectDatabase\UserDataReaders\UserObjectFolderReader.hpp" />
     <ClInclude Include="Code\ObjectDatabase\UserDataReaders\WorldFolderReader.hpp" />
     <ClInclude Include="Code\UStd\UnmanagedMutex.hpp" />
     <ClInclude Include="Code\Utils\BitStream.hpp" />
     <ClInclude Include="Code\Utils\ByteImpl.hpp" />
+    <ClInclude Include="Code\Utils\clr_include.hpp" />
     <ClInclude Include="Code\Utils\Color.hpp" />
     <ClInclude Include="Code\Utils\Console.hpp" />
     <ClInclude Include="Code\Utils\Crypt.hpp" />
@@ -500,10 +531,10 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\Utils\GlmUnmanaged.hpp" />
     <ClInclude Include="Code\Utils\Hashing.hpp" />
     <ClInclude Include="Code\Utils\Json.hpp" />
-    <ClInclude Include="Code\Utils\Lz4Lib.hpp" />
     <ClInclude Include="Code\Utils\Math.hpp" />
     <ClInclude Include="Code\Utils\Memory.hpp" />
     <ClInclude Include="Code\Utils\MemoryMapped.h" />
+    <ClInclude Include="Code\Utils\MutexData.hpp" />
     <ClInclude Include="Code\Utils\String.hpp" />
     <ClInclude Include="Code\UStd\UnmanagedAlgorithm.hpp" />
     <ClInclude Include="Code\UStd\UnmanagedArray.hpp" />
@@ -515,6 +546,7 @@ xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture)
     <ClInclude Include="Code\UStd\UnmanagedUnorderedMap.hpp" />
     <ClInclude Include="Code\UStd\UnmanagedVector.hpp" />
     <ClInclude Include="Code\Utils\Uuid.hpp" />
+    <ClInclude Include="Code\Utils\WineDetect.hpp" />
     <ClInclude Include="Code\Utils\WinInclude.hpp" />
     <ClInclude Include="Code\Converter\WriterOffset.hpp" />
   </ItemGroup>
