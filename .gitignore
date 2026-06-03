@@ -6,5 +6,6 @@
 /ConvertedWorlds
 /Resources/Config.json
 *.vcxproj.user
+*.vcxproj.filters
 /SMConverterQt
 qt.conf
