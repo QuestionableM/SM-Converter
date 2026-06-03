@@ -10,14 +10,12 @@
 
 SM_UNMANAGED_CODE
 
-#include <FreeImage.h>
-
 class GroundTexture
 {
 	int m_width, m_height;
 	std::wstring m_texturePath;
 
-	FIBITMAP* m_imageData = nullptr;
+	struct FIBITMAP* m_imageData = nullptr;
 
 public:
 	GroundTexture() = default;
@@ -31,25 +29,18 @@ public:
 	bool LoadImageData();
 	void Clear();
 
-	void SetPath(const std::wstring& path);
+	void SetPath(const std::wstring_view& path);
 
-	inline int GetWidth() const noexcept { return m_width; }
-	inline int GetHeight() const noexcept { return m_height; }
+	int GetWidth() const noexcept;
+	int GetHeight() const noexcept;
 
-	inline FIBITMAP* Data() noexcept { return m_imageData; };
-	inline void SetData(FIBITMAP* p_tex_data) noexcept { m_imageData = p_tex_data; }
+	FIBITMAP* GetData() noexcept;
+	void SetData(FIBITMAP* pTexData) noexcept;
 
-	inline void GetByte(int p_x, int p_y, RGBQUAD* p_pixel) const
-	{
-		FreeImage_GetPixelColor(m_imageData, p_x, p_y, p_pixel);
-	}
+	void GetByte(const int x, const int y, RGBQUAD* pOut) const;
+	void SetByte(const int x, const int y, RGBQUAD* pByte);
 
-	inline void SetByte(int p_x, int p_y, RGBQUAD* new_data)
-	{
-		FreeImage_SetPixelColor(m_imageData, p_x, p_y, new_data);
-	}
-
-	void WriteToFile(const std::wstring& path, int quality = 90) const;
+	bool WriteToFile(const std::wstring_view& path, const int quality = 90) const;
 };
 
 using GroundTexBundle = std::array<GroundTexture*, 3>;
@@ -66,8 +57,8 @@ public:
 	static void Initialize();
 	static void ClearTextureDatabase();
 
-	static GroundTexture* GetDefaultTexture(std::size_t index);
-	static GroundTexture* GetTexture(std::size_t index, std::size_t type);
+	static GroundTexture* GetDefaultTexture(const std::size_t index);
+	static GroundTexture* GetTexture(const std::size_t index, const std::size_t type);
 };
 
 SM_MANAGED_CODE

@@ -8,6 +8,8 @@
 
 SM_UNMANAGED_CODE
 
+#include <FreeImage.h>
+
 GroundTexture::GroundTexture(const std::wstring& path)
 {
 	this->SetPath(path);
@@ -107,22 +109,58 @@ void GroundTexture::Clear()
 	}
 }
 
-void GroundTexture::SetPath(const std::wstring& path)
+void GroundTexture::SetPath(const std::wstring_view& path)
 {
-	m_texturePath = path;
+	m_texturePath.assign(path);
 	KeywordReplacer::ReplaceKeyR(m_texturePath);
 	DebugOutL("TexPath: ", m_texturePath);
 }
 
-void GroundTexture::WriteToFile(const std::wstring& path, int quality) const
+int GroundTexture::GetWidth() const noexcept
+{
+	return m_width;
+}
+
+int GroundTexture::GetHeight() const noexcept
+{
+	return m_height;
+}
+
+FIBITMAP* GroundTexture::GetData() noexcept
+{
+	return m_imageData;
+}
+
+void GroundTexture::SetData(FIBITMAP* pTexData) noexcept
+{
+	m_imageData = pTexData;
+}
+
+void GroundTexture::GetByte(const int x, const int y, RGBQUAD* pOut) const
+{
+	FreeImage_GetPixelColor(m_imageData, x, y, pOut);
+}
+
+void GroundTexture::SetByte(const int x, const int y, RGBQUAD* pByte)
+{
+	FreeImage_SetPixelColor(m_imageData, x, y, pByte);
+}
+
+bool GroundTexture::WriteToFile(const std::wstring_view& path, const int quality) const
 {
 	if (!m_imageData)
-		return;
+	{
+		DebugErrorL("Tried writing an image that hasn't been initialized");
+		return false;
+	}
 
-	if (!FreeImage_SaveU(FREE_IMAGE_FORMAT::FIF_JPEG, m_imageData, path.c_str(), JPEG_QUALITYSUPERB))
+	if (!FreeImage_SaveU(FREE_IMAGE_FORMAT::FIF_JPEG, m_imageData, path.data(), JPEG_QUALITYSUPERB))
 	{
 		DebugErrorL("Couldn't save the texture: ", path);
+		return false;
 	}
+
+	return true;
 }
 
 
@@ -193,12 +231,12 @@ void GroundTextureDatabase::ClearTextureDatabase()
 	}
 }
 
-GroundTexture* GroundTextureDatabase::GetDefaultTexture(std::size_t index)
+GroundTexture* GroundTextureDatabase::GetDefaultTexture(const std::size_t index)
 {
 	return GroundTextureDatabase::DefaultTex[index];
 }
 
-GroundTexture* GroundTextureDatabase::GetTexture(std::size_t index, std::size_t type)
+GroundTexture* GroundTextureDatabase::GetTexture(const std::size_t index, const std::size_t type)
 {
 	return GroundTextureDatabase::TexStorage[index][type];
 }

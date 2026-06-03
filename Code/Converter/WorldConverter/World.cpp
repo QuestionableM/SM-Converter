@@ -3,6 +3,8 @@
 #include "Converter/Entity/GroundTerrainData.hpp"
 #include "Converter/MtlFileWriter.hpp"
 
+#include "ObjectDatabase/KeywordReplacer.hpp"
+
 #include "Utils/clr_include.hpp"
 #include "Utils/File.hpp"
 #include "Utils/Json.hpp"

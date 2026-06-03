@@ -3,6 +3,7 @@
 #include "Converter/TileConverter/Readers/TileReader.hpp"
 #include "Converter/TileConverter/TileHeader.hpp"
 
+#include "ObjectDatabase/KeywordReplacer.hpp"
 #include "ObjectDatabase/DatabaseConfig.hpp"
 
 #include "Utils/Console.hpp"

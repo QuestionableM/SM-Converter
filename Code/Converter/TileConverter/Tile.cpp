@@ -485,14 +485,14 @@ void Tile::WriteMaterials(const std::wstring& dir) const
 	DebugOutL("Writing materials...");
 	ProgCounter::SetState(ProgState::WritingMaterialMaps, 0);
 
-	const std::vector<long long> ground_data = this->GetGround();
+	const std::vector<long long> v_gndData = this->GetGround();
 
-	const int gnd_width  = m_width  * 64 + 1;
-	const int gnd_height = m_height * 64 + 1;
+	const int v_gndWidth = m_width  * 64 + 1;
+	const int v_gndHeight = m_height * 64 + 1;
 
 	for (std::size_t mat_id = 0; mat_id < 2; mat_id++)
 	{
-		FIBITMAP* v_materialData = FreeImage_Allocate(gnd_width, gnd_height, 32);
+		FIBITMAP* v_materialData = FreeImage_Allocate(v_gndWidth, v_gndHeight, 32);
 		if (!v_materialData)
 		{
 			DebugErrorL("Couldn't allocate memory for material id: ", mat_id);
@@ -502,11 +502,11 @@ void Tile::WriteMaterials(const std::wstring& dir) const
 		const std::size_t v_curOffset = 32 * mat_id;
 		RGBQUAD v_pixelData;
 
-		for (int y = 0; y < gnd_width; y++)
+		for (int y = 0; y < v_gndWidth; y++)
 		{
-			for (int x = 0; x < gnd_height; x++)
+			for (int x = 0; x < v_gndHeight; x++)
 			{
-				const long long cur_data = ground_data[x + y * gnd_width];
+				const long long cur_data = v_gndData[x + y * v_gndWidth];
 				const long cur_chunk = static_cast<long>(cur_data >> v_curOffset);
 
 				v_pixelData.rgbRed      = static_cast<Byte>(cur_chunk >> 0);
@@ -626,10 +626,10 @@ void Tile::SampleTextures(
 	}
 }
 
-void Tile::FillGndTexture(GroundTexture* mGndTex, const std::size_t& tex_id) const
+void Tile::FillGndTexture(GroundTexture* pGndTex, const std::size_t texId) const
 {
-	GroundTexture* pDefTex = GroundTextureDatabase::GetDefaultTexture(tex_id);
-	if (!pDefTex->LoadImageData())
+	GroundTexture* v_pDefTex = GroundTextureDatabase::GetDefaultTexture(texId);
+	if (!v_pDefTex->LoadImageData())
 		return;
 
 	int v_widthDiv = std::max(m_width / 2, 1);
@@ -640,28 +640,28 @@ void Tile::FillGndTexture(GroundTexture* mGndTex, const std::size_t& tex_id) con
 		v_heightDiv = m_height * 2;
 	}
 
-	pDefTex->Resize(pDefTex->GetWidth() / v_widthDiv, pDefTex->GetHeight() / v_heightDiv);
+	v_pDefTex->Resize(v_pDefTex->GetWidth() / v_widthDiv, v_pDefTex->GetHeight() / v_heightDiv);
 
-	const int gnd_tex_x = mGndTex->GetWidth();
-	const int gnd_tex_y = mGndTex->GetHeight();
+	const int v_gndTexX = pGndTex->GetWidth();
+	const int v_gndTexY = pGndTex->GetHeight();
 
-	const int def_size_x = pDefTex->GetWidth();
-	const int def_size_y = pDefTex->GetHeight();
+	const int v_defSizeX = v_pDefTex->GetWidth();
+	const int v_defSizeY = v_pDefTex->GetHeight();
 
-	const int def_x_amount = gnd_tex_x / def_size_x;
-	const int def_y_amount = gnd_tex_y / def_size_y;
+	const int v_defAmountX = v_gndTexX / v_defSizeX;
+	const int v_defAmountY = v_gndTexY / v_defSizeY;
 
-	for (int y = 0; y < def_y_amount; y++)
+	for (int y = 0; y < v_defAmountY; y++)
 	{
-		const int v_img_y_offset = y * def_size_y;
+		const int v_imgOffsetY = y * v_defSizeY;
 
-		for (int x = 0; x < def_x_amount; x++)
+		for (int x = 0; x < v_defAmountX; x++)
 		{
-			FreeImage_Paste(mGndTex->Data(), pDefTex->Data(), x * def_size_x, v_img_y_offset, 256);
+			FreeImage_Paste(pGndTex->GetData(), v_pDefTex->GetData(), x * v_defSizeX, v_imgOffsetY, 256);
 		}
 	}
 
-	pDefTex->Clear();
+	v_pDefTex->Clear();
 }
 
 struct MaterialData
@@ -768,14 +768,14 @@ void Tile::WriteGroundTextures(const std::wstring& dir) const
 	}
 }
 
-void Tile::WriteModel(const std::wstring& file_path, const std::wstring& mtl_name) const
+void Tile::WriteModel(const std::wstring_view& filePath, const std::wstring_view& mtlName) const
 {
-	std::ofstream v_outputModel(file_path);
+	std::ofstream v_outputModel(filePath.data());
 	if (!v_outputModel.is_open()) return;
 
 	if (SharedConverterSettings::ExportMaterials)
 	{
-		const std::string v_mtlHeader = "mtllib " + String::ToUtf8(mtl_name) + "\n";
+		const std::string v_mtlHeader = "mtllib " + String::ToUtf8(mtlName) + "\n";
 		v_outputModel.write(v_mtlHeader.c_str(), v_mtlHeader.size());
 	}
 
