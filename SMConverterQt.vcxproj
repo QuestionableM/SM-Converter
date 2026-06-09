@@ -11,6 +11,10 @@
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseDebugInfo|x64">
+      <Configuration>ReleaseDebugInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
@@ -21,6 +25,7 @@
     <Keyword>QtVS_v304</Keyword>
     <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">10.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)'=='ReleaseDebugInfo|x64'">10.0</WindowsTargetPlatformVersion>
     <QtMsBuild Condition="'$(QtMsBuild)'=='' OR !Exists('$(QtMsBuild)\qt.targets')">$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -29,6 +34,10 @@
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDebugInfo|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
@@ -44,6 +53,10 @@
     <QtInstall>6.10.1_msvc2022_64</QtInstall>
     <QtModules>core;gui;designer</QtModules>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDebugInfo|x64'" Label="QtSettings">
+    <QtInstall>6.10.1_msvc2022_64</QtInstall>
+    <QtModules>core;gui;designer</QtModules>
+  </PropertyGroup>
   <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
     <Message Importance="High" Text="QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly." />
   </Target>
@@ -54,6 +67,10 @@
     <Import Project="$(QtMsBuild)\Qt.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(QtMsBuild)\Qt.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDebugInfo|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(QtMsBuild)\Qt.props" />
   </ImportGroup>
@@ -74,10 +91,21 @@
     <IncludePath>$(SolutionDir)Code;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <ExternalIncludePath>$(SolutionDir)Dependencies\FreeImage\Include;$(SolutionDir)Dependencies\ValveVDF\include;$(SolutionDir)Dependencies\Assimp\Include;$(SolutionDir)Dependencies\nlohmann_json;$(SolutionDIr)Dependencies\PerlinNoise;$(SolutionDir)Dependencies\lz4\Include;$(SolutionDir)Dependencies\simdjson;$(SolutionDir)Dependencies\emhash;$(SolutionDir)Dependencies\glm;$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDebugInfo|x64'">
+    <OutDir>$(SolutionDir)Build\$(ProjectName)-$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Build\Junk\$(ProjectName)-$(Configuration)\</IntDir>
+    <CopyCppRuntimeToOutputDir>true</CopyCppRuntimeToOutputDir>
+    <LibraryPath>$(SolutionDir)Dependencies\FreeImage\Lib\$(PlatformShortName);$(SolutionDIr)Dependencies\Assimp\Lib;$(SolutionDir)Build\libs-$(Configuration);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <IncludePath>$(SolutionDir)Code;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <ExternalIncludePath>$(SolutionDir)Dependencies\FreeImage\Include;$(SolutionDir)Dependencies\ValveVDF\include;$(SolutionDir)Dependencies\Assimp\Include;$(SolutionDir)Dependencies\nlohmann_json;$(SolutionDIr)Dependencies\PerlinNoise;$(SolutionDir)Dependencies\lz4\Include;$(SolutionDir)Dependencies\simdjson;$(SolutionDir)Dependencies\emhash;$(SolutionDir)Dependencies\glm;$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
+  </PropertyGroup>
   <PropertyGroup Label="QtDeploy" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <QtDeploy>true</QtDeploy>
   </PropertyGroup>
   <PropertyGroup Label="QtDeploy" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <QtDeploy>true</QtDeploy>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDebugInfo|x64'" Label="QtDeploy">
     <QtDeploy>true</QtDeploy>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -122,6 +150,27 @@ xcopy /y /d "$(SolutionDir)Media\icon.ico" "$(SolutionDir)Build\$(ProjectName)-$
       <Command>"$(SolutionDir)Dependencies\Version Counter\VersionCounter.exe"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDebugInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PreprocessorDefinitions>$(Qt_DEFINES_);%(PreprocessorDefinitions);_HAS_STATIC_RTTI=0;SMC_ENABLE_DEBUG_CONSOLE</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>FreeImage.lib;simdjson.lib;assimp$(PlatformArchitecture).lib;lz4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /d "$(SolutionDir)Resources" "$(SolutionDir)Build\$(ProjectName)-$(Configuration)\Resources" /I
+xcopy /y /d "$(SolutionDir)Dependencies\FreeImage\DLL\x$(PlatformArchitecture)\FreeImage.dll" "$(SolutionDir)Build\$(ProjectName)-$(Configuration)"
+xcopy /y /d "$(SolutionDir)Dependencies\Assimp\DLL\assimp$(PlatformArchitecture).dll" "$(SolutionDir)Build\$(ProjectName)-$(Configuration)"
+xcopy /y /d "$(SolutionDir)Media\icon.ico" "$(SolutionDir)Build\$(ProjectName)-$(Configuration)"</Command>
+    </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>"$(SolutionDir)Dependencies\Version Counter\VersionCounter.exe"</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
     <ClCompile>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
@@ -135,6 +184,18 @@ xcopy /y /d "$(SolutionDir)Media\icon.ico" "$(SolutionDir)Build\$(ProjectName)-$
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="Configuration">
+    <ClCompile>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDebugInfo|x64'" Label="Configuration">
     <ClCompile>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>

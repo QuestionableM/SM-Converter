@@ -16,8 +16,7 @@ struct ItemModInstance
 		const SMUuid& modUuid,
 		const std::uint64_t modWorkshopId,
 		const std::wstring_view& modPath,
-		const std::wstring_view& modName,
-		const std::size_t partCount
+		const std::wstring_view& modName
 	) noexcept
 		: m_modUuid(modUuid)
 		, m_modWorkshopId(modWorkshopId)
@@ -25,6 +24,7 @@ struct ItemModInstance
 		, m_modName(modName)
 		, m_modParts()
 		, m_partCount(0)
+		, m_partCountOverride(0)
 	{}
 
 	SMUuid m_modUuid;
@@ -34,6 +34,7 @@ struct ItemModInstance
 	std::unordered_set<SMUuid> m_modParts;
 
 	std::size_t m_partCount;
+	std::size_t m_partCountOverride;
 };
 
 struct ItemModStats
@@ -51,6 +52,7 @@ struct ItemModStats
 		const std::uint64_t modWorkshopId,
 		const std::wstring_view& modPath,
 		const std::wstring_view& modName);
+	static ItemModInstance* GetUnknownMod();
 	static ItemModInstance* FindModInstanceFromUuid(const SMUuid& partUuid);
 	static void CountPart(const SMUuid& partUuid, const bool checkBlocksAndParts);
 

@@ -70,7 +70,7 @@ void ModListWidget::updateContextMenu()
 	m_contextMenu->m_openInExplorerAction->setEnabled(v_dirExists);
 }
 
-void ModListWidget::updateModList()
+void ModListWidget::updateModList(const bool showOverrides)
 {
 	m_noModsLabel->setVisible(ItemModStats::ModVector.empty());
 
@@ -83,7 +83,7 @@ void ModListWidget::updateModList()
 	{
 		v_modName.assign(v_curMod->m_modName);
 		v_modName.append(L" (");
-		v_modName.append(std::to_wstring(v_curMod->m_partCount));
+		v_modName.append(std::to_wstring(showOverrides ? v_curMod->m_partCountOverride : v_curMod->m_partCount));
 		v_modName.append(L")");
 
 		this->addItem(QString::fromStdWString(v_modName));
@@ -131,6 +131,7 @@ ObjectInfoGui::ObjectInfoGui(
 	, m_objectImage(new ImageBox(QString::fromStdWString(image)))
 	, m_infoLayout(new QVBoxLayout(this))
 	, m_modList(new ModListWidget(this))
+	, m_cbShowOverrides(new QCheckBox("Show Overrides", this))
 {
 	this->setWindowTitle(title);
 
@@ -138,6 +139,7 @@ ObjectInfoGui::ObjectInfoGui(
 	m_mainLayout->addLayout(m_mainInfoLayout);
 	m_mainLayout->addWidget(new QLabel("Mod List"), 0, Qt::AlignLeft | Qt::AlignBottom);
 	m_mainLayout->addWidget(m_modList);
+	m_mainLayout->addWidget(m_cbShowOverrides);
 
 	m_mainInfoLayout->setAlignment(Qt::AlignTop);
 	m_mainInfoLayout->addWidget(m_objectImage);
@@ -147,6 +149,11 @@ ObjectInfoGui::ObjectInfoGui(
 	m_infoLayout->setSpacing(1);
 	const QMargins v_old_margins = m_infoLayout->contentsMargins();
 	m_infoLayout->setContentsMargins(v_old_margins.left(), 0, v_old_margins.right(), 0);
+
+	connect(
+		m_cbShowOverrides, &QCheckBox::checkStateChanged,
+		this, &ObjectInfoGui::onShowOverridesStateChanged
+	);
 
 	ItemModStats::Reset();
 }
@@ -158,7 +165,7 @@ ObjectInfoGui::ObjectInfoGui(BlueprintInstance* bprint, QWidget* parent)
 	
 	this->appendMainObjectInfo<BlueprintInstance>(bprint);
 	this->appendPartsStats();
-	m_modList->updateModList();
+	this->updateModList();
 }
 
 static bool readWorldData(
@@ -215,7 +222,7 @@ ObjectInfoGui::ObjectInfoGui(WorldInstance* world, QWidget* parent)
 		new QLabel(QString("World Size: %1x%1").arg(v_world_width), this));
 	
 	this->appendPartsStats();
-	m_modList->updateModList();
+	this->updateModList();
 }
 
 static void readTileData(const std::wstring& tile_path, ConvertError& v_error)
@@ -257,7 +264,7 @@ ObjectInfoGui::ObjectInfoGui(TileInstance* tile, QWidget* parent)
 	m_infoLayout->addWidget(new QLabel(v_tileSz, this));
 
 	this->appendPartsStats();
-	m_modList->updateModList();
+	this->updateModList();
 }
 
 void ObjectInfoGui::appendPartsStats()
@@ -269,4 +276,14 @@ void ObjectInfoGui::appendPartsStats()
 
 	m_infoLayout->addWidget(new QLabel(v_part_count, this));
 	m_infoLayout->addWidget(new QLabel(v_mod_count, this));
+}
+
+void ObjectInfoGui::updateModList()
+{
+	m_modList->updateModList(m_cbShowOverrides->isChecked());
+}
+
+void ObjectInfoGui::onShowOverridesStateChanged(const Qt::CheckState state)
+{
+	this->updateModList();
 }

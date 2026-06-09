@@ -25,11 +25,16 @@ ItemModInstance* ItemModStats::RegisterNewMod(
 	if (v_iter != ItemModStats::ModStorage.end())
 		return v_iter->second;
 
-	auto v_newInstance = new ItemModInstance(modUuid, modWorkshopId, modPath, modName, 0);
+	auto v_newInstance = new ItemModInstance(modUuid, modWorkshopId, modPath, modName);
 	ItemModStats::ModVector.emplace_back(v_newInstance);
 	ItemModStats::ModStorage.emplace(modUuid, v_newInstance);
 
 	return v_newInstance;
+}
+
+ItemModInstance* ItemModStats::GetUnknownMod()
+{
+	return ItemModStats::RegisterNewMod(SMUuid::Null, 0, L"", L"UNKNOWN_MOD");
 }
 
 ItemModInstance* ItemModStats::FindModInstanceFromUuid(const SMUuid& partUuid)
@@ -44,38 +49,35 @@ void ItemModStats::CountPart(
 	const SMUuid& partUuid,
 	const bool checkBlocksAndParts)
 {
-#if 1
+	ItemModInstance* v_pModInstanceOverwrite = ItemModStats::FindModInstanceFromUuid(partUuid);
+	ItemModInstance* v_pModInstance;
+
 	SMMod* v_pMod;
 	if (checkBlocksAndParts)
 		v_pMod = SMMod::GetModFromBlocksAndParts(partUuid, true);
 	else
 		v_pMod = SMMod::GetModFromTileParts(partUuid);
 
-	ItemModInstance* v_pModInstance;
 	if (v_pMod)
-		v_pModInstance = ItemModStats::RegisterNewMod(v_pMod->GetUuid(), v_pMod->GetWorkshopId(), v_pMod->GetDirectory(), v_pMod->GetName());
-	else
-		v_pModInstance = ItemModStats::FindModInstanceFromUuid(partUuid);
-#else
-	ItemModInstance* v_pModInstance = ItemModStats::FindModInstanceFromUuid(partUuid);
-	if (!v_pModInstance)
 	{
-		SMMod* v_pMod;
-		if (checkBlocksAndParts)
-			v_pMod = SMMod::GetModFromBlocksAndParts(partUuid, true);
-		else
-			v_pMod = SMMod::GetModFromTileParts(partUuid);
-
-		if (v_pMod)
-			v_pModInstance = ItemModStats::RegisterNewMod(v_pMod->GetUuid(), v_pMod->GetWorkshopId(), v_pMod->GetDirectory(), v_pMod->GetName());
+		v_pModInstance = ItemModStats::RegisterNewMod(v_pMod->GetUuid(), v_pMod->GetWorkshopId(), v_pMod->GetDirectory(), v_pMod->GetName());
+		if (!v_pModInstanceOverwrite)
+			v_pModInstanceOverwrite = v_pModInstance;
 	}
-#endif
+	else
+	{
+		v_pModInstance = v_pModInstanceOverwrite;
+	}
 
 	// Get unknown mod instance
 	if (!v_pModInstance)
-		v_pModInstance = ItemModStats::RegisterNewMod(SMUuid::Null, 0, L"", L"UNKNOWN_MOD");
+		v_pModInstance = ItemModStats::GetUnknownMod();
+
+	if (!v_pModInstanceOverwrite)
+		v_pModInstanceOverwrite = ItemModStats::GetUnknownMod();
 
 	v_pModInstance->m_partCount++;
+	v_pModInstanceOverwrite->m_partCountOverride++;
 }
 
 std::size_t ItemModStats::GetTotalPartCount()

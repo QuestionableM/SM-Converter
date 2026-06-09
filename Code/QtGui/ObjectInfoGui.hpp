@@ -5,6 +5,7 @@
 #include "QtGui/CustomWidgets/ImageBox.hpp"
 
 #include <QListWidget>
+#include <QCheckBox>
 #include <QDialog>
 #include <QLayout>
 #include <QLabel>
@@ -31,7 +32,7 @@ public:
 
 	struct ItemModInstance* getSelectedMod() const;
 	void updateContextMenu();
-	void updateModList();
+	void updateModList(const bool showOverrides);
 
 
 	void openModInWorkshop();
@@ -56,6 +57,8 @@ public:
 
 private:
 	void appendPartsStats();
+	void updateModList();
+	void onShowOverridesStateChanged(const Qt::CheckState state);
 
 	template<typename T>
 	inline void appendMainObjectInfo(T* obj)
@@ -83,4 +86,5 @@ private:
 	//Handles all the label data about the object
 	QVBoxLayout* m_infoLayout;
 	ModListWidget* m_modList;
+	QCheckBox* m_cbShowOverrides;
 };

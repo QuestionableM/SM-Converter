@@ -48,8 +48,8 @@ Global
 		{2202D869-5ABB-4A5F-B995-D57C632A4F41}.Debug|x64.Build.0 = Debug|x64
 		{2202D869-5ABB-4A5F-B995-D57C632A4F41}.Release|x64.ActiveCfg = Release|x64
 		{2202D869-5ABB-4A5F-B995-D57C632A4F41}.Release|x64.Build.0 = Release|x64
-		{2202D869-5ABB-4A5F-B995-D57C632A4F41}.ReleaseDebugInfo|x64.ActiveCfg = Release|x64
-		{2202D869-5ABB-4A5F-B995-D57C632A4F41}.ReleaseDebugInfo|x64.Build.0 = Release|x64
+		{2202D869-5ABB-4A5F-B995-D57C632A4F41}.ReleaseDebugInfo|x64.ActiveCfg = ReleaseDebugInfo|x64
+		{2202D869-5ABB-4A5F-B995-D57C632A4F41}.ReleaseDebugInfo|x64.Build.0 = ReleaseDebugInfo|x64
 		{B9FD7856-9B67-4788-9B89-247E5BC716A8}.Debug|x64.ActiveCfg = Debug|x64
 		{B9FD7856-9B67-4788-9B89-247E5BC716A8}.Debug|x64.Build.0 = Debug|x64
 		{B9FD7856-9B67-4788-9B89-247E5BC716A8}.Release|x64.ActiveCfg = Release|x64
@@ -60,8 +60,8 @@ Global
 		{0ED679F8-518A-4946-BA87-1F24450DE660}.Debug|x64.Build.0 = Debug|x64
 		{0ED679F8-518A-4946-BA87-1F24450DE660}.Release|x64.ActiveCfg = Release|x64
 		{0ED679F8-518A-4946-BA87-1F24450DE660}.Release|x64.Build.0 = Release|x64
-		{0ED679F8-518A-4946-BA87-1F24450DE660}.ReleaseDebugInfo|x64.ActiveCfg = Release|x64
-		{0ED679F8-518A-4946-BA87-1F24450DE660}.ReleaseDebugInfo|x64.Build.0 = Release|x64
+		{0ED679F8-518A-4946-BA87-1F24450DE660}.ReleaseDebugInfo|x64.ActiveCfg = ReleaseDebugInfo|x64
+		{0ED679F8-518A-4946-BA87-1F24450DE660}.ReleaseDebugInfo|x64.Build.0 = ReleaseDebugInfo|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
