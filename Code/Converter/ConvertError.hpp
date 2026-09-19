@@ -48,7 +48,7 @@ private:
 		char v_intBuffer[64];
 		const std::string_view v_result = String::IntegerToString<CurArg>(v_intBuffer, sizeof(v_intBuffer), arg);
 
-		m_errorMessage.assign(v_result);
+		m_errorMessage.append(v_result);
 	}
 
 	template<typename CurArg> requires(std::is_same_v<CurArg, char>)

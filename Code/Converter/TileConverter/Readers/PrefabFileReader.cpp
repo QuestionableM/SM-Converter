@@ -47,6 +47,13 @@ SMPrefab* PrefabFileReader::Read(
 {
 	MemoryWrapper reader(bytes);
 
+	std::ofstream v_outputDump("./dumps/prefab_dump.bin", std::ios::binary);
+	if (v_outputDump.is_open())
+	{
+		v_outputDump.write(reinterpret_cast<const char*>(bytes.data()), bytes.size());
+		v_outputDump.close();
+	}
+
 	if (reader.NextObject<std::uint32_t>() != 0x50524546)
 	{
 		DebugErrorL("Invalid Prefab Magic");
@@ -54,7 +61,7 @@ SMPrefab* PrefabFileReader::Read(
 	}
 
 	const std::uint32_t version = reader.NextObject<std::uint32_t, true>();
-	if (version <= 0 || version > 10)
+	if (version <= 0 || version > 13)
 	{
 		error.setError(1, "Unsupported Prefab Version: ", version);
 		return nullptr;
@@ -90,117 +97,102 @@ void PrefabFileReader::ReadPrefabHeader(PrefabReaderContext& context)
 	PrefabHeader v_header;
 	v_header.Read(v_stream, context.prefabVersion);
 
-	if (v_header.hasBlueprints != 0)
+	if (v_header.blueprintStream.count != 0 && TileConverterSettings::ExportBlueprints)
 	{
-		const int v_blueprint_bytes = PrefabFileReader::ReadBlueprints(context, v_header);
-		THROW_PREFAB_ERROR(v_blueprint_bytes != v_header.hasBlueprints, context.pError);
+		const std::uint32_t v_blueprintBytes = PrefabFileReader::ReadBlueprints(context, v_header);
+		THROW_PREFAB_ERROR(v_blueprintBytes != v_header.blueprintStream.bitSize, context.pError);
 	}
 
-	if (v_header.hasPrefabs != 0)
+	if (v_header.prefabStream.count != 0 && TileConverterSettings::ExportPrefabs)
 	{
-		const int v_prefab_bytes = PrefabFileReader::ReadPrefabs(context, v_header);
+		const std::uint32_t v_prefabBytes = PrefabFileReader::ReadPrefabs(context, v_header);
 		if (*context.pError) return;
 
-		THROW_PREFAB_ERROR(v_prefab_bytes != v_header.hasPrefabs, context.pError);
+		THROW_PREFAB_ERROR(v_prefabBytes != v_header.prefabStream.bitSize, context.pError);
 	}
 
-	//Skipped the node reader as it's not needed
-	if (v_header.hasNodes != 0)
-		v_stream.SetIndex(v_stream.Index() + v_header.hasNodes);
-
-	if (v_header.hasAssets != 0)
+	if (v_header.assetStream.count != 0 && TileConverterSettings::ExportAssets)
 	{
-		const int v_asset_bytes = PrefabFileReader::ReadAssets(context, v_header);
-		THROW_PREFAB_ERROR(v_asset_bytes != v_header.hasAssets, context.pError);
+		const std::uint32_t v_assetBytes = PrefabFileReader::ReadAssets(context, v_header);
+		THROW_PREFAB_ERROR(v_assetBytes != v_header.assetStream.bitSize, context.pError);
 	}
 
-	if (v_header.hasDecals != 0)
+	if (v_header.decalStream.count != 0 && TileConverterSettings::ExportDecals)
 	{
-		const int v_decal_bytes = PrefabFileReader::ReadDecals(context, v_header);
-		THROW_PREFAB_ERROR(v_decal_bytes != v_header.hasDecals, context.pError);
+		const std::uint32_t v_decalBytes = PrefabFileReader::ReadDecals(context, v_header);
+		THROW_PREFAB_ERROR(v_decalBytes != v_header.decalStream.bitSize, context.pError);
 	}
 
-	if (v_header.has_0x5c != 0)
-		PrefabFileReader::Read_248(context, v_header);
-
-	if (v_header.hasKinematics != 0)
+	if (v_header.kinematicsStream.count != 0 && TileConverterSettings::ExportKinematics)
 	{
-		const int v_kinematic_bytes = PrefabFileReader::ReadKinematics(context, v_header);
-		THROW_PREFAB_ERROR(v_kinematic_bytes != v_header.hasKinematics, context.pError);
+		const std::uint32_t v_kinematicBytes = PrefabFileReader::ReadKinematics(context, v_header);
+		THROW_PREFAB_ERROR(v_kinematicBytes != v_header.kinematicsStream.bitSize, context.pError);
 	}
-
-	if (v_header.has_0x7c != 0)
-		PrefabFileReader::Read_2(context, v_header);
 }
 
-int PrefabFileReader::ReadBlueprints(
+std::uint32_t PrefabFileReader::ReadBlueprints(
 	PrefabReaderContext& context,
 	PrefabHeader& header)
 {
 	BitStream& stream = *context.pBitStream;
-
-	if (!TileConverterSettings::ExportBlueprints)
-	{
-		stream.Move(header.hasBlueprints);
-		return header.hasBlueprints;
-	}
+	stream.SetIndex(header.blueprintStream.bitOffset);
 
 	BIT_STREAM_DUMP_INTO_FILE(stream, L"./prefab_dump/prefab" + std::to_wstring(context.prefabVersion) + L"_blueprints", 100);
-	const int v_idx_start = stream.Index();
+	const std::uint32_t v_idxStart = stream.Index();
 
-	for (int a = 0; a < header.blueprintCount; a++)
+	for (std::uint32_t a = 0; a < header.blueprintStream.count; a++)
 	{
-		const int string_length = stream.ReadInt();
-		const std::string value = stream.ReadString(string_length);
+		const std::uint32_t v_bpDataLen = stream.ReadU32();
+		const std::string v_bpData = stream.ReadString(v_bpDataLen);
 
-		const glm::vec3 f_pos = stream.ReadVec3();
-		const glm::quat f_quat = stream.ReadQuat();
+		const glm::vec3 v_bpPosition = stream.ReadVec3();
+		const glm::quat v_bpRotation = stream.ReadQuat();
 
-		stream.ReadInt();
+		// Skip some integer
+		stream.Move(4 * 8);
 
 		// A random byte was added in the version 10 of prefabs
 		if (context.prefabVersion >= 10)
-			stream.ReadByte();
+			stream.Move(1 * 8);
+
+		// Skip another 4 null bytes introduced in the newest prefab version
+		if (context.prefabVersion >= 13)
+			stream.Move(4 * 8);
 
 		if (context.counterMode)
 		{
-			SMBlueprint::LoadAndCountAutomatic(value);
+			SMBlueprint::LoadAndCountAutomatic(v_bpData);
 		}
 		else
 		{
-			SMBlueprint* blueprint = SMBlueprint::LoadAutomatic(value, f_pos, f_quat);
+			SMBlueprint* blueprint = SMBlueprint::LoadAutomatic(v_bpData, v_bpPosition, v_bpRotation);
 			if (!blueprint) continue;
 
 			context.pPrefab->addObject(blueprint);
 		}
 	}
 
-	return stream.Index() - v_idx_start;
+	return stream.Index() - v_idxStart;
 }
 
-int PrefabFileReader::ReadPrefabs(
+std::uint32_t PrefabFileReader::ReadPrefabs(
 	PrefabReaderContext& context,
 	PrefabHeader& header)
 {
 	BitStream& stream = *context.pBitStream;
-
-	if (!TileConverterSettings::ExportPrefabs)
-	{
-		stream.Move(header.hasPrefabs);
-		return header.hasPrefabs;
-	}
+	stream.SetIndex(header.prefabStream.bitOffset);
 
 	BIT_STREAM_DUMP_INTO_FILE(stream, L"./prefab_dump/prefab" + std::to_wstring(context.prefabVersion) + L"_prefabs", 100);
-	const int v_start_idx = stream.Index();
+	const std::uint32_t v_startIdx = stream.Index();
 
 	SMEntityTransform v_transform;
-	for (int a = 0; a < header.prefabCount; a++)
+	for (std::uint32_t a = 0; a < header.prefabStream.count; a++)
 	{
-		const int v_str_length = stream.ReadInt();
-		std::wstring v_pref_path = String::ToWide(stream.ReadString(v_str_length));
-		KeywordReplacer::ReplaceKeyR(v_pref_path);
+		const int v_prefPathLen = stream.ReadInt();
+		std::wstring v_prefPath = String::ToWide(stream.ReadString(v_prefPathLen));
+		KeywordReplacer::ReplaceKeyR(v_prefPath);
 
-		DebugOutL(0b1011_fg, "Recursive Prefab Path: ", v_pref_path);
+		DebugOutL(0b1011_fg, "Recursive Prefab Path: ", v_prefPath);
 
 		v_transform.position = stream.ReadVec3();
 		v_transform.rotation = stream.ReadQuat();
@@ -211,20 +203,20 @@ int PrefabFileReader::ReadPrefabs(
 
 		if (context.counterMode)
 		{
-			PrefabFileReader::Read(v_pref_path, L"", v_transform, *context.pError, context.counterMode);
+			PrefabFileReader::Read(v_prefPath, L"", v_transform, *context.pError, context.counterMode);
 			if (*context.pError) return 0;
 		}
 		else
 		{
-			SMPrefab* rec_prefab = PrefabFileReader::Read(v_pref_path, L"", v_transform, *context.pError, context.counterMode);
+			SMPrefab* v_pRecPrefab = PrefabFileReader::Read(v_prefPath, L"", v_transform, *context.pError, context.counterMode);
 			if (*context.pError) return 0;
-			if (!rec_prefab) continue;
+			if (!v_pRecPrefab) continue;
 
-			context.pPrefab->addObject(rec_prefab);
+			context.pPrefab->addObject(v_pRecPrefab);
 		}
 	}
 
-	return stream.Index() - v_start_idx;
+	return stream.Index() - v_startIdx;
 }
 
 void PrefabFileReader::ReadNodes(
@@ -283,51 +275,45 @@ void PrefabFileReader::ReadNodes(
 	}
 }
 
-int PrefabFileReader::ReadAssets(
+std::uint32_t PrefabFileReader::ReadAssets(
 	PrefabReaderContext& context,
 	PrefabHeader& header)
 {
 	BitStream& stream = *context.pBitStream;
-
-	if (!TileConverterSettings::ExportAssets)
-	{
-		stream.Move(header.hasAssets);
-		return header.hasAssets;
-	}
+	stream.SetIndex(header.assetStream.bitOffset);
 
 	BIT_STREAM_DUMP_INTO_FILE(stream, L"./prefab_dump/prefab" + std::to_wstring(context.prefabVersion) + L"_assets", 100);
-	const int v_idx_start = stream.Index();
+	const std::uint32_t v_idxStart = stream.Index();
 
 	SMEntityTransform v_transform;
-	for (int a = 0; a < header.assetCount; a++)
+	for (std::uint32_t a = 0; a < header.assetStream.count; a++)
 	{
 		v_transform.position = stream.ReadVec3();
 		v_transform.rotation = stream.ReadQuat();
 		v_transform.scale = stream.ReadVec3();
 
-		const SMUuid uuid = stream.ReadUuid();
-		const int materialCount = stream.ReadByte();
+		const SMUuid v_uuid = stream.ReadUuid();
+		const std::uint32_t v_materialCount = stream.ReadU8();
 
-		std::unordered_map<std::string, SMColor, Hashing::StringHasher, std::equal_to<>> color_map;
+		std::unordered_map<std::string, SMColor, Hashing::StringHasher, std::equal_to<>> v_colorMap;
 
-		if (materialCount != 0)
+		if (v_materialCount != 0)
 		{
-			for (int b = 0; b < materialCount; b++)
+			for (std::uint32_t b = 0; b < v_materialCount; b++)
 			{
-				const int length = stream.ReadByte();
-				std::string str = stream.ReadString(length);
+				const std::uint32_t v_matNameLen = stream.ReadU8();
+				const std::string v_matName = stream.ReadString(v_matNameLen);
+				const std::uint32_t color = stream.ReadU32();
 
-				const unsigned int color = stream.ReadInt();
-
-				if (color_map.find(str) == color_map.end())
-					color_map.emplace(std::move(str), color);
+				if (v_colorMap.find(v_matName) == v_colorMap.end())
+					v_colorMap.emplace(std::move(v_matName), color);
 			}
 		}
 
 		if (context.prefabVersion >= 10)
 			stream.ReadByte();
 
-		const AssetData* v_pAssetData = SMMod::GetGlobalObject<AssetData>(uuid);
+		const AssetData* v_pAssetData = SMMod::GetGlobalObject<AssetData>(v_uuid);
 
 		if (context.counterMode)
 		{
@@ -340,31 +326,26 @@ int PrefabFileReader::ReadAssets(
 			Model* pModel = ModelStorage::LoadModel(v_pAssetData->m_mesh);
 			if (!pModel) continue;
 
-			SMAsset* nAsset = new SMAsset(v_pAssetData, v_transform, pModel, std::move(color_map));
+			SMAsset* nAsset = new SMAsset(v_pAssetData, v_transform, pModel, std::move(v_colorMap));
 			context.pPrefab->addObject(nAsset);
 		}
 	}
 
-	return stream.Index() - v_idx_start;
+	return stream.Index() - v_idxStart;
 }
 
-int PrefabFileReader::ReadDecals(
+std::uint32_t PrefabFileReader::ReadDecals(
 	PrefabReaderContext& context,
 	PrefabHeader& header)
 {
 	BitStream& stream = *context.pBitStream;
-
-	if (!TileConverterSettings::ExportDecals)
-	{
-		stream.Move(header.hasDecals);
-		return header.hasDecals;
-	}
+	stream.SetIndex(header.decalStream.bitOffset);
 
 	BIT_STREAM_DUMP_INTO_FILE(stream, L"./prefab_dump/prefab" + std::to_wstring(context.prefabVersion) + L"_decals", 100);
-	const int v_start_idx = stream.Index();
+	const std::uint32_t v_startIdx = stream.Index();
 
 	SMEntityTransform v_transform;
-	for (int a = 0; a < header.decalsCount; a++)
+	for (std::uint32_t a = 0; a < header.decalStream.count; a++)
 	{
 		v_transform.position = stream.ReadVec3();
 		v_transform.rotation = stream.ReadQuat();
@@ -372,9 +353,8 @@ int PrefabFileReader::ReadDecals(
 
 		const SMUuid v_uuid = stream.ReadUuid();
 		const SMColor v_color = stream.ReadInt();
-
-		//Read a random 4 byte value
-		stream.ReadInt();
+		// Skip a random 4 byte value
+		stream.Move(4 * 8);
 
 		const DecalData* v_pDecalData = SMMod::GetGlobalObject<DecalData>(v_uuid);
 
@@ -391,39 +371,21 @@ int PrefabFileReader::ReadDecals(
 		}
 	}
 
-	return stream.Index() - v_start_idx;
+	return stream.Index() - v_startIdx;
 }
 
-int PrefabFileReader::Read_248(
+std::uint32_t PrefabFileReader::ReadKinematics(
 	PrefabReaderContext& context,
 	PrefabHeader& header)
 {
 	BitStream& stream = *context.pBitStream;
-
-	BIT_STREAM_DUMP_INTO_FILE(stream, L"./prefab_dump/prefab" + std::to_wstring(context.prefabVersion) + L"_248", 100);
-	DebugWarningL("UNIMPLEMENTED -> ", stream.Index());
-
-	stream.Move(header.has_0x5c);
-	return header.has_0x5c;
-}
-
-int PrefabFileReader::ReadKinematics(
-	PrefabReaderContext& context,
-	PrefabHeader& header)
-{
-	BitStream& stream = *context.pBitStream;
-
-	if (!TileConverterSettings::ExportKinematics)
-	{
-		stream.Move(header.hasBlueprints);
-		return header.hasBlueprints;
-	}
+	stream.SetIndex(header.kinematicsStream.bitOffset);
 
 	BIT_STREAM_DUMP_INTO_FILE(stream, L"./prefab_dump/prefab" + std::to_wstring(context.prefabVersion) + L"_kinematics", 5000);
-	const int v_start_idx = stream.Index();
+	const std::uint32_t v_startIdx = stream.Index();
 
 	SMEntityTransform v_transform;
-	for (int a = 0; a < header.kinematicsCount; a++)
+	for (std::uint32_t a = 0; a < header.kinematicsStream.count; a++)
 	{
 		v_transform.position = stream.ReadVec3();
 		v_transform.rotation = stream.ReadQuat();
@@ -469,18 +431,5 @@ int PrefabFileReader::ReadKinematics(
 		}
 	}
 
-	return stream.Index() - v_start_idx;
-}
-
-int PrefabFileReader::Read_2(
-	PrefabReaderContext& context,
-	PrefabHeader& header)
-{
-	BitStream& stream = *context.pBitStream;
-
-	BIT_STREAM_DUMP_INTO_FILE(stream, L"./prefab_dump/prefab" + std::to_wstring(context.prefabVersion) + L"_2", 100);
-	DebugWarningL("UNIMPLEMENTED -> ", stream.Index());
-
-	stream.Move(header.has_0x7c);
-	return header.has_0x7c;
+	return stream.Index() - v_startIdx;
 }

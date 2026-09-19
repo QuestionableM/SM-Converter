@@ -54,51 +54,60 @@ int BlueprintListReader::Read(
 	const std::vector<Byte>& bytes,
 	int count)
 {
+	std::ofstream v_output("./dumps/bp_list_data.bin", std::ios::binary);
+	if (v_output.is_open())
+	{
+		v_output.write(reinterpret_cast<const char*>(bytes.data()), bytes.size());
+		v_output.close();
+	}
+
 	MemoryWrapper memory(bytes);
 
-	int index = 0;
+	std::uint32_t v_idx = 0;
 	for (int a = 0; a < count; a++)
 	{
-		const glm::vec3 f_pos = memory.Object<glm::vec3>(index);
-		const glm::quat f_quat = memory.GetQuat(index + 0xc);
-		index += 0x1c;
+		const glm::vec3 f_pos = memory.Object<glm::vec3>(v_idx);
+		const glm::quat f_quat = memory.GetQuat(v_idx + 0xc);
+		v_idx += 0x1c;
 
-		std::string value;
+		std::string v_bpData;
 		if (context.tileVersion < 7)
 		{
-			const int val_len = (int)memory.Object<Byte>(index) & 0xff;
-			index++;
+			const std::uint8_t v_bpDataLen = memory.Object<std::uint8_t>(v_idx);
+			v_idx++;
 
-			value = memory.String(index, val_len);
-			index += val_len;
+			v_bpData = memory.String(v_idx, v_bpDataLen);
+			v_idx += v_bpDataLen;
 		}
 		else
 		{
-			const int val_len = memory.Object<int>(index);
-			index += 4;
+			const std::uint32_t v_bpDataLen = memory.Object<std::uint32_t>(v_idx);
+			v_idx += 4;
 
-			value = memory.String(index, val_len);
-			index += val_len;
+			v_bpData = memory.String(v_idx, v_bpDataLen);
+			v_idx += v_bpDataLen;
 		}
 
+		// Skip a random null byte that was added in the newest versions of tiles
 		if (context.tileVersion >= 13)
-		{
-			//Skip a random null byte that was added in the newest versions of tiles
-			index++;
-		}
+			v_idx++;
+
+		// Skip 8 more random bytes
+		if (context.tileVersion >= 15)
+			v_idx += 8;
 
 		if (context.counterMode)
 		{
-			SMBlueprint::LoadAndCountAutomatic(value);
+			SMBlueprint::LoadAndCountAutomatic(v_bpData);
 		}
 		else
 		{
-			SMBlueprint* pNewBlueprint = SMBlueprint::LoadAutomatic(value, f_pos, f_quat);
+			SMBlueprint* pNewBlueprint = SMBlueprint::LoadAutomatic(v_bpData, f_pos, f_quat);
 			if (!pNewBlueprint) continue;
 
 			context.pTilePart->AddObject(pNewBlueprint);
 		}
 	}
 
-	return index;
+	return v_idx;
 }

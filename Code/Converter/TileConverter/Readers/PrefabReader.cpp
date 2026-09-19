@@ -65,7 +65,14 @@ int PrefabReader::Read(
 	SMEntityTransform v_transform;
 	MemoryWrapper memory(bytes);
 
+	{
+		std::ofstream v_output("./dumps/prefab_data.bin", std::ios::binary);
+		v_output.write(reinterpret_cast<const char*>(bytes.data()), bytes.size());
+	}
+
+	std::string v_flag;
 	int index = 0;
+
 	for (int a = 0; a < prefabCount; a++)
 	{
 		v_transform.position = memory.Object<glm::vec3>(index);
@@ -82,28 +89,41 @@ int PrefabReader::Read(
 			index += 0x28;
 		}
 
-		const int string_length = memory.Object<int>(index);
+		const std::uint32_t v_pathLen = memory.Object<std::uint32_t>(index);
 		index += 4;
-		const std::string v_path = memory.String(index, string_length);
-		index += string_length;
+		const std::string v_path = memory.String(index, v_pathLen);
+		index += v_pathLen;
 
-		const int bVar2 = (int)memory.Object<Byte>(index) & 0xff;
-		index += 1;
-		const std::string v_flag = memory.String(index, bVar2);
-		index += bVar2;
+		const bool v_containsFlag = memory.Object<bool>(index);
+		index++;
+
+		if (v_containsFlag)
+		{
+			const std::uint8_t v_flagLen = memory.Object<std::uint8_t>(index);
+			index++;
+
+			v_flag = memory.String(index, v_flagLen);
+			index += v_flagLen;
+		}
+		else
+		{
+			v_flag.clear();
+		}
+
+		// Skip 4 random bytes
 		index += 4;
 
-		std::wstring v_pref_path = String::ToWide(v_path);
-		KeywordReplacer::ReplaceKeyR(v_pref_path);
+		std::wstring v_prefabPath = String::ToWide(v_path);
+		KeywordReplacer::ReplaceKeyR(v_prefabPath);
 
-		const std::wstring v_pref_flag = String::ToWide(v_flag);
-		DebugOutL("Prefab Path: ", v_pref_path);
+		const std::wstring v_prefabFlag = String::ToWide(v_flag);
+		DebugOutL("Prefab Path: ", v_prefabPath);
 
-		SMPrefab* v_new_prefab = PrefabFileReader::Read(v_pref_path, v_pref_flag, v_transform, *context.pError, context.counterMode);
+		SMPrefab* v_pNewPrefab = PrefabFileReader::Read(v_prefabPath, v_prefabFlag, v_transform, *context.pError, context.counterMode);
 		if (*context.pError) return 0;
-		if (context.counterMode || !v_new_prefab) continue;
+		if (context.counterMode || !v_pNewPrefab) continue;
 
-		context.pTilePart->AddObject(v_new_prefab);
+		context.pTilePart->AddObject(v_pNewPrefab);
 	}
 
 	return index;

@@ -7,131 +7,95 @@
 
 SM_UNMANAGED_CODE
 
+struct PrefabDataStream
+{
+	std::uint32_t bitOffset;
+	std::uint32_t count;
+	std::uint32_t something;
+	std::uint32_t bitSize;
+
+	inline void Read(BitStream& stream)
+	{
+		bitOffset = stream.ReadU32();
+		count = stream.ReadU32();
+		something = stream.ReadU32();
+		bitSize = stream.ReadU32();
+	}
+
+	inline void Reset()
+	{
+		bitOffset = 0;
+		count = 0;
+		something = 0;
+		bitSize = 0;
+	}
+};
+
 class PrefabHeader
 {
 public:
-	int blueprintCount;
-	int hasBlueprints;
-	
-	int prefabCount;
-	int hasPrefabs;
-	
-	int nodeCount;
-	int hasNodes;
-	
-	int assetCount;
-	int hasAssets;
-	
-	int decalsCount;
-	int hasDecals;
-	
-	int count_0x54;
-	int has_0x5c;
-
-	int kinematicsCount;
-	int hasKinematics;
-
-	int count_0x74;
-	int has_0x7c;
+	PrefabDataStream blueprintStream;
+	PrefabDataStream prefabStream;
+	PrefabDataStream nodeStream;
+	PrefabDataStream assetStream;
+	PrefabDataStream decalStream;
+	PrefabDataStream unk1Stream;
+	PrefabDataStream kinematicsStream;
+	PrefabDataStream unk2Stream;
 	
 	PrefabHeader() = default;
 	~PrefabHeader() = default;
 	
 	inline void Read(BitStream& stream, int version)
 	{
-		stream.Move(4 * 8);
-		blueprintCount = stream.ReadInt();
-		stream.Move(4 * 8);
-		hasBlueprints = stream.ReadInt();
-
-		stream.Move(4 * 8);
-		prefabCount = stream.ReadInt();
-		stream.Move(4 * 8);
-		hasPrefabs = stream.ReadInt();
-
-		stream.Move(4 * 8);
-		nodeCount = stream.ReadInt();
-		stream.Move(4 * 8);
-		hasNodes = stream.ReadInt();
+		blueprintStream.Read(stream);
+		prefabStream.Read(stream);
+		nodeStream.Read(stream);
 
 		if (2 < version)
-		{
-			stream.Move(4 * 8);
-			assetCount = stream.ReadInt();
-			stream.Move(4 * 8);
-			hasAssets = stream.ReadInt();
-		}
+			assetStream.Read(stream);
 		else
-		{
-			assetCount = 0;
-			hasAssets  = 0;
-		}
+			assetStream.Reset();
 
 		if (3 < version)
-		{
-			stream.Move(4 * 8);
-			decalsCount = stream.ReadInt();
-			stream.Move(4 * 8);
-			hasDecals = stream.ReadInt();
-		}
+			decalStream.Read(stream);
 		else
-		{
-			decalsCount = 0;
-			hasDecals = 0;
-		}
+			decalStream.Reset();
 
 		if (5 < version)
-		{
-			stream.Move(4 * 8);
-			count_0x54 = stream.ReadInt();
-			stream.Move(4 * 8);
-			has_0x5c = stream.ReadInt();
-		}
+			unk1Stream.Read(stream);
 		else
-		{
-			count_0x54 = 0;
-			has_0x5c   = 0;
-		}
+			unk1Stream.Reset();
 
 		if (7 < version)
 		{
-			stream.Move(4 * 8);
-			kinematicsCount = stream.ReadInt();
-			stream.Move(4 * 8);
-			hasKinematics = stream.ReadInt();
-
-			stream.Move(4 * 8);
-			count_0x74 = stream.ReadInt();
-			stream.Move(4 * 8);
-			has_0x7c = stream.ReadInt();
+			kinematicsStream.Read(stream);
+			unk2Stream.Read(stream);
 		}
 		else
 		{
-			kinematicsCount = 0;
-			hasKinematics   = 0;
-
-			count_0x74 = 0;
-			has_0x7c   = 0;
+			kinematicsStream.Reset();
+			unk2Stream.Reset();
 		}
 
 	#if defined(DEBUG) || defined(_DEBUG)
 		DebugOutL("Prefab Data:");
-		if (hasBlueprints != 0)
-			DebugOutL("Blueprint Count: ", blueprintCount);
-		if (hasPrefabs != 0)
-			DebugOutL("Prefab Count: ", prefabCount);
-		if (hasNodes != 0)
-			DebugOutL("Node Count: ", nodeCount);
-		if (hasAssets != 0)
-			DebugOutL("Asset Count: ", assetCount);
-		if (hasDecals != 0)
-			DebugOutL("Decals Count: ", decalsCount);
-		if (has_0x5c != 0)
-			DebugOutL("Count_0x54: ", count_0x54);
-		if (hasKinematics != 0)
-			DebugOutL("Kinematics Count: ", kinematicsCount);
-		if (has_0x7c != 0)
-			DebugOutL("Count_0x74: ", count_0x74);
+		if (blueprintStream.count != 0)
+			DebugOutL("Blueprint Stream { offset: ", blueprintStream.bitOffset, ", count: ", blueprintStream.count, ", size: ", blueprintStream.bitSize, " }");
+		if (prefabStream.count != 0)
+			DebugOutL("Prefab Stream { offset: ", prefabStream.bitOffset, ", count: ", prefabStream.count, ", size: ", prefabStream.bitSize, " }");
+		if (nodeStream.count != 0)
+			DebugOutL("Node Stream { offset: ", nodeStream.bitOffset, ", count: ", nodeStream.count, ", size: ", nodeStream.bitSize, " }");
+		if (assetStream.count != 0)
+			DebugOutL("Asset Stream { offset: ", assetStream.bitOffset, ", count: ", assetStream.count, ", size: ", assetStream.bitSize, " }");
+		if (decalStream.count != 0)
+			DebugOutL("Decal Stream { offset: ", decalStream.bitOffset, ", count: ", decalStream.count, ", size: ", decalStream.bitSize, " }");
+		if (unk1Stream.count != 0)
+			DebugOutL("Unk1 Stream { offset: ", unk1Stream.bitOffset, ", count: ", unk1Stream.count, ", size: ", unk1Stream.bitSize, " }");
+		if (kinematicsStream.count != 0)
+			DebugOutL("Kinematic Stream { offset: ", kinematicsStream.bitOffset, ", count: ", kinematicsStream.count, ", size: ", kinematicsStream.bitSize, " }");
+		if (unk2Stream.count != 0)
+			DebugOutL("Unk2 Stream { offset: ", unk2Stream.bitOffset, ", count: ", unk2Stream.count, ", size: ", unk2Stream.bitSize, " }");
 	#endif
 	}
 };

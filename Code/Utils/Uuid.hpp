@@ -19,7 +19,7 @@ public:
 	SMUuid();
 	SMUuid(const std::string_view& uuid);
 	SMUuid(const std::vector<long long>& longs);
-	SMUuid(long long first, long long second, bool isBigEndian = false);
+	SMUuid(const std::uint64_t first, const std::uint64_t second, const bool isBigEndian = false);
 
 
 	static SMUuid GenerateNamedStatic(const SMUuid& uuid, const std::string& some_string);
@@ -44,10 +44,10 @@ public:
 
 	union
 	{
-		unsigned __int8  m_Data8[16];
-		unsigned __int16 m_Data16[8];
-		unsigned __int32 m_Data32[4];
-		unsigned __int64 m_Data64[2];
+		std::uint8_t  m_Data8[16];
+		std::uint16_t m_Data16[8];
+		std::uint32_t m_Data32[4];
+		std::uint64_t m_Data64[2];
 	};
 };
 
