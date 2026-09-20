@@ -94,7 +94,7 @@ bool TileReader::ReadTile(
 	DebugOutL("CellHeadersSize: ", v_header.m_data.cell_header_size, "\n");
 
 	const std::uint32_t v_tileVersion = v_header.m_data.version;
-	if (v_tileVersion > 13)
+	if (v_tileVersion > 15)
 	{
 		error.setError(1, "Unsupported Tile Version: ", v_tileVersion);
 		return false;

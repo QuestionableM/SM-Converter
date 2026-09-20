@@ -17,7 +17,10 @@ SMUuid::SMUuid(const std::vector<long long>& longs)
 	std::memcpy(&m_Data64, longs.data(), 16);
 }
 
-SMUuid::SMUuid(long long first, long long second, bool isBigEndian)
+SMUuid::SMUuid(
+	const std::uint64_t first,
+	const std::uint64_t second,
+	const bool isBigEndian)
 {
 	m_Data64[0] = first;
 	m_Data64[1] = second;

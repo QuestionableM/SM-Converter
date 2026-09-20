@@ -46,11 +46,11 @@ public:
 
 	static void ReadPrefabHeader(PrefabReaderContext& context);
 
-	static int ReadBlueprints(
+	static std::uint32_t ReadBlueprints(
 		PrefabReaderContext& context,
 		PrefabHeader& header);
 
-	static int ReadPrefabs(
+	static std::uint32_t ReadPrefabs(
 		PrefabReaderContext& context,
 		PrefabHeader& header);
 
@@ -59,23 +59,15 @@ public:
 		SMPrefab* prefab,
 		int count);
 
-	static int ReadAssets(
+	static std::uint32_t ReadAssets(
 		PrefabReaderContext& context,
 		PrefabHeader& header);
 
-	static int ReadDecals(
+	static std::uint32_t ReadDecals(
 		PrefabReaderContext& context,
 		PrefabHeader& header);
 
-	static int Read_248(
-		PrefabReaderContext& context,
-		PrefabHeader& header);
-
-	static int ReadKinematics(
-		PrefabReaderContext& context,
-		PrefabHeader& header);
-
-	static int Read_2(
+	static std::uint32_t ReadKinematics(
 		PrefabReaderContext& context,
 		PrefabHeader& header);
 };

@@ -22,15 +22,14 @@ SM_UNMANAGED_CODE
 
 class BitStream
 {
-	const std::vector<Byte>* data;
-	int index = 0;
+	const std::vector<Byte>* m_data;
+	std::uint32_t m_index;
 
 public:
 	inline BitStream(MemoryWrapper& memory)
-	{
-		this->data = memory.GetByteStorage();
-		this->index = static_cast<int>(memory.Index() * 8);
-	}
+		: m_data(memory.GetByteStorage())
+		, m_index(static_cast<std::uint32_t>(memory.Index() * 8))
+	{}
 
 #if defined(DEBUG) || defined(_DEBUG)
 	inline void DumpContentsIntoFile(const std::wstring& file_name, const std::size_t& num_bytes)
@@ -41,9 +40,9 @@ public:
 		std::ofstream v_output(file_name, std::ios::binary);
 		if (v_output.is_open())
 		{
-			const int v_index_copy = this->Index();
+			const std::uint32_t v_index_copy = this->Index();
 
-			const std::size_t v_bytes_clamped = std::min(data->size(), static_cast<std::size_t>(v_index_copy) + num_bytes);
+			const std::size_t v_bytes_clamped = std::min(m_data->size(), static_cast<std::size_t>(v_index_copy) + num_bytes);
 			for (std::size_t a = 0; a < v_bytes_clamped; a++)
 			{
 				const unsigned char v_cur_byte = static_cast<unsigned char>(this->ReadByte());
@@ -56,34 +55,34 @@ public:
 	}
 #endif
 
-	inline int Index() const noexcept
+	inline std::uint32_t Index() const noexcept
 	{
-		return this->index;
+		return m_index;
 	}
 
-	inline void SetIndex(int value) noexcept
+	inline void SetIndex(std::uint32_t value) noexcept
 	{
-		this->index = value;
+		m_index = value;
 	}
 
-	inline int Size() const noexcept
+	inline std::uint32_t Size() const noexcept
 	{
-		return static_cast<int>(this->data->size());
+		return static_cast<std::uint32_t>(m_data->size());
 	}
 
 	inline void Align() noexcept
 	{
-		index += (7 - ((index - 1) & 7));
+		m_index += (7 - ((m_index - 1) & 7));
 	}
 
-	inline void Move(int step) noexcept
+	inline void Move(const std::uint32_t step) noexcept
 	{
-		index += step;
+		m_index += step;
 	}
 
 	inline const Byte* Data() const noexcept
 	{
-		return this->data->data();
+		return m_data->data();
 	}
 
 	template<typename T>
@@ -91,15 +90,15 @@ public:
 	{
 		static_assert(std::is_arithmetic_v<T>, "BitStream::ReadObject -> Typename must be of arithmetic type!");
 
-		if (Size() < (index >> 3) + sizeof(T)) return 0;
+		if (Size() < (m_index >> 3) + sizeof(T)) return 0;
 
-		const std::size_t v_mem_off = (index >> 3);
-		const std::size_t v_offset = (index & 7);
+		const std::size_t v_mem_off = (m_index >> 3);
+		const std::size_t v_offset = (m_index & 7);
 
 		T v_result = 0;
-		index += sizeof(T) * 8;
+		m_index += sizeof(T) * 8;
 
-		const std::vector<Byte>& v_data = *this->data;
+		const std::vector<Byte>& v_data = *m_data;
 
 		if (v_offset == 0)
 		{
@@ -130,7 +129,7 @@ public:
 			float converted_float_bits;
 		} bits = {};
 
-		bits.integer_bits = ReadObject<int>();
+		bits.integer_bits = ReadObject<std::uint32_t>();
 
 		return bits.converted_float_bits;
 	}
@@ -154,6 +153,16 @@ public:
 		return { quat_w, quat_x, quat_y, quat_z };
 	}
 
+	inline std::uint32_t ReadU32()
+	{
+		return this->ReadObject<std::uint32_t>();
+	}
+
+	inline std::uint8_t ReadU8()
+	{
+		return this->ReadObject<std::uint8_t>();
+	}
+
 	inline int ReadInt()
 	{
 		return int(this->ReadObject<int>());
@@ -171,23 +180,23 @@ public:
 
 	inline SMUuid ReadUuid()
 	{
-		const long long first = this->ReadObject<long long>();
-		const long long second = this->ReadObject<long long>();
+		const std::uint64_t first = this->ReadObject<std::uint64_t>();
+		const std::uint64_t second = this->ReadObject<std::uint64_t>();
 
 		return SMUuid(second, first, true);
 	}
 
-	inline std::vector<Byte> ReadBytes(int length)
+	inline std::vector<Byte> ReadBytes(const std::uint32_t length)
 	{
-		std::vector<Byte> bytes(static_cast<std::size_t>(length));
+		std::vector<Byte> bytes(length);
 
-		std::memcpy(bytes.data(), this->data->data() + (index >> 3), length);
-		index += length * 8;
+		std::memcpy(bytes.data(), m_data->data() + (m_index >> 3), length);
+		m_index += length * 8;
 
 		return bytes;
 	}
 
-	inline std::string ReadString(int length)
+	inline std::string ReadString(const std::uint32_t length)
 	{
 		const std::vector<Byte> bytes = ReadBytes(length);
 
